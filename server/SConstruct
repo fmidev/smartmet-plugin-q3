@@ -1,0 +1,271 @@
+#
+# SConstruct for building Q3 server code
+#
+# Notes:
+#	Use CPPFLAGS instead of CXXFLAGS (did not work for '-W...' and '-O...')
+#
+# Dependencies:
+#   Newbase     (needed for reading SQD files)
+#       Boost 1.4x
+#       libz
+#       libbz2
+#       libpng
+#       libjpeg
+#   Tron        (needed for creation of curves)
+#   libproj
+#   liblua
+#
+# Platforms:
+#   Linux 64-bit (tested on Centos5)
+#   - Newbase is expected to be installed at system level (from RPM packages)
+#
+# Change log:
+#       AKa 10-Nov-2008: Started Q3
+#
+
+import os
+import sys
+
+Help(""" 
+    Usage: scons [-j4] [-Q] [debug=1] [objdir=<path>] q3.so|q3server|libfmi-q3.so
+    
+    Or just use 'make bs_debug|bs_release', which point right back to us.
+""") 
+
+Decider("MD5-timestamp") 
+
+DEBUG=      int( ARGUMENTS.get("debug", 0) ) != 0
+RELEASE=    not DEBUG
+
+UNAME_M = os.popen("uname -m").read()
+UBUNTU32= (UNAME_M=="i686")
+
+LIB_PREFIX= UBUNTU32 and "/usr/lib/" \
+                      or "/usr/lib64/"
+
+TOOLS_PATH= "../tools"
+COMMON_PATH= "../common"
+ADDONS_PATH= "../addons"
+
+# bin2c.lua and LuaNew can come either from '../tools/' (in RPM packaging) 
+# or from '../addons/newcairo/tools' (in development)
+#
+BIN2C_LUA=   TOOLS_PATH+"/bin2c.lua"
+if not os.path.exists(BIN2C_LUA):
+	BIN2C_LUA= "../addons/newcairo/tools/bin2c.lua"
+
+LUANEW_PATH= TOOLS_PATH+"/luanew"
+if not os.path.exists(LUANEW_PATH):
+	LUANEW_PATH= "../addons/newcairo/tools/luanew"
+
+OBJDIR=     ARGUMENTS.get("objdir","obj")
+print( OBJDIR )
+
+PREFIX= "/usr"
+
+PKG_CONFIG= "pkg-config"
+
+#---
+env= Environment( LIBPREFIX="" )
+
+env.Append( 
+    CPPPATH= [ "./include", 
+               COMMON_PATH+"/include",
+               # 01-Feb-2012 PKi
+               ADDONS_PATH+"/newcairo/include",
+              ],
+
+    CPPDEFINES= [ 
+        "UNIX",
+        "SMOOTH_AND_STRETCH"
+    ],
+
+    CPPFLAGS= [
+        # MAINFLAGS ('-fPIC' is automatically added by SCons)
+        #
+        "-rdynamic",
+        "-Wall",
+        "-W",
+        "-std=c++11",
+        "-Wno-unused-parameter",
+        # 10-Jan-2014 PKi: For including precompiled lua chunks
+        #
+        "-fno-signed-char",
+        
+	    # DIFFICULTFLAGS (flags that cause some choking, would be good but not used)
+	    #
+	    #"-Weffc++",
+	    #"-Wunreachable-code",
+	    "-Wshadow",
+    ] )
+
+#
+# Debug settings
+#
+if DEBUG:
+    env.Append( CPPFLAGS=[ "-O0", "-g", "-Wno-error",
+
+        # EXTRAFLAGS (for 'debug' target)
+        #
+	   "-Wcast-align",
+	   "-Wcast-qual",
+	   "-Wconversion",
+	   "-Winline",
+	   "-Wno-multichar",
+	   "-Wno-pmf-conversions",
+	   "-Woverloaded-virtual",
+	   "-Wpointer-arith",
+	   "-Wredundant-decls",
+	   "-Wsign-promo",
+	   "-Wwrite-strings",
+
+	   #"-Wold-style-cast",
+	   #"-ansi", 
+	   #"-pedantic",
+    ] )
+else:
+    env.Append( CPPDEFINES="NDEBUG",
+                CPPFLAGS= ["-O2",
+
+        # RELEASEFLAGS
+        #
+        "-Wuninitialized",
+    ] )
+
+# 10-Jan-2014 PKi
+#
+env.Append( CPPFLAGS=[ "-std=c++0x" ] )
+
+#---
+# Only 'libfmi-q3' will need to link to Newbase, Tron etc.
+#
+lib_env= env.Clone()
+
+lib_env.Append( CPPPATH= [
+                    OBJDIR,      # for .lch files
+                    LUANEW_PATH+"/include",
+                ] )
+#---
+# Newbase
+#
+lib_env.Append( CPPDEFINES= ["USE_NEWBASE"] )
+
+# Use 'File()' to take in the file directly without prefix/postfix (which
+# would bring in a shared object, though there are none)    --AKa 24-Jan-10
+#
+# 02-Dec-2011 PKi: added cairo
+# 14-Feb-2011 PKi: using multithreaded version of newbase
+#
+lib_env.Append( CPPPATH= [ PREFIX+"/include/smartmet", PREFIX+"/include/cairo" ],
+                LIBS=   ['smartmet-newbase']
+                )    
+
+#---
+# Tron
+#
+lib_env.Append( CPPDEFINES= [ "USE_TRON" ],
+                CPPPATH= [ PREFIX+"/include/smartmet" ],
+                LIBS= [ File( LIB_PREFIX+"libsmartmet-tron.a") ]
+                )
+
+#---
+# Boost
+# 
+# NOTE: This must be AFTER NEWBASE that need it (says Mika).
+#
+# The FMI/KAP policy is to link towards the STATIC libraries and not the SHARED ones,
+# due to some Boost binary interface problems (Mika knows more).
+#
+# 'File()' is needed to add the name as-is, without prefixes ("lib") or postfixes (".so").
+#
+# Since 1.41 (or somewhere between 1.36 and it) the "-mt" suffix was removed - all
+# libraries are the multithreaded versions now (says Mika).
+#
+# 14-Feb-2011 PKi: added boost_thread
+#
+# 10-Jan-2014 PKi: boost -mt libs
+# 14-Jan-2015 PKi: boost 'non' -mt libs
+#
+mt= UBUNTU32 and "-mt" or ""
+lib_env.Append( LIBPATH= LIB_PREFIX,
+                LIBS= [ "boost_filesystem"+mt, "boost_iostreams"+mt, "boost_regex"+mt, "boost_system"+mt, "boost_thread"+mt ]
+              )
+
+#---
+# Other libraries
+#
+# 02-Dec-2011 PKi: added cairo
+#
+lib_env.Append( LIBS= [ "png", "jpeg", "z", "bz2", "proj", "pthread", "cairo" ] )
+
+#---
+# Lua 5.1
+#
+# Ubuntu has 'lua5.1' on pkg-config (and allows multiple versions to coexist)
+# Others have 'lua'
+#
+if os.system( PKG_CONFIG+" --exists lua5.1" )==0:
+    lib_env.ParseConfig( PKG_CONFIG+" --cflags --libs lua5.1" )
+else:
+    lib_env.ParseConfig( PKG_CONFIG+" --cflags --libs lua" )
+    lib_env.Append( SHAREDLIBS="lua" )
+
+#---
+# SSE optimizations
+#
+lib_env.Append( CPPFLAGS=[ "-mfpmath=sse", "-msse2" ] )
+
+
+#---
+# luac -o - source/prepare.lua          Makes precompiled (binary) Lua bytecode
+# lua bin2c.lua -o objs/prepare.lch     Packs the binary into C char array
+#
+# Note: '-o -' will only work on Unix-like systems (not Windows). Windows
+#       needs to use a temporary file since it's stdout is not binary.
+#
+lib_env["BUILDERS"]["LuaPrecompiled"]= Builder( action = "luac -o - $SOURCE | lua "+BIN2C_LUA+" -o $TARGET") 
+
+for fn in Glob("lua/*.lua") + Glob(COMMON_PATH+"/lua/*.lua") + Glob(LUANEW_PATH+"/lua/*.lua") + [TOOLS_PATH+"/assert.lua", TOOLS_PATH+"/type.lua"]:
+    s= os.path.basename( str(fn) )
+    lib_env.LuaPrecompiled( OBJDIR+"/"+ s.replace(".lua",".lch"), fn ) 
+
+
+#---
+# Smartmet Server specific
+#
+bs_env= env.Clone()
+
+# 10-Jan-2014 PKi: SmartMet Server API now uses HTTP classes
+#
+#SYSTEM_SPSERVER= os.path.exists(PREFIX+"/include/spserver/sphttpmsg.hpp")
+#
+# If there is not a system-wise 'spserver' installed, use a local make
+#
+#if not SYSTEM_SPSERVER:
+#   bs_env.Append( CPPPATH="../../spserver/spserver-0.9.3" )
+
+bs_env.Append( CPPPATH= [ PREFIX+"/include/smartmet" ],
+            LIBS= ["smartmet-spine"] )
+
+
+#---
+bs_objs= []
+lib_objs= []
+
+for fn in Glob("source/*.cpp") + Glob(COMMON_PATH+"/source/*.cpp") + Glob(LUANEW_PATH+"/source/*.cpp"): 
+    s= os.path.basename( str(fn) )
+    if s=="Plugin.cpp":
+        bs_objs += bs_env.SharedObject( OBJDIR+"/"+ s.replace(".cpp",""), fn ) 
+    else:
+		lib_objs += lib_env.SharedObject( OBJDIR+"/"+ s.replace(".cpp",""), fn )
+
+#---
+# Final outcome
+#
+libfmi_so= lib_env.SharedLibrary( "libfmi-q3.so", lib_objs )
+
+bs_env.Append( LIBS= libfmi_so )
+bs_env.SharedLibrary( "q3.so", bs_objs )
+
+# end
+

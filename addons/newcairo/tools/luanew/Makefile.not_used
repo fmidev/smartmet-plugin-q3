@@ -1,0 +1,75 @@
+#
+# Makefile 
+#
+# make VARIANT=release|debug
+# make test
+#
+VARIANT=debug
+
+BIN2C=../bin2c.lua
+
+SRCS=$(wildcard source/*.cpp)
+
+OBJS=$(addprefix obj/,$(notdir $(SRCS:.cpp=.o)))
+
+OUT=luanew-$(VARIANT).a
+
+CFLAGS=-Wall -W -fPIC
+
+ifeq "$(VARIANT)" "debug"
+  CFLAGS += -O0 -g
+else
+  CFLAGS += -O2
+endif
+
+# Centos and OS X have 'pkg-config lua'
+# Ubuntu and Debian have 'pkg-config lua5.1'
+#
+ifneq "$(shell pkg-config --exists lua5.1 && echo 1)" ""
+  CFLAGS += $(shell pkg-config --cflags lua5.1)
+  #LIBS += $(shell pkg-config --libs lua5.1)
+else
+  CFLAGS += $(shell pkg-config --cflags lua)
+  #LIBS += $(shell pkg-config --libs lua)
+endif
+
+ifeq "$(shell uname -s)" "Darwin"
+  #SHARED=-bundle
+  LUA=lua51 -lstrict
+else
+  #SHARED=-shared
+  LUA=lua -lstrict
+endif
+
+#--
+all: $(VARIANT)
+
+debug:
+	$(MAKE) luanew-debug.a VARIANT=debug
+
+release:
+	$(MAKE) luanew-release.a VARIANT=release
+
+$(OUT): $(OBJS)
+	ar -cq $@ $^
+
+obj/Proto.o: obj/proto.lch
+
+obj/%.o: include/*.h
+
+obj/%.o: source/%.cpp
+	-@mkdir -p obj/debug
+	g++ -c -o $@ $(CFLAGS) -I include -I obj $<
+
+obj/%.lch: lua/%.lua
+	luac -o delme $< && lua $(BIN2C) delme -o $@
+	@rm delme
+
+clean:
+	-rm -rf obj/* *.a
+
+#--
+echo:
+	@echo $(CFLAGS)
+
+.PHONY: all debug release clean echo

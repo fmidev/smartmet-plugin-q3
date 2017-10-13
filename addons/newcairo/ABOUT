@@ -1,0 +1,30 @@
+
+NewCairo is a binding of the Cairo drawing library to Lua 5.1.
+
+There have been other Lua Cairo bindings (oocairo, luacairo etc.), each with their own programming interface and pros and cons. None of them has been good enough and they have neither been actively maintained.
+
+NewCairo focuses on ease of use and simplicity. Its API is based on queueing drawing operations so that unnecessary "structural typing" is minimized. This has been influenced by i.e. jQuery.svg JavaScript library.
+
+While being simple to use, all libcairo features are supported. Just the interfaces to getting them may be slightly different. I.e. flags are given as strings and case nor use of underscores does not matter (thus "FILL_RULE_EVEN_ODD", "fillruleevenodd" and "FillRuleEvenOdd" all work the same). Unnecessary "cairo" prefixes for the flags are omitted.
+
+Have a look at the samples, which are derived from existing public domain samples on the Internet. If you find ways to make them even simpler, take contact.
+
+One of the features separating us from existing Lua Cairo bindings is that we're prepared to be compiled in a sandboxed fashion, not giving direct access to the file system. This is required in order to run the binding in a server environment.
+
+Requirements:
+
+    libcairo >= 1.8.6
+    liblua >= 5.1.2
+
+The binding may be compilable even with earlier Cairo API versions, but this is the version used in development & testing.
+
+Operating systems:
+
+The binding should work on any operating system supporting both Cairo and Lua (= pretty much everywhere). Tested on:
+
+    OS X 10.6.2 Intel (with Cairo and Lua via 'fink')
+    Linux Centos 5.3
+    ...
+
+--AKa 26-Jan-10 <asko.kauppi@fmi.fi>
+

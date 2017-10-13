@@ -1,0 +1,24 @@
+
+ LuaNew README
+---------------
+
+LuaNew is yet-another Lua/C++ binding tool, trying to be:
+
+- simple and short
+- easy to use
+- efficient
+
+In the area of efficiency, LuaNew provides a 'new(L)' operator that merges
+the C++ constructor/destructor mechanism with Lua garbage collection. It
+also means memory is allocated only once (by Lua), for an object.
+
+The 'new(L)' mechanism is so vital to the binding, it's gotten its name
+from that.
+
+LuaNew has been created by Asko Kauppi for the Finnish Meteorological
+Institute (www.fmi.fi). It is PROPRIETARY SOFTWARE OWNED BY THE FMI.
+
+Opening the library using the same MIT license as Lua 5.1 uses would
+be nice.
+
+--AKa 23-Dec-2009

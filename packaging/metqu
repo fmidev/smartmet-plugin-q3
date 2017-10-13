@@ -1,0 +1,68 @@
+#!/usr/bin/lua -lstrict
+--
+-- Launching of MetQu command line tool.
+--
+-- Usage:
+--  metqu[-nosqd]                           # opens interactive command line with MetQu preloaded
+--  metqu[-nosqd] script.lua ...params...   # runs 'script.lua' and converts its results to JSON on stdout
+--
+-- Note: The file can be named either 'metqu' or 'metqu-nosqd'. It shall load a module
+--      matching its name.
+
+--
+-- 'arg[0]':    '[<path>/]metqu'
+--              '[<path>/]metqu-nosqd'
+--
+--[[
+local name= arg[0]:match( "([^/]+)$" ):replace( "\\-", "_" )
+]]
+local name= "metqu"
+
+-- Handle the interactive case
+--
+if select('#',...)==0 then
+    return os.execute( "lua -lstrict -i -e \"require '"..name.."'\"" )
+end
+
+require(name)   -- load in the C++ side
+
+local fn= select(1,...)
+if type(fn)~="string" then
+    error( "Usage: "..name.." script.lua [... params ...]" )
+end
+
+local f,err= loadfile(fn)
+if not f then
+    io.stderr:write( err, "\n" )    -- syntax error (don't mention us)
+    return -1
+end
+
+--[[
+for _,v in ipairs{ f( select(2,...) ) } do
+    print( _result(v) )     -- JSON or Matrix[2D] conversion
+end
+]]
+
+-- Use of 'arg' is not supported; application scripts should use '...' if they want to know their params)
+--
+-- It is likely that Lua will discontinue the 'arg' support at some point (currently there are two
+-- overlapping mechanisms, 'arg' (mostly phased out) and '...').    --AKa 14-Apr-10
+--
+arg= nil
+
+-- Use 'pcall()' to catch errors (allows us more control on formatting them,
+-- i.e. taking reference to ourselves away).
+--
+local res= { pcall( f, select(2,...) ) }
+    --
+    -- true, ...        on success
+    -- false, str       on error
+
+if not res[1] then
+    io.stderr:write( res[2], "\n" )
+    return -1
+end
+
+_results( unpack(res,2) )      -- to stdout, with one value per line (like in server output)
+
+-- return back to OS
