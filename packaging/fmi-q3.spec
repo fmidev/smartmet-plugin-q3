@@ -174,6 +174,7 @@ Provides:   fmi-q3-virtual
 #---
 %changelog
 * Upcoming
+- Fixed problem loading NFmiGDalArea data using native projection (BRAINSTORM-1011)
 - Load addon settings (e.g. fminames database connection data) from config file
 - Forcing wiping for data loaded/referenced by repetitive metadata queries (BRAINSTORM-784)
 - Sounding data support

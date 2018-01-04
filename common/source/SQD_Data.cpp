@@ -1331,8 +1331,7 @@ Matrix *SQD_Data::push_NativeMatrix_e( lua_State *L, const JDay &vt, const NA_Le
 
 			// Attach grid; needed by PEEKXY
 			//
-			auto areaptr = NFmiAreaFactory::Create(native_proj.toString());
-			std::shared_ptr<NFmiGrid> wantedGrid(new NFmiGrid(areaptr.get(), m->getSize().getXS(), m->getSize().getYS()));
+			std::shared_ptr<NFmiGrid> wantedGrid(new NFmiGrid(qd->Info()->Area(), m->getSize().getXS(), m->getSize().getYS()));
 			m->setGrid(wantedGrid);
 
             return m;
