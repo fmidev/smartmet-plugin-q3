@@ -16,7 +16,7 @@ Name: fmi-metqu
 # el5:      "Enterprise Linux 5.0"
 # fmi:      FMI
 #
-Version: 15.4.22
+Version: 18.1.9
 Release: 1.el7.fmi
 
 License: FMI
@@ -114,6 +114,8 @@ rm -rf %{buildroot}
 
 #---
 %changelog
+* Tue Jan  9 2018 Mika Heiskanen <mika.heiskanen@fmi.fi> - 18.1.9-1.el7.fmi
+- Fix to GDAL area handling
 * Wed Apr 22 2015 Mikko Visa <mikko.visa@fmi.fi>
 - utilities.lua fix #2, BRAINSTORM-466
 * Tue Apr 21 2015 Mikko Visa <mikko.visa@fmi.fi>

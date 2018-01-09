@@ -18,7 +18,7 @@ Name: fmi-q3
 # el5:      "Enterprise Linux 5.0"
 # fmi:      FMI
 #
-Version: 17.2.3
+Version: 18.1.9
 Release: 1.el7.fmi
 
 License: FMI
@@ -173,7 +173,7 @@ Provides:   fmi-q3-virtual
 
 #---
 %changelog
-* Upcoming
+* Tue Jan  9 2018 Mika Heiskanen <mika.heiskanen@fmi.fi> - 18.1.9-1.el7.fmi
 - Fixed problem loading NFmiGDalArea data using native projection (BRAINSTORM-1011)
 - Load addon settings (e.g. fminames database connection data) from config file
 - Forcing wiping for data loaded/referenced by repetitive metadata queries (BRAINSTORM-784)

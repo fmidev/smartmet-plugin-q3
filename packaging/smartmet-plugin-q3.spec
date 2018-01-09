@@ -2,7 +2,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet q3 plugin
 Name: %{SPECNAME}
-Version: 17.9.28
+Version: 18.1.9
 Release: 1.el7.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -72,6 +72,8 @@ rm -rf %{buildroot}
 
 #---
 %changelog
+* Tue Jan  9 2018 Mika Heiskanen <mika.heiskanen@fmi.fi> - 18.1.9-1.el7.fmi
+- Fix to GDAL projection handling
 * Thu Sep 28 2017 Mika Heiskanen <mika.heiskanen@fmi.fi> - 17.9.28-1.el7.fmi
 - Fixed version number to be of form YY.MM.DD
 * Thu Apr 27 2017 <mikko.visa@fmi.fi>
