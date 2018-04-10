@@ -28,8 +28,9 @@ class Sqd_Tracker : public TrackerBase
   Sqd_Tracker(const std::string &fn_abs_mask_,
               unsigned refresh_ms,
               unsigned wiping_[],
+              bool relative_uv_,
               const std::string &trackName_)
-      : TrackerBase(refresh_ms, wiping_, trackName_), fn_abs_mask(fn_abs_mask_)
+      : TrackerBase(refresh_ms, wiping_, relative_uv_, trackName_), fn_abs_mask(fn_abs_mask_)
   {
     init();
   }

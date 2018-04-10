@@ -694,13 +694,14 @@ static vector<NA_Param> getParams( NFmiQueryInfo &info, bool &has_326, bool &has
 
 /*
 */
-SQD_Data::SQD_Data( const char *fn ) throw(E_BAD_FILE)
+SQD_Data::SQD_Data( const char *fn, bool relative_uv ) throw(E_BAD_FILE)
     : NA_Data( read_info(fn) )
       , qd( new NFmiQueryData(fn) )
 #ifdef METQU
       , is_readonly(true)
 #endif
 {
+    setExtra_sqd_RelativeUV(relative_uv);
     INVARIANT();
 }
 
@@ -1309,6 +1310,9 @@ Matrix *SQD_Data::push_NativeMatrix_e( lua_State *L, const JDay &vt, const NA_Le
 		lua_pushstring( L, otstr.CharPtr() );
 		lua_setglobal( L, "first_origintime" );
 	}
+
+    bool relative_uv = getExtra_sqd_RelativeUV();
+    (void) relative_uv;
 
     //---
     // Direct connection to data - no interpolations needed (writable in command line mode)

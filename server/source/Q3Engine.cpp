@@ -178,7 +178,8 @@ static void q3_config(const char *conf,
     // when loading filemask specific values
 
     unsigned wiping[] = {60, 180, 3600, 0};
-    const char *paramname[] = {"wiping", "archwiping", "metawiping", NULL, NULL};
+    bool relative_uv = false;
+    const char *paramname[] = {"relative_uv", "wiping", "archwiping", "metawiping", NULL, NULL};
 
     const int SUBT = lua_gettop(L);  // absolute index to '{ runs=..., ... }' table
     Q3Engine::Track *t;
@@ -226,9 +227,14 @@ static void q3_config(const char *conf,
         lua_gettable(L, SUBT);
         if (!lua_isnil(L, -1))
         {
-          if (lua_isnumber(L, -1))
+          // relative_uv (boolean) is the first parameter
+
+          if (((w == 0) && lua_isboolean(L, -1)) || ((w > 0) && lua_isnumber(L, -1)))
           {
-            wiping[w] = lua_tointeger(L, -1);
+            if (w == 0)
+              relative_uv = lua_toboolean(L, -1);
+            else
+              wiping[w - 1] = lua_tointeger(L, -1);
           }
           else
           {
@@ -284,20 +290,27 @@ static void q3_config(const char *conf,
       }
       lua_pop(L, 1);
 
-      for (int w = 0; paramname[w]; w += 2)
+      bool mask_relative_uv = relative_uv;
+
+      for (int w = 0; paramname[w]; w += ((w == 0) ? 1 : 2))
       {
         lua_pushstring(L, paramname[w]);
         lua_gettable(L, -2);
-        if (lua_isnumber(L, -1))
+        if (((w == 0) && lua_isboolean(L, -1)) || ((w > 0) && lua_isnumber(L, -1)))
         {
-          // Filemask specific wiping for archived data too is set using 'wiping' (not
-          // 'archwiping'),
-          // and the value is stored to last/additional array slot. When wiping, if the last array
-          // value
-          // is nonzero, it will be used instead of the global or track specific value
-          wiping[(w == 0) ? 3 : w] = lua_tointeger(L, -1);
+          if (w == 0)
+            mask_relative_uv = lua_toboolean(L, -1);
+          else
+            // Filemask specific wiping for archived data too is set using 'wiping' (not
+            // 'archwiping'),
+            // and the value is stored to last/additional array slot. When wiping, if the last array
+            // value
+            // is nonzero, it will be used instead of the global or track specific value
+            wiping[(w == 1) ? 3 : w - 1] = lua_tointeger(L, -1);
+//1=3, 3=2
+//0=3, 2=2
         }
-        else
+        else if (!lua_isnil(L, -1))
         {
           LOG_WARNING("Bad '%s' value for mask %d for track %s (ignored)", paramname[w], i, key);
         }
@@ -308,7 +321,7 @@ static void q3_config(const char *conf,
       lua_pushinteger(L, 1);
       lua_gettable(L, -2);
       const char *mask_fn = lua_tostring(L, -1);  // 'rootdir=' already applied
-      t->add(mask_fn, refresh_secs, wiping);
+      t->add(mask_fn, refresh_secs, wiping, mask_relative_uv);
 
       wiping[3] = 0;
 #if 1
@@ -343,10 +356,10 @@ static void q3_config(const char *conf,
     while (lua_next(L, t_idx))
     {
       // [-2]: key (addon.setting)
-      // [-1]: value (number or string)
+      // [-1]: value (number, string or boolean)
 
       string key(lua_tostring(L, -2));
-      string val(lua_tostring(L, -1));
+      string val(lua_isboolean(L, -1) ? (lua_toboolean(L, -1) ? "true" : "false") : lua_tostring(L, -1));
 
       if (key == "include.file")
         includeFile = val;

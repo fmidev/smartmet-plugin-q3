@@ -23,6 +23,7 @@ const char *NA_Info::EXTRA_KEY_SQD_GRIDSIZE= "sqd_gridsize";
 const char *NA_Info::EXTRA_KEY_SQD_COMBO19=  "sqd_combo19";
 const char *NA_Info::EXTRA_KEY_SQD_COMBO326= "sqd_combo326";
 const char *NA_Info::EXTRA_KEY_SQD_REVLEVORDER= "sqd_revlevorder";
+const char *NA_Info::EXTRA_KEY_SQD_RELATIVE_UV= "sqd_relative_uv";
 #endif
 
 
