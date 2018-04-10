@@ -33,12 +33,12 @@ const char *TrackedData::four_Xs= "XXXX";
 * Note:
 *       To actually load the data, caller must call 'Acquire'
 */
-TrackedData::TrackedData( const char *fn, const JDay &ot_given_, const string_or_null &tmp_pattern_, size_t tmp_threshold_ ) throw( E_BAD_FILE, E_USAGE )
+TrackedData::TrackedData( const char *fn, const JDay &ot_given_, const string_or_null &tmp_pattern_, size_t tmp_threshold_, bool relative_uv_ ) throw( E_BAD_FILE, E_USAGE )
     : source(fn), info_(0), ot_given(ot_given_), qd(0), tmp_fn(0)
 #ifndef METQU
     , qd_m(), refcount(0), last_acquired(0), meta_acquired(0)
 #endif
-    , tmp_pattern(tmp_pattern_), tmp_threshold(tmp_threshold_)
+    , tmp_pattern(tmp_pattern_), tmp_threshold(tmp_threshold_), relative_uv(relative_uv_)
 {
     assert(fn);
 
@@ -50,12 +50,12 @@ TrackedData::TrackedData( const char *fn, const JDay &ot_given_, const string_or
     INVARIANT();
 }
 
-TrackedData::TrackedData( const char *fn, const NA_Info &info_given, const string_or_null &tmp_pattern_, size_t tmp_threshold_ ) throw( E_USAGE )
+TrackedData::TrackedData( const char *fn, const NA_Info &info_given, bool relative_uv_, const string_or_null &tmp_pattern_, size_t tmp_threshold_ ) throw( E_USAGE )
     : source(fn), info_(new NA_Info(info_given)), ot_given(), qd(0), tmp_fn(0)
 #ifndef METQU
     , qd_m(), refcount(0), last_acquired(0), meta_acquired(0)
 #endif
-    , tmp_pattern(tmp_pattern_), tmp_threshold(tmp_threshold_)
+    , tmp_pattern(tmp_pattern_), tmp_threshold(tmp_threshold_), relative_uv(relative_uv_)
 {
     assert(fn);
 
@@ -248,7 +248,7 @@ LOG_DEBUG( "Extracting done (%d bytes used)", (int)bytes );
 #endif
 #ifdef USE_NEWBASE
             if (!qd) {
-                qd= new SQD_Data( fn );
+                qd= new SQD_Data( fn, relative_uv );
             }
 #endif
         }

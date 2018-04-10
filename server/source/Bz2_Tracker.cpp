@@ -113,9 +113,10 @@ void Bz2_Tracker::cache_init(const char *fn)
 Bz2_Tracker::Bz2_Tracker(const string &fn_abs_mask,
                          uint_t refresh_ms_,
                          unsigned wiping_[],
+                         bool relative_uv_,
                          const string_or_null &tmp_pattern_,
                          size_t tmp_threshold_) throw(E_USAGE)
-    : TrackerBase(refresh_ms_, wiping_, "TRACK"),
+    : TrackerBase(refresh_ms_, wiping_, relative_uv_, "TRACK"),
       base_path(),
       file_mask(),
       tmp_pattern(tmp_pattern_),
@@ -216,7 +217,7 @@ bool Bz2_Tracker::update_from_cache(set<string> &seen_already) throw()
         //      for extracting its info (vital for keeping launch-to-readiness times short).
         //      Info is extracted on on-demand basis.   --AKa 30-Nov-2009
         //
-        available_data[ot] = new TrackedData(fn_abs, ot, tmp_pattern, tmp_threshold);
+        available_data[ot] = new TrackedData(fn_abs, ot, tmp_pattern, tmp_threshold, relative_uv);
 
         if (ot > last_ot)
           last_ot = ot;
@@ -342,7 +343,8 @@ void Bz2_Tracker::update_subpath(const char *path_abs, set<string> &seen_already
         // Note: This is NOT taking much time (important since we're within the locks).
         // 'Acquire' will do the actual extraction & mapping or loading of data.
         //
-        available_data[ot] = new TrackedData(fn_abs, *info, tmp_pattern, tmp_threshold);
+        available_data[ot] =
+            new TrackedData(fn_abs, *info, relative_uv, tmp_pattern, tmp_threshold);
         if (ot > last_ot)
           last_ot = ot;
       }

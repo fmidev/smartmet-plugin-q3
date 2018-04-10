@@ -47,6 +47,7 @@ std::vector<NA_Level> reverse_vector( const std::vector<NA_Level> &vec );
 *           "combo19=true|false"    whether ":19" (TotalWindMS) is used (carries multiple parameters)
 *           "combo326=true|false"   whether ":326" (WeatherAndCloudiness) is used (carries multiple parameters)
 *           "revlevorder=true|false" whether levels in NA_Info are reverse sorted
+*           "relative_uv=true|false" whether U and V are relative to the grid
 *
 *       MQD format:
 *           TBD: most likely we don't need this:
@@ -160,6 +161,13 @@ enum FmiProducerName
 	NA_Info &setExtra_sqd_revlevorder( bool v ) {
 		return setExtra( EXTRA_KEY_SQD_REVLEVORDER, v );
     }
+
+    bool getExtra_sqd_RelativeUV() const {
+        return getExtra_bool( EXTRA_KEY_SQD_RELATIVE_UV );
+    }
+    NA_Info &setExtra_sqd_RelativeUV( bool v ) {
+        return setExtra( EXTRA_KEY_SQD_RELATIVE_UV, v );
+    }
 #endif
 
     std::vector<NA_Param>::const_iterator getParamsBegin() const { return params.begin(); }
@@ -173,6 +181,7 @@ enum FmiProducerName
     static const char *EXTRA_KEY_SQD_COMBO19;
     static const char *EXTRA_KEY_SQD_COMBO326;
     static const char *EXTRA_KEY_SQD_REVLEVORDER;
+    static const char *EXTRA_KEY_SQD_RELATIVE_UV;
 #endif
 
     string_or_null getExtra_str( const char *key ) const;

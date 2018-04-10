@@ -144,7 +144,7 @@ bool Sqd_Tracker::update(set<string> &seen_already) throw()
         //
         try
         {
-          available_data[ot] = new TrackedData(fn_abs, *info);
+          available_data[ot] = new TrackedData(fn_abs, *info, relative_uv);
         }
         catch (const E_BAD_FILE &e)
         {

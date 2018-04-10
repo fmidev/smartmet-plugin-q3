@@ -63,6 +63,7 @@ end
 [wiping=[Xh][Ymin][Zsec]]
 [archwiping=[Xh][Ymin][Zsec]]
 [metawiping=[Xh][Ymin][Zsec]]
+[relative_uv=true|false]
 [rootdir=str]
 #[cache=str]
 [runs=[Xh][Ymin][Zsec]
@@ -72,8 +73,9 @@ end
 track {
     [runs=[Xh][Ymin][Zsec]]
     [refresh=[Xh][Ymin][Zsec]]
+    [relative_uv=true|false]
     [rootdir=str]
-    { fn_filter_str [refresh=[Xh][Ymin][Zsec]] [wiping=[Xh][Ymin][Zsec]] [metawiping=[Xh][Ymin][Zsec]] }
+    { fn_filter_str [refresh=[Xh][Ymin][Zsec]] [wiping=[Xh][Ymin][Zsec]] [metawiping=[Xh][Ymin][Zsec]] [relative_uv=true|false] }
       ...
 }
 
@@ -82,7 +84,7 @@ track {
 {
 [track]= {
     runs=secs_uint, 
-    { fn_filter_abs, refresh=secs_uint, wiping=secs_uint, metawiping=secs_uint }
+    { fn_filter_abs, refresh=secs_uint, wiping=secs_uint, metawiping=secs_uint, relative_uv=boolean }
     ...
     },
 ...
@@ -265,6 +267,7 @@ for s,line_n in lines(conf_s) do
             --
             -- Convert time strings to seconds, all others passed as-is. 
             -- Numberical strings are converted to numbers.
+            -- Boolean strings are converted to booleans.
             --
             -- Addon configuration settings are named <addon>.<setting>, e.g. fminames.dbuser.
             -- They are allowed in global scope only
@@ -278,7 +281,11 @@ for s,line_n in lines(conf_s) do
             if (addonsetting) then
                 AddonCfg[k]= h_min_sec(v) or tonumber(v) or v
             else
-                params[scope or ""][k]= h_min_sec(v) or tonumber(v) or v
+                if ((v.lower(v)=="true") or (v.lower(v)=="false")) then
+                    params[scope or ""][k]= (v.lower(v)=="true")
+                else
+                    params[scope or ""][k]= h_min_sec(v) or tonumber(v) or v
+                end
             end
         end
 
@@ -331,8 +338,12 @@ for s,line_n in lines(conf_s) do
         
         -- Go through each 'xxx=yyy' pair in the tail
         --
-        for k,v in string.gmatch(tail,"(%w+)=(%w+)") do
-            entry[k]= h_min_sec(v) or tonumber(v) or v
+        for k,v in string.gmatch(tail,"([%w_]+)=(%w+)") do
+            if ((v.lower(v) =="true") or (v.lower(v)=="false")) then
+                entry[k]= (v.lower(v)=="true")
+            else
+                entry[k]= h_min_sec(v) or tonumber(v) or v
+            end
         end
 
         table.insert( params[scope], entry )
@@ -352,6 +363,7 @@ AddonCfg["include.rootdir"]= params[""].rootdir
 AddonCfg["include.wiping"]= params[""].wiping
 AddonCfg["include.metawiping"]= params[""].metawiping
 AddonCfg["include.archwiping"]= params[""].archwiping
+AddonCfg["include.relative_uv"]= params[""].relative_uv
 params[""]= nil
 
 -- TEMPORARILY DISABLED. If we don't have archive extraction to disk, we don't need this.

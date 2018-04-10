@@ -50,7 +50,7 @@ class TrackerBase
 
   virtual bool archived() const { return false; }
  protected:
-  TrackerBase(unsigned refresh_secs_, unsigned wiping_[], const std::string &trackName_);
+  TrackerBase(unsigned refresh_secs_, unsigned wiping_[], bool relative_uv_, const std::string &trackName_);
 
   void init();  // to be called by derived constructors, once they're all done
 
@@ -83,6 +83,7 @@ class TrackerBase
   unsigned
       wiping[4];  // wiping cycle for "normal", archived and metadata access, plus an extra slot
                   // for filemask specific setting ("normal" or archived)
+  bool relative_uv;  // Set if U and V are relative to the grid
 
  private:
   const unsigned refresh_secs;  // Look for new archives every N secs (0=no refresh)
