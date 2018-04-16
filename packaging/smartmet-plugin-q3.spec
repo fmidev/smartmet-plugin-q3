@@ -2,7 +2,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet q3 plugin
 Name: %{SPECNAME}
-Version: 18.1.9
+Version: 18.4.16
 Release: 1.el7.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -27,7 +27,7 @@ Requires:       lua >= 5.1.4
 Requires:       bzip2-libs >= 1.0.6
 Requires:       libpng >= 1.5.13
 Requires:       libjpeg-turbo >= 1.2.90
-Requires:       smartmet-library-newbase >= 17.9.27
+Requires:       smartmet-library-newbase >= 18.4.16
 Requires:       smartmet-library-spine >= 17.9.13
 Requires:       smartmet-server >= 17.8.28
 Obsoletes:      fmi-q3-lib
@@ -72,6 +72,8 @@ rm -rf %{buildroot}
 
 #---
 %changelog
+* Mon Apr 16 2018 Pertti Kinnia <pertti.kinnia@fmi.fi> - 18.4.16-1.fmi
+- New release version (boost 1.66, newbase fixes)
 * Tue Jan  9 2018 Mika Heiskanen <mika.heiskanen@fmi.fi> - 18.1.9-1.el7.fmi
 - Fix to GDAL projection handling
 * Thu Sep 28 2017 Mika Heiskanen <mika.heiskanen@fmi.fi> - 17.9.28-1.el7.fmi
