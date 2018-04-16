@@ -18,7 +18,7 @@ Name: fmi-q3
 # el5:      "Enterprise Linux 5.0"
 # fmi:      FMI
 #
-Version: 18.1.9
+Version: 18.4.16
 Release: 1.el7.fmi
 
 License: FMI
@@ -110,7 +110,7 @@ Requires:       lua >= 5.1.4
 Requires:	bzip2-libs >= 1.0.6
 Requires:	libpng >= 1.5.13
 Requires:	libjpeg-turbo >= 1.2.90
-Requires:	smartmet-library-newbase >= 17.2.2
+Requires:	smartmet-library-newbase >= 18.4.16
 
 %description lib
 %{DESC} (server library)
@@ -173,6 +173,8 @@ Provides:   fmi-q3-virtual
 
 #---
 %changelog
+* Mon Apr 16 2018 Pertti Kinnia <pertti.kinnia@fmi.fi> - 18.4.16-1.fmi
+- New release version (boost 1.66, newbase fixes)
 * Tue Jan  9 2018 Mika Heiskanen <mika.heiskanen@fmi.fi> - 18.1.9-1.el7.fmi
 - Fixed problem loading NFmiGDalArea data using native projection (BRAINSTORM-1011)
 - Load addon settings (e.g. fminames database connection data) from config file
