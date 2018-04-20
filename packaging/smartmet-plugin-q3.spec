@@ -2,7 +2,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet q3 plugin
 Name: %{SPECNAME}
-Version: 18.4.16
+Version: 18.4.19
 Release: 1.el7.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -16,20 +16,20 @@ BuildRequires:	gcc-c++ >= 4.8.5
 BuildRequires:	libstdc++-devel >= 4.8.5
 BuildRequires:  proj-devel >= 4.8.0
 BuildRequires:	lua-devel >= 5.1.4
-BuildRequires:  boost-devel >= 1.65.0
+BuildRequires:  boost-devel >= 1.66.0
 BuildRequires:	bzip2-devel >= 1.0.6
 BuildRequires:	libpng-devel >= 1.5.13
 BuildRequires:	libjpeg-turbo-devel >= 1.2.90
 BuildRequires:  smartmet-library-tron >= 17.9.20
-BuildRequires:	smartmet-library-spine-devel >= 17.9.13
+BuildRequires:	smartmet-library-spine-devel >= 18.4.11
 Requires:       proj >= 4.8.0
 Requires:       lua >= 5.1.4
 Requires:       bzip2-libs >= 1.0.6
 Requires:       libpng >= 1.5.13
 Requires:       libjpeg-turbo >= 1.2.90
-Requires:       smartmet-library-newbase >= 18.4.16
-Requires:       smartmet-library-spine >= 17.9.13
-Requires:       smartmet-server >= 17.8.28
+Requires:       smartmet-library-newbase >= 18.4.19
+Requires:       smartmet-library-spine >= 18.4.11
+Requires:       smartmet-server >= 18.4.7
 Obsoletes:      fmi-q3-lib
 Obsoletes:      fmi-q3-config
 Obsoletes:      fmi-q3-brainstorm
