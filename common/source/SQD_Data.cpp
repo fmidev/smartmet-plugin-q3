@@ -1312,7 +1312,6 @@ Matrix *SQD_Data::push_NativeMatrix_e( lua_State *L, const JDay &vt, const NA_Le
 	}
 
     bool relative_uv = getExtra_sqd_RelativeUV();
-    (void) relative_uv;
 
     //---
     // Direct connection to data - no interpolations needed (writable in command line mode)
@@ -1453,7 +1452,7 @@ Matrix *SQD_Data::push_NativeMatrix_e( lua_State *L, const JDay &vt, const NA_Le
 		if (! (same_proj && same_gs))
 		{
 //			NFmiGrid wantedGrid(areaPtr.get(), m_->getSize().getXS(), m_->getSize().getYS());
-			fi.GridValues(nm, *(wantedGrid.get()), mt);
+			fi.GridValues(nm, *(wantedGrid.get()), mt, relative_uv);
 		}
 		else
         	fi.Values( nm, mt );
@@ -1486,7 +1485,7 @@ Matrix *SQD_Data::push_NativeMatrix_e( lua_State *L, const JDay &vt, const NA_Le
 		if (! (same_proj && same_gs))
 		{
 //			NFmiGrid wantedGrid(areaPtr.get(), m_->getSize().getXS(), m_->getSize().getYS());
-			fi.PressureValues(nm, *(wantedGrid.get()), mt, lv);
+			fi.PressureValues(nm, *(wantedGrid.get()), mt, lv, relative_uv);
 		}
 		else
 			fi.PressureValues(nm, mt, lv);
@@ -1560,7 +1559,7 @@ Matrix *SQD_Data::push_NativeMatrix_e( lua_State *L, const JDay &vt, const NA_Le
 		if (! (same_proj && same_gs))
 		{
 //			NFmiGrid wantedGrid(areaPtr.get(), m_->getSize().getXS(), m_->getSize().getYS());
-			fi.HeightValues(nm, *(wantedGrid.get()), mt, lv);
+			fi.HeightValues(nm, *(wantedGrid.get()), mt, lv, relative_uv);
 		}
 		else
 			fi.HeightValues(nm, mt, lv);
