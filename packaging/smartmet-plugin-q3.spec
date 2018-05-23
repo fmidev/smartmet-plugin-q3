@@ -2,7 +2,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet q3 plugin
 Name: %{SPECNAME}
-Version: 18.4.19
+Version: 18.5.23
 Release: 1.el7.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -21,15 +21,15 @@ BuildRequires:	bzip2-devel >= 1.0.6
 BuildRequires:	libpng-devel >= 1.5.13
 BuildRequires:	libjpeg-turbo-devel >= 1.2.90
 BuildRequires:  smartmet-library-tron >= 17.9.20
-BuildRequires:	smartmet-library-spine-devel >= 18.4.11
+BuildRequires:	smartmet-library-spine-devel >= 18.5.21
 Requires:       proj >= 4.8.0
 Requires:       lua >= 5.1.4
 Requires:       bzip2-libs >= 1.0.6
 Requires:       libpng >= 1.5.13
 Requires:       libjpeg-turbo >= 1.2.90
-Requires:       smartmet-library-newbase >= 18.4.19
-Requires:       smartmet-library-spine >= 18.4.11
-Requires:       smartmet-server >= 18.4.7
+Requires:       smartmet-library-newbase >= 18.5.21
+Requires:       smartmet-library-spine >= 18.5.21
+Requires:       smartmet-server >= 18.5.15
 Obsoletes:      fmi-q3-lib
 Obsoletes:      fmi-q3-config
 Obsoletes:      fmi-q3-brainstorm
@@ -72,6 +72,8 @@ rm -rf %{buildroot}
 
 #---
 %changelog
+* Wed May 23 2018 Pertti Kinnia <pertti.kinnia@fmi.fi> - 18.5.23-1.fmi
+- Use model's U/V reference information to control whether U and V are rotated when reprojecting
 * Mon Apr 16 2018 Pertti Kinnia <pertti.kinnia@fmi.fi> - 18.4.16-1.fmi
 - New release version (boost 1.66, newbase fixes)
 * Tue Jan  9 2018 Mika Heiskanen <mika.heiskanen@fmi.fi> - 18.1.9-1.el7.fmi
