@@ -21,14 +21,14 @@ BuildRequires:	bzip2-devel >= 1.0.6
 BuildRequires:	libpng-devel >= 1.5.13
 BuildRequires:	libjpeg-turbo-devel >= 1.2.90
 BuildRequires:  smartmet-library-tron >= 17.9.20
-BuildRequires:	smartmet-library-spine-devel >= 18.5.21
+BuildRequires:	smartmet-library-spine-devel >= 18.5.23
 Requires:       proj >= 4.8.0
 Requires:       lua >= 5.1.4
 Requires:       bzip2-libs >= 1.0.6
 Requires:       libpng >= 1.5.13
 Requires:       libjpeg-turbo >= 1.2.90
-Requires:       smartmet-library-newbase >= 18.5.21
-Requires:       smartmet-library-spine >= 18.5.21
+Requires:       smartmet-library-newbase >= 18.5.23
+Requires:       smartmet-library-spine >= 18.5.23
 Requires:       smartmet-server >= 18.5.15
 Obsoletes:      fmi-q3-lib
 Obsoletes:      fmi-q3-config
@@ -72,6 +72,8 @@ rm -rf %{buildroot}
 
 #---
 %changelog
+* Wed May 23 2018 Pertti Kinnia <pertti.kinnia@fmi.fi> - 18.5.23-1.fmi
+- Repackaged due to newbase ABI fix
 * Wed May 23 2018 Pertti Kinnia <pertti.kinnia@fmi.fi> - 18.5.23-1.fmi
 - Use model's U/V reference information to control whether U and V are rotated when reprojecting
 * Mon Apr 16 2018 Pertti Kinnia <pertti.kinnia@fmi.fi> - 18.4.16-1.fmi
