@@ -380,6 +380,13 @@ int RawBind::__index( lua_State *L ) {
         return 1;
     }
 
+    // { str }= .mt_relative_uv
+    //
+    if (strcmp(s,"mt_relative_uv")==0) {
+        lua_pushboolean(L, qd->getExtra_sqd_RelativeUV() );
+        return 1;
+    }
+
     // { jday_ud [, ...] }= .times
     //
     if (strcmp(s,"times")==0) {

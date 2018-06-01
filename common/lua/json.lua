@@ -79,9 +79,12 @@ local function json_value( v, recursion_lookup )
     if tv=="string" then
         return json_string(v)
 
-    elseif tv=="number" or tv=="boolean" then
+    elseif tv=="number" then
         -- 05-Jan-2012 PKi: Output nan as "null"
-        return isnan(v) and "null" or tostring(v)  -- number | "true" | "false"
+        return isnan(v) and "null" or tostring(v)  -- number
+
+    elseif tv=="boolean" then
+        return tostring(v)  -- "true" | "false"
 
     elseif v==nil then
         return "null"   -- can exist in arrays with holes
