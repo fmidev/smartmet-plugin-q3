@@ -610,6 +610,7 @@ local function trackmetadata(query,args)
 	local ret_dataids= isfieldselected(query,"dataids")
 	local ret_datanames= isfieldselected(query,"datanames")
 	local ret_locations= isfieldselected(query,"locations")
+	local ret_relativeuvs= isfieldselected(query,"relativeuvs")
 
 	if args==nil then args= {} end
 
@@ -715,6 +716,7 @@ local function trackmetadata(query,args)
 						if (not gs) and ret_dataids then ret[#ret].dataids= {} end
 						if (not gs) and ret_datanames then ret[#ret].datanames= {} end
 						if (not gs) and ret_locations then ret[#ret].locations= {} end
+						if ret_relativeuvs then ret[#ret].relativeuvs= {} end
 					end
 
 					n= n+1
@@ -759,6 +761,8 @@ local function trackmetadata(query,args)
 					if (not gs) and ret_dataids then ret[#ret].dataids[n]= r.dataids end
 					if (not gs) and ret_datanames then ret[#ret].datanames[n]= r.datanames end
 					if (not gs) and ret_locations then ret[#ret].locations[n]= r.locations end
+
+					if ret_relativeuvs then ret[#ret].relativeuvs[n]= r.mt_relative_uv end
 				end
 			end end
   		end
@@ -825,7 +829,8 @@ local function getquery_all(args)
 		wkts= true,
 		dataids= false,
 		datanames= false,
-		locations= false
+		locations= false,
+		relativeuvs= false
 	}
 
 	local query= args.includes and include(getquery_all({}),q,unpack(args.includes)) or q
