@@ -47,7 +47,7 @@ echo "#define RPM_VERSION \"%{version}-%{release}\"" >> common/include/Versions.
 %install
 rm -rf %{buildroot}
 install -d %{buildroot}/usr/lib64
-install -m 664 server/libfmi-q3.so %{buildroot}/usr/lib64/
+install -m 775 server/libfmi-q3.so %{buildroot}/usr/lib64/
 install -d %{buildroot}/etc/smartmet/plugins
 install -m 664 packaging/q3plugin.conf %{buildroot}/etc/smartmet/plugins/ 
 install -d %{buildroot}/usr/share/q3plugin
@@ -55,7 +55,7 @@ install -m 664 packaging/testbed.html %{buildroot}/usr/share/q3plugin/
 install -d %{buildroot}/usr/share/q3plugin/fonts
 install -m 664 fonts/*.ttf %{buildroot}/usr/share/q3plugin/fonts/ 
 install -d %{buildroot}/usr/share/smartmet/plugins
-install -m 664 server/q3.so %{buildroot}/usr/share/smartmet/plugins/
+install -m 775 server/q3.so %{buildroot}/usr/share/smartmet/plugins/
 install -d %{buildroot}/etc/smartmet/plugins
 
 %clean
