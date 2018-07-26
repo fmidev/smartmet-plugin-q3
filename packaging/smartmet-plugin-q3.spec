@@ -2,7 +2,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet q3 plugin
 Name: %{SPECNAME}
-Version: 18.4.19
+Version: 18.6.21
 Release: 1.el7.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -21,15 +21,15 @@ BuildRequires:	bzip2-devel >= 1.0.6
 BuildRequires:	libpng-devel >= 1.5.13
 BuildRequires:	libjpeg-turbo-devel >= 1.2.90
 BuildRequires:  smartmet-library-tron >= 17.9.20
-BuildRequires:	smartmet-library-spine-devel >= 18.4.11
+BuildRequires:	smartmet-library-spine-devel >= 18.6.18
 Requires:       proj >= 4.8.0
 Requires:       lua >= 5.1.4
 Requires:       bzip2-libs >= 1.0.6
 Requires:       libpng >= 1.5.13
 Requires:       libjpeg-turbo >= 1.2.90
-Requires:       smartmet-library-newbase >= 18.4.19
-Requires:       smartmet-library-spine >= 18.4.11
-Requires:       smartmet-server >= 18.4.7
+Requires:       smartmet-library-newbase >= 18.6.13
+Requires:       smartmet-library-spine >= 18.6.18
+Requires:       smartmet-server >= 18.6.6
 Obsoletes:      fmi-q3-lib
 Obsoletes:      fmi-q3-config
 Obsoletes:      fmi-q3-brainstorm
@@ -47,7 +47,7 @@ echo "#define RPM_VERSION \"%{version}-%{release}\"" >> common/include/Versions.
 %install
 rm -rf %{buildroot}
 install -d %{buildroot}/usr/lib64
-install -m 664 server/libfmi-q3.so %{buildroot}/usr/lib64/
+install -m 775 server/libfmi-q3.so %{buildroot}/usr/lib64/
 install -d %{buildroot}/etc/smartmet/plugins
 install -m 664 packaging/q3plugin.conf %{buildroot}/etc/smartmet/plugins/ 
 install -d %{buildroot}/usr/share/q3plugin
@@ -55,7 +55,7 @@ install -m 664 packaging/testbed.html %{buildroot}/usr/share/q3plugin/
 install -d %{buildroot}/usr/share/q3plugin/fonts
 install -m 664 fonts/*.ttf %{buildroot}/usr/share/q3plugin/fonts/ 
 install -d %{buildroot}/usr/share/smartmet/plugins
-install -m 664 server/q3.so %{buildroot}/usr/share/smartmet/plugins/
+install -m 775 server/q3.so %{buildroot}/usr/share/smartmet/plugins/
 install -d %{buildroot}/etc/smartmet/plugins
 
 %clean
@@ -72,6 +72,14 @@ rm -rf %{buildroot}
 
 #---
 %changelog
+* Thu Jun 21 2018 Pertti Kinnia <pertti.kinnia@fmi.fi> - 18.6.21-1.fmi
+- rpm build changed to enable debuginfo generation (BS-1206)
+* Fri Jun  1 2018 Pertti Kinnia <pertti.kinnia@fmi.fi> - 18.6.1-1.fmi
+- Added raw index '.mt_relative_uv' and metadata query field 'relativeuvs' for obtaining wind U/V component reference
+* Wed May 23 2018 Pertti Kinnia <pertti.kinnia@fmi.fi> - 18.5.23-1.fmi
+- Repackaged due to newbase ABI fix
+* Wed May 23 2018 Pertti Kinnia <pertti.kinnia@fmi.fi> - 18.5.23-1.fmi
+- Use model's U/V reference information to control whether U and V are rotated when reprojecting
 * Mon Apr 16 2018 Pertti Kinnia <pertti.kinnia@fmi.fi> - 18.4.16-1.fmi
 - New release version (boost 1.66, newbase fixes)
 * Tue Jan  9 2018 Mika Heiskanen <mika.heiskanen@fmi.fi> - 18.1.9-1.el7.fmi

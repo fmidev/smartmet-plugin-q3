@@ -49,7 +49,7 @@ endif
 # 06-Feb-2012 MHe/PKi: Excluding .spec files too; otherwise build error 'second %prep'
 #
 _rpm:
-	@mkdir -p $(RPMBUILD)/{BUILD,RPMS,SOURCES,SPECS,SRPMS,TEMP}
+	@mkdir -p $(RPMBUILD)/{RPMBUILD,RPMS,SOURCES,SPECS,SRPMS,TEMP}
 	-[ -f $(SOURCE_TGZ) ] && rm $(SOURCE_TGZ)
 	-rm -rf $(SOURCE_DIR)
 	mkdir -p $(SOURCE_DIR)
