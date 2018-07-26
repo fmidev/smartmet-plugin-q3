@@ -39,7 +39,7 @@ static const char *my_reader(lua_State *L, void *st_v, size_t *size)
   if ((!start) || (!*start))
   {
     *size = 0;
-    return NULL;  // done
+    return nullptr;  // done
   }
 
   // '%NN' is "any non alphanumeric character"
@@ -110,7 +110,7 @@ void RequestResponse::set_script(const char *val)
 */
 void RequestResponse::set_output(unsigned resp_code, const char *mime, const char *s, size_t bytes)
 {
-  bool jsonp_wrap = (jsonp_callback != NULL) && (resp_code == 200);
+  bool jsonp_wrap = (jsonp_callback != nullptr) && (resp_code == 200);
 
   set_code(resp_code);
   set_mime(jsonp_wrap ? "script/java-script" : mime);
@@ -149,7 +149,7 @@ void RequestResponse::set_output(unsigned resp_code, const char *mime, const cha
 */
 int RequestResponse::compile_code(lua_State *L, const char *block_name)
 {
-  assert(code != NULL);
+  assert(code != nullptr);
 
   struct my_reader_st my_st(code.c_str());
 

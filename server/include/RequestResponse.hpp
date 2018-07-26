@@ -37,7 +37,7 @@ class RequestResponse {
     virtual std::string get_query_string() const = 0;
 
     const char *get_code() const { return code.c_str(); }       // for debugging only
-    bool get_jsonp_mode() const { return jsonp_callback != NULL; }
+    bool get_jsonp_mode() const { return jsonp_callback != nullptr; }
 
     void set_script( const char *s );
 
@@ -48,7 +48,7 @@ class RequestResponse {
     std::map<std::string, std::string>::const_iterator end() const { return kk.end(); }
     std::map<std::string, std::string>::const_iterator find( const std::string &k ) const { return kk.find(k); }
 
-    bool has_code() const { return code != NULL; }
+    bool has_code() const { return code != nullptr; }
     int compile_code( lua_State *L, const char *block_name );
 
     virtual ~RequestResponse() {};

@@ -67,7 +67,7 @@ static void q3_config(const char *conf,
       // These required by 'proto'
       {LUA_MATHLIBNAME, luaopen_math},     // 'math.*'
       {LUA_LOADLIBNAME, luaopen_package},  // 'module' and 'package.*'
-      {NULL, NULL}};
+      {nullptr, nullptr}};
 
   LuaWrap L(my_stdlibs, config_chunk, sizeof(config_chunk));
 
@@ -174,12 +174,12 @@ static void q3_config(const char *conf,
     //
     // Filemask specific wiping delay is stored to last wiping[] slot.
     //
-    // Note: paramname[] needs an extra (second) NULL valued slot due to looping with index step 2
+    // Note: paramname[] needs an extra (second) nullptr valued slot due to looping with index step 2
     // when loading filemask specific values
 
     unsigned wiping[] = {60, 180, 3600, 0};
     bool relative_uv = false;
-    const char *paramname[] = {"relative_uv", "wiping", "archwiping", "metawiping", NULL, NULL};
+    const char *paramname[] = {"relative_uv", "wiping", "archwiping", "metawiping", nullptr, nullptr};
 
     const int SUBT = lua_gettop(L);  // absolute index to '{ runs=..., ... }' table
     Q3Engine::Track *t;
@@ -276,9 +276,9 @@ static void q3_config(const char *conf,
       }
       else
       {
-        // 22-Nov-2012 PKi: Protection against passing NULL to strcmp
+        // 22-Nov-2012 PKi: Protection against passing nullptr to strcmp
         //
-        const char *s = (lua_isstring(L, -1) ? lua_tostring(L, -1) : NULL);
+        const char *s = (lua_isstring(L, -1) ? lua_tostring(L, -1) : nullptr);
         if (!s)
         {
           luaL_error(L, "Missing 'refresh' value (give 'false' for no refresh)");
@@ -456,7 +456,7 @@ const Q3Engine::Track *Q3Engine::getTrack(const char *name) const
   else
   {
     LOG_DEBUG("No tracker named '%s'", name);
-    return NULL;
+    return nullptr;
   }
 }
 

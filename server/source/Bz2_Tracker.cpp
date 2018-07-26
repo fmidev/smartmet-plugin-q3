@@ -97,7 +97,7 @@ static bool file_mask_match(const char *mask, const char *fn)
 /*
 * Called ONCE by 'Q3Engine' when reading the configuration file.
 *
-* 'fn' is NULL for not having a cache file (we do memory caching anyways).
+* 'fn' is nullptr for not having a cache file (we do memory caching anyways).
 */
 void Bz2_Tracker::cache_init(const char *fn)
 {
@@ -105,7 +105,7 @@ void Bz2_Tracker::cache_init(const char *fn)
   {
     throw E_LOG_BUG0("Bz2 cache is ALREADY initialized.");
   }
-  cache = new Bz2_Cache(fn);  // may be NULL
+  cache = new Bz2_Cache(fn);  // may be nullptr
 }
 
 /*
@@ -262,7 +262,7 @@ void Bz2_Tracker::update_subpath(const char *path_abs, set<string> &seen_already
 
   string tmp = string(path_abs) + "/*";
 
-  while ((subdir_abs = glob_fn(tmp.c_str(), gbuf, gbuf_i, true /*dirs*/)) != NULL)
+  while ((subdir_abs = glob_fn(tmp.c_str(), gbuf, gbuf_i, true /*dirs*/)) != nullptr)
 #else  // !UNIX
 #error "Not implemented for Win32"
 #endif
@@ -277,7 +277,7 @@ void Bz2_Tracker::update_subpath(const char *path_abs, set<string> &seen_already
 
   tmp = string(path_abs) + "/" + mask;
 
-  while ((fn_abs = glob_fn(tmp.c_str(), gbuf, gbuf_i)) != NULL)
+  while ((fn_abs = glob_fn(tmp.c_str(), gbuf, gbuf_i)) != nullptr)
   {
     set<string>::iterator it1 = seen_already.find(fn_abs);
     if (it1 != seen_already.end())

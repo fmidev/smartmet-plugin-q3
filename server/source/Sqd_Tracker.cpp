@@ -56,7 +56,7 @@ bool Sqd_Tracker::update(set<string> &seen_already) throw()
   size_t gl_offs;     // Slots to reserve in 'gl_pathv'.
   } glob_t;
   */
-  while ((fn_abs = glob_fn(fn_abs_mask.c_str(), gbuf, gbuf_i)) != NULL)
+  while ((fn_abs = glob_fn(fn_abs_mask.c_str(), gbuf, gbuf_i)) != nullptr)
 #else
 #error "Not implemented for Win32"
 #endif

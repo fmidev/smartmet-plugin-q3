@@ -26,7 +26,7 @@ static const luaL_Reg stdlibs[] = {
     {LUA_STRLIBNAME, luaopen_string},    // 'string.*'
     {LUA_MATHLIBNAME, luaopen_math},     // 'math.*'
     {LUA_DBLIBNAME, luaopen_debug},      // 'debug' (only 'debug.getinfo' exposed)
-    {NULL, NULL}};
+    {nullptr, nullptr}};
 
 static /*const*/ void *REGISTRY_KEY_HOOK = (void *)LuaWrapper::my_hook;  // unique key
 

@@ -128,7 +128,7 @@ static Logger *logger_parse(const char *conf)
     }
   }
 
-  return NULL;  // unknown log string
+  return nullptr;  // unknown log string
 }
 
 /*---=== Configuration file ===---
@@ -212,10 +212,10 @@ string read_config(const char *fn)
         break;  // done!
       }
     }
-    // 'key': non-NULL if "key =" existed
-    // "val": non-NULL if non-whitespace string followed
+    // 'key': non-nullptr if "key =" existed
+    // "val": non-nullptr if non-whitespace string followed
 
-    bool eat_line = (key != NULL);
+    bool eat_line = (key != nullptr);
     if (key)
     {
       if (strcmp(key, "log") == 0)

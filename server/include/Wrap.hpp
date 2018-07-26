@@ -62,7 +62,7 @@ class LuaWrapper {
 
 #ifndef NDEBUG
     void _INVARIANT( const char *file, unsigned line ) const {
-        // if destroyed, 'L' can be NULL
+        // if destroyed, 'L' can be nullptr
         //
     #if 0
         if (L) {        

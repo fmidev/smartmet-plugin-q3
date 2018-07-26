@@ -115,7 +115,7 @@ void Q3Engine::Track::add(const char *mask_fn,
 *           Collects reasons (one line per each data tried) as to why there was no match.
 *
 * Returns: pointer to suitable data, TO BE RELEASED by the caller
-*          NULL if no data + appends 'err' with the reason, why not.
+*          nullptr if no data + appends 'err' with the reason, why not.
 */
 TrackedData *Q3Engine::Track::getData_must_release_(const JDay &ot,
                                                     const std::vector<JDay> &required_times,
@@ -289,7 +289,7 @@ TrackedData *Q3Engine::Track::getData_must_release_(const JDay &ot,
     return d3;
   }
 
-  return NULL;  // 'err' has the collected reasons
+  return nullptr;  // 'err' has the collected reasons
 }
 
 /*
@@ -417,7 +417,7 @@ static unsigned char track_proxy_chunk[] =
   // Running 'track_proxy.lua' (embedded) gives us the "__index" metamethod
   //
   int st = luaL_loadbuffer(
-      L, (char *)track_proxy_chunk, sizeof(track_proxy_chunk), NULL /*from precompiled*/);
+      L, (char *)track_proxy_chunk, sizeof(track_proxy_chunk), nullptr /*from precompiled*/);
   if (st != 0)
   {
     throw E_LOG_OUT_OF_MEMORY();  // out of memory (since it's precompiled)
@@ -841,7 +841,7 @@ int TrackProxyBind::call(lua_State *L) throw(E_ERROR)
     {
       ot_absolute = my.getOriginTimeOfRun_(run);
       if (!ot_absolute)
-        break;  // checked all data ('d' remains NULL)
+        break;  // checked all data ('d' remains nullptr)
 
       // LOG_DEBUG( "[%x] getData_must_release_ run %d", (int) pthread_self(), run );
       d = my.getData_must_release_(ot_absolute,

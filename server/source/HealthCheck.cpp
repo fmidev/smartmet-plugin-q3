@@ -210,7 +210,7 @@ static string mem_stat(bool initial)
 
   while (fs.getline(buf, sizeof(buf)))
   {
-    long *addr = NULL;
+    long *addr = nullptr;
     switch (*buf)
     {
       case 'B':
@@ -280,7 +280,7 @@ static string mem_stat(bool initial)
       const char *p = strchr(buf, ':');
       if (p)
       {
-        *addr = strtol(p + 1, NULL, 10);
+        *addr = strtol(p + 1, nullptr, 10);
       }
     }
   }
@@ -425,7 +425,7 @@ static string_or_null disk_usage(const char *path)
   if (rc != 0)
   {
     LOG_ERROR("'fstatvfs() gave errno: %d", errno);
-    return NULL;
+    return nullptr;
   }
 
   // Note: 'f_bavail' and 'f_bfree' seem to be same (crash.fmi.fi) so we only
@@ -506,7 +506,7 @@ HealthCheck::HealthCheck(unsigned period_ms_, const char *conf)
     p = p2;
   }
 
-  PTHREAD_CALL(pthread_create, &thread_h, NULL, thread, (void *)this);
+  PTHREAD_CALL(pthread_create, &thread_h, nullptr, thread, (void *)this);
 }
 
 /*

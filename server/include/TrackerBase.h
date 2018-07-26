@@ -73,7 +73,7 @@ class TrackerBase
   // Data that has been opened recently. This is being regularily wiped
   // (in server mode) to take away data that has not been used in a while.
   //
-  // Data we know exists but hasn't been opened yet has a NULL pointer
+  // Data we know exists but hasn't been opened yet has a nullptr pointer
   // value.
   //
  protected:

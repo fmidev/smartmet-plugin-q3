@@ -39,7 +39,7 @@ TrackerBase::TrackerBase(unsigned refresh_secs_, unsigned wiping_[], bool relati
 */
 void TrackerBase::init()
 {
-  PTHREAD_CALL(pthread_create, &thread_h, NULL, polling_thread, (void *)this);
+  PTHREAD_CALL(pthread_create, &thread_h, nullptr, polling_thread, (void *)this);
 }
 
 /*
@@ -158,7 +158,7 @@ void *TrackerBase::polling_thread(void *me_v)
 
   LOG_WARNING("Exiting update thread (refresh_secs==%d)", refresh_secs);
 
-  return NULL;  // exits only if 'refresh_secs'==0
+  return nullptr;  // exits only if 'refresh_secs'==0
 }
 
 /*
@@ -188,7 +188,7 @@ TrackedData *TrackerBase::getData_must_release(const JDay &ot_orig,
                                                bool metaQuery) throw()
 {
   if (!archivedData && archived())
-    return NULL;
+    return nullptr;
 
   TrackedData *data = 0;
   JDay ot(ot_orig);
@@ -228,10 +228,10 @@ TrackedData *TrackerBase::getData_must_release(const JDay &ot_orig,
         catch (const E_BAD_FILE &e)
         {
           // A file has been removed (or is invalid by its contents). Take it
-          // away from 'available_data' and return NULL
+          // away from 'available_data' and return nullptr
           //
           available_data.erase(it);
-          return NULL;
+          return nullptr;
         }
       }
     }

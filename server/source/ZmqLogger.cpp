@@ -58,7 +58,7 @@ void ZmqLogger::log(enum category cat,
   if (!msg)
     return;  // just in case
 
-  const char *cs = NULL;  // if we get some unexpected category (should not)
+  const char *cs = nullptr;  // if we get some unexpected category (should not)
   switch (cat)
   {
     case _FATAL:
