@@ -50,7 +50,7 @@ class MemoryMap {
         assert_invariant( length != (size_t)(-1) );     // constructor has placed real length there
         assert_invariant( mmap_ptr );
 #else
-        assert_invariant( handle != NULL );
+        assert_invariant( handle != nullptr );
 #endif
         assert_invariant( offset_ptr );
     }

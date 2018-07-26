@@ -326,7 +326,7 @@ int Contour::contour( lua_State *L ) {
     ContourCollector cc( L );
 
     MemMatrix * mm;
-    Matrix * mys = ((argc >= 6) ? Matrix::instance( L, 6 ) : NULL);
+    Matrix * mys = ((argc >= 6) ? Matrix::instance( L, 6 ) : nullptr);
 
     if (mys) {
     	// Use and return the smoothened matrix
@@ -360,7 +360,7 @@ int Contour::contour( lua_State *L ) {
 	if ((argc > 3) && (argc < 7))
 		lua_pushnil(L);
 
-    tron_contour( cc, cm, lo_val, hi_val, smooth_length, smooth_degree, (argc == 7) ? L : NULL, argc, tos );    // calls back 'cc.push_contour' 0..N times (adds stuff to Lua stack)
+    tron_contour( cc, cm, lo_val, hi_val, smooth_length, smooth_degree, (argc == 7) ? L : nullptr, argc, tos );    // calls back 'cc.push_contour' 0..N times (adds stuff to Lua stack)
 #else
     luaL_error( L, "TRON contouring not compiled in - cannot calculate contours." );
     (void) val;
@@ -1046,8 +1046,8 @@ int Contour::drawcontours( lua_State *L )
 	try {
 		proto( L, "CairoContext, MatrixPos, { } , { string }, { [ number ] }, { { Contour } }" );
 
-		cairo_t *cr= NULL;
-		MatrixPos *gs= NULL;
+		cairo_t *cr= nullptr;
+		MatrixPos *gs= nullptr;
 
 		const int cr_idx = 1,gs_idx = 2,lcfg_idx = 3,cdef_idx = 4,cval_idx = 5,contour_idx = 6;
 
@@ -1063,10 +1063,10 @@ int Contour::drawcontours( lua_State *L )
 			//                  just casting ...
 			if (! cx) {
 				void *ud = lua_touserdata(L,cr_idx);
-				cx = ((Context *) (ud ? ud : NULL));
+				cx = ((Context *) (ud ? ud : nullptr));
 			}
 
-			cr = (cx ? ((cairo_t *) *cx) : NULL);
+			cr = (cx ? ((cairo_t *) *cx) : nullptr);
 
 			gs= MatrixPos::instance(L,gs_idx);
 		}
@@ -1153,11 +1153,11 @@ int Contour::drawcontours( lua_State *L )
 		//
 	    // If filling, set fill attributes for each pair of lo-hi range contours.
 
-		Contour *c = NULL,*pc = NULL;
+		Contour *c = nullptr,*pc = nullptr;
 	    vector<LineStore> line_store;
 
 		cdefmap::const_iterator pit = contourdefs.end();
-		const ContourInfo_common *cc = NULL;
+		const ContourInfo_common *cc = nullptr;
 		unsigned int nc,pnc = 0;
 		bool first = true,fillOpen = false;
 		bool labelizethis = labelize;
@@ -1256,7 +1256,7 @@ int Contour::drawcontours( lua_State *L )
 
 				pit = cit;
 
-				pc = NULL;	// To create new ContourInfo_Fill for next fill descriptor
+				pc = nullptr;	// To create new ContourInfo_Fill for next fill descriptor
 			}
 
 	        if (cc->line_type()) {
@@ -1440,7 +1440,7 @@ int Contour::drawcontours( lua_State *L )
 		            // 02-Jan-2012 PKi: No dash, disable dashing
 		            //
 
-	                cairo_set_dash( cr, NULL, 0, 0.0 );
+	                cairo_set_dash( cr, nullptr, 0, 0.0 );
 	            }
 
 	            sp_last= &it->sp;

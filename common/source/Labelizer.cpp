@@ -1321,17 +1321,17 @@ int Labelizer::pushLabelizerCfg( lua_State *L )
 const Labelizer::_configFlds * Labelizer::getConfigFlds()
 {
     static Labelizer::_configFlds labelCfgFlds[] = {
-    		{ (const char*) "limitalongline", Labelizer::T_DOUBLE, &Labelizer::lblCfg.limit_along_line, NULL, NULL },
-    		{ (const char*) "limitdirect", Labelizer::T_DOUBLE, &Labelizer::lblCfg.limit_direct, NULL, NULL },
-    		{ (const char*) "allowoverlappinglines", Labelizer::T_BOOL, NULL, &Labelizer::lblCfg.allow_overlapping_lines, NULL },
-    		{ (const char*) "allowoverlappinglabels", Labelizer::T_BOOL, NULL, &Labelizer::lblCfg.allow_overlapping_labels, NULL },
-    		{ (const char*) "dampencornerslimitdeg", Labelizer::T_DOUBLE, &Labelizer::lblCfg.dampen_corners_limit_deg, NULL, NULL },
-    		{ (const char*) "dampencorners", Labelizer::T_DOUBLE, &Labelizer::lblCfg.dampen_corners, NULL, NULL },
-    		{ (const char*) "boosthorizontallimitdeg", Labelizer::T_DOUBLE, &Labelizer::lblCfg.boost_horizontal_limit_deg, NULL, NULL },
-    		{ (const char*) "boosthorizontal", Labelizer::T_DOUBLE, &Labelizer::lblCfg.boost_horizontal, NULL, NULL },
-    		{ (const char*) "curveoptimizationfactor", Labelizer::T_DOUBLE, &Labelizer::lblCfg.curve_optimization, NULL, NULL },
-    		{ (const char*) "decimals", Labelizer::T_INT, NULL, NULL, &Labelizer::lblCfg.decimals },
-    		{ NULL, Labelizer::T_NONE, NULL, NULL, NULL }
+    		{ (const char*) "limitalongline", Labelizer::T_DOUBLE, &Labelizer::lblCfg.limit_along_line, nullptr, nullptr },
+    		{ (const char*) "limitdirect", Labelizer::T_DOUBLE, &Labelizer::lblCfg.limit_direct, nullptr, nullptr },
+    		{ (const char*) "allowoverlappinglines", Labelizer::T_BOOL, nullptr, &Labelizer::lblCfg.allow_overlapping_lines, nullptr },
+    		{ (const char*) "allowoverlappinglabels", Labelizer::T_BOOL, nullptr, &Labelizer::lblCfg.allow_overlapping_labels, nullptr },
+    		{ (const char*) "dampencornerslimitdeg", Labelizer::T_DOUBLE, &Labelizer::lblCfg.dampen_corners_limit_deg, nullptr, nullptr },
+    		{ (const char*) "dampencorners", Labelizer::T_DOUBLE, &Labelizer::lblCfg.dampen_corners, nullptr, nullptr },
+    		{ (const char*) "boosthorizontallimitdeg", Labelizer::T_DOUBLE, &Labelizer::lblCfg.boost_horizontal_limit_deg, nullptr, nullptr },
+    		{ (const char*) "boosthorizontal", Labelizer::T_DOUBLE, &Labelizer::lblCfg.boost_horizontal, nullptr, nullptr },
+    		{ (const char*) "curveoptimizationfactor", Labelizer::T_DOUBLE, &Labelizer::lblCfg.curve_optimization, nullptr, nullptr },
+    		{ (const char*) "decimals", Labelizer::T_INT, nullptr, nullptr, &Labelizer::lblCfg.decimals },
+    		{ nullptr, Labelizer::T_NONE, nullptr, nullptr, nullptr }
     };
 
     return labelCfgFlds;

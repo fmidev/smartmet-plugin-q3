@@ -25,7 +25,7 @@ struct VectorMatrixBind {
     static LuaNew_ID ID;     // the unique key
     static void setup( lua_State *L );
     static const char *name() { return "VectorMatrix"; }
-    static const char *env_mode() { return NULL; }
+    static const char *env_mode() { return nullptr; }
     static const LuaNew_ID & id() { return ID; }
     typedef VectorMatrix CAST_T;
 
@@ -97,13 +97,13 @@ class VectorMatrix : public ApiMatrix, public LuaNew<VectorMatrixBind> {
 
     bool isPolar() const { return polar; }
 
-    // Return direct pointers to the submatrices (or NULL if needs reading via Vector
+    // Return direct pointers to the submatrices (or nullptr if needs reading via Vector
     // iteration and '.getX()', '.getY()', '.getAbs()' or '.getDeg()')
     //
-    const Matrix *getMX_() const { return polar ? NULL : m1; }
-    const Matrix *getMY_() const { return polar ? NULL : m2; }
-    const Matrix *getAbs_() const { return polar ? m1 : NULL; }
-    const Matrix *getDeg_() const { return polar ? m2 : NULL; }
+    const Matrix *getMX_() const { return polar ? nullptr : m1; }
+    const Matrix *getMY_() const { return polar ? nullptr : m2; }
+    const Matrix *getAbs_() const { return polar ? m1 : nullptr; }
+    const Matrix *getDeg_() const { return polar ? m2 : nullptr; }
 
     const Matrix *getM1() const { return m1; }
     const Matrix *getM2() const { return m2; }

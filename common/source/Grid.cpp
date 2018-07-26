@@ -385,7 +385,7 @@ CONST_IF_SERVER ApiMatrix *Grid::push_Matrix( lua_State *L, const ApiParam &p ) 
     bool polar;
     
     if (!p.covered_by( params, na, nb, polar )) {
-        return NULL;    // no match for 'p' in 'params'
+        return nullptr;    // no match for 'p' in 'params'
     }
 
     L_GROW(3);
@@ -416,7 +416,7 @@ CONST_IF_SERVER Matrix *Grid::push_ScalarMatrix( lua_State *L, const NA_Param &p
 // 09-Apr-2015 PKi: Do not call push_NativeMatrix to take projection into account
 //
 //	} else if (!gridsize) {
-//  	return data->push_NativeMatrix( L, vt, level, p, NULL, NULL, NULL, &dataIds);
+//  	return data->push_NativeMatrix( L, vt, level, p, nullptr, nullptr, nullptr, &dataIds);
     } else {
         const Matrix *m= data->push_Matrix( L, vt, level, p, proj, gridsize, &dataIds );    // project and scale
 #ifdef METQU
@@ -469,7 +469,7 @@ ApiMatrix *Grid::push_NativeMatrix( lua_State *L, const ApiParam &p ) {
         } 
     }
 
-    return NULL;
+    return nullptr;
 }
 #endif
 
@@ -483,7 +483,7 @@ Matrix *Grid::push_NativeScalarMatrix( lua_State *L, const ApiScalarParam &p ) {
     if (np) {
         return data->push_NativeMatrix( L, vt, level, np );
     } else {
-        return NULL;    // 'p' not among the data
+        return nullptr;    // 'p' not among the data
     }
 }
 #endif

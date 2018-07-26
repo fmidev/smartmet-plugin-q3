@@ -83,14 +83,14 @@ class SQD_Matrix : public Matrix {
     conv_f get_f;
     conv_f set_f;
 
-    /* Extra fields that are non-NULL only for 'WVEC' and 'WD' params (which need to know
+    /* Extra fields that are non-nullptr only for 'WVEC' and 'WD' params (which need to know
     * about others.
     */
 #ifdef SQD_WD_WS_TRACKING
     FmiParameterName my_e;      // kind of parameter we're carrying
 
-    NFmiFastQueryInfo *fi_WD;   // non-NULL only if 'fi' points to WVEC
-    NFmiFastQueryInfo *fi_WS;   // non-NULL only if 'fi' points to WD or WVEC
+    NFmiFastQueryInfo *fi_WD;   // non-nullptr only if 'fi' points to WVEC
+    NFmiFastQueryInfo *fi_WS;   // non-nullptr only if 'fi' points to WD or WVEC
 #endif
 
 #ifndef NDEBUG        

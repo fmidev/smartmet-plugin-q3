@@ -40,12 +40,12 @@ const NA_Param::Unit NA_Param::UNIT_1( NA_Param::DATATYPE_FLOAT, NA_Param::INTER
 /*
 * Unknown unit, and interpolation not allowed.
 */
-const NA_Param::Unit NA_Param::UNIT_UNKNOWN_( NA_Param::DATATYPE_FLOAT, NA_Param::INTERPOLATE_UNKNOWN, NULL );
+const NA_Param::Unit NA_Param::UNIT_UNKNOWN_( NA_Param::DATATYPE_FLOAT, NA_Param::INTERPOLATE_UNKNOWN, nullptr );
 
 /*
 * Unit used for results of mathematical operations.
 */
-const NA_Param::Unit NA_Param::UNIT_UNKNOWN_INTERPOLATABLE( NA_Param::DATATYPE_FLOAT, NA_Param::INTERPOLATE_LINEAR, NULL );
+const NA_Param::Unit NA_Param::UNIT_UNKNOWN_INTERPOLATABLE( NA_Param::DATATYPE_FLOAT, NA_Param::INTERPOLATE_LINEAR, nullptr );
 
 
 /*---=== Standard param names to SQD file id mapping ===---
@@ -125,7 +125,7 @@ static struct {
     { "U", kFmiWindUMS },
     { "V", kFmiWindVMS },
     
-    { NULL, (FmiParameterName)0 }   // end marker
+    { nullptr, (FmiParameterName)0 }   // end marker
 };
 
 static map< string, FmiParameterName > id_by_name;

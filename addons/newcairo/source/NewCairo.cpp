@@ -150,7 +150,7 @@ static int image_surface_from_png( lua_State *L ) {
 
     cairo_surface_t* surf= cairo_image_surface_create_from_png(fn);
         //
-        // Always returns a non-NULL pointer. If there is an error, it points to a 'nil'
+        // Always returns a non-nullptr pointer. If there is an error, it points to a 'nil'
         // surface.
 
     assert(surf);
@@ -254,7 +254,7 @@ static int pattern_rgb( lua_State *L ) {
     proto( L, lua_type(L,1)==LUA_TNUMBER ? "number,number,number" : "string" );
     Color col(L,1);
 
-    // 'cairo_pattern_create_rgb()' always provides a non-NULL pointer.
+    // 'cairo_pattern_create_rgb()' always provides a non-nullptr pointer.
     // By pushing it to Lua already here, we guarantee getting automatic
     // '.destroy()' even if we were to abandon it.
     //
@@ -417,7 +417,7 @@ static int font( lua_State *L ) {
 * bool= is_surface( any )
 */
 static int is_surface( lua_State *L ) {
-    lua_pushboolean( L, Surface::instance(L,1) != NULL );
+    lua_pushboolean( L, Surface::instance(L,1) != nullptr );
     return 1;
 }
 
@@ -425,7 +425,7 @@ static int is_surface( lua_State *L ) {
 * bool= is_context( any )
 */
 static int is_context( lua_State *L ) {
-    lua_pushboolean( L, Context::instance(L,1) != NULL );
+    lua_pushboolean( L, Context::instance(L,1) != nullptr );
     return 1;
 }
 
@@ -433,7 +433,7 @@ static int is_context( lua_State *L ) {
 * bool= is_pattern( any )
 */
 static int is_pattern( lua_State *L ) {
-    lua_pushboolean( L, Pattern::instance(L,1) != NULL );
+    lua_pushboolean( L, Pattern::instance(L,1) != nullptr );
     return 1;
 }
 
@@ -441,7 +441,7 @@ static int is_pattern( lua_State *L ) {
 * bool= is_matrix( any )
 */
 static int is_matrix( lua_State *L ) {
-    lua_pushboolean( L, Matrix::instance(L,1) != NULL );
+    lua_pushboolean( L, Matrix::instance(L,1) != nullptr );
     return 1;
 }
 
@@ -449,7 +449,7 @@ static int is_matrix( lua_State *L ) {
 * bool= is_font( any )
 */
 static int is_font( lua_State *L ) {
-    lua_pushboolean( L, FontFace::instance(L,1) != NULL );
+    lua_pushboolean( L, FontFace::instance(L,1) != nullptr );
     return 1;
 }
 
@@ -466,7 +466,7 @@ extern "C" int WIN32_DLLEXPORT luaopen_newcairo( lua_State *L )
     //---
     // Push the precompiled Lua level chunk
     //
-    st= luaL_loadbuffer( L, (char *) newcairo_chunk, sizeof(newcairo_chunk), NULL /*from precompiled*/ );
+    st= luaL_loadbuffer( L, (char *) newcairo_chunk, sizeof(newcairo_chunk), nullptr /*from precompiled*/ );
     if (st) {
         // Can only be LUA_ERRMEM (the script is precompiled so no syntax errors)
         //

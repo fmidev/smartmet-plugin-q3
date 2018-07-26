@@ -62,7 +62,7 @@ class TrackedData {
     // data fields
     //
     const std::string source;   // source filename (.sqd, .sqd.bz2 or .mqd)
-    mutable volatile const NA_Info *info_;       // originally NULL, loaded on demand by 'getInfo()'
+    mutable volatile const NA_Info *info_;       // originally nullptr, loaded on demand by 'getInfo()'
     bool relative_uv;		// Set if U and V are relative to the grid
 
     JDay ot_given;            // origintime 'known' in the constructor (i.e. from cache)
@@ -80,7 +80,7 @@ class TrackedData {
         volatile time_t meta_acquired;     // time stamp
 #endif
 
-    const string_or_null tmp_pattern;   // if non-NULL, try to extract BZ2 to disk
+    const string_or_null tmp_pattern;   // if non-nullptr, try to extract BZ2 to disk
     const size_t tmp_threshold;         // amount of free space to remain on 'tmp_pattern'
 
     // Don't allow (would render refcount useless)

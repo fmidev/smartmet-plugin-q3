@@ -25,8 +25,8 @@ using namespace std;
 * The time, level and parameter are _guaranteed_ to be covered by 'qd'; 
 * otherwise an 'SQD_Matrix' would not have been created.
 *
-* Returns: non-NULL pointer allocated by 'new' (if parameter existed)
-*       NULL if parameter did not exist
+* Returns: non-nullptr pointer allocated by 'new' (if parameter existed)
+*       nullptr if parameter did not exist
 */
 static NFmiFastQueryInfo *new_iter( NFmiQueryData *qd, const JDay &vt, const NA_Level &lev, FmiParameterName e )
 {
@@ -51,7 +51,7 @@ static NFmiFastQueryInfo *new_iter( NFmiQueryData *qd, const JDay &vt, const NA_
 
     if (!fi->Param( NFmiParam(e) )) {
         delete fi;
-        return NULL;    // no such param in data
+        return nullptr;    // no such param in data
     }
 
     return fi;

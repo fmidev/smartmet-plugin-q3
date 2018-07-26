@@ -48,7 +48,7 @@ static const projPJ PJ_LATLON= pj_init_plus( LATLON_DECL );
 
 static projPJ pj_clone( projPJ o_pj ) {
     if (!o_pj) {
-        return NULL;
+        return nullptr;
     } else {
         return pj_init_plus( pj_get_def( o_pj, 0 /*options*/ ) );
     }
@@ -108,7 +108,7 @@ Proj4_Projection::~Proj4_Projection() {
     double x_array= ll.getLat() * DEG_TO_RAD;
     double y_array= ll.getLon() * DEG_TO_RAD;
 
-    int st= pj_transform( PJ_LATLON, pj, 1 /*values*/, 1 /*offset between array elements*/, &x_array, &y_array, NULL /*z*/ );
+    int st= pj_transform( PJ_LATLON, pj, 1 /*values*/, 1 /*offset between array elements*/, &x_array, &y_array, nullptr /*z*/ );
     if (st) {
         throw E_LOG_ERROR( "Proj4 transform error: %s", pj_strerrno(st) );
     }
@@ -127,7 +127,7 @@ Proj4_Projection::~Proj4_Projection() {
     double x_array= dx;
     double y_array= dy;
 
-    int st= pj_transform( pj, PJ_LATLON, 1 /*values*/, 1 /*offset between array elements*/, &x_array, &y_array, NULL /*z*/ );
+    int st= pj_transform( pj, PJ_LATLON, 1 /*values*/, 1 /*offset between array elements*/, &x_array, &y_array, nullptr /*z*/ );
     if (st) {
         throw E_LOG_ERROR( "Proj4 transform error: %s", pj_strerrno(st) );
     }

@@ -68,7 +68,7 @@ NA_Info::NA_Info(
 string_or_null NA_Info::getExtra_str( const char *key ) const {
     map<string,string>::const_iterator it= extra.find(key);
     if (it==extra.end()) {
-        return NULL;
+        return nullptr;
     }
     return it->second;
 }

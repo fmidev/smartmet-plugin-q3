@@ -299,7 +299,7 @@ int RawBind::new_Raw_rw( lua_State *L ) {
     //                  Intepolation is set to linear for parameters not found in known_parameters[];
     //                  otherwise using it's information and it might not match actual template data.
 
-    NA_Info info( time(NULL), time(NULL),
+    NA_Info info( time(nullptr), time(nullptr),
                     ot, times, 
                     nativeLevelType, levels, 
                     ApiParam::convert_to_native(params,temp_data),

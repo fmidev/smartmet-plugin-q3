@@ -299,7 +299,7 @@ void StderrLogger::log( enum category cat, const char *file, unsigned line, cons
 
     (void)id_;              // useful in distributed logs (not shown here)
 
-    const char *ansi= NULL;
+    const char *ansi= nullptr;
     switch(cat) {
         case _INFO:      ansi= _ANSI_GREEN("OK"); break;
         case _WARNING:   ansi= _ANSI_YELLOW("WARNING"); break;

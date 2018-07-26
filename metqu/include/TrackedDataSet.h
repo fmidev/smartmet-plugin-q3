@@ -28,7 +28,7 @@ struct TDSBind {
     static LuaNew_ID ID;     // the unique key
     static void setup( lua_State * ) {}     // no metamethods
     static const char *name() { return "TDS"; }
-    static const char *env_mode() { return NULL; }
+    static const char *env_mode() { return nullptr; }
     static const LuaNew_ID & id() { return ID; }
     typedef TrackedDataSet CAST_T;
 
@@ -46,7 +46,7 @@ class TrackedDataSet : public LuaNew<TDSBind> {
     TrackedDataSet( const char *fn_mask ) throw(E_USAGE);
     ~TrackedDataSet();
 
-    // Set 'i' to 0 before first iteration. Gives matching data until NULL.
+    // Set 'i' to 0 before first iteration. Gives matching data until nullptr.
     //
     TrackedData *getData( unsigned &i, const JDay &ot ) const throw();    // 'empty' ot for any origintime
 

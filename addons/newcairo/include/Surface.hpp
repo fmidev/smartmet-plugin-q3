@@ -53,7 +53,7 @@ struct Surface_bind {
     static LuaNew_ID ID;     // the unique key
     static void setup( lua_State *L );
     static const char *name() { return "Cairo surface"; }
-    static const char *env_mode() { return NULL; }
+    static const char *env_mode() { return nullptr; }
     static const LuaNew_ID & id() { return ID; }
     typedef Surface CAST_T;
 
@@ -100,8 +100,8 @@ class Surface : public LuaNew<Surface_bind> {
 
 #ifndef NDEBUG
     void _INVARIANT( const char *, unsigned ) const {
-        // Normally 'surf' is non-NULL but 'PdfSurface' and 'SvgSurface' constructors 
-        // must have it initially NULL, until they set it themselves.
+        // Normally 'surf' is non-nullptr but 'PdfSurface' and 'SvgSurface' constructors 
+        // must have it initially nullptr, until they set it themselves.
         
         assert_invariant(io);
     }

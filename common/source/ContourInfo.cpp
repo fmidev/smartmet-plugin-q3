@@ -428,7 +428,7 @@ const ContourInfo_Line *ContourInfo_Line::create( const string &conf, const Cont
         // 32700 is a special value for "no limit" = use -inf/+inf
         //
         if ((lo==32700) || (hi==32700)) {
-            find_limits( data, step, (lo==32700) ? &lo:NULL, (hi==32700) ? &hi:NULL );
+            find_limits( data, step, (lo==32700) ? &lo:nullptr, (hi==32700) ? &hi:nullptr );
         }
 
         if (hi<lo)
@@ -602,7 +602,7 @@ const ContourInfo_Fill *ContourInfo_Fill::create( const string &conf, const Cont
 		* 19-Mar-2015 PKi: 32700 goes now thru to tron (-inf, +inf)
         *
         if ((lo==32700) || (hi==32700)) {
-            find_limits( data, step, lo==32700 ? &lo:NULL, hi==32700 ? &hi:NULL );
+            find_limits( data, step, lo==32700 ? &lo:nullptr, hi==32700 ? &hi:nullptr );
         }
         */
 

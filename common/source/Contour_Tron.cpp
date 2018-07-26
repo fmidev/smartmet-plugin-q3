@@ -207,14 +207,14 @@ typedef Tron::Hints<MyGrid,MyTraits> MyHints;
 
 class TronHints : public LuaNew<TronHintsBind> {
   public:
-	TronHints() : itsHints(NULL) { }
-	~TronHints() { if (itsHints) delete itsHints; itsHints = NULL; }
+	TronHints() : itsHints(nullptr) { }
+	~TronHints() { if (itsHints) delete itsHints; itsHints = nullptr; }
 
     MyHints & hints(MyGrid & mg) { if (!itsHints) itsHints = new MyHints(mg); return *itsHints; }
 
     static int is( lua_State *L ) {  // for 'proto.TronHints()'
         const TronHints *ll= TronHints::instance(L,1);
-        lua_pushboolean( L, ll != NULL );
+        lua_pushboolean( L, ll != nullptr );
         return 1;
     }
 
@@ -240,7 +240,7 @@ class Tron_ContourAdapter : public PathAdapterBase {
     Tron_ContourAdapter( ContourCollector &cc_, /*const 08-Dec-2011 PKi*/ ContourMatrix &cm, float lo_val, float hi_val, unsigned int smooth_length, unsigned int smooth_degree, TronHints * th)
         : cc(cc_), mg(cm), current_contour(0)
 #if TRON_MODE==2
-            , edges(NULL), x_max( cm.getXS()-1 ), y_max( cm.getYS()-1 ), itsGeomFactory(new geos::geom::GeometryFactory())
+            , edges(nullptr), x_max( cm.getXS()-1 ), y_max( cm.getYS()-1 ), itsGeomFactory(new geos::geom::GeometryFactory())
 #endif
     {
 #if TRON_MODE==3
@@ -283,13 +283,13 @@ class Tron_ContourAdapter : public PathAdapterBase {
 
         	if (edges) {
 				delete edges;   // not needed any more
-				edges= NULL;
+				edges= nullptr;
         	}
 
         	if (current_contour && ((lo_val == 32700) || (!isnan(hi_val))))
         		current_contour->range(true);
         } else {
-            assert( edges==NULL );
+            assert( edges==nullptr );
             MyContourer::fill( builder, mg, NAN, NAN, false );   // limits of the data (holes or grid edge)
 
             SmartMet::Q3GeosTools::getContours(&(*builder.result()),this);
@@ -353,7 +353,7 @@ class Tron_ContourAdapter : public PathAdapterBase {
   private:
     ContourCollector &cc;
     MyGrid mg;
-    Contour *current_contour;       // NULL initially, copy of a pointer maintained by the caller (not to be released)
+    Contour *current_contour;       // nullptr initially, copy of a pointer maintained by the caller (not to be released)
 
 #if TRON_MODE==2
     const Tron_EdgeAdapter *edges;    // giving 'lineto()' visibility to edges we live in
@@ -373,7 +373,7 @@ void tron_contour( ContourCollector &cc, /*const 08-Dec-2011 PKi*/ ContourMatrix
 	// 10-Jan-2014 PKi: Even if tron hints were passed in (contour.lua was modified not to do so if resmoothing is to be done),
 	//					push new object if smooth factor is given; the data will be (re)smoothed
 
-	TronHints * th = NULL;
+	TronHints * th = nullptr;
 
     if (L) {
 		if ((smooth_length > 0) || (! (th = TronHints::instance( L, thIndex ))))

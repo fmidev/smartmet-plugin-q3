@@ -223,7 +223,7 @@ extern "C" int /*WIN32_DLLEXPORT*/ luaopen_fminames(lua_State *L)
   // Push the precompiled Lua level chunk
   //
   st =
-      luaL_loadbuffer(L, (char *)fminames_chunk, sizeof(fminames_chunk), NULL /*from precompiled*/);
+      luaL_loadbuffer(L, (char *)fminames_chunk, sizeof(fminames_chunk), nullptr /*from precompiled*/);
   if (st)
   {
     // Can only be LUA_ERRMEM (the script is precompiled so no syntax errors)

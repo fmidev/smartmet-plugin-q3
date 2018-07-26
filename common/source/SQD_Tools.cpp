@@ -338,7 +338,7 @@ static struct {
     PARAM( kFmiRainfallDepth, U("mm") ),
     PARAM( kFmiRawRadarData, UNIT_FLOAT_NEAREST ),     // TBD: range; integer only?
     PARAM( kFmiRadialWind, U("m/s") ),
-    PARAM( kFmiWindAndReflectivity, U("m/s-dBZ") ),   // NULL: what is that unit?
+    PARAM( kFmiWindAndReflectivity, U("m/s-dBZ") ),   // nullptr: what is that unit?
     PARAM( kFmiMaxLayerHeight, U("km") ),
     PARAM( kFmiMaxElevation, UNIT_FLOAT_NEAREST ),     // TBD: unit?
     PARAM( kFmiProjectionID, UNIT_FLOAT_NEAREST ),     // TBD: unit?

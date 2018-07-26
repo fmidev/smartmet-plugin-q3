@@ -296,11 +296,11 @@ static int new_VectorMatrix( lua_State *L ) {
         MatrixPos &gs= *MatrixPos::instance(L,1);
 
 #ifdef NDEBUG
-        new(L) MemMatrix( gs, NA_Param::UNIT_UNKNOWN_, NULL );     // not initialized (the script will)
-        new(L) MemMatrix( gs, NA_Param::UNIT_UNKNOWN_, NULL );
+        new(L) MemMatrix( gs, NA_Param::UNIT_UNKNOWN_, nullptr );     // not initialized (the script will)
+        new(L) MemMatrix( gs, NA_Param::UNIT_UNKNOWN_, nullptr );
 #else
-        new(L) MemMatrix( gs, UNINITIALIZED_VALUE, NA_Param::UNIT_UNKNOWN_, NULL );
-        new(L) MemMatrix( gs, UNINITIALIZED_VALUE, NA_Param::UNIT_UNKNOWN_, NULL );
+        new(L) MemMatrix( gs, UNINITIALIZED_VALUE, NA_Param::UNIT_UNKNOWN_, nullptr );
+        new(L) MemMatrix( gs, UNINITIALIZED_VALUE, NA_Param::UNIT_UNKNOWN_, nullptr );
 #endif
     }
 
@@ -323,14 +323,14 @@ static int nan_matrix( lua_State *L ) {
     const MatrixPos &size= *MatrixPos::instance(L,1);
 
     if (lua_type(L,2)==LUA_TNIL || lua_type(L,2)==LUA_TNUMBER) {
-        new(L) MemMatrix(size, NAN, NA_Param::UNIT_UNKNOWN_, NULL);
+        new(L) MemMatrix(size, NAN, NA_Param::UNIT_UNKNOWN_, nullptr);
         return 1;
 
     } else {
         const Vector &v= *Vector::instance(L,2);
 
-        new(L) MemMatrix(size, NAN, NA_Param::UNIT_UNKNOWN_, NULL);
-        new(L) MemMatrix(size, NAN, NA_Param::UNIT_UNKNOWN_, NULL);        
+        new(L) MemMatrix(size, NAN, NA_Param::UNIT_UNKNOWN_, nullptr);
+        new(L) MemMatrix(size, NAN, NA_Param::UNIT_UNKNOWN_, nullptr);        
         new(L) VectorMatrix( L, v.isPolar() );   // eat components
         return 1;
     }
@@ -845,7 +845,7 @@ int Session::init( lua_State *L ) {
     //---
     // Run 'type.lua' (baked-in)
     //
-    { st= luaL_loadbuffer( L, (char *) type_chunk, sizeof(type_chunk), NULL /*from precompiled*/ );
+    { st= luaL_loadbuffer( L, (char *) type_chunk, sizeof(type_chunk), nullptr /*from precompiled*/ );
     if (st) {
         // Can only be LUA_ERRMEM (the script is precompiled so no syntax errors)
         //
@@ -858,7 +858,7 @@ int Session::init( lua_State *L ) {
     //---
     // Run 'assert.lua' (baked-in)
     //
-    { st= luaL_loadbuffer( L, (char *) assert_chunk, sizeof(assert_chunk), NULL /*from precompiled*/ );
+    { st= luaL_loadbuffer( L, (char *) assert_chunk, sizeof(assert_chunk), nullptr /*from precompiled*/ );
     if (st) { INIT_ERROR( L, st, __FILE__, __LINE__ ); }
 
     lua_call( L, 0 /*args*/, 0 /*results*/ );
@@ -867,7 +867,7 @@ int Session::init( lua_State *L ) {
     //---
     // Run 'json.lua' (baked-in) and keep a reference to the returned function 
     //
-    { st= luaL_loadbuffer( L, (char *) json_chunk, sizeof(json_chunk), NULL /*from precompiled*/ );
+    { st= luaL_loadbuffer( L, (char *) json_chunk, sizeof(json_chunk), nullptr /*from precompiled*/ );
     if (st) { INIT_ERROR( L, st, __FILE__, __LINE__ ); }
 
     lua_call( L, 0 /*args*/, 1 /*results*/ );
@@ -893,7 +893,7 @@ int Session::init( lua_State *L ) {
     //---
     // Run 'latlon.lua' (baked-in) and keep a reference to the returned function.
     //
-    { st= luaL_loadbuffer( L, (char *) latlon_chunk, sizeof(latlon_chunk), NULL /*from precompiled*/ );
+    { st= luaL_loadbuffer( L, (char *) latlon_chunk, sizeof(latlon_chunk), nullptr /*from precompiled*/ );
     if (st) { INIT_ERROR( L, st, __FILE__, __LINE__ ); }
 
     lua_call( L, 0 /*args*/, 1 /*results*/ );
@@ -925,7 +925,7 @@ int Session::init( lua_State *L ) {
     //---
     // Run 'prepare.lua' (baked-in)
     //
-    { st= luaL_loadbuffer( L, (char *) prepare_chunk, sizeof(prepare_chunk), NULL /*from precompiled*/ );
+    { st= luaL_loadbuffer( L, (char *) prepare_chunk, sizeof(prepare_chunk), nullptr /*from precompiled*/ );
     if (st) { INIT_ERROR( L, st, __FILE__, __LINE__ ); }
 
     lua_pushvalue( L, bind_index );
@@ -949,7 +949,7 @@ int Session::init( lua_State *L ) {
     //---
     // Run 'q3.lua' (baked-in)
     //
-    { st= luaL_loadbuffer( L, (char *) q3_chunk, sizeof(q3_chunk), NULL /*from precompiled*/ );
+    { st= luaL_loadbuffer( L, (char *) q3_chunk, sizeof(q3_chunk), nullptr /*from precompiled*/ );
     if (st) { INIT_ERROR( L, st, __FILE__, __LINE__ ); }
 
     // Call 'q3.lua' with bindings table, current UTC time, METQU and SMARTTOOL_NAMES as parameters
@@ -964,7 +964,7 @@ int Session::init( lua_State *L ) {
         //   suseconds_t  tv_usec;  /* and microseconds */
         // };
 
-    int rc= gettimeofday( &tv, NULL /*time zone not used any more (in Linux)*/ );
+    int rc= gettimeofday( &tv, nullptr /*time zone not used any more (in Linux)*/ );
     assert( rc==0 ); (void)rc;
 
     struct tm tmp;
@@ -1012,11 +1012,11 @@ int Session::init( lua_State *L ) {
 #endif
             // ... add more chunks here
 
-        { NULL, 0 }     // end mark
+        { nullptr, 0 }     // end mark
     };
 
     for( unsigned i=0; chunks[i].chunk; i++ ) {    
-        st= luaL_loadbuffer( L, (char *) chunks[i].chunk, chunks[i].bytes, NULL /*from precompiled*/ );
+        st= luaL_loadbuffer( L, (char *) chunks[i].chunk, chunks[i].bytes, nullptr /*from precompiled*/ );
         if (st) { 
             INIT_ERROR( L, st, __FILE__, __LINE__ );
         }
@@ -1034,7 +1034,7 @@ int Session::init( lua_State *L ) {
 /*
 * Output script return value N (if any).
 *
-* Returns: MIME type of the entry (NULL for just text)
+* Returns: MIME type of the entry (nullptr for just text)
 *
 * Note: The caller is supposed to have 'lua_pcall()' somewhere above us, to catch possible
 *       errors from user-provided metamethods (or built-in 'json.lua').
@@ -1098,7 +1098,7 @@ string_or_null Session::result_( lua_State *L, ostream &os, unsigned i ) {
         */        
 #if (!defined METQU) && (defined CONFIG_BINARY_OUTPUT_ENABLED)
         if (RegTools::get_Binary(L)) {
-            Matrix *m= Matrix::instance(L,i);   // NULL if not a (scalar) matrix
+            Matrix *m= Matrix::instance(L,i);   // nullptr if not a (scalar) matrix
             if (m) {
                 int decs= RegTools::get_Decimals(L);
 
@@ -1129,7 +1129,7 @@ string_or_null Session::result_( lua_State *L, ostream &os, unsigned i ) {
                 os << tmp;
             }
             lua_pop(L,2);
-            return NULL;    // just text
+            return nullptr;    // just text
         }
         lua_pop(L,2);   // remove nil and metatable
     }
@@ -1188,6 +1188,6 @@ string_or_null Session::result_( lua_State *L, ostream &os, unsigned i ) {
 
     os.write( s, len );
 
-    return NULL;    // just text
+    return nullptr;    // just text
 }
 

@@ -60,7 +60,7 @@ struct MatrixSizeBind {
     static LuaNew_ID ID;     // the unique key
     static void setup( lua_State *L );
     static const char *name() { return "MatrixSize"; }
-    static const char *env_mode() { return NULL; }
+    static const char *env_mode() { return nullptr; }
     static const LuaNew_ID & id() { return ID; }
     typedef MatrixSize CAST_T;
 
@@ -137,7 +137,7 @@ struct MatrixIterBind {
     static LuaNew_ID ID;     // the unique key
     static void setup( lua_State *L );
     static const char *name() { return "MatrixIter"; }
-    static const char *env_mode() { return NULL; }
+    static const char *env_mode() { return nullptr; }
     static const LuaNew_ID & id() { return ID; }
     typedef MatrixIter CAST_T;
 
@@ -268,7 +268,7 @@ struct MatrixBind {
     static LuaNew_ID ID;     // the unique key
     static void setup( lua_State *L );
     static const char *name() { return "Matrix"; }
-    static const char *env_mode() { return NULL; }
+    static const char *env_mode() { return nullptr; }
     static const LuaNew_ID & id() { return ID; }
     typedef Matrix CAST_T;
 

@@ -386,19 +386,19 @@ unsigned JDay::calc_jdn( int yyyy, int mm, int dd ) {
 
 unsigned JDay::year() const {
     unsigned x;
-    gregorian( &x, NULL, NULL );
+    gregorian( &x, nullptr, nullptr );
     return x;
 }
 
 unsigned JDay::month() const {
     unsigned x;
-    gregorian( NULL, &x, NULL );
+    gregorian( nullptr, &x, nullptr );
     return x;
 }
 
 unsigned JDay::day() const {
     unsigned x;
-    gregorian( NULL, NULL, &x );
+    gregorian( nullptr, nullptr, &x );
     return x;
 }
 
@@ -427,7 +427,7 @@ unsigned JDay::wday() const {
 unsigned JDay::yday() const {
 
     unsigned yyyy;
-    gregorian( &yyyy, NULL, NULL );
+    gregorian( &yyyy, nullptr, nullptr );
 
     // Calculate day of year by reducing Jan 1st
     //

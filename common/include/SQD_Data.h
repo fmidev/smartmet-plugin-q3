@@ -53,10 +53,10 @@ class SQD_Data : public NA_Data {
 								//
 								// 22-Aug-2011 PKi: For fetching data using newbase interpolation, projection and scaling
 								//
-							  , const Projection *target_proj = NULL
-							  , const MatrixPos *target_gs = NULL
-							  , bool  *target_ready = NULL
-							  , const DataIdList *dataIds = NULL
+							  , const Projection *target_proj = nullptr
+							  , const MatrixPos *target_gs = nullptr
+							  , bool  *target_ready = nullptr
+							  , const DataIdList *dataIds = nullptr
                               ) CONST_IF_SERVER throw();
 
     static NA_Info read_info( const char *fn ) throw(E_BAD_FILE);
@@ -91,10 +91,10 @@ class SQD_Data : public NA_Data {
 								//
 								// 22-Aug-2011 PKi: For fetching data using newbase interpolation, projection and scaling
 								//
-							  , const Projection *target_proj = NULL
-							  , const MatrixPos *target_gs = NULL
-							  , bool  *target_ready = NULL
-							  , const DataIdList *dataIds = NULL
+							  , const Projection *target_proj = nullptr
+							  , const MatrixPos *target_gs = nullptr
+							  , bool  *target_ready = nullptr
+							  , const DataIdList *dataIds = nullptr
                               ) CONST_IF_SERVER throw();
 
     //
@@ -111,9 +111,9 @@ class SQD_Data : public NA_Data {
     //
     // 29-Sep-2011 PKi: For fetching grid locations and data point (e.g. observation station) metadata
     //
-    /*virtual*/ void getLocations(std::vector<LatLon> &locations,const Projection *target_proj = NULL) const;
-    /*virtual*/ void getDataIds(std::vector<unsigned long> &dataIds,const Projection *target_proj = NULL) const;
-    /*virtual*/ void getDataNames(std::vector<std::string> &dataNames,const Projection *target_proj = NULL) const;
+    /*virtual*/ void getLocations(std::vector<LatLon> &locations,const Projection *target_proj = nullptr) const;
+    /*virtual*/ void getDataIds(std::vector<unsigned long> &dataIds,const Projection *target_proj = nullptr) const;
+    /*virtual*/ void getDataNames(std::vector<std::string> &dataNames,const Projection *target_proj = nullptr) const;
 
     /*
     * 13-Oct-2011 PKi: For checking the availability of height levels in data
@@ -123,7 +123,7 @@ class SQD_Data : public NA_Data {
     /*
       18-Oct-2011 PKi: Primary/secondary parameter mapping for virtual parameters
     */
-    /*virtual*/ FmiParameterName mapParameter(const NA_Param &p,bool primary = true,bool *mapped = NULL) const;
+    /*virtual*/ FmiParameterName mapParameter(const NA_Param &p,bool primary = true,bool *mapped = nullptr) const;
 
     // For 'SQD_Matrix'
     //

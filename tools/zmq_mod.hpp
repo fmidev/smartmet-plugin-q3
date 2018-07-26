@@ -112,7 +112,7 @@ namespace zmq
         }
 
         pollitem( int fd_, enum e_inout e ) {
-            socket= NULL;
+            socket= nullptr;
             fd= fd_;
             events= e;
             revents= 0;
@@ -166,7 +166,7 @@ namespace zmq
     public:
         message () { init(); }
         message (size_t size_) { init(size_); }
-        message (void *data_, size_t size_, free_fn *ffn_, void *hint_ = NULL) {
+        message (void *data_, size_t size_, free_fn *ffn_, void *hint_ = nullptr) {
             init(data_, size_, ffn_, hint_);
         }
 
@@ -186,7 +186,7 @@ namespace zmq
         }
 
         void rebuild (void *data_, size_t size_, free_fn *ffn_,
-            void *hint_ = NULL)
+            void *hint_ = nullptr)
         {
             close(); init(data_, size_, ffn_, hint_);
         }
@@ -259,7 +259,7 @@ namespace zmq
         context (unsigned app_threads_, unsigned io_threads_, enum e_flags e= (enum e_flags)0 )
         {
             ptr = zmq_init (app_threads_, io_threads_, (int)e);
-            if (ptr == NULL) {
+            if (ptr == nullptr) {
                 // EINVAL: less than one application thread (or number of I/O threads is negative)
                 throw error("zmq_init");
             }
@@ -317,7 +317,7 @@ namespace zmq
         socket_base( context &context_, int type_ )
         {
             ptr = zmq_socket (context_.ptr, type_);
-            if (ptr == NULL) {
+            if (ptr == nullptr) {
                 // (EINVAL -  invalid socket type)
                 // EMTHREAD - number of application threads allowed to own 0MQ sockets was exceeded. 
                 //            See app_threads parameter to zmq_init function. 

@@ -68,7 +68,7 @@ class NA_Param {
 
     class Unit {
       public:
-        Unit( enum e_Datatype dt_, enum e_Interpolation method_, const char *unit_= NULL )
+        Unit( enum e_Datatype dt_, enum e_Interpolation method_, const char *unit_= nullptr )
             : dt(dt_), method(method_), unit() {
                 LOG_DEBUG( "Initializing with method %d", (int)method_ );
                 if (!unit_) {
@@ -81,7 +81,7 @@ class NA_Param {
 
         Unit() : dt(DATATYPE_FLOAT), method(INTERPOLATE_UNKNOWN), unit() { unit[0]= '\0'; }
 
-        string_or_null getUnitName() const { return *unit ? unit : NULL; }
+        string_or_null getUnitName() const { return *unit ? unit : nullptr; }
         enum e_Interpolation getMethod() const { return method; }
         enum e_Datatype getDatatype() const { return dt; }
 
@@ -179,7 +179,7 @@ class NA_Param {
     const std::string &getNativeName_() const { return native_name; }
 
     const Unit &getUnit() const { return unit; }
-    bool hasUnit() const { return unit.getUnitName().c_str() != NULL; }
+    bool hasUnit() const { return unit.getUnitName().c_str() != nullptr; }
 
     e_Interpolation getMethod() const { return unit.getMethod(); }
     const std::string & getInterpolationName() const { return interpolation_name; }

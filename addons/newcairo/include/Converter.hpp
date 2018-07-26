@@ -128,13 +128,13 @@ class MethodNames {
                     // Is this function banned?
                     //
                     if ((mask & ban_mask)!=0) {
-                        return NULL;    // hidden for us
+                        return nullptr;    // hidden for us
                     }
                 }
             }
             return f;
         }
-        return NULL;    // no function by that name
+        return nullptr;    // no function by that name
     }
 
   private:

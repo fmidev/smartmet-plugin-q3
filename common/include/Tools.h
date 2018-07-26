@@ -118,7 +118,7 @@ const char *pthread_rc2str(int rc);
 
 class Mutex {
   public:
-    Mutex() : mm( new pthread_mutex_t() ) { PTHREAD_CALL( pthread_mutex_init, mm, NULL ); }
+    Mutex() : mm( new pthread_mutex_t() ) { PTHREAD_CALL( pthread_mutex_init, mm, nullptr ); }
 
     ~Mutex() { Destroy(); }
     
@@ -183,7 +183,7 @@ void remove_file( const char *fn );
 
 /*---=== string_or_null ===---*/
 /*
-* Like 'const std::string' but allows NULL be used in initialization (and 
+* Like 'const std::string' but allows nullptr be used in initialization (and 
 * returned in 'c_str()'). This class basically carries a copy of a string when
 * we cannot trust it to remain available on the Lua stack.
 */
@@ -216,7 +216,7 @@ class string_or_null : public std::string {
     /*
     * Like 'std::string::compare()'
     *
-    * NULL is ordered less than any string (and unequal to "").
+    * nullptr is ordered less than any string (and unequal to "").
     */
     int compare( const string_or_null &b ) const {
         if (is_null) {
@@ -224,7 +224,7 @@ class string_or_null : public std::string {
         } else if (b.is_null) {
             return 1;                   // 'this' is bigger
         } else {
-            return std::string::compare(b);    // both are non-NULL
+            return std::string::compare(b);    // both are non-nullptr
         }
     }
 
@@ -241,7 +241,7 @@ class string_or_null : public std::string {
     bool operator!() const { return is_null; }
 
     // Note: Implicit conversion operations are generally _bad_ in C++. 
-    //       To check for non-NULL value, use 'if (x.c_str()) ...'
+    //       To check for non-nullptr value, use 'if (x.c_str()) ...'
     //
     //operator bool() const { return !is_null; }
 

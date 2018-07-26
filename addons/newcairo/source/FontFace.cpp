@@ -99,7 +99,7 @@ cairo_font_face_t *FontFace::load_ttf( const char *fn, unsigned face_index, FT_L
     //
 # ifdef SANDBOX
     if (strchr(fn,'/')) {
-        return NULL;    // refused
+        return nullptr;    // refused
     }
     
     // Prefix with where the server fonts are stored
@@ -114,7 +114,7 @@ cairo_font_face_t *FontFace::load_ttf( const char *fn, unsigned face_index, FT_L
     FT_Face ft_face;
     FT_Error ft_err= FT_New_Face( ft_lib, fn, face_index, &ft_face );
     if (ft_err) {
-        return NULL;    // no such file (or something else)
+        return nullptr;    // no such file (or something else)
     }
 
     // Tie 'ft_face' to Cairo (also its lifespan)
@@ -128,7 +128,7 @@ cairo_font_face_t *FontFace::load_ttf( const char *fn, unsigned face_index, FT_L
     if (st) {
         cairo_font_face_destroy(ff);
         FT_Done_Face(ft_face);
-        return NULL;
+        return nullptr;
     }
     
     return ff;

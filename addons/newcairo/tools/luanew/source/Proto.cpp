@@ -55,7 +55,7 @@ ProtoProxy proto_init( lua_State *L ) {
 
         // Initialize the precompiled block to 'proto' global and C++ binding.
         //
-        int st= luaL_loadbuffer( L, (char *) proto_chunk, sizeof(proto_chunk), NULL /*from precompiled*/ );
+        int st= luaL_loadbuffer( L, (char *) proto_chunk, sizeof(proto_chunk), nullptr /*from precompiled*/ );
         if (st) {
             luaL_error( L, lua_tostring(L,-1) );    // can only be LUA_ERRMEM (script is precompiled)
         }

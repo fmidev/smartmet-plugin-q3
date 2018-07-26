@@ -65,7 +65,7 @@ struct SubMatrixBind {
     static LuaNew_ID ID;     // the unique key
     static void setup( lua_State *L );
     static const char *name() { return "SubMatrix"; }
-    static const char *env_mode() { return NULL; }
+    static const char *env_mode() { return nullptr; }
     static const LuaNew_ID & id() { return ID; }
     typedef SubMatrix CAST_T;
 
@@ -82,7 +82,7 @@ class SubMatrix : protected Matrix, public LuaNew<SubMatrixBind> {
     /*virtual*/ void set_value_n( offset_t n, float v ) throw ();
 
     /* 
-    * Returning NULL here means we won't be used by SSE. That is quite fine.
+    * Returning nullptr here means we won't be used by SSE. That is quite fine.
     */
     /*virtual*/ const float *getData() const throw() { return 0; }
     /*virtual*/ float *getData() throw() { 

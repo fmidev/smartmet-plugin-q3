@@ -489,7 +489,7 @@ int Context::set_source_rgb( lua_State *L ) {
 
     Context &my= *Context::instance(L,lua_upvalueindex(1));
     double r,g,b;
-    parse_rgba( L, 1, r,g,b, NULL );
+    parse_rgba( L, 1, r,g,b, nullptr );
 
     cairo_set_source_rgb( my, r,g,b );
     status_check_ok( L, cairo_status(my) );
@@ -1844,7 +1844,7 @@ int Context::get_font_face( lua_State *L ) {
     cairo_font_face_t *ff= cairo_get_font_face(my);
         //
         // "This object is owned by cairo. To keep a reference to it, you must call 'cairo_font_face_reference()'.
-        // This function never returns NULL."
+        // This function never returns nullptr."
         
     cairo_font_face_reference(ff);
 
@@ -1881,7 +1881,7 @@ int Context::get_scaled_font( lua_State *L ) {
     cairo_scaled_font_t *sf= cairo_get_scaled_font(my);
         //
         // "This object is owned by cairo. To keep a reference to it, you must call 'cairo_font_face_reference()'.
-        // This function never returns NULL."
+        // This function never returns nullptr."
         
     cairo_scaled_font_reference(sf);
 

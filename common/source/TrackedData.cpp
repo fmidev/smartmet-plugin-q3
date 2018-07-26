@@ -91,7 +91,7 @@ const NA_Info &TrackedData::getInfo() const {
 
     static Mutex my_m;  // local lock needed only here
 
-    // 'info_' only transitions from NULL -> valid via us.
+    // 'info_' only transitions from nullptr -> valid via us.
     //
     if (!info_) {
         ClaimMutex lock(my_m);  // automatically unclaims at scope exit
@@ -205,7 +205,7 @@ NA_Data *TrackedData::Acquire(bool metaQuery) throw(E_BAD_FILE, E_BUG) {
             //
             int fd= mkstemp(buf);
             if (fd==-1) {
-                // Just proceed and load the file via Newbase (as if 'tmp_pattern' was NULL)
+                // Just proceed and load the file via Newbase (as if 'tmp_pattern' was nullptr)
                 //
                 // EEXIST:  Could not create a unique temporary filename.
                 // EINVAL:  Last _six_ characters were not 'X'.
@@ -267,13 +267,13 @@ LOG_DEBUG( "Extracting done (%d bytes used)", (int)bytes );
     ++refcount;
     if (!metaQuery)
     {
-//printf("*** %s set last_acquired=%ld ***\n",source.c_str(),time(NULL));
-        last_acquired= time(NULL);
+//printf("*** %s set last_acquired=%ld ***\n",source.c_str(),time(nullptr));
+        last_acquired= time(nullptr);
     }
     else if (meta_acquired == 0)
     {
-//printf("*** %s set meta_acquired=%ld ***\n",source.c_str(),time(NULL));
-        meta_acquired= time(NULL);
+//printf("*** %s set meta_acquired=%ld ***\n",source.c_str(),time(nullptr));
+        meta_acquired= time(nullptr);
 //last_acquired=meta_acquired;
     }
     //printf("*** Ack %s refcount %d\n",source.c_str(),refcount);
@@ -324,8 +324,8 @@ bool TrackedData::Wipe( unsigned wiping, unsigned metawiping )
         (
          (wiping==0) ||
          (
-          ((time(NULL) - last_acquired) > (int)wiping) &&
-          ((meta_acquired==0) || ((time(NULL) - meta_acquired) > (int)metawiping))
+          ((time(nullptr) - last_acquired) > (int)wiping) &&
+          ((meta_acquired==0) || ((time(nullptr) - meta_acquired) > (int)metawiping))
          )
         )
        ) {
@@ -334,7 +334,7 @@ bool TrackedData::Wipe( unsigned wiping, unsigned metawiping )
         assert( qd==0 );
         return true;
     }
-//printf("*** %s NOT wiped: refcnt=%ld, wip=%u, ldff=%ld, mwip=%u, mdff=%ld***\n",source.c_str(),refcount,wiping,time(NULL) - last_acquired,metawiping,time(NULL) - meta_acquired);
+//printf("*** %s NOT wiped: refcnt=%ld, wip=%u, ldff=%ld, mwip=%u, mdff=%ld***\n",source.c_str(),refcount,wiping,time(nullptr) - last_acquired,metawiping,time(nullptr) - meta_acquired);
     return false;
 }
 #endif

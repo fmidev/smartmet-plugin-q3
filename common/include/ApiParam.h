@@ -75,7 +75,7 @@ class ApiParam {
     static std::vector<std::string> convert_to_api( const std::vector<NA_Param> &vec, bool prefer_standard_names );
 // 25-Oct-2011 PKi: Now needed by server too
 //#ifdef METQU
-    static std::vector<NA_Param> convert_to_native( const std::vector<ApiParam> &vec, const NA_Data *data = NULL );
+    static std::vector<NA_Param> convert_to_native( const std::vector<ApiParam> &vec, const NA_Data *data = nullptr );
 //#endif
 
     // 25-Oct-2011 PKi: Returns data's parameters with virtual parameters stripped off

@@ -64,7 +64,7 @@ CHECK_INVARIANT:
 
 /*
 */
-Projection::Projection( const Projection &o ) : proj( o.proj ? o.proj->clone_() : NULL ), creation_str( o.creation_str ) {
+Projection::Projection( const Projection &o ) : proj( o.proj ? o.proj->clone_() : nullptr ), creation_str( o.creation_str ) {
 
     INVARIANT();
 }
@@ -79,7 +79,7 @@ Projection::~Projection() {
 */
 Projection & Projection::operator=( const Projection &o ) {
     delete proj;
-    proj= o.proj ? o.proj->clone_() : NULL;
+    proj= o.proj ? o.proj->clone_() : nullptr;
     creation_str= o.creation_str;
 
     INVARIANT();

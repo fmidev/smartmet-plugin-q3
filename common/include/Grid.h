@@ -43,22 +43,22 @@ class Grid : public LuaNew<GridBind> {
         //
     	// 22-Sep-2011 PKi: For fetching cross using newbase
     	//
-        , std::vector<JDay> const *vtVec = NULL
-        , std::vector<NA_Level> const *levelVec = NULL
-        , LatLonList const *locs = NULL
+        , std::vector<JDay> const *vtVec = nullptr
+        , std::vector<NA_Level> const *levelVec = nullptr
+        , LatLonList const *locs = nullptr
 		, bool flightRoute = false
-		, const DataIdList *dataIds = NULL
+		, const DataIdList *dataIds = nullptr
         ) throw(E_NO_MATCH);
 #endif
     Grid( const Raw_interface &r_, const JDay &vt, const NA_Level &lev, const Projection &projection, const MatrixPos &gs= MatrixPos::ZERO
         //
         // 22-Sep-2011 PKi: For fetching cross using newbase
         //
-        , std::vector<JDay> const *vtVec = NULL
-        , std::vector<NA_Level> const *levelVec = NULL
-        , LatLonList const *locs = NULL
+        , std::vector<JDay> const *vtVec = nullptr
+        , std::vector<NA_Level> const *levelVec = nullptr
+        , LatLonList const *locs = nullptr
 		, bool flightRoute = false
-		, const DataIdList *dataIds = NULL
+		, const DataIdList *dataIds = nullptr
     	) throw(E_NO_MATCH);
 
     void set_rkey(unsigned rk) {

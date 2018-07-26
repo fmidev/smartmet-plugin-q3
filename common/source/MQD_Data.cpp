@@ -77,7 +77,7 @@ MQD_Data::MQD_Data( const string &fn ) throw(E_BAD_FILE)
 #else
       //tiles( (const float *) mm->getPointer() ) 
 #endif
-    tiles(NULL)
+    tiles(nullptr)
 #ifdef METQU
       , is_readonly(true)
 #endif
@@ -312,7 +312,7 @@ NA_Info MQD_Data::read_info( const char *fn ) throw(E_BAD_FILE/*,E_BUG*/) {
       {LUA_TABLIBNAME, luaopen_table},      // 'table.*'
       {LUA_STRLIBNAME, luaopen_string},     // 'string.*'
       {LUA_IOLIBNAME, luaopen_io},          // 'io.*'
-      {NULL, NULL}
+      {nullptr, nullptr}
     };
 
     LuaWrap L( my_stdlibs, mqd_reader_chunk, sizeof(mqd_reader_chunk) );

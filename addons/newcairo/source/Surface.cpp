@@ -335,7 +335,7 @@ int Surface::contents( lua_State *L ) {
 #ifdef CAIRO_HAS_SVG_SURFACE
                         (st==CAIRO_SURFACE_TYPE_SVG) ? "image/svg+xml" :
 #endif
-                        NULL;
+                        nullptr;
     if (!mime) {
         luaL_error( L, "Internal error: unknown surface type" );
     }

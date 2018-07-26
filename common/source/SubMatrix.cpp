@@ -21,7 +21,7 @@ SubMatrix::SubMatrix( Matrix& m_, const MatrixPos &ws )
     , m(m_)
     , m_pos(0,0)
     , r_km(NAN)
-    , latlon(NULL) { INVARIANT(); }
+    , latlon(nullptr) { INVARIANT(); }
 
 /*
 */

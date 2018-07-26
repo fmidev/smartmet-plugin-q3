@@ -28,7 +28,7 @@ LuaWrap::LuaWrap( const luaL_Reg *libs, const char *chunk, size_t chunk_size )
     
     // Load in the precompiled chunk
     //
-    int st= luaL_loadbuffer( L, chunk, chunk_size, NULL /*from precompiled*/ );
+    int st= luaL_loadbuffer( L, chunk, chunk_size, nullptr /*from precompiled*/ );
     if (st!=0) {
         lua_close(L); L=0;
         throw E_LOG_OUT_OF_MEMORY();    // can not be anything else, since precompiled

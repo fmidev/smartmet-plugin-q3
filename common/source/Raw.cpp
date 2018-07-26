@@ -96,7 +96,7 @@ Raw::~Raw() {
 /*
 * Get projection object for global 'projection' or for data native projection
 */
-Projection getProjection(lua_State *L,const NA_Data *qd = NULL)
+Projection getProjection(lua_State *L,const NA_Data *qd = nullptr)
 {
 	if (L) {
 		lua_getglobal( L, "projection" );
@@ -421,7 +421,7 @@ int RawBind::__index( lua_State *L ) {
         vector<LatLon> vec;
     	Projection proj = getProjection(L);
 
-        qd->getLocations(vec,(proj != Projection::NONE) ? &proj : NULL);
+        qd->getLocations(vec,(proj != Projection::NONE) ? &proj : nullptr);
 
         unsigned i=1;
 
@@ -445,7 +445,7 @@ int RawBind::__index( lua_State *L ) {
     	Projection proj = getProjection(L);
 
     	try {
-    		qd->getDataIds(vec,(proj != Projection::NONE) ? &proj : NULL);
+    		qd->getDataIds(vec,(proj != Projection::NONE) ? &proj : nullptr);
     	}
     	catch (runtime_error & e) {
             luaL_error( L, e.what() );
@@ -473,7 +473,7 @@ int RawBind::__index( lua_State *L ) {
     	Projection proj = getProjection(L);
 
     	try {
-            qd->getDataNames(vec,(proj != Projection::NONE) ? &proj : NULL);
+            qd->getDataNames(vec,(proj != Projection::NONE) ? &proj : nullptr);
     	}
     	catch (runtime_error & e) {
             luaL_error( L, e.what() );
@@ -545,7 +545,7 @@ int RawBind::__index( lua_State *L ) {
 
     if (! Grid::instance( L, sPos ))
     {
-        const char *p = ((sPos == -2) ? lua_tostring(L, -1) : NULL);
+        const char *p = ((sPos == -2) ? lua_tostring(L, -1) : nullptr);
         luaL_error( L, p ? p : "RawBind::__call() failed");
     }
     else if (sPos == -2)						// Grid to top of stack
@@ -561,7 +561,7 @@ int RawBind::__index( lua_State *L ) {
     lua_pushstring( L,s );
     lua_gettable( L, -2 );      // leads to 'GridBind::index()'
     
-    L_ASSERT( (Matrix::instance(L,-1)!=NULL) || (VectorMatrix::instance(L,-1)!=NULL) );
+    L_ASSERT( (Matrix::instance(L,-1)!=nullptr) || (VectorMatrix::instance(L,-1)!=nullptr) );
     
     // Note: Lua will clean out the reference to grid, but keep it alive via the matrix
     //      returned.
@@ -884,11 +884,11 @@ int RawBind::__call( lua_State *L ) {
     		          //
     		  	      // 22-Sep-2011 PKi: For cross call
     		  	      //
-                      , cross ? &vtVec : NULL
-                      , cross ? &levelVec : NULL
-                      , cross ? &locs : NULL
+                      , cross ? &vtVec : nullptr
+                      , cross ? &levelVec : nullptr
+                      , cross ? &locs : nullptr
                       , flightRoute
-					  , (dataIds.size() > 0) ? &dataIds : NULL
+					  , (dataIds.size() > 0) ? &dataIds : nullptr
                       );
     }
     catch( const E_NO_MATCH &e ) {

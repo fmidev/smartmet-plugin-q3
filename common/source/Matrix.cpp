@@ -1197,7 +1197,7 @@ int Matrix::q3_sum_or_avg( lua_State *L ) {
                 // Init the whole 'avg_count' with 1 (even areas where 'c' carries NAN).
                 // This matrix is only temporary, so no need for setting projection.
                 //
-                avg_count= new(L) MemMatrix( a->getSize(), 1.0f, NA_Param::UNIT_UNKNOWN_INTERPOLATABLE, NULL );
+                avg_count= new(L) MemMatrix( a->getSize(), 1.0f, NA_Param::UNIT_UNKNOWN_INTERPOLATABLE, nullptr );
             }
             c= new(L) MemMatrix(*a);    // clone of a (data, unit and projection also)
             
@@ -1479,7 +1479,7 @@ int MatrixBind::index( lua_State *L ) {
                 return 0;
             }
             else if (strcmp(s,"unit")==0) {
-                lua_pushstring( L, m.getUnitName().c_str() );    // may be NULL
+                lua_pushstring( L, m.getUnitName().c_str() );    // may be nullptr
                 return 1;
             }
             else if (strcmp(s,"projection")==0) {
@@ -2216,7 +2216,7 @@ void ApiMatrix::push_tostring( lua_State *L ) const {
  */
 int Matrix::offsetPosition(lua_State *L,const NFmiPoint &location,const MatrixPos &offset) const {
 
-	NFmiGrid * grid = (wantedGrid ? wantedGrid.get() : NULL);
+	NFmiGrid * grid = (wantedGrid ? wantedGrid.get() : nullptr);
 
 	if (grid) {
 		NFmiPoint xyPoint(grid->Area()->ToXY(location));
@@ -2235,7 +2235,7 @@ int Matrix::offsetPosition(lua_State *L,const NFmiPoint &location,const MatrixPo
 }
 int Matrix::offsetPosition(lua_State *L,const Matrix &m,const MatrixPos &pos,const MatrixPos &offset) const {
 
-	NFmiGrid * grid = (wantedGrid ? wantedGrid.get() : NULL);
+	NFmiGrid * grid = (wantedGrid ? wantedGrid.get() : nullptr);
 	int x = pos.getX(),y = pos.getY();
 
 	if (grid && (x >= 0) && (x < size.getXS()) && (y >= 0) && (y < size.getYS()))
@@ -2245,7 +2245,7 @@ int Matrix::offsetPosition(lua_State *L,const Matrix &m,const MatrixPos &pos,con
 }
 int Matrix::offsetPosition(lua_State *L,const NFmiLocation &location,double xoffsetkm,double yoffsetkm) const {
 
-	NFmiGrid * grid = (wantedGrid ? wantedGrid.get() : NULL);
+	NFmiGrid * grid = (wantedGrid ? wantedGrid.get() : nullptr);
 
 	if (grid) {
 		NFmiLocation loc(location);
@@ -2268,7 +2268,7 @@ int Matrix::offsetPosition(lua_State *L,const NFmiLocation &location,double xoff
 }
 int Matrix::offsetPosition(lua_State *L,const Matrix &m,const MatrixPos &pos,double xoffsetkm,double yoffsetkm) const {
 
-	NFmiGrid * grid = (wantedGrid ? wantedGrid.get() : NULL);
+	NFmiGrid * grid = (wantedGrid ? wantedGrid.get() : nullptr);
 	int x = pos.getX(),y = pos.getY();
 
 	if (grid && (x >= 0) && (x < size.getXS()) && (y >= 0) && (y < size.getYS()))

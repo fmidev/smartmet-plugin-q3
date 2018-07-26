@@ -25,7 +25,7 @@ struct LatLonBind {
     static LuaNew_ID ID;     // the unique key
     static void setup( lua_State *L );
     static const char *name() { return "LatLon"; }
-    static const char *env_mode() { return NULL; }
+    static const char *env_mode() { return nullptr; }
     static const LuaNew_ID & id() { return ID; }
     typedef LatLon CAST_T;
 
@@ -48,7 +48,7 @@ class LatLon : public LuaNew<LatLonBind> {
 
     static int is( lua_State *L ) {  // for 'proto.LatLon()'
         const LatLon *ll= LatLon::instance(L,1);
-        lua_pushboolean( L, ll != NULL );
+        lua_pushboolean( L, ll != nullptr );
         return 1;
     }
 

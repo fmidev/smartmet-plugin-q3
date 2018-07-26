@@ -875,14 +875,14 @@ NFmiQueryData *SQD_Data::new_qd( const NA_Info &info, const MatrixPos &gs ) thro
     //
     if (host_326) {
         NFmiWeatherAndCloudiness wc;
-        NFmiDataIdent *id= wc.CreateParam( *nprod, NULL );      // for us to 'delete'
+        NFmiDataIdent *id= wc.CreateParam( *nprod, nullptr );      // for us to 'delete'
         pbag.Add( *id, true /*prevent duplicates (not really needed)*/ );
         delete id;
     }
     
     if (host_19) {
         NFmiTotalWind tw;
-        NFmiDataIdent *id= tw.CreateParam( *nprod, NULL );      // for us to 'delete'
+        NFmiDataIdent *id= tw.CreateParam( *nprod, nullptr );      // for us to 'delete'
         pbag.Add( *id, true /*prevent duplicates (not really needed)*/ );
         delete id;
     }
@@ -969,7 +969,7 @@ NA_Info SQD_Data::read_info( const char *fn ) throw(E_BAD_FILE) {
     assert( levels.size()>0 );      // '::getLevels()' threw the exceptions
 
     const NFmiGrid *grid= info.Grid();
-    const NFmiArea *area= NULL;
+    const NFmiArea *area= nullptr;
 
     // 07-Apr-2015 PKi: Handling point data (observations) too
     //
@@ -985,12 +985,12 @@ NA_Info SQD_Data::read_info( const char *fn ) throw(E_BAD_FILE) {
     //						projection may not exactly be the same (floating point accuracy problem)
     //
 
-    const Projection pr(grid ? Projection(area->AreaStr().c_str(), SQD_Projection(area)) : Projection(NULL));
+    const Projection pr(grid ? Projection(area->AreaStr().c_str(), SQD_Projection(area)) : Projection(nullptr));
 
     struct stat attrib;
     stat(fn,&attrib);
 
-    NA_Info info2( time(NULL),
+    NA_Info info2( time(nullptr),
                    attrib.st_mtime,
                    SQD_Tools::mt2jd( info.OriginTime() ),
                    times,
@@ -1107,7 +1107,7 @@ MatrixPos SQD_Data::getGridSize(size_t nPoints) const {
 * Push a certain 'Matrix' value on Lua stack (or use regular 'new' operator if 'L'==0).
 *
 * Returns: pointer to the pushed object; tied to Lua GC if 'L'!=0. To be deleted by the caller if 'L'==0.
-*       NULL if the requested parameter is not available
+*       nullptr if the requested parameter is not available
 */
 /*virtual*/ CONST_IF_SERVER Matrix *SQD_Data::push_NativeMatrix( lua_State *L, const JDay &vt, const NA_Level &lev, const NA_Param &p
   //
@@ -1277,8 +1277,8 @@ Matrix *SQD_Data::push_NativeMatrix_e( lua_State *L, const JDay &vt, const NA_Le
 
     // 07-Apr-2015 PKi: Handling point data (e.g. observations) too
 	//
-	bool pointData = (qd->Info()->Grid() == NULL);
-	const DataIdList *dataIds = ((dataIds_ && (dataIds_->size() > 0)) ? dataIds_ : NULL);
+	bool pointData = (qd->Info()->Grid() == nullptr);
+	const DataIdList *dataIds = ((dataIds_ && (dataIds_->size() > 0)) ? dataIds_ : nullptr);
 
     const MatrixPos native_gs= getGridSize((pointData && dataIds) ? dataIds->size() : 0);
     const Projection &native_proj= getProjection();
@@ -1293,7 +1293,7 @@ Matrix *SQD_Data::push_NativeMatrix_e( lua_State *L, const JDay &vt, const NA_Le
                        (find_it<NA_Level>( levels_, lev ) != levels_.end())));
 
 	if (target_gs && (*target_gs == MatrixPos::ZERO))
-		target_gs = NULL;
+		target_gs = nullptr;
 
 	bool same_proj = ((! target_proj) || (*target_proj == native_proj));
 	bool same_gs = (pointData || (! target_gs) || (*target_gs == native_gs));
@@ -1346,7 +1346,7 @@ Matrix *SQD_Data::push_NativeMatrix_e( lua_State *L, const JDay &vt, const NA_Le
                 //
                 LuaNew_base::nuke(L,-1);  // removes the link from Lua GC to C++ destructor
             }
-            return NULL;    // no such param
+            return nullptr;    // no such param
         }
     }
 
@@ -1364,7 +1364,7 @@ Matrix *SQD_Data::push_NativeMatrix_e( lua_State *L, const JDay &vt, const NA_Le
     //       but it's good to get out here early if the param won't even be available.
     //
     if (!fi.Param(e)) {
-        return NULL;
+        return nullptr;
     }
 
     NFmiMetTime mt= SQD_Tools::jd2mt(vt);
@@ -1403,8 +1403,8 @@ Matrix *SQD_Data::push_NativeMatrix_e( lua_State *L, const JDay &vt, const NA_Le
 						: ::new MemMatrix( (!pointData) && target_gs ? *target_gs : native_gs, lev, e, unit, target_proj ? *target_proj : native_proj );
 
     NFmiDataMatrix<float> nm;
-    const Projection *pr = NULL;
-    NFmiArea *area = NULL;
+    const Projection *pr = nullptr;
+    NFmiArea *area = nullptr;
 
     if (! (same_proj && same_gs))
     {
@@ -1418,7 +1418,7 @@ Matrix *SQD_Data::push_NativeMatrix_e( lua_State *L, const JDay &vt, const NA_Le
     	if (same_proj)
 		{
 		    const NFmiGrid *grid = fi.Grid();
-		    if ((area = (grid ? grid->Area() : NULL)))
+		    if ((area = (grid ? grid->Area() : nullptr)))
 		    	area = area->Clone();
 		}
     }
@@ -1679,7 +1679,7 @@ const unsigned int NewBaseMinTimeStepInSecs = 60;
             setOk = fi.Param(e = mapParameter(p,false));		// Try the secondary parameter
 
         if (! setOk)
-            return NULL;
+            return nullptr;
     }
 
     // Convert call parameters and get the data
@@ -1839,7 +1839,7 @@ const unsigned int NewBaseMinTimeStepInSecs = 60;
 			}
     }
     else {
-    	NFmiAreaFactory::return_type area = target_proj ? NFmiAreaFactory::Create(target_proj->toString()) : NULL;
+    	NFmiAreaFactory::return_type area = target_proj ? NFmiAreaFactory::Create(target_proj->toString()) : nullptr;
 
 		for (fi.ResetLocation(); fi.NextLocation(); ) {
 			NFmiPoint p(fi.LatLon());

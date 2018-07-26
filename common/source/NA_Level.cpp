@@ -62,7 +62,7 @@ string NA_Level::toString(bool getLongName) const {
                    (lt==NA_Level::PRESSURE_LEVEL) ? (getLongName ? "PressureLevel" : "hPa") :
                    (lt==NA_Level::HEIGHT_LEVEL) ? (getLongName ? "HeightLevel" : "height") :	// 04-Oct-2011 PKi: "Height" level for cross call
                    (lt==NA_Level::SOUNDING_LEVEL) ? (getLongName ? "SoundingLevel" : "sounding") :
-                    NULL;
+                    nullptr;
     assert(s);
     
     if (std::isnan(lv)) {

@@ -162,7 +162,7 @@ class MQD_Data : public NA_Data {
 
     // data fields
     //
-    const MemoryMap *mm;    // non-NULL if memory mapping used (keeps the 'block' pointer valid)
+    const MemoryMap *mm;    // non-nullptr if memory mapping used (keeps the 'block' pointer valid)
     const void *block;      // binary block (memory mapped)
 
     Tile * const tiles;

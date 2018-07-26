@@ -65,16 +65,16 @@ MemoryMap::MemoryMap( const char *fn, size_t start, size_t length_ ) throw(E_BAD
     //
     handle= ::CreateFileMapping(
             h_file,
-            NULL,   // default security (handle cannot be inherited)
+            nullptr,   // default security (handle cannot be inherited)
             PAGE_READONLY,
             0,0,    // size = actual file size
-            NULL    // name
+            nullptr    // name
         );
     
-    // Note: MSDN says 'CreateFileMapping()' fails with NULL return value,
+    // Note: MSDN says 'CreateFileMapping()' fails with nullptr return value,
     //       not with INVALID_HANDLE. Win32 HANDLEs are split on this aspect.
     //
-    if (h_fd == NULL) {
+    if (h_fd == nullptr) {
         fclose(f);
         throw E_LOG_FATAL( "'CreateFileMapping() failed: %d", GetLastError() );
     }

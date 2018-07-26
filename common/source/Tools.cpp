@@ -91,7 +91,7 @@ uint64_t now_ms() {
         //   suseconds_t  tv_usec;  /* and microseconds */
         // };
 
-    int rc= gettimeofday( &tv, NULL /*time zone not used any more (in Linux)*/ );
+    int rc= gettimeofday( &tv, nullptr /*time zone not used any more (in Linux)*/ );
     assert( rc==0 ); (void)rc;
 
     return ((uint64_t)tv.tv_sec)*1000 + (tv.tv_usec/1000);
@@ -103,7 +103,7 @@ uint64_t now_ms() {
 *
 * 'gbuf' contents must be 0 before first call.
 *
-* Returns the matching filename, or NULL for no more files.
+* Returns the matching filename, or nullptr for no more files.
 */
 #ifdef UNIX
 const char *glob_fn( const char *fn_mask, glob_t &gbuf, int &gbuf_i, bool is_dir ) {
@@ -111,7 +111,7 @@ const char *glob_fn( const char *fn_mask, glob_t &gbuf, int &gbuf_i, bool is_dir
 
     if (gbuf_i < 0) { /* first call */
         gbuf.gl_offs = 0;
-        int rc= glob( fn_mask, 0 /*flags*/, NULL /*errfunc*/, &gbuf );
+        int rc= glob( fn_mask, 0 /*flags*/, nullptr /*errfunc*/, &gbuf );
             // 
             // 0: ok
             // GLOB_NOSPACE:    attempt to allocate memory failed
@@ -123,7 +123,7 @@ const char *glob_fn( const char *fn_mask, glob_t &gbuf, int &gbuf_i, bool is_dir
                 LOG_ERROR( "'glob()' gave error %d (%s)", rc, 
                             (rc==GLOB_NOSPACE) ? "GLOB_NOSPACE" :
                             (rc==GLOB_ABORTED) ? "GLOB_ABORTED" : "??" );
-            return NULL;
+            return nullptr;
         }
         gbuf_i= 0;  // take first file 
     }
@@ -161,7 +161,7 @@ const char *glob_fn( const char *fn_mask, glob_t &gbuf, int &gbuf_i, bool is_dir
     //
     globfree( &gbuf );
     gbuf_i= -1;
-    return NULL;
+    return nullptr;
 }
 #else
 # error "Not implemented for Win32 API"
@@ -389,7 +389,7 @@ static int utf8_to_latin1( unsigned utf8 ) {
 *       consideration for this implementation.
 */
 string_or_null latin1_to_utf8( const char *latin1 ) {
-    if (!latin1) return NULL;
+    if (!latin1) return nullptr;
 
     unsigned n= strlen(latin1);
 
@@ -422,7 +422,7 @@ string_or_null latin1_to_utf8( const char *latin1 ) {
 */
 #ifdef METQU
 string_or_null utf8_to_latin1( const char *utf8 ) {
-    if (!utf8) return NULL;
+    if (!utf8) return nullptr;
 
     unsigned n= strlen(utf8);
 

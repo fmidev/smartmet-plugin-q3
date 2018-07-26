@@ -31,10 +31,10 @@ class Test_Data : public NA_Data {
  							    //
 							    // 22-Aug-2011 PKi: For fetching data using newbase interpolation, projection and scaling
 							    //
-							  , const Projection *target_proj_orig = NULL
-							  , const MatrixPos *target_gs_orig = NULL
-							  , bool  *target_ready = NULL
-							  , const DataIdList *dataIds = NULL
+							  , const Projection *target_proj_orig = nullptr
+							  , const MatrixPos *target_gs_orig = nullptr
+							  , bool  *target_ready = nullptr
+							  , const DataIdList *dataIds = nullptr
                               ) const throw() {
         return push_TestMatrix( L, vt, lev, p, MatrixPos(50,50) );
     }
@@ -45,7 +45,7 @@ class Test_Data : public NA_Data {
                                 const NA_Param &p,
                                 const Projection &proj_,
                                 const MatrixPos &target_gs,
-                                const DataIdList *dataIds = NULL ) const throw() {
+                                const DataIdList *dataIds = nullptr ) const throw() {
         (void)proj_;     // not used
         return push_TestMatrix( L, vt, lev, p, target_gs );
     }

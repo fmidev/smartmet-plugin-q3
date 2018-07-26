@@ -119,10 +119,10 @@ class Logger {
     static void TIMING( const char *fn, unsigned line, const unique_t id, const std::string &msg ) { LOG( _TIMING, fn, line, id, msg ); }
     static void STAT( const char *fn, unsigned line, const unique_t id, const std::string &msg ) { LOG( _STAT, fn, line, id, msg ); }
 
-    static void MAINTENANCE( const std::string &msg ) { LOG( _MAINTENANCE, NULL, 0, 0, msg ); }
+    static void MAINTENANCE( const std::string &msg ) { LOG( _MAINTENANCE, nullptr, 0, 0, msg ); }
 
   private:
-    static Logger *logger;    // current logger (NULL: none; set only once)
+    static Logger *logger;    // current logger (nullptr: none; set only once)
 };
 
 #define LOG_DEBUG( fmt, ... )   Logger::DEBUG(  __FILE__, __LINE__, 0, string_fmt(fmt, __VA_ARGS__) )
@@ -284,7 +284,7 @@ class E_USAGE : public E_ANY {
 #define E_LOG_USAGE( fmt, ... ) E_USAGE( __FILE__, __LINE__, string_fmt(fmt,__VA_ARGS__) )
 #define E_LOG_USAGE0( s )       E_USAGE( __FILE__, __LINE__, s )
 
-#define E_NOLOG_USAGE( fmt, ... ) E_USAGE( NULL, 0, string_fmt(fmt,__VA_ARGS__) )
+#define E_NOLOG_USAGE( fmt, ... ) E_USAGE( nullptr, 0, string_fmt(fmt,__VA_ARGS__) )
 
 /** (not used)
 // E_SECURITY is for cases where behaviour seems to be a hack attempt;

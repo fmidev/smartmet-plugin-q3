@@ -31,7 +31,7 @@ namespace
 
   void contourFromLinearRing(const LinearRing * geom, PathAdapterBase * pathAdapter)
   {
-	if (geom == NULL || geom->isEmpty())
+	if (geom == nullptr || geom->isEmpty())
 		return;
 
 	for (unsigned long i=0, n=geom->getNumPoints(); i<n-1; ++i) {
@@ -50,7 +50,7 @@ namespace
 
   void contourFromLineString(const LineString * geom, PathAdapterBase * pathAdapter)
   {
-	if (geom == NULL || geom->isEmpty())
+	if (geom == nullptr || geom->isEmpty())
 		return;
 
 	unsigned long n = geom->getNumPoints();
@@ -74,7 +74,7 @@ namespace
 
   void contoursFromPolygon(const Polygon * geom, PathAdapterBase * pathAdapter)
   {
-	if (geom == NULL || geom->isEmpty())
+	if (geom == nullptr || geom->isEmpty())
 		return;
 
 	contourFromLineString(geom->getExteriorRing(), pathAdapter);
@@ -91,7 +91,7 @@ namespace
 
   void contoursFromMultiLineString(const MultiLineString * geom, PathAdapterBase * pathAdapter)
   {
-	if (geom == NULL || geom->isEmpty())
+	if (geom == nullptr || geom->isEmpty())
 		return;
 
 	for (size_t i=0, n=geom->getNumGeometries(); i<n; ++i)
@@ -106,7 +106,7 @@ namespace
 
   void contoursFromMultiPolygon(const MultiPolygon * geom, PathAdapterBase * pathAdapter)
   {
-	if (geom == NULL || geom->isEmpty())
+	if (geom == nullptr || geom->isEmpty())
 		return;
 
 	for (size_t i=0, n=geom->getNumGeometries(); i<n; ++i)
@@ -121,7 +121,7 @@ namespace
 
   void contoursFromGeometryCollection(const GeometryCollection * geom, PathAdapterBase * pathAdapter)
   {
-	if (geom == NULL || geom->isEmpty())
+	if (geom == nullptr || geom->isEmpty())
 		return;
 
 	for (size_t i=0, n=geom->getNumGeometries(); i<n; ++i)

@@ -70,7 +70,7 @@ class Projection {
     
     const static Projection NONE;
 
-    operator bool() const { return proj != NULL; }
+    operator bool() const { return proj != nullptr; }
 
     bool operator==( const Projection &o ) const {
         return toString() == o.toString();
@@ -81,7 +81,7 @@ class Projection {
     //
     // Note: Cannot make 'def_str' 'const' because we have an assignment operator.
     //
-    Projection_provider *proj;      // NULL for no projection ('Projection::NONE')
+    Projection_provider *proj;      // nullptr for no projection ('Projection::NONE')
     std::string creation_str;       // for reporting to API in string form
         
 #ifndef NDEBUG        

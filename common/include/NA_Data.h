@@ -270,10 +270,10 @@ class NA_Data : public NA_Info {
 							    //
 							    // 22-Aug-2011 PKi: For fetching data using newbase interpolation, projection and scaling
 							    //
-							  , const Projection *target_proj_orig = NULL
-							  , const MatrixPos *target_gs_orig = NULL
-							  , bool  *target_ready = NULL
-							  , const DataIdList *dataIds = NULL
+							  , const Projection *target_proj_orig = nullptr
+							  , const MatrixPos *target_gs_orig = nullptr
+							  , bool  *target_ready = nullptr
+							  , const DataIdList *dataIds = nullptr
                               ) const {
         return const_cast<NA_Data*>(this) -> push_NativeMatrix( L, vt, lev, p, target_proj_orig, target_gs_orig, target_ready );
     }
@@ -286,10 +286,10 @@ class NA_Data : public NA_Info {
 							    //
 							    // 22-Aug-2011 PKi: For fetching data using newbase interpolation, projection and scaling
 							    //
-							  , const Projection *target_proj_orig = NULL
-							  , const MatrixPos *target_gs_orig = NULL
-							  , bool  *target_ready = NULL
-							  , const DataIdList *dataIds = NULL
+							  , const Projection *target_proj_orig = nullptr
+							  , const MatrixPos *target_gs_orig = nullptr
+							  , bool  *target_ready = nullptr
+							  , const DataIdList *dataIds = nullptr
                               ) CONST_IF_SERVER = 0;
 
     // Providing data with projection change (causes a read-only matrix if projection and/or grid size
@@ -306,7 +306,7 @@ class NA_Data : public NA_Info {
                                 const NA_Param &p, 
                                 const Projection &proj,
                                 const MatrixPos &target_gs,
-								const DataIdList *dataIds = NULL
+								const DataIdList *dataIds = nullptr
                                 ) const;
                                 
     // Some levels are calculated by the adaptors, on-the-fly (height levels from hybrid or pressure
@@ -324,14 +324,14 @@ class NA_Data : public NA_Info {
     						                          const LatLonList &locs,
     						                          const NA_Param &p,
     						                          bool flightRoute
-    						                        ) const { return NULL; }
+    						                        ) const { return nullptr; }
 
     /*
     * 29-Sep-2011 PKi: For fetching grid locations and data point (e.g. observation station) metadata; overridden by SQD_Data
     */
-    virtual void getLocations(std::vector<LatLon> &locations,const Projection *target_proj = NULL) const { return; }
-    virtual void getDataIds(std::vector<unsigned long> &dataIds,const Projection *target_proj = NULL) const { return; }
-    virtual void getDataNames(std::vector<std::string> &dataNames,const Projection *target_proj = NULL) const { return; }
+    virtual void getLocations(std::vector<LatLon> &locations,const Projection *target_proj = nullptr) const { return; }
+    virtual void getDataIds(std::vector<unsigned long> &dataIds,const Projection *target_proj = nullptr) const { return; }
+    virtual void getDataNames(std::vector<std::string> &dataNames,const Projection *target_proj = nullptr) const { return; }
 
     /*
     * 13-Oct-2011 PKi: For checking the availability of height levels in data; overridden by SQD_Data

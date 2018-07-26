@@ -241,7 +241,7 @@ int VectorMatrixBind::index( lua_State *L ) {
             assert(s);
 
             if (strcmp(s,"x")==0) {
-                const Matrix *mm= me.getMX_();    // non-NULL if data is stored as X/Y components
+                const Matrix *mm= me.getMX_();    // non-nullptr if data is stored as X/Y components
                 if (mm) {
                     new(L) MemMatrix(*mm);    // it's a copy; changes won't affect us
                 } else {
@@ -254,7 +254,7 @@ int VectorMatrixBind::index( lua_State *L ) {
                 return 1;
             }
             else if (strcmp(s,"y")==0) {
-                const Matrix *mm= me.getMY_();    // non-NULL if data is stored as X/Y components
+                const Matrix *mm= me.getMY_();    // non-nullptr if data is stored as X/Y components
                 if (mm) {
                     new(L) MemMatrix(*mm);    // it's a copy; changes won't affect us
                 } else {
@@ -267,7 +267,7 @@ int VectorMatrixBind::index( lua_State *L ) {
                 return 1;
             }
             else if (strcmp(s,"abs")==0) {
-                const Matrix *mm= me.getAbs_();    // non-NULL if data is stored as polar coords
+                const Matrix *mm= me.getAbs_();    // non-nullptr if data is stored as polar coords
                 if (mm) {
                     new(L) MemMatrix(*mm);    // it's a copy; changes won't affect us
                 } else {
@@ -280,7 +280,7 @@ int VectorMatrixBind::index( lua_State *L ) {
                 return 1;
             }
             else if (strcmp(s,"deg")==0) {
-                const Matrix *mm= me.getDeg_();    // non-NULL if data is stored as polar coords
+                const Matrix *mm= me.getDeg_();    // non-nullptr if data is stored as polar coords
                 if (mm) {
                     new(L) MemMatrix(*mm);    // it's a copy; changes won't affect us
                 } else {
@@ -299,7 +299,7 @@ int VectorMatrixBind::index( lua_State *L ) {
                 return 1;
             }
             else if (strcmp(s,"unit")==0) {
-                lua_pushstring( L, me.m1->getUnitName().c_str() );   // may be NULL
+                lua_pushstring( L, me.m1->getUnitName().c_str() );   // may be nullptr
                 return 1;
             }
             else if (strcmp(s,"projection")==0) {

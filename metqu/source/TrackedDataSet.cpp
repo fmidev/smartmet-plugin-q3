@@ -41,7 +41,7 @@ char **gl_pathv;    // List of matched pathnames.
 size_t gl_offs;     // Slots to reserve in 'gl_pathv'.
 } glob_t;
 */
-    while( (fn_abs= glob_fn( fn_mask, gbuf, gbuf_i )) != NULL )
+    while( (fn_abs= glob_fn( fn_mask, gbuf, gbuf_i )) != nullptr )
 #else
 # error "Not implemented for Win32"
 #endif
@@ -152,7 +152,7 @@ TrackedData *TrackedDataSet::getData( unsigned &i, const JDay &ot ) const throw(
         }
         // continue search
     }
-    return NULL;    // no match
+    return nullptr;    // no match
 }
 
 
@@ -166,7 +166,7 @@ TrackedData *TrackedDataSet::getData_latest( unsigned i ) const throw() {
     if (i<line.size()) {
         return line[i];     // [0] is the most recent
     } else {
-        return NULL;        // nothing so old
+        return nullptr;        // nothing so old
     }
 }
 

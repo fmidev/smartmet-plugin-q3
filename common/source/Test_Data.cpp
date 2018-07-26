@@ -11,7 +11,7 @@
 
 using namespace std;
 
-static const NA_Info *my_info= NULL;
+static const NA_Info *my_info= nullptr;
 
 /*
 * Init 'my_info'
@@ -131,9 +131,9 @@ const Matrix *Test_Data::push_TestMatrix( lua_State *L,
                              (ps=="FULL") ? f_FULL : 
                              (ps=="NONE") ? f_NONE : 
                              (ps=="BALL") ? f_BALL : 
-                             NULL;
+                             nullptr;
 
-    if (!param_func) { return NULL; }
+    if (!param_func) { return nullptr; }
 
     // TBD: Käytä aikaa ('vt') testimatriisien kasvattamiseen reunoilta (TODAY+0) toiseen reunaan (TODAY+24)
 
