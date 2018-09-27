@@ -256,10 +256,12 @@ LOG_DEBUG( "Extracting done (%d bytes used)", (int)bytes );
             // i.e. "Unable to read (Could not open '...' for reading):
             //       /smartmet/brainstorm/hirlamrcr/pinta/200911300936_hirlam_pinta.sqd"
             //
+            LOG_WARNING( "Ignoring %s: %s", fn, e.what() );
             throw e;
         }
         catch(exception &e) {    // should not happen
-            throw E_LOG_BUG( "Unexpected exception: %s", e.what() );
+            LOG_WARNING( "Ignoring %s: %s", fn, e.what() );
+            throw E_BAD_FILE ( source, e.what() );
         }
     }
 

@@ -33,7 +33,7 @@ class NFmiFastQueryInfo;
 */
 class SQD_Data : public NA_Data {
   public:
-    SQD_Data( const char *fn, bool relative_uv ) throw(E_BAD_FILE);
+    SQD_Data( const char *fn, bool relative_uv ) throw( E_BAD_FILE, std::runtime_error );
 
 #ifdef METQU
     SQD_Data( const NA_Info &info ) throw();    // create new, values not initialized
