@@ -142,7 +142,7 @@ TrackedData *Q3Engine::Track::getData_must_release_(const JDay &ot,
 
     // 'd' is acquired for us; we (or our caller) need to '->Release()' it once done.
 
-    LOG_DEBUG("[%x] Considering raw: %s", (int)pthread_self(), d->getSource().c_str());
+//  LOG_DEBUG("[%x] Considering raw: %s", (int)pthread_self(), d->getSource().c_str());
 
     NA_Info info = d->getInfo();
 
@@ -182,7 +182,7 @@ TrackedData *Q3Engine::Track::getData_must_release_(const JDay &ot,
         {
           if (!it->covered_by(qd_params))
           {
-            LOG_DEBUG("No param found: %s", it->toString().c_str());
+//          LOG_DEBUG("No param found: %s", it->toString().c_str());
             missing_param = it->toString();
             break;
           }
@@ -251,7 +251,7 @@ TrackedData *Q3Engine::Track::getData_must_release_(const JDay &ot,
           if (!d3)
             d3 = d;  // first pressure data we found
         }
-        LOG_DEBUG0("\tstill looking for perfect pressure data");
+//      LOG_DEBUG0("\tstill looking for perfect pressure data");
 
         // 08-Mar-2012 PKi: Keep the data when needed to release it
         if ((d == d2) || (d == d3))
