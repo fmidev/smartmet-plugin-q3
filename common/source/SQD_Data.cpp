@@ -954,8 +954,16 @@ NA_Info SQD_Data::read_info( const char *fn ) throw(E_BAD_FILE) {
 
     bool revlevorder = false;
     string nativeLevelType;
-    vector<JDay> times=       ::getTimes(info);
-    vector<NA_Level> levels=  ::getLevels(info, fn, revlevorder, nativeLevelType);
+    // getTimes() and getLevels() can throw (E_BUG, E_LOG_BAD_FILE)
+    vector<JDay> times;
+    vector<NA_Level> levels;
+    try {
+        times=   ::getTimes(info);
+        levels=  ::getLevels(info, fn, revlevorder, nativeLevelType);
+    }
+    catch ( const std::exception &e ) {
+        throw E_LOG_BAD_FILE( fn, e.what() );
+    }
 
     bool has_326, has_19;
     vector<NA_Param> params=  ::getParams(info, has_326, has_19);
