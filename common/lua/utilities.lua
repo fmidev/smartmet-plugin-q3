@@ -23,6 +23,7 @@ local table_insert= assert( table.insert )
 local math_pow=     assert( math.pow )
 local math_exp=     assert( math.exp )
 
+local WeatherNumberParam= ":1382"
 
 ---=== Helpers ===---
 
@@ -585,6 +586,12 @@ end
 -- Get querydata for given track and data selection (level type, parameters and origintime) criterias
 --
 local function getraw(track,targs)
+	-- params is empty if querying only calculated parameter(s)
+	--
+	if targs.params and #targs.params==0 then
+		targs.params= nil
+	end
+
 	return track(targs)
 end
 
@@ -1105,6 +1112,16 @@ local function getdataset(args)
 	local times= args.times or { 0 }
 	local status,r
 
+	-- Ignore calculated parameter weathernumber when selecting data
+	--
+	local queryparams = {}
+
+	for p=0,#params do
+		if params[p]~=WeatherNumberParam then
+			queryparams[p]= params[p]
+		end
+	end
+
 	for n=1,#args.names do
 		local track= rawget( _G, args.names[n] )
 
@@ -1132,7 +1149,7 @@ local function getdataset(args)
 				--		 don't affect us. 
 
 				for p=0,#params do
-					targs.params= p==0 and params or {params[p]}
+					targs.params= p==0 and queryparams or (params[p]~=WeatherNumberParam and {params[p]}) or {}
 
 -- print("** GET track "..args.names[n].." ot "..targs.origintime)
 					status,r= pcall(getraw,track,targs)
@@ -1160,7 +1177,7 @@ local function getdataset(args)
 				if args.times then targs.times= times[t] end
 
 				for p=0,#params do
-					targs.params= p==0 and params or {params[p]}
+					targs.params= p==0 and queryparams or (params[p]~=WeatherNumberParam and {params[p]}) or {}
 
 -- Runtime error: attempt to concatenate field 'origintime' (a nil value)
 -- print("** GET track "..args.names[n].." ot "..targs.origintime)
@@ -1219,16 +1236,183 @@ local function datatime(times,time)
 end
 
 --
+-- Calculate weathernumber
+--
+-- For some reason calcweathernumber can't successfully call back getgrid; using copy of it
+--
+local function getgrid2(raw,param)
+	return raw and raw[param] or error("No raw")
+end
+local function calcweathernumber(raw,locations)
+        -- Matrix filled with missing value, used for missing parameters
+        --
+	if _G["gridsize"]==nil or _G["projection"]==nil then
+		error("calcweathernumber: gridsize and projection must be set")
+	end
+
+	local kFloatMissing= 32700.0
+	local mmissing= new_ScalarMatrix(_G["gridsize"],kFloatMissing,_G["projection"])
+
+	-- Get input data
+	--
+	local TotalCloudCover= ":79"
+	local Precipitation1h= ":353"
+	local PotentialPrecipitationForm= ":1226"
+	local PrecipitationForm= ":57"
+	local PotentialPrecipitationType= ":1235"
+	local PrecipitationType= ":56"
+	local ProbabilityThunderstorm= ":260"
+	local FogIntensity= ":327"
+
+	local status1,g1= pcall(getgrid2,raw,TotalCloudCover)
+	local mcloudcover= status1 and g1 or mmissing
+	local status2,g2= pcall(getgrid2,raw,Precipitation1h)
+	local mrain= status2 and g2 or mmissing
+	local status3,g3= pcall(getgrid2,raw,PotentialPrecipitationForm)
+        if not status3 then
+		status3,g3= pcall(getgrid2,raw,PrecipitationForm)
+	end
+	local mrform= status3 and g3 or mmissing
+	local status4,g4= pcall(getgrid2,raw,PotentialPrecipitationType)
+	if not status4 then
+		status4,g4= pcall(getgrid2,raw,PrecipitationType)
+	end
+	local mrtype= status4 and g4 or mmissing
+	local status5,g5= pcall(getgrid2,raw,ProbabilityThunderstorm)
+	local mthunder= status5 and g5 or mmissing
+	local status6,g6= pcall(getgrid2,raw,FogIntensity)
+	local mfog= status6 and g6 or mmissing
+
+	-- Calculate weathernumber
+
+	local gs= #locations.locations==0 and _G["gridsize"] or xy(#locations.locations,1)
+	local weathernumber= matrix(gs,nil,_G["projection"])
+	local version= 1
+	local cloud_class= 0		-- not available yet
+
+	local thunder_limit1= 30
+	local thunder_limit2= 60
+
+	local rain_limit1= 0.025
+	local rain_limit2= 0.04
+	local rain_limit3= 0.4
+	local rain_limit4= 1.5
+	local rain_limit5= 2
+	local rain_limit6= 4
+	local rain_limit7= 7
+
+	local cloud_limit1= 7
+	local cloud_limit2= 20
+	local cloud_limit3= 33
+	local cloud_limit4= 46
+	local cloud_limit5= 59
+	local cloud_limit6= 72
+	local cloud_limit7= 85
+	local cloud_limit8= 93
+
+	local loc= 1
+	for pos,v in points(weathernumber) do
+		local mpos= #locations.locations==0 and pos or locations.locations[loc]
+		local n= mcloudcover[mpos]
+		local n_class= 9	-- missing
+
+		if n==kFloatMissing then
+			n_class= 9
+		elseif n<cloud_limit1 then
+			n_class= 0
+		elseif n<cloud_limit2 then
+			n_class= 1
+		elseif n<cloud_limit3 then
+			n_class= 2
+		elseif n<cloud_limit4 then
+			n_class= 3
+		elseif n<cloud_limit5 then
+			n_class= 4
+		elseif n<cloud_limit6 then
+			n_class= 5
+		elseif n<cloud_limit7 then
+			n_class= 6
+		elseif n<cloud_limit8 then
+			n_class= 7
+		else
+			n_class= 8
+		end
+
+		local rain= mrain[mpos]
+		local rain_class= 9	-- missing
+
+		if rain==kFloatMissing then
+			rain_class= 9
+		elseif rain<rain_limit1 then
+			rain_class= 0
+		elseif rain<rain_limit2 then
+			rain_class= 1
+		elseif rain<rain_limit3 then
+			rain_class= 2
+		elseif rain<rain_limit4 then
+			rain_class= 3
+		elseif rain<rain_limit5 then
+			rain_class= 4
+		elseif rain<rain_limit6 then
+			rain_class= 5
+		elseif rain<rain_limit7 then
+			rain_class= 6
+		else
+			rain_class= 7
+		end
+
+		local rform= mrform[mpos]
+		local rform_class= rform==kFloatMissing and 9 or math.floor(rform)
+
+		local rtype= mrtype[mpos]
+		local rtype_class= rtype==kFloatMissing and 9 or math.floor(rtype)
+
+		local thunder= mthunder[mpos]
+		local thunder_class= 9	-- missing
+
+		if thunder==kFloatMissing then
+			thunder_class= 9
+		elseif thunder<thunder_limit1 then
+			thunder_class= 1
+		elseif thunder<thunder_limit2 then
+			thunder_class= 2
+		else
+			thunder_class= 3
+		end
+
+		local fog= mfog[mpos]
+		local fog_class = fog==kFloatMissing and 9 or math.floor(fog)
+
+		weathernumber[pos]= 10000000 * version +
+				    1000000 * thunder_class +
+				    100000 * rform_class +
+				    10000 * rtype_class +
+				    1000 * rain_class +
+				    100 * fog_class +
+				    10 * n_class +
+				    cloud_class
+
+		loc= loc+1
+	end
+
+	return weathernumber
+end
+
+--
 -- Get grid for given parameter
 --
-local function getgrid(raw,param)
-	return raw and raw[param] or {}
+local function getgrid(raw,param,locations)
+	if param==WeatherNumberParam then
+		return calcweathernumber(raw,locations)
+	else
+		return raw and raw[param] or error("No raw")
+	end
 end
 
 --
 -- Return data
 --
-local function querydata(args)
+local function querydata(args,locations)
 	if type.Matrix(args.data) then
 		--
 		-- Return given data, no query
@@ -1256,7 +1440,7 @@ local function querydata(args)
 						for t=1,#times do
 							if datatime(dataset.datas[d].times,times[t]) then
 								gargs.time= times[t]
-								local status,g= pcall(getgrid,dataset.datas[d].data(gargs),dataset.parameters[p])
+								local status,g= pcall(getgrid,dataset.datas[d].data(gargs),dataset.parameters[p],locations)
 								ret[#ret+1]= status and g or {}
 
 								if args.requiredata and type(ret[#ret])=="table" then return ret end
@@ -1273,7 +1457,7 @@ local function querydata(args)
 				for t=1,#times do
 					if datatime(dataset.datas[d].times,times[t]) then
 						gargs.time= times[t]
-						local status,g= pcall(getgrid,dataset.datas[d].data(gargs),dataset.parameters[p])
+						local status,g= pcall(getgrid,dataset.datas[d].data(gargs),dataset.parameters[p],locations)
 						ret[#ret+1]= status and g or {}
 
 						if args.requiredata and type(ret[#ret])=="table" then return ret end
@@ -1566,9 +1750,56 @@ local function checktimes( times )
 end
 
 --
--- Check data query parameters. Parameters are returned as a table of tables
+-- Check location parameters. Parameters are returned as a table of tables
 --
-local function checkdqargs(args)
+local function checklqargs(lqargs)
+	if lqargs==nil then
+		lqargs= {}
+		lqargs.locations= {}
+
+		return lqargs
+	end
+
+	if type(lqargs)~="table" then
+		error("Invalid arguments, (table) expected")
+	end
+
+	-- Parameter names, in plural for tables
+	--
+	-- e.g. {locations={"62.7572N 25.9542E","62.8113N 25.9401E"}}
+	--
+	local fields= { "location" }
+
+	for field=1,#fields do
+		local fld= fields[field]
+		local flds= fld.."s"
+
+		if lqargs[fld]~=nil then
+			if type(lqargs[fld])=="string" then
+				lqargs[flds]= { latlon(lqargs[fld]) }
+			elseif fld~="location" or not type.LatLon(lqargs[fld]) then error("Invalid query parameter '"..fld.."', string expected")
+			else lqargs[flds]= { lqargs[fld] }
+			end
+		elseif flds and lqargs[flds]~=nil then
+			if type(lqargs[flds])~="table" then
+				error("Invalid query parameter '"..flds.."', table expected")
+			end
+		end
+	end
+
+	if lqargs.locations~=nil then
+		for l=1,#lqargs.locations do if type(lqargs.locations[l])=="string" then lqargs.locations[l]= latlon(lqargs.locations[l]) end end
+	else
+		lqargs.locations= {}
+	end
+
+	return lqargs
+end
+
+--
+-- Check data query parameters. Parameters are returned as tables of tables
+--
+local function checkdqargs(args,lqargs)
 	if args==nil then
 		error("No query args, datastring or a table expected")
 	end
@@ -1673,6 +1904,8 @@ local function checkdqargs(args)
 		end
 
 		if args.includes then args.includes= getquery_addmeta(args.includes, args.leveltypetype=="sounding") end
+
+		lqargs= checklqargs(lqargs)
 	end
 
 	if args.gridsize==true then
@@ -1691,7 +1924,7 @@ local function checkdqargs(args)
 		rawset( _G, "gridsize", gridsize)
 	end
 
-	return args
+	return args,lqargs
 end
 
 --
@@ -1769,38 +2002,15 @@ local function checkcqargs(dqargs,cqargs,crosstype)
 		error("Invalid arguments, (table,table) expected")
 	end
 
-	dqargs= checkdqargs(dqargs)
+	--
+	-- Currently cqargs carries only locations, so it can be passed as is to checkdqargs
+	--
+	dqargs,cqargs= checkdqargs(dqargs,cqargs)
 
 	if crosstype then cqargs[crosstype]= true end
-	--
-	-- Parameter names, in plural for tables
-	--
-	-- e.g. cross({name="HIR",parameter=4},{location="62.7572N 25.9542E"})
-	-- 		cross({names={"HIR","EC"},parameters={4,13}},{locations={"62.7572N 25.9542E","62.8113N 25.9401E"}})
-	--
-	local fields= { "location" }
 
-	for field=1,#fields do
-		local fld= fields[field]
-		local flds= fld.."s"
-
-		if cqargs[fld]~=nil then
-			if type(cqargs[fld])=="string" then
-				cqargs[flds]= { latlon(cqargs[fld]) }
-			elseif fld~="location" or not type.LatLon(args[fld]) then error("Invalid query parameter '"..fld.."', string expected")
-			else cqargs[flds]= { cqargs[fld] }
-			end
-		elseif flds and cqargs[flds]~=nil then
-			if type(cqargs[flds])~="table" then
-				error("Invalid query parameter '"..flds.."', table expected")
-			end
-		end
-	end
-
-	if cqargs.locations==nil then
-		error("Location(s) missing")
-	else
-		for l=1,#cqargs.locations do if type(cqargs.locations[l])=="string" then cqargs.locations[l]= latlon(cqargs.locations[l]) end end
+	if #cqargs.locations==0 then
+		error("cross: Location(s) missing")
 	end
 
 	if cqargs.flightroute or cqargs.timecross then
@@ -1916,7 +2126,7 @@ function dataquery()
 	--
 	-- Query returning data
 	--
-	local function query(args) return querydata(checkdqargs(args)) end
+	local function query(args,lqargs) return querydata(checkdqargs(args,lqargs)) end
 
 	--
 	-- Querys returning cross section data
