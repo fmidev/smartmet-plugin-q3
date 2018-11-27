@@ -1248,6 +1248,10 @@ local function calcweathernumber(raw,locations)
         --
 	if _G["gridsize"]==nil or _G["projection"]==nil then
 		error("calcweathernumber: gridsize and projection must be set")
+	elseif type(_G["gridsize"])=="boolean" then
+		-- Native gridsize
+		--
+		rawset (_G, "gridsize", raw["raw"]["sqd_gridsize"])
 	end
 
 	local kFloatMissing= 32700.0
