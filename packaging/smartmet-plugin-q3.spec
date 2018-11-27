@@ -2,7 +2,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet q3 plugin
 Name: %{SPECNAME}
-Version: 18.10.1
+Version: 18.11.27
 Release: 1.el7.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -72,6 +72,8 @@ rm -rf %{buildroot}
 
 #---
 %changelog
+* Tue Nov 27 2018 Pertti Kinnia <pertti.kinnia@fmi.fi> - 18.11.27-1.fmi
+- Added weathernumber calculation (PAK-1288)
 * Mon Oct  1 2018 Pertti Kinnia <pertti.kinnia@fmi.fi> - 18.10.1-1.fmi
 - Catch exceptions thrown when loading querydata time and level information (BS-1375)
 * Thu Sep 27 2018 Pertti Kinnia <pertti.kinnia@fmi.fi> - 18.9.27-1.fmi
