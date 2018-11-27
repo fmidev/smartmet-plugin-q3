@@ -21,15 +21,15 @@ BuildRequires:	bzip2-devel >= 1.0.6
 BuildRequires:	libpng-devel >= 1.5.13
 BuildRequires:	libjpeg-turbo-devel >= 1.2.90
 BuildRequires:  smartmet-library-tron >= 17.9.20
-BuildRequires:	smartmet-library-spine-devel >= 18.9.29
+BuildRequires:	smartmet-library-spine-devel >= 18.11.27
 Requires:       proj >= 4.8.0
 Requires:       lua >= 5.1.4
 Requires:       bzip2-libs >= 1.0.6
 Requires:       libpng >= 1.5.13
 Requires:       libjpeg-turbo >= 1.2.90
-Requires:       smartmet-library-newbase >= 18.9.29
-Requires:       smartmet-library-spine >= 18.9.29
-Requires:       smartmet-server >= 18.9.29
+Requires:       smartmet-library-newbase >= 18.11.26
+Requires:       smartmet-library-spine >= 18.11.27
+Requires:       smartmet-server >= 18.11.8
 Obsoletes:      fmi-q3-lib
 Obsoletes:      fmi-q3-config
 Obsoletes:      fmi-q3-brainstorm
