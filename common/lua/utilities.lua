@@ -1402,14 +1402,34 @@ local function calcweathernumber(raw,locations)
 	return weathernumber
 end
 
+local function locationdata(m,locations)
+	if not type.Matrix(m) then
+		error "locationdata: No data"
+	elseif #locations.locations==0 then
+		error "locationdata: No locations"
+	end
+
+	local lm= new_ScalarMatrix(xy(#locations.locations,1), 32700, m.projection)
+	local loc= 1
+
+	for pos,_ in points(lm) do
+		lm[pos]= m[locations.locations[loc]]
+		loc= loc+1
+	end
+
+	return lm
+end
+
 --
 -- Get grid for given parameter
 --
 local function getgrid(raw,param,locations)
 	if param==WeatherNumberParam then
 		return calcweathernumber(raw,locations)
+	elseif raw then
+		return #locations.locations>0 and locationdata(raw[param],locations) or raw[param]
 	else
-		return raw and raw[param] or error("No raw")
+		error("No raw")
 	end
 end
 
@@ -1601,7 +1621,7 @@ local function querydata(args,locations)
 		if ret.sdataids then ret.sdataids=nil end
 	end
 
-	return ret
+	return (#locations.locations>0 and #ret==1) and ret[1] or ret
 end
 
 --
