@@ -1409,7 +1409,7 @@ local function locationdata(m,locations)
 		error "locationdata: No locations"
 	end
 
-	local lm= new_ScalarMatrix(xy(#locations.locations,1), 32700, m.projection)
+	local lm= new_ScalarMatrix(xy(#locations.locations,1), nil, m.projection)
 	local loc= 1
 
 	for pos,_ in points(lm) do
