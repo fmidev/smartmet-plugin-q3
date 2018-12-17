@@ -1694,7 +1694,7 @@ end
 --
 -- Return image
 --
-local function queryimage(dqargs,pqargs)
+local function queryimage(dqargs,lqargs,pqargs)
 	require 'newcairo'
 
 	--
@@ -1707,7 +1707,7 @@ local function queryimage(dqargs,pqargs)
 	--
 	dqargs.requiredata= true
 
-	local datas,d= querydata(dqargs),1
+	local datas,d= querydata(dqargs,lqargs),1
 	local gs= type.Matrix(datas[1]) and datas[1].size or gridsize
 	local x_max,y_max= gs.x-1, gs.y-1
 	local xscale= pqargs.size[1]/x_max
@@ -1833,6 +1833,10 @@ local function checkdqargs(args,lqargs)
 		-- Get data as a table
 		--
 		args= getdatafromstring(args,{},true)
+	end
+
+	if lqargs==nil then
+		lqargs= { locations= {} }
 	end
 
 	if not type.Matrix(args.data) then
@@ -2072,7 +2076,9 @@ local function checkpqargs(dqargs,pqargs)
 		error("Invalid arguments, (datastring|table,table) expected")
 	end
 
-	dqargs= checkdqargs(dqargs)
+	-- Store/return empty locations (lqargs) too, to be passed on to queryimage() (and further to querydata())
+	--
+	dqargs,lqargs= checkdqargs(dqargs)
 
 	--
 	-- Parameter names, in plural for tables
@@ -2140,7 +2146,7 @@ local function checkpqargs(dqargs,pqargs)
 		end
 	end
 
-	return dqargs,pqargs
+	return dqargs,lqargs,pqargs
 end
 
 --
