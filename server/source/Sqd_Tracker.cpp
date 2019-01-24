@@ -44,6 +44,7 @@ using namespace std;
 */
 bool Sqd_Tracker::update(set<string> &seen_already) throw()
 {
+  set<string> current_files;
   const char *fn_abs;
 
 #ifdef UNIX
@@ -61,6 +62,9 @@ bool Sqd_Tracker::update(set<string> &seen_already) throw()
 #error "Not implemented for Win32"
 #endif
   {
+    // Current set of files to update seen_already
+    current_files.insert(fn_abs);
+
     // Skip if filename known already
     //
     // "inserts val, but only if val doesn't already exist. The return value is an iterator to the
@@ -164,6 +168,8 @@ bool Sqd_Tracker::update(set<string> &seen_already) throw()
            (int)available_data.size(),
            fn_abs);
   }  // while(files)
+
+  seen_already.swap(current_files);
 
   return true;  // ready for sleep
 }
