@@ -1248,10 +1248,17 @@ local function calcweathernumber(raw,locations)
         --
 	if _G["gridsize"]==nil or _G["projection"]==nil then
 		error("calcweathernumber: gridsize and projection must be set")
-	elseif type(_G["gridsize"])=="boolean" then
-		-- Native gridsize
-		--
-		rawset (_G, "gridsize", raw["raw"]["sqd_gridsize"])
+	else
+		if type(_G["projection"])=="boolean" then
+			-- Native projection
+			--
+			rawset (_G, "projection", raw["raw"]["projection"])
+		end
+		if type(_G["gridsize"])=="boolean" then
+			-- Native gridsize
+			--
+			rawset (_G, "gridsize", raw["raw"]["sqd_gridsize"])
+		end
 	end
 
 	local kFloatMissing= 32700.0
@@ -1377,11 +1384,11 @@ local function calcweathernumber(raw,locations)
 		if thunder==kFloatMissing then
 			thunder_class= 9
 		elseif thunder<thunder_limit1 then
-			thunder_class= 1
+			thunder_class= 0
 		elseif thunder<thunder_limit2 then
-			thunder_class= 2
+			thunder_class= 1
 		else
-			thunder_class= 3
+			thunder_class= 2
 		end
 
 		local fog= mfog[mpos]
