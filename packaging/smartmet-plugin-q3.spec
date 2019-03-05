@@ -2,7 +2,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet q3 plugin
 Name: %{SPECNAME}
-Version: 1
+Version: 19.3.5
 Release: 1.el7.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -72,7 +72,7 @@ rm -rf %{buildroot}
 
 #---
 %changelog
-* Upcoming
+* Tue Mar  5 2019 Pertti Kinnia <pertti.kinnia@fmi.fi> - 19.3.5-1.fmi
 - Fixed weathernumber calculation with native projection data (BS-1489)
 - Fixed weathernumber thunder probability classification (BS-1491)
 * Wed Dec 17 2018 Pertti Kinnia <pertti.kinnia@fmi.fi> - 18.12.17-1.fmi
