@@ -26,6 +26,8 @@ class Projection_provider {
 
     virtual Projection_provider *clone_() const = 0;
 
+    virtual std::string creationPrefix() const { return ""; }
+
   private:
     Projection_provider( const Projection_provider & );               // not allowed
     Projection_provider & operator=( const Projection_provider & );   // -''-
@@ -75,6 +77,8 @@ class Projection {
     bool operator==( const Projection &o ) const {
         return toString() == o.toString();
     }
+
+    std::string creationPrefix() const { return (proj ? proj->creationPrefix() : ""); }
 
   private:
     // data members

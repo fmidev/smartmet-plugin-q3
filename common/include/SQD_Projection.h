@@ -36,6 +36,8 @@ class SQD_Projection : public Projection_provider {
         return new SQD_Projection(*this);
     }
 
+    std::string creationPrefix() const { return (strcmp(ap->ClassName(),"kNFmiGdalArea") ? "" : "FMI|"); }
+
   private:
     SQD_Projection( const SQD_Projection &o );  // accessed through '.clone()'
     SQD_Projection & operator=( const SQD_Projection &o );      // not allowed

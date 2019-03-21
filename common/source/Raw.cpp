@@ -183,7 +183,7 @@ int RawBind::__index( lua_State *L ) {
     //
     if (strcmp(s,"projection")==0) {
         const Projection &pr= qd->getProjection();
-        lua_pushstring( L, pr.toString().c_str() );
+        lua_pushstring( L, (pr.creationPrefix() + pr.toString()).c_str() );
         return 1;
     }
 
