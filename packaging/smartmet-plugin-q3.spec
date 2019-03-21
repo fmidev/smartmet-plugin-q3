@@ -2,7 +2,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet q3 plugin
 Name: %{SPECNAME}
-Version: 19.3.5
+Version: 19.3.21
 Release: 1.el7.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -21,15 +21,15 @@ BuildRequires:	bzip2-devel >= 1.0.6
 BuildRequires:	libpng-devel >= 1.5.13
 BuildRequires:	libjpeg-turbo-devel >= 1.2.90
 BuildRequires:  smartmet-library-tron >= 17.9.20
-BuildRequires:	smartmet-library-spine-devel >= 18.12.13
+BuildRequires:	smartmet-library-spine-devel >= 19.3.14
 Requires:       proj >= 4.8.0
 Requires:       lua >= 5.1.4
 Requires:       bzip2-libs >= 1.0.6
 Requires:       libpng >= 1.5.13
 Requires:       libjpeg-turbo >= 1.2.90
-Requires:       smartmet-library-newbase >= 18.12.4
-Requires:       smartmet-library-spine >= 18.12.13
-Requires:       smartmet-server >= 18.12.14
+Requires:       smartmet-library-newbase >= 19.3.21
+Requires:       smartmet-library-spine >= 19.3.14
+Requires:       smartmet-server >= 19.3.19
 Obsoletes:      fmi-q3-lib
 Obsoletes:      fmi-q3-config
 Obsoletes:      fmi-q3-brainstorm
@@ -72,6 +72,9 @@ rm -rf %{buildroot}
 
 #---
 %changelog
+* Thu Mar 21 2019 Pertti Kinnia <pertti.kinnia@fmi.fi> - 19.3.21-1.fmi
+- Fixed missing value handling in weathernumber calculation
+- Fixed GDalArea projection creation (BRAINSTORM-1541, LENTOSAA-1122, PAK-1288)
 * Tue Mar  5 2019 Pertti Kinnia <pertti.kinnia@fmi.fi> - 19.3.5-1.fmi
 - Fixed weathernumber calculation with native projection data (BS-1489)
 - Fixed weathernumber thunder probability classification (BS-1491)
