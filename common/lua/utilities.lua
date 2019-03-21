@@ -1327,7 +1327,7 @@ local function calcweathernumber(raw,locations)
 		local n= mcloudcover[mpos]
 		local n_class= 9	-- missing
 
-		if n==kFloatMissing then
+		if isnan(n) or n==kFloatMissing then
 			n_class= 9
 		elseif n<cloud_limit1 then
 			n_class= 0
@@ -1352,7 +1352,7 @@ local function calcweathernumber(raw,locations)
 		local rain= mrain[mpos]
 		local rain_class= 9	-- missing
 
-		if rain==kFloatMissing then
+		if isnan(rain) or rain==kFloatMissing then
 			rain_class= 9
 		elseif rain<rain_limit1 then
 			rain_class= 0
@@ -1373,15 +1373,15 @@ local function calcweathernumber(raw,locations)
 		end
 
 		local rform= mrform[mpos]
-		local rform_class= rform==kFloatMissing and 9 or math.floor(rform)
+		local rform_class= (isnan(rform) or (rform==kFloatMissing)) and 9 or math.floor(rform)
 
 		local rtype= mrtype[mpos]
-		local rtype_class= rtype==kFloatMissing and 9 or math.floor(rtype)
+		local rtype_class= (isnan(rtype) or (rtype==kFloatMissing)) and 9 or math.floor(rtype)
 
 		local thunder= mthunder[mpos]
 		local thunder_class= 9	-- missing
 
-		if thunder==kFloatMissing then
+		if isnan(thunder) or thunder==kFloatMissing then
 			thunder_class= 9
 		elseif thunder<thunder_limit1 then
 			thunder_class= 0
@@ -1392,7 +1392,7 @@ local function calcweathernumber(raw,locations)
 		end
 
 		local fog= mfog[mpos]
-		local fog_class = fog==kFloatMissing and 9 or math.floor(fog)
+		local fog_class = (isnan(fog) or (fog==kFloatMissing)) and 9 or math.floor(fog)
 
 		weathernumber[pos]= 10000000 * version +
 				    1000000 * thunder_class +
