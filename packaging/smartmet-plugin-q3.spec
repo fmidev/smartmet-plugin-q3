@@ -2,7 +2,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet q3 plugin
 Name: %{SPECNAME}
-Version: 19.3.21
+Version: 19.4.2
 Release: 1.el7.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -72,6 +72,8 @@ rm -rf %{buildroot}
 
 #---
 %changelog
+* Tue Apr  2 2019 Pertti Kinnia <pertti.kinnia@fmi.fi> - 19.4.2-1.fmi
+- Using ProbabilityThunderstorm2 in weather number calculation if ProbabilityThunderstorm is not available (BRAINSTORM-1557)
 * Thu Mar 21 2019 Pertti Kinnia <pertti.kinnia@fmi.fi> - 19.3.21-1.fmi
 - Fixed missing value handling in weathernumber calculation
 - Fixed GDalArea projection creation (BRAINSTORM-1541, LENTOSAA-1122, PAK-1288)
