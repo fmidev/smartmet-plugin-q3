@@ -1273,6 +1273,7 @@ local function calcweathernumber(raw,locations)
 	local PotentialPrecipitationType= ":1235"
 	local PrecipitationType= ":56"
 	local ProbabilityThunderstorm= ":260"
+	local ProbabilityThunderstorm2= ":1218"
 	local FogIntensity= ":327"
 
 	local status1,g1= pcall(getgrid2,raw,TotalCloudCover)
@@ -1290,6 +1291,9 @@ local function calcweathernumber(raw,locations)
 	end
 	local mrtype= status4 and g4 or mmissing
 	local status5,g5= pcall(getgrid2,raw,ProbabilityThunderstorm)
+	if not status5 then
+		status5,g5= pcall(getgrid2,raw,ProbabilityThunderstorm2)
+	end
 	local mthunder= status5 and g5 or mmissing
 	local status6,g6= pcall(getgrid2,raw,FogIntensity)
 	local mfog= status6 and g6 or mmissing
