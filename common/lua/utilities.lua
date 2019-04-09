@@ -1290,6 +1290,16 @@ local function calcweathernumber(raw,locations)
 		status4,g4= pcall(getgrid2,raw,PrecipitationType)
 	end
 	local mrtype= status4 and g4 or mmissing
+
+	-- local status3,g3= pcall(getgrid2,raw,PotentialPrecipitationForm)
+	-- local mprform= status3 and g3 or mmissing
+	-- local status32,g32= pcall(getgrid2,raw,PrecipitationForm)
+	-- local mrform= status32 and g32 or mmissing
+	-- local status4,g4= pcall(getgrid2,raw,PotentialPrecipitationType)
+	-- local mprtype= status4 and g4 or mmissing
+	-- local status42,g42= pcall(getgrid2,raw,PrecipitationType)
+	-- local mrtype= status42 and g42 or mmissing
+
 	local status5,g5= pcall(getgrid2,raw,ProbabilityThunderstorm)
 	if not status5 then
 		status5,g5= pcall(getgrid2,raw,ProbabilityThunderstorm2)
@@ -1378,6 +1388,16 @@ local function calcweathernumber(raw,locations)
 
 		local rform= mrform[mpos]
 		local rform_class= (isnan(rform) or (rform==kFloatMissing)) and 9 or math.floor(rform)
+
+		-- local rform= mprform[mpos]
+		-- local rtype= mprtype[mpos]
+		--
+		-- if (isnan(rform) or (rform==kFloatMissing) or isnan(rtype) or (rtype==kFloatMissing)) then
+		--	rform= mrform[mpos]
+		--	rtype= mrtype[mpos]
+		-- end
+		--
+		-- local rform_class= (isnan(rform) or (rform==kFloatMissing)) and 9 or math.floor(rform)
 
 		local rtype= mrtype[mpos]
 		local rtype_class= (isnan(rtype) or (rtype==kFloatMissing)) and 9 or math.floor(rtype)
