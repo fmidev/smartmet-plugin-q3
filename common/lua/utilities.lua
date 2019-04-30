@@ -1077,13 +1077,18 @@ end
 --
 -- Add querydata to dataset
 --
-local function addqd2ds(dataset,status,r,name,origintime,time)
+local function addqd2ds(dataset,status,r,name,origintime,time,params,combined)
 	local data= status and r or nil
 	local index
 
 	if data then
 		for d=1,#dataset do
-			if dataset[d].data and dataset[d].data.source==data.source then index= d break end
+			if dataset[d].data and dataset[d].data.source==data.source then
+				if not combined or #dataset[d].parameters>1 or dataset[d].parameters[1]==params[1] then
+					index= d
+					break
+				end
+			end
 		end
 	end
 
@@ -1095,11 +1100,24 @@ local function addqd2ds(dataset,status,r,name,origintime,time)
 		dataset[index].data= data
 		dataset[index].origintime= origintime
 		dataset[index].times= {}
+		dataset[index].parameters= {}
+		dataset[index].combined= combined
+
+--		if data then print("Added " .. data["source"]) end
 	end
 
-	-- Store the validtime to be taken from this query data
+	-- Store the validtime and parameter(s) to be taken from this query data
 	
 	if time then dataset[index].times[#dataset[index].times+1]= time end
+	dataset[index].parameters= params
+end
+
+--
+-- Return track names for combined track (e.g. config setting 'combine.EC = ECM,ECS')
+--
+local function combinedtracks(trackname)
+	local tracknames= getaddonsetting( 'combine.' .. trackname )
+	return tracknames and string.gsub( string.gsub(tracknames, " ", "" ), ",", ":" ) or trackname
 end
 
 --
@@ -1116,17 +1134,41 @@ local function getdataset(args)
 	--
 	local queryparams = {}
 
-	for p=0,#params do
+	for p=1,#params do
 		if params[p]~=WeatherNumberParam then
-			queryparams[p]= params[p]
+			queryparams[#queryparams+1]= params[p]
 		end
 	end
 
 	for n=1,#args.names do
-		local track= rawget( _G, args.names[n] )
+		local tracks= {}
+		tracks.names= {}
+		tracks.tracks= {}
+		tracks.origintimes= {}
 
-  		if track==nil then
-			error( "Could not get track with name '"..args.names[n].."'" )
+		-- Check for combined tracks; ECM[:ECS[:...]].
+		--
+		-- With combined tracks, each parameter in taken from the first possible track and
+		-- the same (given, or newest common of 2 newest) origintime is used for each track
+
+		local trackname= args.names[n]
+
+		local track= rawget( _G, trackname )
+		if track==nil then
+			trackname= combinedtracks( trackname )
+		end
+
+		for tr in string.gmatch(trackname, "(%a+):?") do
+			local track= track or rawget( _G, tr )
+
+			if track==nil then
+				error( "Could not get track with name '"..tr.."' (" ..args.names[n] .. " " .. trackname .. ")" )
+			end
+
+			tracks.names[#tracks.names+1]= tr
+			tracks.tracks[#tracks.tracks+1]= track
+
+			track= nil
 		end
 
 		if ret.datas==nil then ret.datas= {} end
@@ -1137,67 +1179,142 @@ local function getdataset(args)
 
 				-- At first 'param' round search for querydata containing all requested parameters;
 				-- if not available, search parameter by parameter until found.
-				--
-				-- Note: When data is found, values (well empty for missing parameters) for all requested parameters
-				--		 are taken from it. Selecting multiple data's within 'param' loop would result in sort of messed
-				-- 		 up output; first there would be block of values for some and missing values for some of the parameters,
-				--		 then another (additional) block with other/changed values for some and values for some other parameters
-				--		 that were missing in previous block and so on). If such could happen depends on track configuration,
-				--		 but we don't let it happen.
-				--
-				-- 		 And, by picking up just one/first available data, track updates (new querydatas) meanwhile looping
-				--		 don't affect us. 
 
 				for p=0,#params do
 					targs.params= p==0 and queryparams or (params[p]~=WeatherNumberParam and {params[p]}) or {}
 
--- print("** GET track "..args.names[n].." ot "..targs.origintime)
-					status,r= pcall(getraw,track,targs)
+					local tr= 1
+					while tr<=#tracks.tracks do
+						local track= tracks.tracks[tr]
 
-					if (status and r) or p==0 then
-						if status and r and p>0 then
-							-- Ignore the nil data
-							--
--- print("** NIL data "..args.names[n].." ot "..targs.origintime)
-							table.remove(ret.datas)
-						end
+						status,r= pcall(getraw,track,targs)
 
-						addqd2ds(ret.datas,status,r,args.names[n],targs.origintime)
+						-- Search with all parameters for first/primary track only (and, currently
+						-- data output / parameter order would not be handled correctly otherwise)
 
-						if (status and r) or #params==1 then
-							break
-						end
+						if (status and r) or p==0 then break end
+
+						tr= tr+1
 					end
 
-					p= p+1
+					if (#tracks.tracks==1 and p==0) or (status and r) or (#tracks.tracks>1 and p>0) then
+						-- Check if all params are loaded from the same data (WeatherNumberParam might be missing),
+						-- or if getraw() removed empty targs.params table (WeatherNumberParam), resume it.
+						--
+						if #tracks.tracks==1 or p==0 then
+							targs.params= params
+						elseif targs.params==nil or #targs.params==0 then
+							targs.params= { WeatherNumberParam }
+						end
+
+						-- Attach missing param to primary track
+						--
+						if not (status and r) then tr= 1 end
+
+						-- Ignore the nil data with single track query (was stored at 1'st round)
+						--
+						if #tracks.tracks==1 and status and r and p>0 then table.remove(ret.datas) end
+
+						addqd2ds(ret.datas,status,r,tracks.names[tr],targs.origintime,nil,targs.params,#tracks.tracks>1)
+
+						-- All parameters from same data / primary track ?
+						--
+						if (status and r and #tracks.tracks==1) or (#tracks.tracks>1 and p==0) then break end
+					end
 				end
 			end
 		else
+			for tr=1,#tracks.tracks do
+				tracks.origintimes[tr]= tracks.tracks[tr].origintimes
+			end
+
 			for t=1,#times do
+				targs.origintime= nil
 				if args.times then targs.times= times[t] end
 
 				for p=0,#params do
 					targs.params= p==0 and queryparams or (params[p]~=WeatherNumberParam and {params[p]}) or {}
 
--- Runtime error: attempt to concatenate field 'origintime' (a nil value)
--- print("** GET track "..args.names[n].." ot "..targs.origintime)
-					status,r= pcall(getraw,track,targs)
+					local tr= 1
+					while tr<=#tracks.tracks do
+						local track= tracks.tracks[tr]
+						status,r= pcall(getraw,track,targs)
 
-					if (status and r) or p==0 then
-						if status and r and p>0 then
--- Runtime error: attempt to concatenate field 'origintime' (a nil value)
--- print("** NIL data "..args.names[n].." ot "..targs.origintime)
-							table.remove(ret.datas)
-						end
+						if (status and r) or p==0 then
+							if p>0 and #tracks.tracks>1 and not targs.origintime then
+								-- Check/lock origintime
+								--
+								local origintimes=  { r.origintime }
+								local otcommon
 
-						addqd2ds(ret.datas,status,r,args.names[n],targs.origintime,targs.times)
+								for ot=1,#tracks.origintimes[tr] do
+									if tracks.origintimes[tr][ot]==origintimes[1] then
+										if ot==1 and #tracks.origintimes[tr]>1 then
+											origintimes[2]= tracks.origintimes[tr][2]
+										end
 
-						if (status and r) or #params==1 then
+										break
+									end
+								end
+
+								for tr2=1,#tracks.tracks do
+									if tr2~=tr then
+										local ot= 1
+										while ot<=#origintimes do
+											otcommon= ot
+
+											local ot2=1
+											while ot2<=#tracks.origintimes[tr2] do
+												if tracks.origintimes[tr2][ot2]==origintimes[ot] then
+													break
+												end
+
+												ot2= ot2+1
+											end
+
+											if ot2<=#tracks.origintimes[tr2] then
+												break
+											end
+
+											ot= ot+1
+										end
+
+										if ot>#origintimes then
+											error("Nonmatching origin times: " .. args.names[n])
+										end
+									end
+
+									tr2= tr2+1
+								end
+
+								targs.origintime= origintimes[otcommon]
+
+								if otcommon==2 then
+									status,r= pcall(getraw,track,targs)
+								end
+							end
+
 							break
 						end
+
+						tr= tr+1
 					end
 
-					p= p+1
+					if (#tracks.tracks==1 and p==0) or (status and r) or (#tracks.tracks>1 and p>0) then
+						if #tracks.tracks==1 or p==0 then
+							targs.params= params
+						elseif targs.params==nil or #targs.params==0 then
+							targs.params= { WeatherNumberParam }
+						end
+
+						if not (status and r) then tr= 1 end
+
+						if #tracks.tracks==1 and status and r and p>0 then table.remove(ret.datas) end
+
+						addqd2ds(ret.datas,status,r,tracks.names[tr],targs.origintime,targs.times,targs.params,#tracks.tracks>1)
+
+						if (status and r and #tracks.tracks==1) or (#tracks.tracks>1 and p==0) then break end
+					end
 				end
 			end
 		end
@@ -1480,12 +1597,19 @@ local function querydata(args,locations)
 	local levels= args.levels or {}
 
 	for d=1,#dataset.datas do
-		local times= args.times or getdefaulttime(dataset.datas[d].data)
+		local data= dataset.datas[d]
+		local times= args.times or getdefaulttime(data.data)
 
 		for p=1,#dataset.parameters do
-			if #levels>0 then
+			-- With combined track read each parameter from first available data (track) only.
+			--
+			-- If all parameters (or no data at all) are available in this data/track, dataset.datas[d].parameters contains
+			-- all parameters. Otherwise dataset.datas[d].parameters contains only the parameter taken from this data
+			--
+			if data.combined and #data.parameters==1 and dataset.parameters[p]~=data.parameters[1] then
+			elseif #levels>0 then
 				for l=1,#levels do
-					if dataset.datas[d].data==nil then
+					if data.data==nil then
 						ret[#ret+1]= {}
 						if args.requiredata then return ret end
 					else
@@ -1493,9 +1617,9 @@ local function querydata(args,locations)
 						gargs[args.leveltypetype]= levels[l]
 
 						for t=1,#times do
-							if datatime(dataset.datas[d].times,times[t]) then
+							if datatime(data.times,times[t]) then
 								gargs.time= times[t]
-								local status,g= pcall(getgrid,dataset.datas[d].data(gargs),dataset.parameters[p],locations)
+								local status,g= pcall(getgrid,data.data(gargs),dataset.parameters[p],locations)
 								ret[#ret+1]= status and g or {}
 
 								if args.requiredata and type(ret[#ret])=="table" then return ret end
@@ -1503,16 +1627,16 @@ local function querydata(args,locations)
 						end
 					end
 				end
-			elseif dataset.datas[d].data==nil then
+			elseif data.data==nil then
 				ret[#ret+1]= {}
 				if args.requiredata then return ret end
 			else
 				local gargs= {}
 
 				for t=1,#times do
-					if datatime(dataset.datas[d].times,times[t]) then
+					if datatime(data.times,times[t]) then
 						gargs.time= times[t]
-						local status,g= pcall(getgrid,dataset.datas[d].data(gargs),dataset.parameters[p],locations)
+						local status,g= pcall(getgrid,data.data(gargs),dataset.parameters[p],locations)
 						ret[#ret+1]= status and g or {}
 
 						if args.requiredata and type(ret[#ret])=="table" then return ret end
