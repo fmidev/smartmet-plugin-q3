@@ -165,6 +165,15 @@ void SyslogLogger::log(enum category cat,
     buf[msg_len] = ' ';
     strcpy(buf + msg_len + 1, tmp.c_str());  // adds the terminating '\0'
 
+    // Formatter like text can cause crash (e.g. s="some string" return string.gsub(s,"^%s*(.-)%s*$", "%1")).
+    // Just replace all '%' with '?'
+    //
+    char *p = buf;
+    while (p = strchr(p, '%'))
+    {
+      *p++ = '?';
+    }
+
     syslog(prio, buf);  // atomic
   }
 }

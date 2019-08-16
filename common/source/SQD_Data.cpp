@@ -1385,7 +1385,7 @@ Matrix *SQD_Data::push_NativeMatrix_e( lua_State *L, const JDay &vt, const NA_Le
     }
     
     if (exact_level) {
-        if ((!lev) || lev.isGroundLevel()) {
+        if ((!lev) || lev.isGroundLevel() || lev.isSoundingLevel()) {
             fi.FirstLevel();
         } else {
             fi.Level( SQD_Tools::newbase_level(lev) );
