@@ -2,7 +2,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet q3 plugin
 Name: %{SPECNAME}
-Version: 19.4.2
+Version: 19.9.26
 Release: 1.el7.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -11,7 +11,7 @@ Vendor: Finnish Meteorological Institute
 Source: %{name}.tgz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
-BuildRequires:	scons >= 2.5.1
+BuildRequires:	scons
 BuildRequires:	gcc-c++ >= 4.8.5
 BuildRequires:	libstdc++-devel >= 4.8.5
 BuildRequires:  proj-devel >= 4.8.0
@@ -20,16 +20,16 @@ BuildRequires:  boost-devel >= 1.66.0
 BuildRequires:	bzip2-devel >= 1.0.6
 BuildRequires:	libpng-devel >= 1.5.13
 BuildRequires:	libjpeg-turbo-devel >= 1.2.90
-BuildRequires:  smartmet-library-tron >= 17.9.20
-BuildRequires:	smartmet-library-spine-devel >= 19.3.14
+BuildRequires:  smartmet-library-tron >= 19.9.26
+BuildRequires:	smartmet-library-spine-devel >= 19.9.26
 Requires:       proj >= 4.8.0
 Requires:       lua >= 5.1.4
 Requires:       bzip2-libs >= 1.0.6
 Requires:       libpng >= 1.5.13
 Requires:       libjpeg-turbo >= 1.2.90
-Requires:       smartmet-library-newbase >= 19.3.21
-Requires:       smartmet-library-spine >= 19.3.14
-Requires:       smartmet-server >= 19.3.19
+Requires:       smartmet-library-newbase >= 19.9.26
+Requires:       smartmet-library-spine >= 19.9.26
+Requires:       smartmet-server >= 19.9.26
 Obsoletes:      fmi-q3-lib
 Obsoletes:      fmi-q3-config
 Obsoletes:      fmi-q3-brainstorm
@@ -72,6 +72,8 @@ rm -rf %{buildroot}
 
 #---
 %changelog
+* Thu Sep 26 2019 Mika Heiskanen <mika.heiskanen@fmi.fi> - 19.9.26-1.el7.fmi
+- Repackaged due to ABI changes
 * Tue Apr  2 2019 Pertti Kinnia <pertti.kinnia@fmi.fi> - 19.4.2-1.fmi
 - Using ProbabilityThunderstorm2 in weather number calculation if ProbabilityThunderstorm is not available (BRAINSTORM-1557)
 * Thu Mar 21 2019 Pertti Kinnia <pertti.kinnia@fmi.fi> - 19.3.21-1.fmi
