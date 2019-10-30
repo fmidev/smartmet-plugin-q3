@@ -2,7 +2,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet q3 plugin
 Name: %{SPECNAME}
-Version: 19.9.26
+Version: 19.10.31
 Release: 1.el7.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -21,15 +21,15 @@ BuildRequires:	bzip2-devel >= 1.0.6
 BuildRequires:	libpng-devel >= 1.5.13
 BuildRequires:	libjpeg-turbo-devel >= 1.2.90
 BuildRequires:  smartmet-library-tron >= 19.9.26
-BuildRequires:	smartmet-library-spine-devel >= 19.9.26
+BuildRequires:	smartmet-library-spine-devel >= 19.10.31
 Requires:       proj >= 4.8.0
 Requires:       lua >= 5.1.4
 Requires:       bzip2-libs >= 1.0.6
 Requires:       libpng >= 1.5.13
 Requires:       libjpeg-turbo >= 1.2.90
-Requires:       smartmet-library-newbase >= 19.9.26
-Requires:       smartmet-library-spine >= 19.9.26
-Requires:       smartmet-server >= 19.9.26
+Requires:       smartmet-library-newbase >= 19.10.31
+Requires:       smartmet-library-spine >= 19.10.31
+Requires:       smartmet-server >= 19.10.1
 Obsoletes:      fmi-q3-lib
 Obsoletes:      fmi-q3-config
 Obsoletes:      fmi-q3-brainstorm
@@ -72,6 +72,8 @@ rm -rf %{buildroot}
 
 #---
 %changelog
+* Thu Oct 31 2019 Mika Heiskanen <mika.heiskanen@fmi.fi> - 19.10.31-1.el7.fmi
+- Rebuilt due to newbase API/ABI changes
 * Thu Sep 26 2019 Mika Heiskanen <mika.heiskanen@fmi.fi> - 19.9.26-1.el7.fmi
 - Repackaged due to ABI changes
 * Tue Apr  2 2019 Pertti Kinnia <pertti.kinnia@fmi.fi> - 19.4.2-1.fmi
