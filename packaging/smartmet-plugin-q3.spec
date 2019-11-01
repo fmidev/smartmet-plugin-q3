@@ -84,7 +84,7 @@ rm -rf %{buildroot}
 * Tue Mar  5 2019 Pertti Kinnia <pertti.kinnia@fmi.fi> - 19.3.5-1.fmi
 - Fixed weathernumber calculation with native projection data (BS-1489)
 - Fixed weathernumber thunder probability classification (BS-1491)
-* Wed Dec 17 2018 Pertti Kinnia <pertti.kinnia@fmi.fi> - 18.12.17-1.fmi
+* Mon Dec 17 2018 Pertti Kinnia <pertti.kinnia@fmi.fi> - 18.12.17-1.fmi
 - Fixed bug in dataquery().imagequery(), did not pass (empty) locations to querydata()
 * Wed Dec  5 2018 Pertti Kinnia <pertti.kinnia@fmi.fi> - 18.12.5-1.fmi
 - dataquery() returns data for given locations (if any), and returns data as a matrix (instead of a table) when querying a single parameter (for convenience only)
