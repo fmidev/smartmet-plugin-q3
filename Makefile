@@ -145,7 +145,6 @@ STRICT_RPM=         $(wildcard $(RPMS_PATH)/lua-strict-*)
 #       latest versions. Knowing the right versions (from studying the '.spec' files) is
 #       possible but elaborate.
 rpm:
-	-rm -rf $(RPMBUILD)
 	(cd packaging && $(MAKE) rpm)
 	(cd addons && $(MAKE) rpm)
 	$(MAKE) msg
