@@ -37,6 +37,7 @@ class Q3Engine::Track
                                      const std::vector<JDay> &required_times,
                                      const std::vector<ApiParam> &required_params,
                                      const std::vector<NA_Level> &required_levels,
+                                     bool only_ground,
                                      bool only_pressure,
                                      bool archivedData,
                                      bool metaQuery,

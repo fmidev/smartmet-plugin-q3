@@ -2,7 +2,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet q3 plugin
 Name: %{SPECNAME}
-Version: 19.11.20
+Version: 20.2.3
 Release: 1.el7.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -72,6 +72,8 @@ rm -rf %{buildroot}
 
 #---
 %changelog
+* Mon Feb  3 2020 Pertti Kinnia <pertti.kinnia@fmi.fi> - 20.2.3-1.el7.fmi
+- Fix to ground data query, level data could be returned instead when it was never than ground data (BRAINSTORM-1741)
 * Wed Nov 20 2019 Mika Heiskanen <mika.heiskanen@fmi.fi> - 19.11.20-1.el7.fmi
 - Repackaged due to newbase ABI changes
 * Thu Oct 31 2019 Mika Heiskanen <mika.heiskanen@fmi.fi> - 19.10.31-1.el7.fmi
