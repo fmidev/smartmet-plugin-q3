@@ -1158,7 +1158,7 @@ local function getdataset(args)
 			trackname= combinedtracks( trackname )
 		end
 
-		for tr in string.gmatch(trackname, "(%a+):?") do
+		for tr in string.gmatch(trackname, "([%a_]+):?") do
 			local track= track or rawget( _G, tr )
 
 			if track==nil then
