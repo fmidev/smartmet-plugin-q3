@@ -2,7 +2,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet q3 plugin
 Name: %{SPECNAME}
-Version: 20.2.3
+Version: 20.2.4
 Release: 1.el7.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -72,9 +72,11 @@ rm -rf %{buildroot}
 
 #---
 %changelog
+* Tue Feb  4 2020 Pertti Kinnia <pertti.kinnia@fmi.fi> - 20.2.4-1.el7.fmi
+- Added underscore to character set used to match/split track names for combined tracks (BRAINSTORM-1749)
+- New release version
 * Mon Feb  3 2020 Pertti Kinnia <pertti.kinnia@fmi.fi> - 20.2.3-1.el7.fmi
 - Fix to ground data query, level data could be returned instead when it was never than ground data (BRAINSTORM-1741)
-- New release version
 * Wed Nov 20 2019 Mika Heiskanen <mika.heiskanen@fmi.fi> - 19.11.20-1.el7.fmi
 - Repackaged due to newbase ABI changes
 * Thu Oct 31 2019 Mika Heiskanen <mika.heiskanen@fmi.fi> - 19.10.31-1.el7.fmi
