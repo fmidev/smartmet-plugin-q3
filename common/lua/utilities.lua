@@ -1085,8 +1085,12 @@ local function addqd2ds(dataset,status,r,name,origintime,time,params,combined)
 		for d=1,#dataset do
 			if dataset[d].data and dataset[d].data.source==data.source then
 				if not combined or #dataset[d].parameters>1 or dataset[d].parameters[1]==params[1] then
-					index= d
-					break
+					-- Same data for multiple tracks ?
+					--
+					if dataset[d].name==name then
+						index= d
+						break
+					end
 				end
 			end
 		end
@@ -1108,7 +1112,9 @@ local function addqd2ds(dataset,status,r,name,origintime,time,params,combined)
 
 	-- Store the validtime and parameter(s) to be taken from this query data
 	
-	if time then dataset[index].times[#dataset[index].times+1]= time end
+	local times = dataset[index].times
+	if time and ((#times==0) or (time~=times[#times])) then times[#times+1]= time end
+
 	dataset[index].parameters= params
 end
 
@@ -1213,13 +1219,13 @@ local function getdataset(args)
 
 						-- Ignore the nil data with single track query (was stored at 1'st round)
 						--
-						if #tracks.tracks==1 and status and r and p>0 then table.remove(ret.datas) end
+						if status and r and p>0 and ret.datas[#ret.datas].data==nil then table.remove(ret.datas) end
 
 						addqd2ds(ret.datas,status,r,tracks.names[tr],targs.origintime,nil,targs.params,#tracks.tracks>1)
 
 						-- All parameters from same data / primary track ?
 						--
-						if (status and r and #tracks.tracks==1) or (#tracks.tracks>1 and p==0) then break end
+						if (status and r and p==0) then break end
 					end
 				end
 			end
@@ -1309,11 +1315,11 @@ local function getdataset(args)
 
 						if not (status and r) then tr= 1 end
 
-						if #tracks.tracks==1 and status and r and p>0 then table.remove(ret.datas) end
+						if status and r and p>0 and ret.datas[#ret.datas].data==nil then table.remove(ret.datas) end
 
 						addqd2ds(ret.datas,status,r,tracks.names[tr],targs.origintime,targs.times,targs.params,#tracks.tracks>1)
 
-						if (status and r and #tracks.tracks==1) or (#tracks.tracks>1 and p==0) then break end
+						if (status and r and p==0) then break end
 					end
 				end
 			end
