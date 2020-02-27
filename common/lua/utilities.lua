@@ -886,7 +886,8 @@ local function getquery_addmeta(includes, soundingdata)
 		end
 	end
 
-	if (soundingdata and func.pressures and (not func.dataids)) then
+--	if (soundingdata and func.pressures and (not func.dataids)) then
+	if (func and (not func.dataids)) then
 		--
 		-- 'sdataids' include is used to get the stations (number of them) when 'dataids' is not included by the query
 		--
@@ -1687,7 +1688,210 @@ local function querydata(args,locations)
 			end
 		end
 
-		if ret.pressures then
+		if not ret.pressures then
+			--
+			-- If multiple (non sounding) point datas were loaded for a track, combine their data and metadata.
+			--
+			-- First combine/collect all dataids (all metadata) and create dataids index table to reorder data vectors.
+			-- Then resize/reorder data vectors using combined dataids order.
+			-- Finally rebuild return data table by selecting first nonmissing datablock/vector for each parameter,
+			-- level and time
+			--
+			local dataids= ret.dataids or ret.sdataids
+			local datanames= ret.datanames
+			local locations= ret.locations
+			local name,d0
+			local d= 1
+			local combine= false
+
+			while d<#dataset.datas do
+				while d<=#dataset.datas do
+					local ndataids= dataids[d] and #dataids[d] or 0
+
+					if dataset.datas[d].data and ndataids>0 then
+						if name==nil then
+							d0= d
+							name= dataset.datas[d0].name
+							dataset.datas[d0].dataids= {}
+						elseif dataset.datas[d].name==name then
+							local dataids0= dataset.datas[d0].dataids
+
+							if #dataids0==0 then
+								dataset.datas[d0].d0= d0
+
+								for j=1,#dataids[d0] do
+									dataids0[dataids[d0][j]]= j-1
+								end
+							end
+
+							dataset.datas[d].d0= d0
+
+							for j=1,ndataids do
+								local dataid= dataids[d][j]
+
+								if dataids0[dataid]==nil then
+									dataids[d0][#dataids[d0]+1]= dataid
+									dataids0[dataid]= #dataids[d0]-1
+
+									if datanames then datanames[d0][#datanames[d0]+1]= datanames[d][j] end
+									if locations then locations[d0][#locations[d0]+1]= locations[d][j] end
+								end
+							end
+
+							combine= true
+						else
+							break
+						end
+					end
+
+					d= d+1
+				end
+
+				name= nil
+			end
+
+			if combine then
+				local function reorderdata(dataset, d, dataids, ret, retidx)
+					if type.Matrix(ret.data[retidx]) then
+
+						local d0= dataset.datas[d].d0
+						local dataids0= dataset.datas[d0].dataids
+						local ndataids= dataids[d] and #dataids[d] or 0
+
+						local m= ret.data[retidx]
+						local m2= matrix(xy(#dataids[d0],1))
+
+						for j=1,ndataids do
+							if j<=m.size.x then
+								m2[xy(dataids0[dataids[d][j]],0)]= m[xy(j-1,0)]
+							end
+						end
+
+						ret.data[retidx]= m2
+					end
+				end
+
+				local retidx= 1
+
+				for d=1,#dataset.datas do
+					local data= dataset.datas[d]
+					local times= args.times or getdefaulttime(data.data)
+
+					for p=1,#dataset.parameters do
+						if data.combined and #data.parameters==1 and dataset.parameters[p]~=data.parameters[1] then
+						elseif #levels>0 then
+							for l=1,#levels do
+								if data.data==nil then
+									retidx= retidx+1
+								elseif dataset.datas[d].d0 then
+									for t=1,#times do
+										if datatime(data.times,times[t]) then
+											reorderdata(dataset, d, dataids, ret, retidx)
+											retidx= retidx+1
+										end
+									end
+								end
+							end
+						elseif data.data==nil then
+							retidx= retidx+1
+						elseif dataset.datas[d].d0 then
+							for t=1,#times do
+								if datatime(data.times,times[t]) then
+									reorderdata(dataset, d, dataids, ret, retidx)
+									retidx= retidx+1
+								end
+							end
+						end
+					end
+				end
+
+				-- Select first nonmissing datablock/vector for each parameter, level and time
+
+				local function selectdata(dataset, d, combineddata, ret, retidx2, offset)
+					local d0= dataset.datas[d].d0
+
+					if (type.Matrix(ret.data[retidx2])) then
+						combineddata[retidx2]= ret.data[retidx2]
+						return
+					elseif d0 then
+						local retidx= retidx2
+
+						for d2=d+1,#dataset.datas do
+							if not dataset.datas[d2].d0 or dataset.datas[d2].d0~=d0 then
+								break
+							end
+
+							retidx= retidx+offset
+
+							if type.Matrix(ret.data[retidx]) then
+								combineddata[retidx2]= ret.data[retidx]
+								return
+							end
+						end
+					end
+
+					combineddata[retidx2]= {}
+				end
+
+				local combineddata= {}
+				local nremoved=0
+				retidx= 1
+
+				for d=1,#dataset.datas do
+					if dataset.datas[d].d0 and dataset.datas[d].d0~=d then
+						-- Multiple datas, remove other but first data's (combined) metadata
+						--
+						table.remove(dataids, d-nremoved)
+						if ret.datanames then table.remove(ret.datanames, d-nremoved) end
+						if ret.locations then table.remove(ret.locations, d-nremoved) end
+
+						nremoved= nremoved+1
+					else
+						local data= dataset.datas[d]
+						local times= args.times or getdefaulttime(data.data)
+
+						for p=1,#dataset.parameters do
+							if data.combined and #data.parameters==1 and dataset.parameters[p]~=data.parameters[1] then
+								combineddata[#combineddata+1]= ret.data[retidx]
+								retidx= retidx+1
+							elseif #levels>0 then
+								local offset= #dataset.parameters*#levels*#times
+
+								for l=1,#levels do
+									if data.data==nil then
+										combineddata[#combineddata+1]= ret.data[retidx]
+										retidx= retidx+1
+									elseif dataset.datas[d].d0 then
+										for t=1,#times do
+											if datatime(data.times,times[t]) then
+												-- Select first nonmissing datablock/vector
+												--
+												selectdata(dataset, d, combineddata, ret, retidx, offset)
+												retidx= retidx+1
+											end
+										end
+									end
+								end
+							elseif data.data==nil then
+								combineddata[#combineddata+1]= ret.data[retidx]
+								retidx= retidx+1
+							elseif dataset.datas[d].d0 then
+								local offset= #dataset.parameters*#times
+
+								for t=1,#times do
+									if datatime(data.times,times[t]) then
+										selectdata(dataset, d, combineddata, ret, retidx, offset)
+										retidx= retidx+1
+									end
+								end
+							end
+						end
+					end
+				end
+
+				ret.data= combineddata
+			end
+		else
 			--
 			-- Remove missing sounding pressure values and corresponding data values; they are of no use without pressure/height information
 			-- (well height could exist in the data, but we don't use/check it).
