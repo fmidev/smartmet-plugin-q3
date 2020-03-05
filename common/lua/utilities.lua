@@ -1078,7 +1078,7 @@ end
 --
 -- Add querydata to dataset
 --
-local function addqd2ds(dataset,status,r,name,origintime,time,params,combined)
+local function addqd2ds(dataset,status,r,name,origintime,time,params,combined,rtargs)
 	local data= status and r or nil
 	local index
 
@@ -1107,6 +1107,7 @@ local function addqd2ds(dataset,status,r,name,origintime,time,params,combined)
 		dataset[index].times= {}
 		dataset[index].parameters= {}
 		dataset[index].combined= combined
+		dataset[index].rtargs= rtargs
 
 --		if data then print("Added " .. data["source"]) end
 	end
@@ -1222,7 +1223,7 @@ local function getdataset(args)
 						--
 						if status and r and p>0 and ret.datas[#ret.datas].data==nil then table.remove(ret.datas) end
 
-						addqd2ds(ret.datas,status,r,tracks.names[tr],targs.origintime,nil,targs.params,#tracks.tracks>1)
+						addqd2ds(ret.datas,status,r,tracks.names[tr],targs.origintime,nil,targs.params,#tracks.tracks>1,nil)
 
 						-- All parameters from same data / primary track ?
 						--
@@ -1231,20 +1232,46 @@ local function getdataset(args)
 				end
 			end
 		else
+			function getotindex(name, origintime, trackorigintimes)
+				for ot=1,#trackorigintimes do
+					if trackorigintimes[ot]==origintime then
+						return ot
+					end
+				end
+
+				error("Nonmatching origintime: " .. name .. " " .. tostring(origintime))
+			end
+
+			local otsecond,otindex0
+
 			for tr=1,#tracks.tracks do
 				tracks.origintimes[tr]= tracks.tracks[tr].origintimes
 			end
 
 			for t=1,#times do
 				targs.origintime= nil
+				otindex0= nil
 				if args.times then targs.times= times[t] end
 
 				for p=0,#params do
+					if otindex0 and otindex0>2 then
+						-- Some older (3'rd oldest or older) ot/data, lock origintime
+						--
+						targs.origintime= tracks.origintimes[1][otindex0]
+					end
 					targs.params= p==0 and queryparams or (params[p]~=WeatherNumberParam and {params[p]}) or {}
 
 					local tr= 1
+					local rtargs
+
 					while tr<=#tracks.tracks do
 						local track= tracks.tracks[tr]
+						rtargs= {}
+
+						for k,v in pairs(targs) do
+							rtargs[k]= v
+						end
+
 						status,r= pcall(getraw,track,targs)
 
 						if (status and r) or p==0 then
@@ -1316,12 +1343,104 @@ local function getdataset(args)
 
 						if not (status and r) then tr= 1 end
 
-						if status and r and p>0 and ret.datas[#ret.datas].data==nil then table.remove(ret.datas) end
+						local otindex
 
-						addqd2ds(ret.datas,status,r,tracks.names[tr],targs.origintime,targs.times,targs.params,#tracks.tracks>1)
+						if #tracks.tracks==1 and status and r and p>0 then
+							-- Check if got the latest and 2'nd latest origintime; datas
+							-- with latest origintime will be replaced by 2'nd latest data
+							--
+							otindex= getotindex(tracks.names[1], r.origintime, tracks.origintimes[1])
+
+							if (otindex0) then
+								if (otindex0<=2 and otindex>2) or
+								   (otindex0>2 and otindex<=2) or
+								   (otindex0>2 and otindex~=otindex0) then
+									error("Unexpected origintime sequence: " ..
+									      tostring(tracks.origintimes[1][otindex0])
+									      .. "," ..
+									      tostring(tracks.origintimes[1][otindex]))
+								elseif otindex~=otindex0 then
+									otsecond= true
+								end
+							else
+								otindex0= otindex
+							end
+
+							if ret.datas[#ret.datas].data==nil then
+								table.remove(ret.datas)
+							end
+						end
+
+						rtargs.otindex= otindex
+
+						addqd2ds(ret.datas,status,r,tracks.names[tr],targs.origintime,targs.times,targs.params,#tracks.tracks>1,rtargs)
 
 						if (status and r and p==0) then break end
 					end
+				end
+			end
+
+			if otsecond then
+				-- Replace latest origintime datas with 2'nd latest data
+				--
+				local name,d0
+				local d= 1
+
+				while d<#ret.datas do
+					while d<=#ret.datas do
+						if ret.datas[d].data then
+							if name==nil then
+								d0= d
+								name= ret.datas[d].name
+							elseif ret.datas[d].name==name then
+								local track= tracks.tracks[1]
+
+								if ret.datas[d0].rtargs.otindex==1 then
+									local targs= ret.datas[d0].rtargs
+									targs.origintime= tracks.origintimes[1][2]
+									targs.otindex= nil
+
+									status,r= pcall(getraw,track,targs)
+									if not (status and r) then
+										error("Failed to load 2'nd latest data: "
+										      .. name .. " " ..
+										      ret.datas[d0].data.source)
+									end
+
+									LOG("Replace " .. name .. " " ..
+									    ret.datas[d0].data.source .. " " .. r.source)
+
+									ret.datas[d0].data= r
+									ret.datas[d0].rtargs.otindex= 2
+								end
+
+								if ret.datas[d].rtargs.otindex==1 then
+									local targs= ret.datas[d].rtargs
+									targs.origintime= tracks.origintimes[1][2]
+									targs.otindex= nil
+
+									status,r= pcall(getraw,track,targs)
+									if not (status and r) then
+										error("Failed to load 2'nd latest data: "
+										      .. name .. " " ..
+										      ret.datas[d].data.source)
+									end
+
+									LOG("Replace " .. name .. " " ..
+									    ret.datas[d].data.source .. " " .. r.source)
+
+									ret.datas[d].data= r
+									ret.datas[d].rtargs.otindex= 2
+								end
+							else
+								break
+							end
+						end
+
+						d= d+1
+					end
+
+					name= nil
 				end
 			end
 		end
