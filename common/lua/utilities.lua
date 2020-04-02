@@ -699,6 +699,21 @@ local function trackmetadata(query,args)
 					end
 				end
 
+				-- Both hpa=850 and sounding=true seem to match (estea's) sounding data.
+				-- As a quick fix skip if got duplicate
+
+				if matchingdata and #ret>0 and ret[#ret].name==tracks[t] then
+					local files= ret_files and ret[#ret].files or ret[#ret].sfiles
+					local file= r.source
+
+					for f=1,#files do
+						if files[f]==file then
+							matchingdata= false
+							break
+						end
+					end
+				end
+
 				if matchingdata then
 					local gs= r.sqd_gridsize
 
@@ -707,7 +722,7 @@ local function trackmetadata(query,args)
 						ret[#ret].name= tracks[t]
 
 						if ret_origintimes then ret[#ret].origintimes= {} end
-						if ret_files then ret[#ret].files= {} end
+						if ret_files then ret[#ret].files= {} else ret[#ret].sfiles= {} end
 						if ret_loadtimes then ret[#ret].loadtimes= {} end
 						if ret_filetimes then ret[#ret].filetimes= {} end
 						if ret_idents then ret[#ret].idents= {} end
@@ -729,7 +744,7 @@ local function trackmetadata(query,args)
 					n= n+1
 
 					if ret_origintimes then ret[#ret].origintimes[n]= origintimes[ot] end
-					if ret_files then ret[#ret].files[n]= r.source end
+					if ret_files then ret[#ret].files[n]= r.source else ret[#ret].sfiles[n]= r.source end
 					if ret_loadtimes then ret[#ret].loadtimes[n]= r.mt_loadtime end
 					if ret_filetimes then ret[#ret].filetimes[n]= r.mt_modificationtime end
 					if ret_idents then ret[#ret].idents[n]= r.sqd_producer end
@@ -773,6 +788,12 @@ local function trackmetadata(query,args)
 				end
 			end end
   		end
+	end
+
+	if not ret_files then
+		for n=1,#ret do
+			if ret[n].sfiles then ret[n].sfiles= nil end
+		end
 	end
 
 	return ret
