@@ -2,7 +2,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet q3 plugin
 Name: %{SPECNAME}
-Version: 20.2.4
+Version: 20.4.2
 Release: 1.el7.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -21,15 +21,15 @@ BuildRequires:	bzip2-devel >= 1.0.6
 BuildRequires:	libpng-devel >= 1.5.13
 BuildRequires:	libjpeg-turbo-devel >= 1.2.90
 BuildRequires:  smartmet-library-tron >= 19.12.4
-BuildRequires:	smartmet-library-spine-devel >= 20.1.15
+BuildRequires:	smartmet-library-spine-devel >= 20.3.9
 Requires:       proj >= 4.8.0
 Requires:       lua >= 5.1.4
 Requires:       bzip2-libs >= 1.0.6
 Requires:       libpng >= 1.5.13
 Requires:       libjpeg-turbo >= 1.2.90
-Requires:       smartmet-library-newbase >= 20.1.29
-Requires:       smartmet-library-spine >= 20.1.15
-Requires:       smartmet-server >= 20.1.15
+Requires:       smartmet-library-newbase >= 20.2.13
+Requires:       smartmet-library-spine >= 20.3.9
+Requires:       smartmet-server >= 20.2.13
 Obsoletes:      fmi-q3-lib
 Obsoletes:      fmi-q3-config
 Obsoletes:      fmi-q3-brainstorm
@@ -72,6 +72,8 @@ rm -rf %{buildroot}
 
 #---
 %changelog
+* Thu Apr  2 2020 Pertti Kinnia <pertti.kinnia@fmi.fi> - 20.4.2-1.el7.fmi
+- Skip duplicate metadata for sounding data (both hpa=850 and sounding=true matches); BS-1812
 * Tue Feb  4 2020 Pertti Kinnia <pertti.kinnia@fmi.fi> - 20.2.4-1.el7.fmi
 - Added underscore to character set used to match/split track names for combined tracks (BRAINSTORM-1749)
 - New release version
