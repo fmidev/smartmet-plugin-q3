@@ -2097,18 +2097,19 @@ local function querydata(args,locations)
 
 						for p=1,#dataset.parameters do
 							local sdm= {}
+							local rdm= ret.data[((p-1)*ntimes) + i]
 
 							for s=1,ndataids do
 								sdm[s]= {}
 
-								nx= si[s] and #si[s] or 0
+								nx= type.Matrix(rdm) and si[s] and #si[s] or 0
 
 								if nx>0 then
 									local dm= matrix(xy(nx,1))
 									j=0
 
 									for n=1,nx do
-										dm[xy(j,0)]= ret.data[((p-1)*ntimes) + i][xy(si[s][n],0)]
+										dm[xy(j,0)]= rdm[xy(si[s][n],0)]
 										j= j+1
 									end
 
