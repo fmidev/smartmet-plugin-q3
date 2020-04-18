@@ -2,7 +2,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet q3 plugin
 Name: %{SPECNAME}
-Version: 19.11.20
+Version: 20.4.18
 Release: 1.el7.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -16,20 +16,20 @@ BuildRequires:	gcc-c++ >= 4.8.5
 BuildRequires:	libstdc++-devel >= 4.8.5
 BuildRequires:  proj-devel >= 4.8.0
 BuildRequires:	lua-devel >= 5.1.4
-BuildRequires:  boost-devel >= 1.66.0
+BuildRequires:  boost169-devel
 BuildRequires:	bzip2-devel >= 1.0.6
 BuildRequires:	libpng-devel >= 1.5.13
 BuildRequires:	libjpeg-turbo-devel >= 1.2.90
-BuildRequires:  smartmet-library-tron >= 19.10.31
-BuildRequires:	smartmet-library-spine-devel >= 19.11.20
+BuildRequires:  smartmet-library-tron >= 20.4.18
+BuildRequires:	smartmet-library-spine-devel >= 20.4.18
 Requires:       proj >= 4.8.0
 Requires:       lua >= 5.1.4
 Requires:       bzip2-libs >= 1.0.6
 Requires:       libpng >= 1.5.13
 Requires:       libjpeg-turbo >= 1.2.90
-Requires:       smartmet-library-newbase >= 19.11.20
-Requires:       smartmet-library-spine >= 19.11.20
-Requires:       smartmet-server >= 19.10.1
+Requires:       smartmet-library-newbase >= 20.4.18
+Requires:       smartmet-library-spine >= 20.4.18
+Requires:       smartmet-server >= 20.4.18
 Obsoletes:      fmi-q3-lib
 Obsoletes:      fmi-q3-config
 Obsoletes:      fmi-q3-brainstorm
@@ -72,6 +72,8 @@ rm -rf %{buildroot}
 
 #---
 %changelog
+* Sat Apr 18 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.4.18-1.el7.fmi
+- Upgraded to Boost 1.69
 * Wed Nov 20 2019 Mika Heiskanen <mika.heiskanen@fmi.fi> - 19.11.20-1.el7.fmi
 - Repackaged due to newbase ABI changes
 * Thu Oct 31 2019 Mika Heiskanen <mika.heiskanen@fmi.fi> - 19.10.31-1.el7.fmi

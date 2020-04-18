@@ -71,8 +71,8 @@ env= Environment( LIBPREFIX="" )
 env.Append( 
     CPPPATH= [ "./include", 
                COMMON_PATH+"/include",
-               # 01-Feb-2012 PKi
                ADDONS_PATH+"/newcairo/include",
+	       PREFIX+"/include/boost169"	       
               ],
 
     CPPDEFINES= [ 
@@ -187,7 +187,7 @@ lib_env.Append( CPPDEFINES= [ "USE_TRON" ],
 # 14-Jan-2015 PKi: boost 'non' -mt libs
 #
 mt= UBUNTU32 and "-mt" or ""
-lib_env.Append( LIBPATH= LIB_PREFIX,
+lib_env.Append( LIBPATH= LIB_PREFIX+"/boost169",
                 LIBS= [ "boost_filesystem"+mt, "boost_iostreams"+mt, "boost_regex"+mt, "boost_system"+mt, "boost_thread"+mt ]
               )
 

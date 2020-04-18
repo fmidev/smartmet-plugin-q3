@@ -113,8 +113,8 @@ env.Append(
                COMMON_PATH+"/include",
                OBJDIR,          # for the .lch files
                LUANEW_PATH+"/include",
-               # 01-Feb-2012 PKi
                PREFIX+"/include/cairo",
+	       PREFIX+"/include/boost169",
                ADDONS_PATH+"/newcairo/include",
              ],
 
@@ -286,7 +286,7 @@ env.Append( LIBS= [ "png", "jpeg", "z", "bz2", "cairo" ] )
 # 14-Jan-2015 PKi: boost 'non' -mt libs
 #
 mt= UBUNTU and "-mt" or ""
-env.Append( LIBPATH= LIB_PREFIX,
+env.Append( LIBPATH= LIB_PREFIX+ "/boost169",
             LIBS= [ "boost_filesystem"+mt, "boost_iostreams"+mt, "boost_regex"+mt, "boost_system"+mt ]
         )
 
