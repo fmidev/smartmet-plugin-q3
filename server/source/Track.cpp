@@ -121,6 +121,7 @@ TrackedData *Q3Engine::Track::getData_must_release_(const JDay &ot,
                                                     const std::vector<JDay> &required_times,
                                                     const std::vector<ApiParam> &required_params,
                                                     const std::vector<NA_Level> &required_levels,
+                                                    bool only_ground,    // mode==ONLY_GROUND
                                                     bool only_pressure,  // mode==ONLY_PRESSURE
                                                     bool archivedData,
                                                     bool metaQuery,
@@ -202,6 +203,12 @@ TrackedData *Q3Engine::Track::getData_must_release_(const JDay &ot,
     // Does it cover the required levels?
     //
     const vector<NA_Level> &levels = info.getLevels();
+
+    if (only_ground && (!levels.front().isGroundLevel()))
+    {
+      err += string_fmt("\t%s (not ground)\n", info.getExtra_fn().c_str());
+      continue;
+    }
 
     if (required_levels.size() > 0)
     {
@@ -848,6 +855,7 @@ int TrackProxyBind::call(lua_State *L) throw(E_ERROR)
                                    required_times,
                                    required_params,
                                    required_levels,
+                                   mode == ONLY_GROUND,
                                    mode == ONLY_PRESSURE || mode == BEST_VERTICAL,
                                    false,
                                    metaQuery,
@@ -872,6 +880,7 @@ int TrackProxyBind::call(lua_State *L) throw(E_ERROR)
                                  required_times,
                                  required_params,
                                  required_levels,
+                                 mode == ONLY_GROUND,
                                  mode == ONLY_PRESSURE || mode == BEST_VERTICAL,
                                  !metaQuery,
                                  metaQuery,
@@ -908,6 +917,7 @@ int TrackProxyBind::call(lua_State *L) throw(E_ERROR)
                                        required_times,
                                        required_params,
                                        required_levels,
+                                       mode == ONLY_GROUND,
                                        mode == ONLY_PRESSURE || mode == BEST_VERTICAL,
                                        true,
                                        metaQuery,
@@ -934,6 +944,7 @@ int TrackProxyBind::call(lua_State *L) throw(E_ERROR)
                                          required_times,
                                          required_params,
                                          required_levels,
+                                         mode == ONLY_GROUND,
                                          mode == ONLY_PRESSURE || mode == BEST_VERTICAL,
                                          true,
                                          metaQuery,
@@ -947,6 +958,7 @@ int TrackProxyBind::call(lua_State *L) throw(E_ERROR)
                                          required_times,
                                          required_params,
                                          required_levels,
+                                         mode == ONLY_GROUND,
                                          mode == ONLY_PRESSURE || mode == BEST_VERTICAL,
                                          true,
                                          metaQuery,

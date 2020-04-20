@@ -699,6 +699,21 @@ local function trackmetadata(query,args)
 					end
 				end
 
+				-- Both hpa=850 and sounding=true seem to match (estea's) sounding data.
+				-- As a quick fix skip if got duplicate
+
+				if matchingdata and #ret>0 and ret[#ret].name==tracks[t] then
+					local files= ret_files and ret[#ret].files or ret[#ret].sfiles
+					local file= r.source
+
+					for f=1,#files do
+						if files[f]==file then
+							matchingdata= false
+							break
+						end
+					end
+				end
+
 				if matchingdata then
 					local gs= r.sqd_gridsize
 
@@ -707,7 +722,7 @@ local function trackmetadata(query,args)
 						ret[#ret].name= tracks[t]
 
 						if ret_origintimes then ret[#ret].origintimes= {} end
-						if ret_files then ret[#ret].files= {} end
+						if ret_files then ret[#ret].files= {} else ret[#ret].sfiles= {} end
 						if ret_loadtimes then ret[#ret].loadtimes= {} end
 						if ret_filetimes then ret[#ret].filetimes= {} end
 						if ret_idents then ret[#ret].idents= {} end
@@ -729,7 +744,7 @@ local function trackmetadata(query,args)
 					n= n+1
 
 					if ret_origintimes then ret[#ret].origintimes[n]= origintimes[ot] end
-					if ret_files then ret[#ret].files[n]= r.source end
+					if ret_files then ret[#ret].files[n]= r.source else ret[#ret].sfiles[n]= r.source end
 					if ret_loadtimes then ret[#ret].loadtimes[n]= r.mt_loadtime end
 					if ret_filetimes then ret[#ret].filetimes[n]= r.mt_modificationtime end
 					if ret_idents then ret[#ret].idents[n]= r.sqd_producer end
@@ -773,6 +788,12 @@ local function trackmetadata(query,args)
 				end
 			end end
   		end
+	end
+
+	if not ret_files then
+		for n=1,#ret do
+			if ret[n].sfiles then ret[n].sfiles= nil end
+		end
 	end
 
 	return ret
@@ -886,7 +907,8 @@ local function getquery_addmeta(includes, soundingdata)
 		end
 	end
 
-	if (soundingdata and func.pressures and (not func.dataids)) then
+--	if (soundingdata and func.pressures and (not func.dataids)) then
+	if (func and (not func.dataids)) then
 		--
 		-- 'sdataids' include is used to get the stations (number of them) when 'dataids' is not included by the query
 		--
@@ -1077,7 +1099,7 @@ end
 --
 -- Add querydata to dataset
 --
-local function addqd2ds(dataset,status,r,name,origintime,time,params,combined)
+local function addqd2ds(dataset,status,r,name,origintime,time,params,combined,rtargs)
 	local data= status and r or nil
 	local index
 
@@ -1085,8 +1107,12 @@ local function addqd2ds(dataset,status,r,name,origintime,time,params,combined)
 		for d=1,#dataset do
 			if dataset[d].data and dataset[d].data.source==data.source then
 				if not combined or #dataset[d].parameters>1 or dataset[d].parameters[1]==params[1] then
-					index= d
-					break
+					-- Same data for multiple tracks ?
+					--
+					if dataset[d].name==name then
+						index= d
+						break
+					end
 				end
 			end
 		end
@@ -1102,13 +1128,16 @@ local function addqd2ds(dataset,status,r,name,origintime,time,params,combined)
 		dataset[index].times= {}
 		dataset[index].parameters= {}
 		dataset[index].combined= combined
+		dataset[index].rtargs= rtargs
 
 --		if data then print("Added " .. data["source"]) end
 	end
 
 	-- Store the validtime and parameter(s) to be taken from this query data
 	
-	if time then dataset[index].times[#dataset[index].times+1]= time end
+	local times = dataset[index].times
+	if time and ((#times==0) or (time~=times[#times])) then times[#times+1]= time end
+
 	dataset[index].parameters= params
 end
 
@@ -1158,7 +1187,7 @@ local function getdataset(args)
 			trackname= combinedtracks( trackname )
 		end
 
-		for tr in string.gmatch(trackname, "(%a+):?") do
+		for tr in string.gmatch(trackname, "([%a_]+):?") do
 			local track= track or rawget( _G, tr )
 
 			if track==nil then
@@ -1213,31 +1242,57 @@ local function getdataset(args)
 
 						-- Ignore the nil data with single track query (was stored at 1'st round)
 						--
-						if #tracks.tracks==1 and status and r and p>0 then table.remove(ret.datas) end
+						if status and r and p>0 and ret.datas[#ret.datas].data==nil then table.remove(ret.datas) end
 
-						addqd2ds(ret.datas,status,r,tracks.names[tr],targs.origintime,nil,targs.params,#tracks.tracks>1)
+						addqd2ds(ret.datas,status,r,tracks.names[tr],targs.origintime,nil,targs.params,#tracks.tracks>1,nil)
 
 						-- All parameters from same data / primary track ?
 						--
-						if (status and r and #tracks.tracks==1) or (#tracks.tracks>1 and p==0) then break end
+						if (status and r and p==0) then break end
 					end
 				end
 			end
 		else
+			function getotindex(name, origintime, trackorigintimes)
+				for ot=1,#trackorigintimes do
+					if trackorigintimes[ot]==origintime then
+						return ot
+					end
+				end
+
+				error("Nonmatching origintime: " .. name .. " " .. tostring(origintime))
+			end
+
+			local otsecond,otindex0
+
 			for tr=1,#tracks.tracks do
 				tracks.origintimes[tr]= tracks.tracks[tr].origintimes
 			end
 
 			for t=1,#times do
 				targs.origintime= nil
+				otindex0= nil
 				if args.times then targs.times= times[t] end
 
 				for p=0,#params do
+					if otindex0 and otindex0>2 then
+						-- Some older (3'rd oldest or older) ot/data, lock origintime
+						--
+						targs.origintime= tracks.origintimes[1][otindex0]
+					end
 					targs.params= p==0 and queryparams or (params[p]~=WeatherNumberParam and {params[p]}) or {}
 
 					local tr= 1
+					local rtargs
+
 					while tr<=#tracks.tracks do
 						local track= tracks.tracks[tr]
+						rtargs= {}
+
+						for k,v in pairs(targs) do
+							rtargs[k]= v
+						end
+
 						status,r= pcall(getraw,track,targs)
 
 						if (status and r) or p==0 then
@@ -1309,12 +1364,104 @@ local function getdataset(args)
 
 						if not (status and r) then tr= 1 end
 
-						if #tracks.tracks==1 and status and r and p>0 then table.remove(ret.datas) end
+						local otindex
 
-						addqd2ds(ret.datas,status,r,tracks.names[tr],targs.origintime,targs.times,targs.params,#tracks.tracks>1)
+						if #tracks.tracks==1 and status and r and p>0 then
+							-- Check if got the latest and 2'nd latest origintime; datas
+							-- with latest origintime will be replaced by 2'nd latest data
+							--
+							otindex= getotindex(tracks.names[1], r.origintime, tracks.origintimes[1])
 
-						if (status and r and #tracks.tracks==1) or (#tracks.tracks>1 and p==0) then break end
+							if (otindex0) then
+								if (otindex0<=2 and otindex>2) or
+								   (otindex0>2 and otindex<=2) or
+								   (otindex0>2 and otindex~=otindex0) then
+									error("Unexpected origintime sequence: " ..
+									      tostring(tracks.origintimes[1][otindex0])
+									      .. "," ..
+									      tostring(tracks.origintimes[1][otindex]))
+								elseif otindex~=otindex0 then
+									otsecond= true
+								end
+							else
+								otindex0= otindex
+							end
+
+							if ret.datas[#ret.datas].data==nil then
+								table.remove(ret.datas)
+							end
+						end
+
+						rtargs.otindex= otindex
+
+						addqd2ds(ret.datas,status,r,tracks.names[tr],targs.origintime,targs.times,targs.params,#tracks.tracks>1,rtargs)
+
+						if (status and r and p==0) then break end
 					end
+				end
+			end
+
+			if otsecond then
+				-- Replace latest origintime datas with 2'nd latest data
+				--
+				local name,d0
+				local d= 1
+
+				while d<#ret.datas do
+					while d<=#ret.datas do
+						if ret.datas[d].data then
+							if name==nil then
+								d0= d
+								name= ret.datas[d].name
+							elseif ret.datas[d].name==name then
+								local track= tracks.tracks[1]
+
+								if ret.datas[d0].rtargs.otindex==1 then
+									local targs= ret.datas[d0].rtargs
+									targs.origintime= tracks.origintimes[1][2]
+									targs.otindex= nil
+
+									status,r= pcall(getraw,track,targs)
+									if not (status and r) then
+										error("Failed to load 2'nd latest data: "
+										      .. name .. " " ..
+										      ret.datas[d0].data.source)
+									end
+
+									LOG("Replace " .. name .. " " ..
+									    ret.datas[d0].data.source .. " " .. r.source)
+
+									ret.datas[d0].data= r
+									ret.datas[d0].rtargs.otindex= 2
+								end
+
+								if ret.datas[d].rtargs.otindex==1 then
+									local targs= ret.datas[d].rtargs
+									targs.origintime= tracks.origintimes[1][2]
+									targs.otindex= nil
+
+									status,r= pcall(getraw,track,targs)
+									if not (status and r) then
+										error("Failed to load 2'nd latest data: "
+										      .. name .. " " ..
+										      ret.datas[d].data.source)
+									end
+
+									LOG("Replace " .. name .. " " ..
+									    ret.datas[d].data.source .. " " .. r.source)
+
+									ret.datas[d].data= r
+									ret.datas[d].rtargs.otindex= 2
+								end
+							else
+								break
+							end
+						end
+
+						d= d+1
+					end
+
+					name= nil
 				end
 			end
 		end
@@ -1681,7 +1828,210 @@ local function querydata(args,locations)
 			end
 		end
 
-		if ret.pressures then
+		if not ret.pressures then
+			--
+			-- If multiple (non sounding) point datas were loaded for a track, combine their data and metadata.
+			--
+			-- First combine/collect all dataids (all metadata) and create dataids index table to reorder data vectors.
+			-- Then resize/reorder data vectors using combined dataids order.
+			-- Finally rebuild return data table by selecting first nonmissing datablock/vector for each parameter,
+			-- level and time
+			--
+			local dataids= ret.dataids or ret.sdataids
+			local datanames= ret.datanames
+			local locations= ret.locations
+			local name,d0
+			local d= 1
+			local combine= false
+
+			while d<#dataset.datas do
+				while d<=#dataset.datas do
+					local ndataids= dataids[d] and #dataids[d] or 0
+
+					if dataset.datas[d].data and ndataids>0 then
+						if name==nil then
+							d0= d
+							name= dataset.datas[d0].name
+							dataset.datas[d0].dataids= {}
+						elseif dataset.datas[d].name==name then
+							local dataids0= dataset.datas[d0].dataids
+
+							if #dataids0==0 then
+								dataset.datas[d0].d0= d0
+
+								for j=1,#dataids[d0] do
+									dataids0[dataids[d0][j]]= j-1
+								end
+							end
+
+							dataset.datas[d].d0= d0
+
+							for j=1,ndataids do
+								local dataid= dataids[d][j]
+
+								if dataids0[dataid]==nil then
+									dataids[d0][#dataids[d0]+1]= dataid
+									dataids0[dataid]= #dataids[d0]-1
+
+									if datanames then datanames[d0][#datanames[d0]+1]= datanames[d][j] end
+									if locations then locations[d0][#locations[d0]+1]= locations[d][j] end
+								end
+							end
+
+							combine= true
+						else
+							break
+						end
+					end
+
+					d= d+1
+				end
+
+				name= nil
+			end
+
+			if combine then
+				local function reorderdata(dataset, d, dataids, ret, retidx)
+					if type.Matrix(ret.data[retidx]) then
+
+						local d0= dataset.datas[d].d0
+						local dataids0= dataset.datas[d0].dataids
+						local ndataids= dataids[d] and #dataids[d] or 0
+
+						local m= ret.data[retidx]
+						local m2= matrix(xy(#dataids[d0],1))
+
+						for j=1,ndataids do
+							if j<=m.size.x then
+								m2[xy(dataids0[dataids[d][j]],0)]= m[xy(j-1,0)]
+							end
+						end
+
+						ret.data[retidx]= m2
+					end
+				end
+
+				local retidx= 1
+
+				for d=1,#dataset.datas do
+					local data= dataset.datas[d]
+					local times= args.times or getdefaulttime(data.data)
+
+					for p=1,#dataset.parameters do
+						if data.combined and #data.parameters==1 and dataset.parameters[p]~=data.parameters[1] then
+						elseif #levels>0 then
+							for l=1,#levels do
+								if data.data==nil then
+									retidx= retidx+1
+								elseif dataset.datas[d].d0 then
+									for t=1,#times do
+										if datatime(data.times,times[t]) then
+											reorderdata(dataset, d, dataids, ret, retidx)
+											retidx= retidx+1
+										end
+									end
+								end
+							end
+						elseif data.data==nil then
+							retidx= retidx+1
+						elseif dataset.datas[d].d0 then
+							for t=1,#times do
+								if datatime(data.times,times[t]) then
+									reorderdata(dataset, d, dataids, ret, retidx)
+									retidx= retidx+1
+								end
+							end
+						end
+					end
+				end
+
+				-- Select first nonmissing datablock/vector for each parameter, level and time
+
+				local function selectdata(dataset, d, combineddata, ret, retidx2, offset)
+					local d0= dataset.datas[d].d0
+
+					if (type.Matrix(ret.data[retidx2])) then
+						combineddata[retidx2]= ret.data[retidx2]
+						return
+					elseif d0 then
+						local retidx= retidx2
+
+						for d2=d+1,#dataset.datas do
+							if not dataset.datas[d2].d0 or dataset.datas[d2].d0~=d0 then
+								break
+							end
+
+							retidx= retidx+offset
+
+							if type.Matrix(ret.data[retidx]) then
+								combineddata[retidx2]= ret.data[retidx]
+								return
+							end
+						end
+					end
+
+					combineddata[retidx2]= {}
+				end
+
+				local combineddata= {}
+				local nremoved=0
+				retidx= 1
+
+				for d=1,#dataset.datas do
+					if dataset.datas[d].d0 and dataset.datas[d].d0~=d then
+						-- Multiple datas, remove other but first data's (combined) metadata
+						--
+						table.remove(dataids, d-nremoved)
+						if ret.datanames then table.remove(ret.datanames, d-nremoved) end
+						if ret.locations then table.remove(ret.locations, d-nremoved) end
+
+						nremoved= nremoved+1
+					else
+						local data= dataset.datas[d]
+						local times= args.times or getdefaulttime(data.data)
+
+						for p=1,#dataset.parameters do
+							if data.combined and #data.parameters==1 and dataset.parameters[p]~=data.parameters[1] then
+								combineddata[#combineddata+1]= ret.data[retidx]
+								retidx= retidx+1
+							elseif #levels>0 then
+								local offset= #dataset.parameters*#levels*#times
+
+								for l=1,#levels do
+									if data.data==nil then
+										combineddata[#combineddata+1]= ret.data[retidx]
+										retidx= retidx+1
+									elseif dataset.datas[d].d0 then
+										for t=1,#times do
+											if datatime(data.times,times[t]) then
+												-- Select first nonmissing datablock/vector
+												--
+												selectdata(dataset, d, combineddata, ret, retidx, offset)
+												retidx= retidx+1
+											end
+										end
+									end
+								end
+							elseif data.data==nil then
+								combineddata[#combineddata+1]= ret.data[retidx]
+								retidx= retidx+1
+							elseif dataset.datas[d].d0 then
+								local offset= #dataset.parameters*#times
+
+								for t=1,#times do
+									if datatime(data.times,times[t]) then
+										selectdata(dataset, d, combineddata, ret, retidx, offset)
+										retidx= retidx+1
+									end
+								end
+							end
+						end
+					end
+				end
+
+				ret.data= combineddata
+			end
+		else
 			--
 			-- Remove missing sounding pressure values and corresponding data values; they are of no use without pressure/height information
 			-- (well height could exist in the data, but we don't use/check it).
@@ -1747,18 +2097,19 @@ local function querydata(args,locations)
 
 						for p=1,#dataset.parameters do
 							local sdm= {}
+							local rdm= ret.data[((p-1)*ntimes) + i]
 
 							for s=1,ndataids do
 								sdm[s]= {}
 
-								nx= si[s] and #si[s] or 0
+								nx= type.Matrix(rdm) and si[s] and #si[s] or 0
 
 								if nx>0 then
 									local dm= matrix(xy(nx,1))
 									j=0
 
 									for n=1,nx do
-										dm[xy(j,0)]= ret.data[((p-1)*ntimes) + i][xy(si[s][n],0)]
+										dm[xy(j,0)]= rdm[xy(si[s][n],0)]
 										j= j+1
 									end
 
