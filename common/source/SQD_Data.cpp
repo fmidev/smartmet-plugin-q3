@@ -139,7 +139,7 @@ static int TestRising(NFmiFastQueryInfo &fi, FmiParameterName id, const char *fn
 #if 1
         if (n >= HEIGHT_POLLING_GIVING_UP_LIMIT)
         {
-          LOG_WARNING(
+          LOG_DEBUG(
               "GIVING UP parameter orientation detection. Over %d missing values for param %d.",
               n,
               (int)id);
@@ -462,7 +462,7 @@ static vector<NA_Level> getLevels(const NFmiQueryInfo &info,
       //
       // 31-Aug-2011 PKi: Must use original level order when creating a raw object using template
       //				    (otherwise data will be copied between unequal levels);
-      //inform about reversed order
+      // inform about reversed order
 
       revorder = true;
       return reverse_vector(vec);
@@ -1082,8 +1082,8 @@ NA_Info SQD_Data::read_info(const char *fn) throw(E_BAD_FILE)
   // (avoids going through any other parsing)
   //
   // 22-Aug-2011 MPi/PKi: Use grid's area to create projection; if using creation string the
-  //						projection may not exactly be the same (floating point accuracy
-  //problem)
+  //						projection may not exactly be the same (floating
+  //point accuracy problem)
   //
 
   const Projection pr(grid ? Projection(area->AreaStr().c_str(), SQD_Projection(area))
@@ -1196,8 +1196,8 @@ MatrixPos SQD_Data::getGridSize(size_t nPoints) const
   if (grid) return MatrixPos(grid->XNumber(), grid->YNumber());
 
   // 07-Apr-2015 PKi: Use number of given data points for point data. If projection (bounding box)
-  //					was given instead, the matrix will later be resized to the number of data
-  //points 					within the given area
+  //					was given instead, the matrix will later be resized to the number
+  //of data points 					within the given area
   //
   return MatrixPos(
       qd->Info()->SizeLevels() * ((nPoints > 0) ? nPoints : qd->Info()->SizeLocations()), 1);
@@ -1616,7 +1616,7 @@ Matrix *SQD_Data::push_NativeMatrix_e(
       if (!(same_proj && same_gs))
       {
         //			NFmiGrid wantedGrid(areaPtr.get(), m_->getSize().getXS(),
-        //m_->getSize().getYS());
+        // m_->getSize().getYS());
         fi.GridValues(nm, *(wantedGrid.get()), mt, relative_uv);
       }
       else
@@ -1655,7 +1655,7 @@ Matrix *SQD_Data::push_NativeMatrix_e(
       if (!(same_proj && same_gs))
       {
         //			NFmiGrid wantedGrid(areaPtr.get(), m_->getSize().getXS(),
-        //m_->getSize().getYS());
+        // m_->getSize().getYS());
         fi.PressureValues(nm, *(wantedGrid.get()), mt, lv, relative_uv);
       }
       else
@@ -1741,7 +1741,7 @@ Matrix *SQD_Data::push_NativeMatrix_e(
       if (!(same_proj && same_gs))
       {
         //			NFmiGrid wantedGrid(areaPtr.get(), m_->getSize().getXS(),
-        //m_->getSize().getYS());
+        // m_->getSize().getYS());
         fi.HeightValues(nm, *(wantedGrid.get()), mt, lv, relative_uv);
       }
       else

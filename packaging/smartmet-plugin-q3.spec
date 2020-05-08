@@ -2,7 +2,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet q3 plugin
 Name: %{SPECNAME}
-Version: 20.4.18
+Version: 20.5.8
 Release: 1.el7.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -70,8 +70,9 @@ rm -rf %{buildroot}
 %{_sysconfdir}/smartmet/plugins/*.conf
 %config(noreplace) %{_sysconfdir}/smartmet/plugins/q3plugin.conf
 
-#---
 %changelog
+* Fri May  8 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.5.8-1.el7.fmi
+- Disabled LOG_OK, LOG_DEBUG, LOG_STAT and LOG_TIMING output
 * Sat Apr 18 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.4.18-1.el7.fmi
 - Upgraded to Boost 1.69
 * Thu Apr 17 2020 Pertti Kinnia <pertti.kinnia@fmi.fi> - 20.4.17-1.el7.fmi
