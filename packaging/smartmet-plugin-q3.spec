@@ -2,7 +2,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet q3 plugin
 Name: %{SPECNAME}
-Version: 20.5.8
+Version: 20.5.18
 Release: 1.el7.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -21,14 +21,14 @@ BuildRequires:	bzip2-devel >= 1.0.6
 BuildRequires:	libpng-devel >= 1.5.13
 BuildRequires:	libjpeg-turbo-devel >= 1.2.90
 BuildRequires:  smartmet-library-tron >= 20.4.18
-BuildRequires:	smartmet-library-spine-devel >= 20.4.18
+BuildRequires:	smartmet-library-spine-devel >= 20.5.12
 Requires:       proj >= 4.8.0
 Requires:       lua >= 5.1.4
 Requires:       bzip2-libs >= 1.0.6
 Requires:       libpng >= 1.5.13
 Requires:       libjpeg-turbo >= 1.2.90
 Requires:       smartmet-library-newbase >= 20.4.18
-Requires:       smartmet-library-spine >= 20.4.18
+Requires:       smartmet-library-spine >= 20.5.12
 Requires:       smartmet-server >= 20.4.18
 Obsoletes:      fmi-q3-lib
 Obsoletes:      fmi-q3-config
@@ -71,6 +71,8 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/smartmet/plugins/q3plugin.conf
 
 %changelog
+* Mon May 18 2020 Pertti Kinnia <pertti.kinnia@fmi.fi> - 20.5.18-1.el7.fmi
+- Use default precision (query parameter 'decimals') 0 instead of -1; exponential presentation causes data loss e.g. for WeatherNumber
 * Fri May  8 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.5.8-1.el7.fmi
 - Disabled LOG_OK, LOG_DEBUG, LOG_STAT and LOG_TIMING output
 * Sat Apr 18 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.4.18-1.el7.fmi
