@@ -585,7 +585,7 @@ void Q3Server::native_handler(RequestResponse &rr)
 #ifdef CONFIG_BINARY_OUTPUT_ENABLED
   bool binary_q2 = false;
 #endif
-  int decimals = -1;
+  int decimals = 0;
   string err;
   int err_code = -1;
 
