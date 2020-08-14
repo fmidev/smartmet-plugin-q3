@@ -2437,7 +2437,25 @@ local function checkdqargs(args,lqargs)
 			end
 		end
 
-		if args.includes then args.includes= getquery_addmeta(args.includes, args.leveltypetype=="sounding") end
+		if args.includes then
+			--
+			-- Point data or sounding data query
+			--
+			-- BS-1892: older mirwas do not provide level type when querying soundings;
+			-- if track has sounding data (instead of the default 'ground'), set level type
+			--
+			if args.leveltype==nil then
+				local targs= { name= args.name, names= args.names, leveltype= "SoundingLevel"}
+				local ret= metadataquery().trackquery(targs)
+
+				if ret and #ret>0 then
+					args.leveltypetype="sounding" args.levels=nil
+					args.leveltype= {} args.leveltype[args.leveltypetype]= true
+				end
+			end
+
+			args.includes= getquery_addmeta(args.includes, args.leveltypetype=="sounding")
+		end
 
 		lqargs= checklqargs(lqargs)
 	end
