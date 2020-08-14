@@ -2,7 +2,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet q3 plugin
 Name: %{SPECNAME}
-Version: 20.5.18
+Version: 20.8.14
 Release: 1.el7.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -21,15 +21,15 @@ BuildRequires:	bzip2-devel >= 1.0.6
 BuildRequires:	libpng-devel >= 1.5.13
 BuildRequires:	libjpeg-turbo-devel >= 1.2.90
 BuildRequires:  smartmet-library-tron >= 20.4.18
-BuildRequires:	smartmet-library-spine-devel >= 20.5.12
+BuildRequires:	smartmet-library-spine-devel >= 20.8.11
 Requires:       proj >= 4.8.0
 Requires:       lua >= 5.1.4
 Requires:       bzip2-libs >= 1.0.6
 Requires:       libpng >= 1.5.13
 Requires:       libjpeg-turbo >= 1.2.90
-Requires:       smartmet-library-newbase >= 20.4.18
-Requires:       smartmet-library-spine >= 20.5.12
-Requires:       smartmet-server >= 20.4.18
+Requires:       smartmet-library-newbase >= 20.6.16
+Requires:       smartmet-library-spine >= 20.8.11
+Requires:       smartmet-server >= 20.8.10
 Obsoletes:      fmi-q3-lib
 Obsoletes:      fmi-q3-config
 Obsoletes:      fmi-q3-brainstorm
@@ -71,6 +71,8 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/smartmet/plugins/q3plugin.conf
 
 %changelog
+* Fri Aug 14 2020 Pertti Kinnia <pertti.kinnia@fmi.fi> - 20.8.14-1.el7.fmi
+- dataquery(): use 'SoundingLevel' leveltype if leveltype is not provided (defaulting to 'Ground') and track has sounding data; BS-1892
 * Mon May 18 2020 Pertti Kinnia <pertti.kinnia@fmi.fi> - 20.5.18-1.el7.fmi
 - Use default precision (query parameter 'decimals') 0 instead of -1; exponential presentation causes data loss e.g. for WeatherNumber
 * Fri May  8 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.5.8-1.el7.fmi
