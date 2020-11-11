@@ -347,7 +347,7 @@ vector<TrackedData *> Q3Engine::Track::getOriginTimeDatas(const JDay &ot) const 
 *           origintime of the latest, 2nd latest, ... run (which always exists)
 *           0 for no data (at all, or not so many origintimes available)
 */
-JDay Q3Engine::Track::getOriginTimeOfRun_(int x) const throw(E_USAGE)
+JDay Q3Engine::Track::getOriginTimeOfRun_(int x, NA_Level::Type &leveltype) const throw(E_USAGE)
 {
   assert(x <= 0);
   const unsigned abs_x = (unsigned)(-x);
@@ -358,16 +358,32 @@ JDay Q3Engine::Track::getOriginTimeOfRun_(int x) const throw(E_USAGE)
   {
     JDay ot_last;   // latest origintime of all tracks
     JDay ot_first;  // earliest -''-
+    NA_Level::Type lt_last = NA_Level::NO_LEVEL;
 
     for (vector<TrackerBase *>::const_iterator it = watch.begin(); it != watch.end(); ++it)
     {
       // Note: Tracks may be empty, in which case the returned JDay object
       //       is 'empty' (test with boolean operator).
       //
-      JDay ot = (*it)->getLastOriginTime_fast();
-      if (ot && ((!ot_last) || (ot > ot_last)))
+      // BS-1973: Track can contain data with multiple level types, and each type can have different
+      // latest origintime. To take leveltype into account when needed, pass on the required type
+      // (which is NO_LEVEL if leveltype does not matter) to getLastOriginTime_fast()
+      //
+      NA_Level::Type lt = leveltype;
+      JDay ot = (*it)->getLastOriginTime_fast(lt);
+      if (ot &&
+          (
+           (!ot_last) || (ot > ot_last) ||
+           (
+            (ot == ot_last) &&
+            (leveltype == NA_Level::PRESSUREORHYBRID_LEVEL) &&
+            (lt_last == NA_Level::HYBRID_LEVEL)
+           )
+          )
+         )
       {
         ot_last = ot;
+        lt_last = lt;
       }
 
       JDay ot2 = (*it)->getFirstOriginTime_fast();
@@ -382,6 +398,9 @@ JDay Q3Engine::Track::getOriginTimeOfRun_(int x) const throw(E_USAGE)
       JDay ot_run = ot_last.add_secs(-(abs_x * run_secs));
       if (ot_run >= ot_first)
       {
+        if (leveltype == NA_Level::PRESSUREORHYBRID_LEVEL)
+          leveltype = lt_last;
+
         return ot_run;
       }
     }
@@ -562,6 +581,8 @@ int TrackProxyBind::call(lua_State *L) throw(E_ERROR)
 
   bool demand_z_param = false, demand_p_param = false, metaQuery = false;
 
+  int otindex = 1;     // Set to <= 0 if relative origintime=n (<= 0) is given
+
   if (lua_gettop(L) >= 2)
   {
     /*
@@ -660,6 +681,8 @@ int TrackProxyBind::call(lua_State *L) throw(E_ERROR)
               double dd = lua_tonumber(L, v_idx);
               if ((floor(dd) == dd) && dd <= 0.0)
               {
+                /* Do not select origintime yet, get all keys first (taking leveltype etc into account too)
+                //
                 // Find by relative origintime (0,-1,...)
                 //
                 ot_absolute = my.getOriginTimeOfRun_((int)dd);  // [0] is latest ot
@@ -671,6 +694,9 @@ int TrackProxyBind::call(lua_State *L) throw(E_ERROR)
                   err = "no raw data";
                   goto ERROR;
                 }
+                */
+
+                otindex = (int) dd;
               }
               else
               {
@@ -825,7 +851,7 @@ int TrackProxyBind::call(lua_State *L) throw(E_ERROR)
 
   // Take default origintime from globals (if any)
   //
-  if ((!any_ot) && (!ot_absolute))
+  if ((otindex > 0) && (!any_ot) && (!ot_absolute))
   {
     lua_pushliteral(L, "origintime");
     lua_rawget(L, LUA_GLOBALSINDEX);
@@ -838,15 +864,17 @@ int TrackProxyBind::call(lua_State *L) throw(E_ERROR)
     }
   }
 
-  assert(any_ot || ot_absolute);
+  assert((otindex <= 0) || any_ot || ot_absolute);
 
   // If required, loop 0,-1,... until there is a match (or none, at all)
   //
   if (any_ot)
   {
+    NA_Level::Type leveltype = NA_Level::NO_LEVEL;
+
     for (int run = 0; true; run--)
     {
-      ot_absolute = my.getOriginTimeOfRun_(run);
+      ot_absolute = my.getOriginTimeOfRun_(run, leveltype);
       if (!ot_absolute)
         break;  // checked all data ('d' remains nullptr)
 
@@ -862,6 +890,52 @@ int TrackProxyBind::call(lua_State *L) throw(E_ERROR)
                                    err);
       if (d)
         break;  // Got it!
+    }
+  }
+  else if (otindex <= 0)
+  {
+    // For vertical nonsounding data try pressure data (primary to search for exact pressure match)
+    // or hybrid data first whichever is newer
+    //
+    // getOriginTimeOfRun_ sets the selected leveltype (pressure or hybrid) when called
+    // with PRESSUREORHYBRID_LEVEL
+    //
+    // If first data/leveltype does not match the query, try the other leveltype
+
+    NA_Level::Type leveltype(mode == ONLY_SOUNDING ? NA_Level::NO_LEVEL
+                             : mode == ONLY_GROUND ? NA_Level::GROUND_LEVEL
+                             : mode == ONLY_PRESSURE ? NA_Level::PRESSUREORHYBRID_LEVEL
+                             : NA_Level::HYBRID_LEVEL);
+
+    for (int v = 0; (v < 2); v++)
+    {
+      ot_absolute = my.getOriginTimeOfRun_(otindex, leveltype);
+
+      if (ot_absolute)
+      {
+        // LOG_DEBUG( "[%x] getData_must_release_ run %d", (int) pthread_self(), run );
+        d = my.getData_must_release_(ot_absolute,
+                                     required_times,
+                                     required_params,
+                                     required_levels,
+                                     mode == ONLY_GROUND,
+                                     mode == ONLY_PRESSURE || mode == BEST_VERTICAL,
+                                     false,
+                                     metaQuery,
+                                     err);
+
+        if (d || ((leveltype != NA_Level::PRESSURE_LEVEL) && (leveltype != NA_Level::HYBRID_LEVEL)))
+          break;
+
+        // Try with the other (pressure or hybrid) leveltype
+
+        if ((v == 0) && (leveltype == NA_Level::HYBRID_LEVEL))
+          leveltype = NA_Level::PRESSURE_LEVEL;
+        else
+          leveltype = NA_Level::HYBRID_LEVEL;
+      }
+      else
+        break;
     }
   }
   else

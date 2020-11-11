@@ -41,6 +41,15 @@ class TrackedData {
     const std::string &getSource() const { return source; }
     const NA_Info &getInfo() const;
     JDay getOriginTime() const { return ot_given ? ot_given : getInfo().getOriginTime(); }
+    NA_Level::Type getLevelType() const
+    {
+      auto levels = getInfo().getLevels();
+
+      if (levels.size() > 0)
+        return levels.front().getType();
+
+      return NA_Level::NO_LEVEL;
+    }
 
   private:
     // For 'Sqd_Tracker' and 'BZ2_Tracker' only:

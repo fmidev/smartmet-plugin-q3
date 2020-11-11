@@ -45,7 +45,7 @@ class TrackerBase
                                OriginTimeQuery originTimeQuery = Current) const throw();
   void addDatas_must_release(const JDay &ot, std::vector<TrackedData *> &vec) const throw();
 
-  JDay getLastOriginTime_fast() const throw();
+  JDay getLastOriginTime_fast(NA_Level::Type &leveltype) const throw();
   JDay getFirstOriginTime_fast() const throw();
 
   virtual bool archived() const { return false; }
@@ -64,7 +64,7 @@ class TrackerBase
   static void *polling_thread(void *me_v);
   void wait_until_initialized() const;
 
-  JDay getLastOriginTime_LOCKED() const throw();
+  JDay getLastOriginTime_LOCKED(NA_Level::Type &leveltype) const throw();
 
   // data fields
   volatile bool initialized;

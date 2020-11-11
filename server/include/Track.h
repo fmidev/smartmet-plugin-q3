@@ -47,7 +47,7 @@ class Q3Engine::Track
       throw();
   std::vector<TrackedData *> getOriginTimeDatas(const JDay &ot) const throw();
 
-  JDay getOriginTimeOfRun_(int x) const throw(E_USAGE);
+  JDay getOriginTimeOfRun_(int x, NA_Level::Type &leveltype) const throw(E_USAGE);
 
   unsigned getRunSecs() const { return run_secs; }
   void add(const char *mask_fn, unsigned refresh_secs, unsigned wiping[], bool relative_uv) throw(E_USAGE);

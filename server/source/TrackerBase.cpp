@@ -192,6 +192,7 @@ TrackedData *TrackerBase::getData_must_release(const JDay &ot_orig,
 
   TrackedData *data = 0;
   JDay ot(ot_orig);
+  NA_Level::Type leveltype = NA_Level::NO_LEVEL;
 
   wait_until_initialized();
 
@@ -200,7 +201,7 @@ TrackedData *TrackerBase::getData_must_release(const JDay &ot_orig,
 
     if (!ot)
     {
-      ot = getLastOriginTime_LOCKED();
+      ot = getLastOriginTime_LOCKED(leveltype);
     }
 
     if (ot)
@@ -301,21 +302,30 @@ void TrackerBase::addDatas_must_release(const JDay &ot, vector<TrackedData *> &v
 *
 * This function is FAST and does not cause locks to be required.
 */
-JDay TrackerBase::getLastOriginTime_fast() const throw()
+JDay TrackerBase::getLastOriginTime_fast(NA_Level::Type &leveltype) const throw()
 {
   wait_until_initialized();
 
   {
     ClaimMutex lock(data_m);
-    return getLastOriginTime_LOCKED();
+    return getLastOriginTime_LOCKED(leveltype);
   }
 }
 
 /*
 */
-JDay TrackerBase::getLastOriginTime_LOCKED() const throw()
+JDay TrackerBase::getLastOriginTime_LOCKED(NA_Level::Type &leveltype) const throw()
 {
   JDay last_ot;
+  NA_Level::Type leveltype1, leveltype2, lt = NA_Level::NO_LEVEL;
+
+  if (leveltype == NA_Level::PRESSUREORHYBRID_LEVEL)
+  {
+    leveltype1 = NA_Level::PRESSURE_LEVEL;
+    leveltype2 = NA_Level::HYBRID_LEVEL;
+  }
+  else
+    leveltype1 = leveltype2 = leveltype;
 
   // Exact origintime must be used to access archived data
   if (!archived())
@@ -324,11 +334,32 @@ JDay TrackerBase::getLastOriginTime_LOCKED() const throw()
          ++it)
     {
       JDay ot = it->first;
-      if ((!last_ot) || (ot > last_ot))
+
+      // For PRESSUREORHYBRID_LEVEL use pressure (primary) or hybrid data whichever is newer
+
+      if (
+          (
+           (leveltype == NA_Level::NO_LEVEL) ||
+           (leveltype1 == it->second->getLevelType()) || (leveltype2 == it->second->getLevelType())
+          ) &&
+          (
+           (!last_ot) || (ot > last_ot) ||
+           (
+            (ot == last_ot) &&
+            (leveltype == NA_Level::PRESSUREORHYBRID_LEVEL) &&
+            (lt == NA_Level::HYBRID_LEVEL)
+           )
+          )
+         )
       {
         last_ot = ot;
+        lt = it->second->getLevelType();
       }
     }
+
+  if (leveltype == NA_Level::PRESSUREORHYBRID_LEVEL)
+    leveltype = lt;  // pressure or hybrid
+
   return last_ot;
 }
 

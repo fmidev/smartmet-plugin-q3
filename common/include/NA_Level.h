@@ -29,7 +29,8 @@ struct NA_Level {
         PRESSURE_LEVEL,     // "hpa[:xxx.x]"    Pressure levels; 'lv' in hPa (= mbar)
 
         HEIGHT_LEVEL,       // "height[:xxx.x]" Height for cross call; 'lv' in meters
-        SOUNDING_LEVEL      // "sounding"		All sounding levels
+        SOUNDING_LEVEL,     // "sounding"		All sounding levels
+        PRESSUREORHYBRID_LEVEL // Used only to select latest origintime from pressure or hybrid data
     };
 
 #ifdef MQD_ENABLED

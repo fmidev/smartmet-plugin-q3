@@ -2,7 +2,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet q3 plugin
 Name: %{SPECNAME}
-Version: 20.8.21
+Version: 20.11.11
 Release: 1.el7.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -21,15 +21,15 @@ BuildRequires:	bzip2-devel >= 1.0.6
 BuildRequires:	libpng-devel >= 1.5.13
 BuildRequires:	libjpeg-turbo-devel >= 1.2.90
 BuildRequires:  smartmet-library-tron >= 20.4.18
-BuildRequires:	smartmet-library-spine-devel >= 20.8.21
+BuildRequires:	smartmet-library-spine-devel >= 20.10.28
 Requires:       proj >= 4.8.0
 Requires:       lua >= 5.1.4
 Requires:       bzip2-libs >= 1.0.6
 Requires:       libpng >= 1.5.13
 Requires:       libjpeg-turbo >= 1.2.90
-Requires:       smartmet-library-newbase >= 20.8.21
-Requires:       smartmet-library-spine >= 20.8.21
-Requires:       smartmet-server >= 20.8.21
+Requires:       smartmet-library-newbase >= 20.10.28
+Requires:       smartmet-library-spine >= 20.10.28
+Requires:       smartmet-server >= 20.10.28
 Obsoletes:      fmi-q3-lib
 Obsoletes:      fmi-q3-config
 Obsoletes:      fmi-q3-brainstorm
@@ -71,6 +71,8 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/smartmet/plugins/q3plugin.conf
 
 %changelog
+* Wed Nov 11 2020 Pertti Kinnia <pertti.kinnia@fmi.fi> - 20.11.11-1.el7.fmi
+- Take leveltype into account when using relative origintime; BS-1973
 * Fri Aug 21 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.8.21-1.el7.fmi
 - Upgrade to fmt 6.2
 * Fri Aug 14 2020 Pertti Kinnia <pertti.kinnia@fmi.fi> - 20.8.14-1.el7.fmi
