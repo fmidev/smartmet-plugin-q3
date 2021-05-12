@@ -156,17 +156,20 @@ lib_env.Append( CPPDEFINES= ["USE_NEWBASE"] )
 # 02-Dec-2011 PKi: added cairo
 # 14-Feb-2011 PKi: using multithreaded version of newbase
 #
-lib_env.Append( CPPPATH= [ PREFIX+"/include/smartmet", PREFIX+"/include/cairo" ],
+lib_env.Append( CPPPATH= [ PREFIX+"/include/smartmet", PREFIX+"/include/cairo",
+                           PREFIX+"/geos39/include", PREFIX+"/gdal32/include", PREFIX+"/proj72/include" ],
                 LIBS=   ['smartmet-newbase']
                 )    
 
 #---
 # Tron
 #
-lib_env.Append( CPPDEFINES= [ "USE_TRON" ],
+lib_env.Append( CPPDEFINES= [ "USE_TRON", "USE_UNSTABLE_GEOS_CPP_API" ],
                 CPPPATH= [ PREFIX+"/include/smartmet" ],
-                LIBS= [ File( LIB_PREFIX+"libsmartmet-tron.a") ]
+                LIBS= [ File( LIB_PREFIX+"libsmartmet-tron.so") ]
                 )
+
+lib_env.Append(LIBS= [ File( "/usr/proj72/lib/libproj.so") ])
 
 #---
 # Boost
@@ -196,7 +199,7 @@ lib_env.Append( LIBPATH= LIB_PREFIX+"/boost169",
 #
 # 02-Dec-2011 PKi: added cairo
 #
-lib_env.Append( LIBS= [ "png", "jpeg", "z", "bz2", "proj", "pthread", "cairo" ] )
+lib_env.Append( LIBS= [ "png", "jpeg", "z", "bz2", "pthread", "cairo" ] )
 
 #---
 # Lua 5.1

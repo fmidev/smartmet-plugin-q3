@@ -6,8 +6,6 @@
 
 #pragma once
 
-#include <geos/geom/Geometry.h>
-
 namespace geos { namespace geom { class Geometry; } }
 class PathAdapterBase;
 

@@ -33,6 +33,8 @@
 
 #include "newbase/NFmiRotatedLatLonArea.h"
 
+#include <gis/CoordinateMatrix.h>
+
 using namespace std;
 
 /*
@@ -1617,10 +1619,10 @@ Matrix *SQD_Data::push_NativeMatrix_e(
       {
         //			NFmiGrid wantedGrid(areaPtr.get(), m_->getSize().getXS(),
         // m_->getSize().getYS());
-        fi.GridValues(nm, *(wantedGrid.get()), mt, relative_uv);
+        nm = fi.GridValues(*(wantedGrid.get()), mt, relative_uv);
       }
       else
-        fi.Values(nm, mt);
+        nm = fi.Values(mt);
 
         // LOG_DEBUG( "NMatrix size: %d", (int)(nm.NX() * nm.NY()) );
         // LOG_DEBUG( "Grid size: %d", (int)native_gs.getN() );
@@ -1656,10 +1658,10 @@ Matrix *SQD_Data::push_NativeMatrix_e(
       {
         //			NFmiGrid wantedGrid(areaPtr.get(), m_->getSize().getXS(),
         // m_->getSize().getYS());
-        fi.PressureValues(nm, *(wantedGrid.get()), mt, lv, relative_uv);
+        nm = fi.PressureValues(*(wantedGrid.get()), mt, lv, relative_uv);
       }
       else
-        fi.PressureValues(nm, mt, lv);
+        nm = fi.PressureValues(mt, lv);
 
 #else
 
@@ -1742,10 +1744,10 @@ Matrix *SQD_Data::push_NativeMatrix_e(
       {
         //			NFmiGrid wantedGrid(areaPtr.get(), m_->getSize().getXS(),
         // m_->getSize().getYS());
-        fi.HeightValues(nm, *(wantedGrid.get()), mt, lv, relative_uv);
+        nm = fi.HeightValues(*(wantedGrid.get()), mt, lv, relative_uv);
       }
       else
-        fi.HeightValues(nm, mt, lv);
+        nm = fi.HeightValues(mt, lv);
     }
     else
     {
@@ -1919,14 +1921,14 @@ const unsigned int NewBaseMinTimeStepInSecs = 60;
     //    		fi.TimeCrossSectionValuesGround( nm, NFmiPoint(locs[0].getLon(),
     //    locs[0].getLat()), validTimes ); 	else
     if (hybrid)
-      fi.TimeCrossSectionValuesHybrid(
-          nm, hLevels, NFmiPoint(locs[0].getLon(), locs[0].getLat()), validTimes);
+      nm = fi.TimeCrossSectionValuesHybrid(
+          hLevels, NFmiPoint(locs[0].getLon(), locs[0].getLat()), validTimes);
     else if (height)
-      fi.TimeCrossSectionValues(
-          nm, heights, NFmiPoint(locs[0].getLon(), locs[0].getLat()), validTimes);
+      nm = fi.TimeCrossSectionValues(
+          heights, NFmiPoint(locs[0].getLon(), locs[0].getLat()), validTimes);
     else
-      fi.TimeCrossSectionValuesLogP(
-          nm, pressures, NFmiPoint(locs[0].getLon(), locs[0].getLat()), validTimes);
+      nm = fi.TimeCrossSectionValuesLogP(
+          pressures, NFmiPoint(locs[0].getLon(), locs[0].getLat()), validTimes);
   }
   else
   {
@@ -1960,19 +1962,19 @@ const unsigned int NewBaseMinTimeStepInSecs = 60;
         //            	fi.CrossSectionValuesGround( nm, validTimes[0], locations );
         //        	else
         if (hybrid)
-          fi.CrossSectionValuesHybrid(nm, validTimes[0], hLevels, locations);
+          nm = fi.CrossSectionValuesHybrid(validTimes[0], hLevels, locations);
         else if (height)
-          fi.CrossSectionValues(nm, validTimes[0], heights, locations);
+          nm = fi.CrossSectionValues(validTimes[0], heights, locations);
         else
-          fi.CrossSectionValuesLogP(nm, validTimes[0], pressures, locations);
+          nm = fi.CrossSectionValuesLogP(validTimes[0], pressures, locations);
       //      else if (ground)
       //      	fi.RouteCrossSectionValuesGround( nm, locations, validTimes );
       else if (hybrid)
-        fi.RouteCrossSectionValuesHybrid(nm, hLevels, locations, validTimes);
+        nm = fi.RouteCrossSectionValuesHybrid(hLevels, locations, validTimes);
       else if (height)
-        fi.RouteCrossSectionValues(nm, heights, locations, validTimes);
+        nm = fi.RouteCrossSectionValues(heights, locations, validTimes);
       else
-        fi.RouteCrossSectionValuesLogP(nm, pressures, locations, validTimes);
+        nm = fi.RouteCrossSectionValuesLogP(pressures, locations, validTimes);
     }
     else
     {
@@ -1982,11 +1984,11 @@ const unsigned int NewBaseMinTimeStepInSecs = 60;
         locations.push_back(NFmiPoint(locs[i].getLon(), locs[i].getLat()));
 
       if (hybrid)
-        fi.FlightRouteValuesHybrid(nm, hLevels, locations, validTimes);
+        nm = fi.FlightRouteValuesHybrid(hLevels, locations, validTimes);
       else if (height)
-        fi.FlightRouteValues(nm, heights, locations, validTimes);
+        nm = fi.FlightRouteValues(heights, locations, validTimes);
       else
-        fi.FlightRouteValuesLogP(nm, pressures, locations, validTimes);
+        nm = fi.FlightRouteValuesLogP(pressures, locations, validTimes);
 
       if (nm.NX() == 0)
         throw E_LOG_USAGE0(
@@ -2021,18 +2023,17 @@ const unsigned int NewBaseMinTimeStepInSecs = 60;
 
   if (fi.Grid())
   {
-    NFmiDataMatrix<NFmiPoint> nm;
+    const Projection &proj = target_proj ? *target_proj : getProjection();
+    NFmiAreaFactory::return_type area = NFmiAreaFactory::Create(proj.toString().c_str());
+    Fmi::CoordinateMatrix cm = fi.LocationsXY(*(area.get()));
 
-    fi.Locations(nm);
+    const size_t xs = cm.width();
+    const size_t ys = cm.height();
 
-    typedef NFmiDataMatrix<float>::size_type sz_t;
-    const sz_t xs = nm.NX();
-    const sz_t ys = nm.NY();
-
-    for (sz_t y = 0; y < ys; y++)
-      for (sz_t x = 0; x < xs; x++)
+    for (size_t y = 0; y < ys; y++)
+      for (size_t x = 0; x < xs; x++)
       {
-        const NFmiPoint &p = nm[x][y];
+        const NFmiPoint &p = area->ToLatLon(cm(x, y));
         locations.push_back(LatLon(p.Y(), p.X()));
       }
   }

@@ -9,7 +9,14 @@
 
 #include "Projection.h"
 
-#include <projects.h>
+#include <ogr_spatialref.h>
+#include <gis/CoordinateTransformation.h>
+#include <gis/SpatialReference.h>
+
+#define PI 3.14159265358979323846
+#define DEG_TO_RAD (PI / 180)
+#define RAD_TO_DEG (180 / PI)
+#define pj_strerrno(st) #st
 
 /*
 */
@@ -33,11 +40,10 @@ class Proj4_Projection : public Projection_provider {
 
     // data members
     //
-    projPJ pj;
+    Fmi::CoordinateTransformation pj;
             
 #ifndef NDEBUG        
     void _INVARIANT( const char *file, unsigned line ) const {
-        assert_invariant(pj);
     }
 #endif
 };

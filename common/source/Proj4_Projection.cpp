@@ -9,13 +9,6 @@
 
 using namespace std;
 
-/*
-* NOTE: 'pj_init()', 'pj_fwd()', 'pj_inv()' are *deprecated functions* in the Proj4 API. Avoid them.
-*/
-#define pj_init DONT_USE_pj_init
-#define pj_fwd DONT_USE_pj_fwd
-#define pj_inv DONT_USE_pj_inv
-
 
 /*
     Matti.Horttanainen@fmi.fi 4-Nov-2010 on which LatLon projection to use (in FMI):
@@ -38,23 +31,6 @@ using namespace std;
 */
 const char *LATLON_DECL= "+proj=longlat +ellps=sphere +a=6371220 +b=6371220";
 
-
-/* The LatLon projection used in FMI.
-*/
-static const projPJ PJ_LATLON= pj_init_plus( LATLON_DECL );
-
-
-/*---=== Helpers ===---*/
-
-static projPJ pj_clone( projPJ o_pj ) {
-    if (!o_pj) {
-        return nullptr;
-    } else {
-        return pj_init_plus( pj_get_def( o_pj, 0 /*options*/ ) );
-    }
-}
-
-
 /*---=== Proj4_Projection ===---*/
 
 /*
@@ -71,12 +47,9 @@ static projPJ pj_clone( projPJ o_pj ) {
 
 /*
 */
-Proj4_Projection::Proj4_Projection( const char *proj_ ) throw(E_USAGE) : Projection_provider(), pj( pj_init_plus(proj_) ) {
+Proj4_Projection::Proj4_Projection( const char *proj_ ) throw(E_USAGE)
+    : Projection_provider(), pj(Fmi::CoordinateTransformation("WGS84", proj_)) {
     assert(proj_);
-
-    if (!pj) {
-        throw E_LOG_USAGE( "Bad projection: %s", proj_ );
-    }
 
     INVARIANT();
 }
@@ -85,7 +58,7 @@ Proj4_Projection::Proj4_Projection( const char *proj_ ) throw(E_USAGE) : Project
 /*
 */
 /*virtual*/ Proj4_Projection::Proj4_Projection( const Proj4_Projection &o )
-    : Projection_provider(), pj( pj_clone(o.pj) ) {
+    : Projection_provider(), pj(o.pj) {
     
     INVARIANT();
 }
@@ -94,7 +67,7 @@ Proj4_Projection::Proj4_Projection( const char *proj_ ) throw(E_USAGE) : Project
 /*
 */
 Proj4_Projection::~Proj4_Projection() {
-    pj_free(pj);
+    ;
 }
 
 
@@ -108,9 +81,10 @@ Proj4_Projection::~Proj4_Projection() {
     double x_array= ll.getLat() * DEG_TO_RAD;
     double y_array= ll.getLon() * DEG_TO_RAD;
 
-    int st= pj_transform( PJ_LATLON, pj, 1 /*values*/, 1 /*offset between array elements*/, &x_array, &y_array, nullptr /*z*/ );
-    if (st) {
-        throw E_LOG_ERROR( "Proj4 transform error: %s", pj_strerrno(st) );
+    bool st= pj.transform( x_array, y_array );
+
+    if (!st) {
+        throw E_LOG_ERROR( "Proj4 transform error: %s", "at()" );
     }
     
     dx= x_array;
@@ -127,9 +101,12 @@ Proj4_Projection::~Proj4_Projection() {
     double x_array= dx;
     double y_array= dy;
 
-    int st= pj_transform( pj, PJ_LATLON, 1 /*values*/, 1 /*offset between array elements*/, &x_array, &y_array, nullptr /*z*/ );
-    if (st) {
-        throw E_LOG_ERROR( "Proj4 transform error: %s", pj_strerrno(st) );
+    auto pjll = Fmi::CoordinateTransformation("WGS84", LATLON_DECL);
+
+    bool st= pjll.transform( x_array, y_array );
+
+    if (!st) {
+        throw E_LOG_ERROR( "Proj4 transform error: %s", "latlon()" );
     }
     
     return LatLon( x_array * RAD_TO_DEG, y_array * RAD_TO_DEG );

@@ -125,6 +125,11 @@ class MyGrid {
         		cm.getValue( MatrixPos(i,j) ) = other.cm.getValue( MatrixPos(i,j) );
     }
 
+    bool valid(size_t i, size_t j) const
+    {
+      return true;
+    }
+
   private:
     /*const 08-Dec-2011 PKi*/ ContourMatrix &cm;
 
@@ -146,9 +151,9 @@ class Tron_EdgeAdapter : public PathAdapterBase , public vector<Contour> {
 
   public:
     Tron_EdgeAdapter( /*const 08-Dec-2011 PKi*/ ContourMatrix &cm )
-        : mg(cm), itsGeomFactory(new geos::geom::GeometryFactory()) {
-    	Tron::FmiBuilder builder(itsGeomFactory);
-        MyContourer::fill( builder, mg, NAN, NAN, false );   // limits of the data (holes or grid edge)
+        : mg(cm), itsGeomFactory(geos::geom::GeometryFactory::create()) {
+	Tron::FmiBuilder builder(*itsGeomFactory);
+        MyContourer::fill( builder, mg, NAN, NAN );   // limits of the data (holes or grid edge)
 
         SmartMet::Q3GeosTools::getContours(&(*builder.result()),this);
 
@@ -180,7 +185,7 @@ class Tron_EdgeAdapter : public PathAdapterBase , public vector<Contour> {
     
   private:
     MyGrid mg;
-    boost::shared_ptr<geos::geom::GeometryFactory> itsGeomFactory;
+    geos::geom::GeometryFactory::Ptr itsGeomFactory;
 
     //MatrixPos::xy_t x_max, y_max;
 };
@@ -240,7 +245,7 @@ class Tron_ContourAdapter : public PathAdapterBase {
     Tron_ContourAdapter( ContourCollector &cc_, /*const 08-Dec-2011 PKi*/ ContourMatrix &cm, float lo_val, float hi_val, unsigned int smooth_length, unsigned int smooth_degree, TronHints * th)
         : cc(cc_), mg(cm), current_contour(0)
 #if TRON_MODE==2
-            , edges(nullptr), x_max( cm.getXS()-1 ), y_max( cm.getYS()-1 ), itsGeomFactory(new geos::geom::GeometryFactory())
+            , edges(nullptr), x_max( cm.getXS()-1 ), y_max( cm.getYS()-1 ), itsGeomFactory(geos::geom::GeometryFactory::create())
 #endif
     {
 #if TRON_MODE==3
@@ -249,7 +254,7 @@ class Tron_ContourAdapter : public PathAdapterBase {
         MyContourer::fill( *this, mg, val, NAN, false);    // iso curves at value 'val' (right hand side is "uphill")
 
 #elif TRON_MODE==2
-    	Tron::FmiBuilder builder(itsGeomFactory);
+	Tron::FmiBuilder builder(*itsGeomFactory);
 
         if (!isnanf(lo_val)) {
             // Need to have 'edges' as a member so it's visible to 'lineto()' callback
@@ -275,9 +280,9 @@ class Tron_ContourAdapter : public PathAdapterBase {
 			// Note: Range NAN,x==-inf,x and range x,32700==x,+inf
 			//
         	if (th)
-        		MyContourer::fill( builder, mg, (lo_val == 32700) ? NAN : lo_val, hi_val, false, th->hints(mg) );
+			MyContourer::fill( builder, mg, (lo_val == 32700) ? NAN : lo_val, hi_val, th->hints(mg) );
         	else
-        		MyContourer::fill( builder, mg, (lo_val == 32700) ? NAN : lo_val, hi_val, false );
+			MyContourer::fill( builder, mg, (lo_val == 32700) ? NAN : lo_val, hi_val );
 
             SmartMet::Q3GeosTools::getContours(&(*builder.result()),this);
 
@@ -290,7 +295,7 @@ class Tron_ContourAdapter : public PathAdapterBase {
         		current_contour->range(true);
         } else {
             assert( edges==nullptr );
-            MyContourer::fill( builder, mg, NAN, NAN, false );   // limits of the data (holes or grid edge)
+            MyContourer::fill( builder, mg, NAN, NAN );   // limits of the data (holes or grid edge)
 
             SmartMet::Q3GeosTools::getContours(&(*builder.result()),this);
 
@@ -358,7 +363,7 @@ class Tron_ContourAdapter : public PathAdapterBase {
 #if TRON_MODE==2
     const Tron_EdgeAdapter *edges;    // giving 'lineto()' visibility to edges we live in
     MatrixPos::xy_t x_max, y_max;
-    boost::shared_ptr<geos::geom::GeometryFactory> itsGeomFactory;
+    geos::geom::GeometryFactory::Ptr itsGeomFactory;
 #endif
 };
 
