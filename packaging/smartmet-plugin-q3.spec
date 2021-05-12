@@ -2,7 +2,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet q3 plugin
 Name: %{SPECNAME}
-Version: 20.11.11
+Version: 21.5.12
 Release: 1.el7.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -14,22 +14,22 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires:	scons
 BuildRequires:	gcc-c++ >= 4.8.5
 BuildRequires:	libstdc++-devel >= 4.8.5
-BuildRequires:  proj-devel >= 4.8.0
+BuildRequires:  proj72-devel >= 7.2.1
 BuildRequires:	lua-devel >= 5.1.4
 BuildRequires:  boost169-devel
 BuildRequires:	bzip2-devel >= 1.0.6
 BuildRequires:	libpng-devel >= 1.5.13
 BuildRequires:	libjpeg-turbo-devel >= 1.2.90
-BuildRequires:  smartmet-library-tron >= 20.4.18
-BuildRequires:	smartmet-library-spine-devel >= 20.10.28
-Requires:       proj >= 4.8.0
+BuildRequires:  smartmet-library-tron >= 21.4.15
+BuildRequires:	smartmet-library-spine-devel >= 21.5.11
+Requires:       proj72 >= 7.2.1
 Requires:       lua >= 5.1.4
 Requires:       bzip2-libs >= 1.0.6
 Requires:       libpng >= 1.5.13
 Requires:       libjpeg-turbo >= 1.2.90
-Requires:       smartmet-library-newbase >= 20.10.28
-Requires:       smartmet-library-spine >= 20.10.28
-Requires:       smartmet-server >= 20.10.28
+Requires:       smartmet-library-newbase >= 21.5.6
+Requires:       smartmet-library-spine >= 21.5.11
+Requires:       smartmet-server >= 21.1.14
 Obsoletes:      fmi-q3-lib
 Obsoletes:      fmi-q3-config
 Obsoletes:      fmi-q3-brainstorm
@@ -71,6 +71,8 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/smartmet/plugins/q3plugin.conf
 
 %changelog
+* Wed May 12 2021 Pertti Kinnia <pertti.kinnia@fmi.fi> - 21.5.12-1.el7.fmi
+- Upgrade to proj72 and geos39. Newbase and tron api changes.
 * Wed Nov 11 2020 Pertti Kinnia <pertti.kinnia@fmi.fi> - 20.11.11-1.el7.fmi
 - Take leveltype into account when using relative origintime; BS-1973
 * Fri Aug 21 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.8.21-1.el7.fmi
