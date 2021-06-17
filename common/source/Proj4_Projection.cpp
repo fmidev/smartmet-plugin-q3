@@ -47,7 +47,7 @@ const char *LATLON_DECL= "+proj=longlat +ellps=sphere +a=6371220 +b=6371220";
 
 /*
 */
-Proj4_Projection::Proj4_Projection( const char *proj_ ) throw(E_USAGE)
+Proj4_Projection::Proj4_Projection( const char *proj_ ) throw(E_USAGE, std::runtime_error)
     : Projection_provider(), pj(Fmi::CoordinateTransformation("WGS84", proj_)) {
     assert(proj_);
 

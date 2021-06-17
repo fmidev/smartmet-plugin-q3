@@ -55,6 +55,9 @@ Projection::Projection( const char *proj_ ) throw(E_USAGE) : proj(), creation_st
         //
         reason= e.what();
     }
+    catch( const std::runtime_error &e ) {
+        reason= e.what();
+    }
 
     throw E_LOG_USAGE( "Bad projection: %s (%s)", proj_, reason.c_str() );
 
