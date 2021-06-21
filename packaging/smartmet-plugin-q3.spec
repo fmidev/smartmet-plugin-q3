@@ -2,7 +2,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet q3 plugin
 Name: %{SPECNAME}
-Version: 21.6.17
+Version: 21.6.21
 Release: 1.el7.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -20,7 +20,7 @@ BuildRequires:  boost169-devel
 BuildRequires:	bzip2-devel >= 1.0.6
 BuildRequires:	libpng-devel >= 1.5.13
 BuildRequires:	libjpeg-turbo-devel >= 1.2.90
-BuildRequires:  smartmet-library-tron >= 21.4.15
+BuildRequires:  smartmet-library-tron >= 21.6.19
 BuildRequires:	smartmet-library-spine-devel >= 21.6.15
 Requires:       proj72 >= 7.2.1
 Requires:       lua >= 5.1.4
@@ -71,8 +71,9 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/smartmet/plugins/q3plugin.conf
 
 %changelog
-* Thu Jun 17 2021 Pertti Kinnia <pertti.kinnia@fmi.fi> - 21.6.17-1.el7.fmi
-- Catch std::runtime_error in Proj4_Projection (BRAINSTORM-2092)
+* Mon Jun 21 2021 Pertti Kinnia <pertti.kinnia@fmi.fi> - 21.6.21-1.el7.fmi
+- Catch std::exception thrown by newbase and coordinate transformation (BS-2092)
+- nuke LatLon object if it's constructor throws due to invalid coordinates (BS-2100); otherwise crashes in lua gc
 * Wed May 12 2021 Pertti Kinnia <pertti.kinnia@fmi.fi> - 21.5.12-1.el7.fmi
 - Upgrade to proj72 and geos39. Newbase and tron api changes.
 * Wed Nov 11 2020 Pertti Kinnia <pertti.kinnia@fmi.fi> - 20.11.11-1.el7.fmi
