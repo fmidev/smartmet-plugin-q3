@@ -454,6 +454,7 @@ static int latlon( lua_State *L ) {
             new(L) LatLon( lat, lon );
         }
         catch( const E_USAGE &e ) {
+            LuaNew_base::nuke(L,-1);  // removes the link from Lua GC to C++ destructor
             luaL_error( L, "%s", e.what() );
         }
         return 1;
