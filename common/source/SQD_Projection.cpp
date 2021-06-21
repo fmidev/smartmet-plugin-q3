@@ -34,12 +34,12 @@ using namespace std;
 
 /*
 */
-SQD_Projection::SQD_Projection( const char *proj_ ) throw(runtime_error) : Projection_provider(), ap( NFmiAreaFactory::Create( proj_ ) ) {
+SQD_Projection::SQD_Projection( const char *proj_ ) throw(std::exception) : Projection_provider(), ap( NFmiAreaFactory::Create( proj_ ) ) {
 
     INVARIANT();
 }
 
-SQD_Projection::SQD_Projection( const NFmiArea *area_ ) throw (std::runtime_error)
+SQD_Projection::SQD_Projection( const NFmiArea *area_ ) throw (std::exception)
  : Projection_provider()
  , ap( area_->Clone() ) 
 {

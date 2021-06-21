@@ -47,7 +47,7 @@ const char *LATLON_DECL= "+proj=longlat +ellps=sphere +a=6371220 +b=6371220";
 
 /*
 */
-Proj4_Projection::Proj4_Projection( const char *proj_ ) throw(E_USAGE, std::runtime_error)
+Proj4_Projection::Proj4_Projection( const char *proj_ ) throw(E_USAGE, std::exception)
     : Projection_provider(), pj(Fmi::CoordinateTransformation("WGS84", proj_)) {
     assert(proj_);
 
@@ -100,10 +100,18 @@ Proj4_Projection::~Proj4_Projection() {
 
     double x_array= dx;
     double y_array= dy;
+    bool st= false;
 
-    auto pjll = Fmi::CoordinateTransformation("WGS84", LATLON_DECL);
+    try
+    {
+      auto pjll = Fmi::CoordinateTransformation("WGS84", LATLON_DECL);
 
-    bool st= pjll.transform( x_array, y_array );
+      st= pjll.transform( x_array, y_array );
+    }
+    catch (...)
+    {
+      st= false;
+    }
 
     if (!st) {
         throw E_LOG_ERROR( "Proj4 transform error: %s", "latlon()" );

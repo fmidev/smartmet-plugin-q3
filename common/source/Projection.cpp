@@ -55,7 +55,7 @@ Projection::Projection( const char *proj_ ) throw(E_USAGE) : proj(), creation_st
         //
         reason= e.what();
     }
-    catch( const std::runtime_error &e ) {
+    catch( const std::exception &e ) {
         reason= e.what();
     }
 

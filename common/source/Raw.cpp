@@ -447,7 +447,7 @@ int RawBind::__index( lua_State *L ) {
     	try {
     		qd->getDataIds(vec,(proj != Projection::NONE) ? &proj : nullptr);
     	}
-    	catch (runtime_error & e) {
+	catch (const std::exception & e) {
             luaL_error( L, e.what() );
     	}
 
@@ -475,7 +475,7 @@ int RawBind::__index( lua_State *L ) {
     	try {
             qd->getDataNames(vec,(proj != Projection::NONE) ? &proj : nullptr);
     	}
-    	catch (runtime_error & e) {
+	catch (const std::exception & e) {
             luaL_error( L, e.what() );
     	}
 

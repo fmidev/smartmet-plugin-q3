@@ -13,6 +13,8 @@
 #include <string>
 #include <vector>
 
+#include <macgyver/Exception.h>
+
 /*
 * Abstract base class (interface) for particular projections.
 */

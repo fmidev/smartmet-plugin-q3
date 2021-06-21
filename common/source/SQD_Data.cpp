@@ -773,7 +773,7 @@ static vector<NA_Param> getParams(NFmiQueryInfo &info, bool &has_326, bool &has_
 
 /*
  */
-SQD_Data::SQD_Data(const char *fn, bool relative_uv) throw(E_BAD_FILE, std::runtime_error)
+SQD_Data::SQD_Data(const char *fn, bool relative_uv) throw(E_BAD_FILE, std::exception)
     : NA_Data(read_info(fn)),
       qd(new NFmiQueryData(fn))
 #ifdef METQU
@@ -1036,7 +1036,7 @@ NA_Info SQD_Data::read_info(const char *fn) throw(E_BAD_FILE)
   {
     info = NFmiQueryInfo(fn);
   }
-  catch (const std::runtime_error &e)
+  catch (const std::exception &e)
   {
     throw E_LOG_BAD_FILE(fn, e.what());
   }
