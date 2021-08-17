@@ -2,7 +2,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet q3 plugin
 Name: %{SPECNAME}
-Version: 21.6.21
+Version: 21.8.17
 Release: 1.el7.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -14,21 +14,21 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires:	scons
 BuildRequires:	gcc-c++ >= 4.8.5
 BuildRequires:	libstdc++-devel >= 4.8.5
-BuildRequires:  proj72-devel >= 7.2.1
+BuildRequires:  proj72-devel >= 7.2.2
 BuildRequires:	lua-devel >= 5.1.4
 BuildRequires:  boost169-devel
 BuildRequires:	bzip2-devel >= 1.0.6
 BuildRequires:	libpng-devel >= 1.5.13
 BuildRequires:	libjpeg-turbo-devel >= 1.2.90
-BuildRequires:  smartmet-library-tron >= 21.6.19
-BuildRequires:	smartmet-library-spine-devel >= 21.6.15
-Requires:       proj72 >= 7.2.1
+BuildRequires:  smartmet-library-tron >= 21.6.21
+BuildRequires:	smartmet-library-spine-devel >= 21.8.17
+Requires:       proj72 >= 7.2.2
 Requires:       lua >= 5.1.4
 Requires:       bzip2-libs >= 1.0.6
 Requires:       libpng >= 1.5.13
 Requires:       libjpeg-turbo >= 1.2.90
 Requires:       smartmet-library-newbase >= 21.6.16
-Requires:       smartmet-library-spine >= 21.6.15
+Requires:       smartmet-library-spine >= 21.8.17
 Requires:       smartmet-server >= 21.6.3
 Obsoletes:      fmi-q3-lib
 Obsoletes:      fmi-q3-config
@@ -71,6 +71,8 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/smartmet/plugins/q3plugin.conf
 
 %changelog
+* Tue Aug 17 2021 Mika Heiskanen <mika.heiskanen@fmi.fi> - 21.8.17-1.el7.fmi
+- Use the new shutdown API
 * Mon Jun 21 2021 Pertti Kinnia <pertti.kinnia@fmi.fi> - 21.6.21-1.el7.fmi
 - Catch std::exception thrown by newbase and coordinate transformation (BS-2092)
 - nuke LatLon object if it's constructor throws due to invalid coordinates (BS-2100); otherwise crashes in lua gc
