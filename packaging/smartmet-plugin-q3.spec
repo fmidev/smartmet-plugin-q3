@@ -2,7 +2,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet q3 plugin
 Name: %{SPECNAME}
-Version: 21.8.17
+Version: 21.8.31
 Release: 1.el7.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -21,14 +21,14 @@ BuildRequires:	bzip2-devel >= 1.0.6
 BuildRequires:	libpng-devel >= 1.5.13
 BuildRequires:	libjpeg-turbo-devel >= 1.2.90
 BuildRequires:  smartmet-library-tron >= 21.6.21
-BuildRequires:	smartmet-library-spine-devel >= 21.8.17
+BuildRequires:	smartmet-library-spine-devel >= 21.8.30
 Requires:       proj72 >= 7.2.2
 Requires:       lua >= 5.1.4
 Requires:       bzip2-libs >= 1.0.6
 Requires:       libpng >= 1.5.13
 Requires:       libjpeg-turbo >= 1.2.90
 Requires:       smartmet-library-newbase >= 21.6.16
-Requires:       smartmet-library-spine >= 21.8.17
+Requires:       smartmet-library-spine >= 21.8.30
 Requires:       smartmet-server >= 21.6.3
 Obsoletes:      fmi-q3-lib
 Obsoletes:      fmi-q3-config
@@ -71,6 +71,8 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/smartmet/plugins/q3plugin.conf
 
 %changelog
+* Tue Aug 31 2021 Mika Heiskanen <mika.heiskanen@fmi.fi> - 21.8.31-1.el7.fmi
+- Repackaged due to Spine ABI changes
 * Tue Aug 17 2021 Mika Heiskanen <mika.heiskanen@fmi.fi> - 21.8.17-1.el7.fmi
 - Use the new shutdown API
 * Mon Jun 21 2021 Pertti Kinnia <pertti.kinnia@fmi.fi> - 21.6.21-1.el7.fmi
