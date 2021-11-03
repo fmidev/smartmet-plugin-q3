@@ -48,8 +48,8 @@ var SCRIPTS_PATH= "tests/";
 
 var SCRIPT_SIZE= [100, 10];
 
-var Q3_SERVER= "crash.fmi.fi:8091";     //"smartmet.fmi.fi/q3";
-var Q2_SERVER= "smartmet.fmi.fi/q2";
+var Q3_SERVER= "crash.fmi.fi:8080/q3";
+var Q2_SERVER= "v1.q3.fmi.fi:8080/q3";  // q2 not available anymore, test q3 servers
 
 var NOTHING_PNG= "gra/nothing.png";
 
@@ -242,6 +242,15 @@ function q3_url( $q3 ) {
 */
 function q2_url( $q2 ) {
 
+    // q2 not available anymore, test q3 servers
+
+    var code = $q2.find("textarea.script").val();
+
+    code= code.replace( /\-\-.*$/mg, "" );
+
+    return "http://"+ $("#q2_url").val() +"?"+ $q2.attr("url_params_x")+"&code="+ my_escape( code );
+
+    /*
     var url= "http://"+ $("#q2_url").val() +"?";
     
     var q2_code= $q2.find("textarea").val();
@@ -274,6 +283,7 @@ function q2_url( $q2 ) {
         }
     }
     return url;
+    */
 }
         
 
@@ -325,7 +335,7 @@ function test_entry( $host, test, type ) {
             "<div class='name'>"+test+"</div>"+
             "<div class='description'></div>"+
         "</div>"+
-        "<div class='q3'>Q3 script:"+
+        "<div class='q3'>Q3 script 1:"+
             "<a class='url' target='_blank'>...</a>"+
             "<textarea class='script'></textarea>"+
             (type_image ? "" : "<div class='result'></div>")+
@@ -337,8 +347,10 @@ function test_entry( $host, test, type ) {
     $host.addClass( "collapsed" );
 
     if (type_q2) {
+        // q2 not available anymore, test q3 servers
+        //
         $host.append(
-            "<div class='q2'>Q2 script:"+
+            "<div class='q2'>Q3 script 2:"+
                 "<a class='url' target='_blank'>...</a>"+
                 "<textarea class='script'></textarea>"+
             "</div>"
@@ -364,7 +376,9 @@ function test_entry( $host, test, type ) {
     if (type_q2) {    
         var $q2= $host.find(".q2");
         var q2_update_f= function() {
-            var url= q2_url( $q2 );
+            // q2 not available anymore, test q3 servers
+            //
+            var url= q2_url( $q3 );
             $q2.find("a.url").attr( "href", url ).text( url ).attr( "title", url );
         };
 
@@ -535,6 +549,18 @@ function test_init( $host, test ) {
                     gridsize: gridsize
                 } ) );
 
+            // q2 not available anymore, test q3 servers
+
+            $host.find(".q2").attr( "url_params_x",
+                form_params( {
+                    projection: projection,
+                    validtime: validtime,
+                    decimals: decimals,
+                    origintime: origintime,
+                    gridsize: gridsize
+                } ) );
+
+            /*
             $host.find(".q2").attr( "url_params_x",
                 form_params( {
                     projection: projection || "stereographic,20,90,60:6,51.3,49,70.2",
@@ -543,6 +569,7 @@ function test_init( $host, test ) {
                     originTime: origintime,
                     gridSize: gridsize || "5,6"
                 } ) );
+            */
 
             // Update the URLs
             //
@@ -630,7 +657,6 @@ function init_buttons( $set ) {
                 var a= trim_end( $q3_result.text() )    // remove trailing newline
                         .replace( /^\"/, "" ).replace( /\"$/, "" );     // remove '"' surrounding a text string (s.a. '"ok"'->'ok')
 
-                var b= $ok.text();
                 var st;
                 
                 if (!use_q2) {
@@ -638,6 +664,8 @@ function init_buttons( $set ) {
                     // Compare the output by a special function that adds color markup to 'q3',
                     // trying to mark the places that were wrong.
                     //
+                    var b= $ok.text();
+
                     var arr= differ_json( a, b );
                         //
                         // { "ok"|"fail", null | q3_highlighted_str, null | ok_highlighted_str }
@@ -655,6 +683,11 @@ function init_buttons( $set ) {
                     // Compare the output by a special function that adds color markup to both
                     // entries, highlighting slight deviations and major differences.
                     //
+                    // q2 not available anymore, test q3 servers
+                    //
+                    var b= trim_end( $ok.text() )
+                        .replace( /^\"/, "" ).replace( /\"$/, "" );
+
                     var arr= differ_matrices( a, b );
                         //
                         // { "ok"|"almost"|"fail", q3_highlighted_str, q2_highlighted_str }
@@ -720,6 +753,34 @@ console.log( gateway_url( q3_url ) );
                 }
             } );   
             
+            // q2 not available anymore, test q3 servers
+
+            if (use_q2) {
+            $.ajax( {
+                url: gateway_url( q2_url ),
+                type: "GET",
+                dataType: "text",
+                cache: false,
+                timeout: 10000, // ms
+                success: function( data, status, xml_http_req ) {
+                    if (!data) {
+                        $this.attr( { picture: "failed" } );
+                        $test.attr( { status: "fail" } );
+                        $ok.text( "(nothing returned; server down?)" );
+                    } else {
+                        $ok.text( data );
+                        done_f();
+                    }
+                },
+                error: function(_,c,d) {
+                    $this.attr( "picture", "failed" );
+                    $test.attr( { status: "fail" } );
+                    $ok.text( "Failed: "+c+" "+d );
+                }
+            } );
+            }
+
+            /*
             if (use_q2) {
                 // Start fetching q2 results
                 //
@@ -747,6 +808,7 @@ console.log( gateway_url( q3_url ) );
                     }
                 } );   
             }
+            */
         }
 
     } );
