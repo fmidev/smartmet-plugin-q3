@@ -1413,6 +1413,8 @@ Matrix *SQD_Data::push_NativeMatrix_e(
     bool *target_ready,
     const DataIdList *dataIds_) CONST_IF_SERVER throw(/*E_BUG*/)
 {
+  try {
+
   // 07-Apr-2015 PKi: Handling point data (e.g. observations) too
   //
   bool pointData = (qd->Info()->Grid() == nullptr);
@@ -1769,6 +1771,13 @@ Matrix *SQD_Data::push_NativeMatrix_e(
 
   //  m_->set_readonly();   // Make the matrix read-only
   return m_;
+
+  }
+
+  catch (const std::exception &ex)
+  {
+    luaL_error( L, "Data retrieval error: %s", ex.what());
+  }
 }
 
 /*
@@ -1835,6 +1844,8 @@ const unsigned int NewBaseMinTimeStepInSecs = 60;
     const NA_Param &p,
     bool flightRoute) const
 {
+  try {
+
   NFmiFastQueryInfo fi(qd);
 #if 1
   fi.First();  // Just in case (faint memory this would be needed?) -- AKa 24-Mar-10
@@ -2010,6 +2021,12 @@ const unsigned int NewBaseMinTimeStepInSecs = 60;
   matrix_fill(*m, nm);
 
   return m;
+
+  }
+  catch (const std::exception &ex)
+  {
+    luaL_error( L, "Data retrieval error: %s", ex.what());
+  }
 }
 
 /*
