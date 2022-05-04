@@ -157,7 +157,7 @@ lib_env.Append( CPPDEFINES= ["USE_NEWBASE"] )
 # 14-Feb-2011 PKi: using multithreaded version of newbase
 #
 lib_env.Append( CPPPATH= [ PREFIX+"/include/smartmet", PREFIX+"/include/cairo",
-                           PREFIX+"/geos39/include", PREFIX+"/gdal32/include", PREFIX+"/proj72/include" ],
+                           PREFIX+"/geos310/include", PREFIX+"/gdal34/include", PREFIX+"/proj72/include" ],
                 LIBS=   ['smartmet-newbase']
                 )    
 

@@ -7,6 +7,8 @@
 # error "Shouldn't even read this file in."
 #endif
 
+#include <geos/geom/Coordinate.inl>
+
 #include "Contour.h"
 
 #include "Matrix.h"
