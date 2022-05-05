@@ -23,8 +23,8 @@ class Q3Engine
 
   class Track;
 
-  std::vector<std::string> getNames() const;
-  const Track *getTrack(const char *name) const;
+  std::vector<std::string> getNames(bool getAliases = true) const;
+  const Track *getTrack(const char *name, bool getAlias = true) const;
 
   static int getAddonConfigSetting(lua_State *L);
 

@@ -30,7 +30,8 @@ class Q3Engine::Track
   Track(const std::string &name_,
         time_t run_secs_,
         const char *tmp_pattern_,
-        size_t tmp_threshold_);
+        size_t tmp_threshold_,
+        const std::string &alias_ = "");
   ~Track();
 
   TrackedData *getData_must_release_(const JDay &ot,
@@ -53,11 +54,13 @@ class Q3Engine::Track
   void add(const char *mask_fn, unsigned refresh_secs, unsigned wiping[], bool relative_uv) throw(E_USAGE);
 
   const std::string &getName() const { return name; }
+  const std::string &getAlias() const { return alias; }
  private:
   /* 'watch' is constant after initialization and needs no locking.
    */
   /*const*/ std::vector<TrackerBase *> watch;
   const std::string name;
+  const std::string alias; // Track alias name, e.g. 'MEPS' for 'HIR'
 
   const time_t run_secs;  // difference between subsequent runs (0 = no regular runs)
 

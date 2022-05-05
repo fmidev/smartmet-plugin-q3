@@ -54,9 +54,11 @@ static const ApiScalarParam Z("Z");
 Q3Engine::Track::Track(const string &name_,
                        time_t run_secs_,
                        const char *tmp_pattern_,
-                       size_t tmp_threshold_)
+                       size_t tmp_threshold_,
+                       const string &alias_)
     : watch(),
       name(name_),
+      alias(alias_),
       run_secs(run_secs_),
       tmp_pattern(tmp_pattern_),
       tmp_threshold(tmp_threshold_)

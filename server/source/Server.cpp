@@ -432,11 +432,23 @@ int Q3Server::query(const map<string, string> &key_val,
     lua_newtable(L);
     int i = 0;
 
-    for (vector<string>::const_iterator it = names.begin(); it != names.end(); ++it, i++)
+    for (vector<string>::const_iterator it = names.begin(); it != names.end(); ++it)
     {
+      const char *cstr = it->c_str();
+      const Q3Engine::Track *track = itsEngine->getTrack(cstr, false);
+      if (!track)
+      {
+        LOG_BUG("No track for %s", cstr);
+      }
+
+      if (!(track->getAlias().empty()))
+        continue;
+
       lua_pushinteger(L, i + 1);
       lua_pushstring(L, it->c_str());
       lua_settable(L, -3);
+
+      i++;
     }
 
     lua_setglobal(L, "mt_tracknames");

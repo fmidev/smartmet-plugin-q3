@@ -184,6 +184,25 @@ static void q3_config(const char *conf,
     const int SUBT = lua_gettop(L);  // absolute index to '{ runs=..., ... }' table
     Q3Engine::Track *t;
     {
+      // Forward queries to another track (e.g. HIR to MEPS) ?
+
+      string alias;
+
+      lua_pushliteral(L, "alias");
+      lua_gettable(L, SUBT);
+      if (!lua_isnil(L, -1))
+      {
+        alias = lua_tostring(L, -1);
+
+        if (alias == key)
+        {
+          LOG_WARNING("Warning: self alias '%s' ignored", alias.c_str());
+          alias.clear();
+        }
+        else if (trackers.find(alias) != trackers.end())
+          throw E_LOG_USAGE("Redefinition of track '%s'", alias.c_str());
+      }
+
       lua_pushliteral(L, "runs");
       lua_gettable(L, SUBT);
       unsigned run_secs =
@@ -247,6 +266,12 @@ static void q3_config(const char *conf,
 
       t = new Q3Engine::Track(key, run_secs, tmp_pattern, tmp_threshold);
       trackers[key] = t;
+
+      if (!alias.empty())
+      {
+        auto ta = new Q3Engine::Track(alias.c_str(), run_secs, tmp_pattern, tmp_threshold, key);
+        trackers[alias.c_str()] = ta;
+      }
     }
     lua_settop(L, SUBT);  // restore stack to where it was (pops 3)
 
@@ -431,24 +456,37 @@ Q3Engine::~Q3Engine()
 
 /*
 */
-vector<string> Q3Engine::getNames() const
+vector<string> Q3Engine::getNames(bool getAliases) const
 {
   vector<string> ret;
 
   for (map<string, Track *>::const_iterator it = trackers.begin(); it != trackers.end(); ++it)
   {
-    ret.push_back(it->first);
+    if (getAliases || it->second->getAlias().empty())
+      ret.push_back(it->first);
   }
   return ret;
 }
 
 /*
 */
-const Q3Engine::Track *Q3Engine::getTrack(const char *name) const
+const Q3Engine::Track *Q3Engine::getTrack(const char *name, bool getAlias) const
 {
   // Need to do it like this (and not straight indexing) because we're 'const'
   //
   map<string, Track *>::const_iterator it = trackers.find(name);
+
+  if (getAlias && (it != trackers.end()))
+  {
+    auto alias = it->second->getAlias();
+
+    if (!alias.empty())
+    {
+      LOG_WARNING("Warning: using track alias %s (%s)", alias.c_str(), name);
+      it = trackers.find(alias.c_str());
+    }
+  }
+
   if (it != trackers.end())
   {
     return it->second;
