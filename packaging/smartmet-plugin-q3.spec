@@ -2,7 +2,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet q3 plugin
 Name: %{SPECNAME}
-Version: 21.10.15
+Version: 22.5.5
 Release: 1.el7.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -20,16 +20,16 @@ BuildRequires:  boost169-devel
 BuildRequires:	bzip2-devel >= 1.0.6
 BuildRequires:	libpng-devel >= 1.5.13
 BuildRequires:	libjpeg-turbo-devel >= 1.2.90
-BuildRequires:  smartmet-library-tron >= 21.6.21
-BuildRequires:	smartmet-library-spine-devel >= 21.10.11
+BuildRequires:  smartmet-library-tron >= 22.1.21
+BuildRequires:	smartmet-library-spine-devel >= 22.3.18
 Requires:       proj72 >= 7.2.2
 Requires:       lua >= 5.1.4
 Requires:       bzip2-libs >= 1.0.6
 Requires:       libpng >= 1.5.13
 Requires:       libjpeg-turbo >= 1.2.90
-Requires:       smartmet-library-newbase >= 21.9.22
-Requires:       smartmet-library-spine >= 21.10.11
-Requires:       smartmet-server >= 21.9.7
+Requires:       smartmet-library-newbase >= 22.4.28
+Requires:       smartmet-library-spine >= 22.3.18
+Requires:       smartmet-server >= 21.11.25
 Obsoletes:      fmi-q3-lib
 Obsoletes:      fmi-q3-config
 Obsoletes:      fmi-q3-brainstorm
@@ -71,6 +71,9 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/smartmet/plugins/q3plugin.conf
 
 %changelog
+* Thu May  5 2022 Pertti Kinnia <pertti.kinnia@fmi.fi> - 22.5.5-1.el7.fmi
+- Added track alias handling to forward queries to another track (e.g. HIR to MEPS); BRAINSTORM-2257
+- Added geos/geom/Coordinate.inl include for contouring (otherwise undefined symbols). Updated geos and gdal include paths
 * Fri Oct 15 2021 Pertti Kinnia <pertti.kinnia@fmi.fi> - 21.10.15-1.el7.fmi
 - Added more exception handling for exceptions thrown by newbase (BRAINSTORM-2180)
 * Tue Aug 31 2021 Mika Heiskanen <mika.heiskanen@fmi.fi> - 21.8.31-1.el7.fmi
