@@ -2,7 +2,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet q3 plugin
 Name: %{SPECNAME}
-Version: 22.5.5
+Version: 22.8.24
 Release: 1.el7.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -71,6 +71,8 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/smartmet/plugins/q3plugin.conf
 
 %changelog
+* Wed Aug 24 2022 Mika Heiskanen <mika.heiskanen@fmi.fi> - 22.8.24-1.el7.fmi
+- Fixed resolution calculation in SQD_Data
 * Thu May  5 2022 Pertti Kinnia <pertti.kinnia@fmi.fi> - 22.5.5-1.el7.fmi
 - Added track alias handling to forward queries to another track (e.g. HIR to MEPS); BRAINSTORM-2257
 - Added geos/geom/Coordinate.inl include for contouring (otherwise undefined symbols). Updated geos and gdal include paths
