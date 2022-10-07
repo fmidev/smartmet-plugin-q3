@@ -11,28 +11,28 @@ Vendor: Finnish Meteorological Institute
 Source: %{name}.tgz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
-BuildRequires:	scons
-BuildRequires:	gcc-c++ >= 4.8.5
-BuildRequires:	libstdc++-devel >= 4.8.5
-BuildRequires:  proj72-devel >= 7.2.2
-BuildRequires:	lua-devel >= 5.1.4
-BuildRequires:  boost169-devel
-BuildRequires:	bzip2-devel >= 1.0.6
-BuildRequires:	libpng-devel >= 1.5.13
-BuildRequires:	libjpeg-turbo-devel >= 1.2.90
-BuildRequires:  smartmet-library-tron >= 22.1.21
-BuildRequires:	smartmet-library-spine-devel >= 22.3.18
-Requires:       proj72 >= 7.2.2
-Requires:       lua >= 5.1.4
-Requires:       bzip2-libs >= 1.0.6
-Requires:       libpng >= 1.5.13
-Requires:       libjpeg-turbo >= 1.2.90
-Requires:       smartmet-library-newbase >= 22.4.28
-Requires:       smartmet-library-spine >= 22.3.18
-Requires:       smartmet-server >= 21.11.25
-Obsoletes:      fmi-q3-lib
-Obsoletes:      fmi-q3-config
-Obsoletes:      fmi-q3-brainstorm
+BuildRequires: scons
+BuildRequires: gcc-c++ >= 4.8.5
+BuildRequires: libstdc++-devel >= 4.8.5
+BuildRequires: proj72-devel >= 7.2.2
+BuildRequires: lua-devel >= 5.1.4
+BuildRequires: boost169-devel
+BuildRequires: bzip2-devel >= 1.0.6
+BuildRequires: libpng-devel >= 1.5.13
+BuildRequires: libjpeg-turbo-devel >= 1.2.90
+BuildRequires: smartmet-library-tron >= 22.1.21
+BuildRequires: smartmet-library-spine-devel >= 22.3.18
+Requires: proj72 >= 7.2.2
+Requires: lua >= 5.1.4
+Requires: bzip2-libs >= 1.0.6
+Requires: libpng >= 1.5.13
+Requires: libjpeg-turbo >= 1.2.90
+Requires: smartmet-library-newbase >= 22.4.28
+Requires: smartmet-library-spine >= 22.3.18
+Requires: smartmet-server >= 21.11.25
+Obsoletes: fmi-q3-lib
+Obsoletes: fmi-q3-config
+Obsoletes: fmi-q3-brainstorm
 
 %description
 SmartMet q3 plugin
