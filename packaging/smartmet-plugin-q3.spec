@@ -2,7 +2,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet q3 plugin
 Name: %{SPECNAME}
-Version: 22.8.24
+Version: 22.10.7
 Release: 1.el7.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -20,16 +20,16 @@ BuildRequires: boost169-devel
 BuildRequires: bzip2-devel >= 1.0.6
 BuildRequires: libpng-devel >= 1.5.13
 BuildRequires: libjpeg-turbo-devel >= 1.2.90
-BuildRequires: smartmet-library-tron >= 22.1.21
-BuildRequires: smartmet-library-spine-devel >= 22.3.18
+BuildRequires: smartmet-library-tron >= 22.6.17
+BuildRequires: smartmet-library-spine-devel >= 22.9.5
 Requires: proj72 >= 7.2.2
 Requires: lua >= 5.1.4
 Requires: bzip2-libs >= 1.0.6
 Requires: libpng >= 1.5.13
 Requires: libjpeg-turbo >= 1.2.90
-Requires: smartmet-library-newbase >= 22.4.28
-Requires: smartmet-library-spine >= 22.3.18
-Requires: smartmet-server >= 21.11.25
+Requires: smartmet-library-newbase >= 22.8.29
+Requires: smartmet-library-spine >= 22.9.5
+Requires: smartmet-server >= 22.10.5
 Obsoletes: fmi-q3-lib
 Obsoletes: fmi-q3-config
 Obsoletes: fmi-q3-brainstorm
@@ -71,6 +71,9 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/smartmet/plugins/q3plugin.conf
 
 %changelog
+* Fri Oct  7 2022 Pertti Kinnia <pertti.kinnia@fmi.fi> - 22.10.7-1.el7.fmi
+- Support for multiple track aliases; BRAINSTORM-2257
+- Logging track alias when track is used, not when initializing the query
 * Wed Aug 24 2022 Mika Heiskanen <mika.heiskanen@fmi.fi> - 22.8.24-1.el7.fmi
 - Fixed resolution calculation in SQD_Data
 * Thu May  5 2022 Pertti Kinnia <pertti.kinnia@fmi.fi> - 22.5.5-1.el7.fmi
