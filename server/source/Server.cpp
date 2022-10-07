@@ -425,7 +425,7 @@ int Q3Server::query(const map<string, string> &key_val,
       }
 
       lua_pushstring(L, cstr);
-      new (L) TrackProxy(track);
+      new (L) TrackProxy(track, (cstr != track->getName() ? cstr : ""));
       lua_settable(L, LUA_GLOBALSINDEX);
     }
 

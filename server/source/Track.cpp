@@ -551,7 +551,12 @@ int TrackProxyBind::call(lua_State *L) throw(E_ERROR)
     proto(L, "TrackProxy,string");
   }
 
-  const Q3Engine::Track &my = *(TrackProxy::instance(L, 1)->getTrack());
+  const TrackProxy *proxy = TrackProxy::instance(L, 1);
+  const Q3Engine::Track &my = *(proxy->getTrack());
+
+  if (!(proxy->getAlias().empty()))
+    LOG_WARNING("Warning: using track alias %s (%s)",
+                my.getName().c_str(), proxy->getAlias().c_str());
 
   JDay ot_absolute;     // origintime as YYYYMMDDHHMMSS (or NOW, TODAY)
   bool any_ot = false;  // reel back in time; any origintime that otherwise matches will do

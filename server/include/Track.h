@@ -96,11 +96,13 @@ struct TrackProxyBind
 class TrackProxy : public LuaNew<TrackProxyBind>
 {
  public:
-  TrackProxy(const Q3Engine::Track *t_) : t(t_) { INVARIANT(); }
+  TrackProxy(const Q3Engine::Track *t_, const std::string &a_ = "") : t(t_), a(a_) { INVARIANT(); }
   ~TrackProxy() {}
-  const Q3Engine::Track *getTrack() { return t; }
+  const Q3Engine::Track *getTrack() const { return t; }
+  const std::string &getAlias() const { return a; }
  private:
   const Q3Engine::Track *t;
+  const std::string a;
 
   friend class TrackProxyBind;
 

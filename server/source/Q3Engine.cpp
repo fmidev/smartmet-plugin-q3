@@ -29,6 +29,8 @@
 
 #include <math.h>
 
+#include <boost/algorithm/string.hpp>
+
 // 02-Dec-2011 PKi: Labelizer (contour labeling) configuration from configuration file
 //
 #include "Labelizer.h"
@@ -186,21 +188,34 @@ static void q3_config(const char *conf,
     {
       // Forward queries to another track (e.g. HIR to MEPS) ?
 
-      string alias;
+      vector<string> aliasvect;
 
       lua_pushliteral(L, "alias");
       lua_gettable(L, SUBT);
       if (!lua_isnil(L, -1))
       {
-        alias = lua_tostring(L, -1);
+        string aliases = lua_tostring(L, -1), tmp;
+        boost::split(aliasvect, aliases, boost::is_any_of(","));
 
-        if (alias == key)
+        for (vector<string>::const_iterator it = aliasvect.begin(); it != aliasvect.end(); it++)
         {
-          LOG_WARNING("Warning: self alias '%s' ignored", alias.c_str());
-          alias.clear();
+          auto alias = boost::trim_copy(*it);
+
+          if (alias.empty())
+            LOG_WARNING("Warning: empty alias for track '%s'", key);
+          else if (alias == key)
+          {
+            LOG_WARNING("Warning: self alias '%s' ignored", alias.c_str());
+            aliases.clear();
+          }
+          else if (trackers.find(alias) != trackers.end())
+            throw E_LOG_USAGE("Redefinition of track '%s' ('%s')", alias.c_str(), key);
+          else
+            tmp += ((tmp.empty() ? "" : ",") + alias);
         }
-        else if (trackers.find(alias) != trackers.end())
-          throw E_LOG_USAGE("Redefinition of track '%s'", alias.c_str());
+
+        if (aliases.empty() && (!tmp.empty()))
+          boost::split(aliasvect, tmp, boost::is_any_of(","));
       }
 
       lua_pushliteral(L, "runs");
@@ -267,10 +282,15 @@ static void q3_config(const char *conf,
       t = new Q3Engine::Track(key, run_secs, tmp_pattern, tmp_threshold);
       trackers[key] = t;
 
-      if (!alias.empty())
+      if (!aliasvect.empty())
       {
-        auto ta = new Q3Engine::Track(alias.c_str(), run_secs, tmp_pattern, tmp_threshold, key);
-        trackers[alias.c_str()] = ta;
+        for (vector<string>::const_iterator it = aliasvect.begin(); it != aliasvect.end(); it++)
+        {
+          auto alias = boost::trim_copy(*it);
+
+          auto ta = new Q3Engine::Track(alias.c_str(), run_secs, tmp_pattern, tmp_threshold, key);
+          trackers[alias.c_str()] = ta;
+        }
       }
     }
     lua_settop(L, SUBT);  // restore stack to where it was (pops 3)
@@ -482,7 +502,6 @@ const Q3Engine::Track *Q3Engine::getTrack(const char *name, bool getAlias) const
 
     if (!alias.empty())
     {
-      LOG_WARNING("Warning: using track alias %s (%s)", alias.c_str(), name);
       it = trackers.find(alias.c_str());
     }
   }
