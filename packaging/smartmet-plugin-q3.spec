@@ -2,7 +2,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet q3 plugin
 Name: %{SPECNAME}
-Version: 22.10.7
+Version: 22.10.19
 Release: 1.el7.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -71,6 +71,8 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/smartmet/plugins/q3plugin.conf
 
 %changelog
+* Wed Oct 19 2022 Pertti Kinnia <pertti.kinnia@fmi.fi> - 22.10.19-1.el7.fmi
+- Do not log use of track aliases, too much output. Logging must be controlled by a config setting or by a query which sets logging on (or off) if alias usage needs to be logged
 * Fri Oct  7 2022 Pertti Kinnia <pertti.kinnia@fmi.fi> - 22.10.7-1.el7.fmi
 - Support for multiple track aliases; BRAINSTORM-2257
 - Logging track alias when track is used, not when initializing the query
