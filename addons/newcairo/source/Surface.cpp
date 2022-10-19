@@ -452,7 +452,11 @@ cairo_status_t Surface::collect_f( void *v_this, const unsigned char *data, unsi
 */
 ImageSurface::~ImageSurface() {
     if (!finished) {
-        image_to_out();
+        try {
+            image_to_out();
+        }
+        catch (...) {
+        }
     }
 }
 
@@ -463,17 +467,22 @@ ImageSurface::~ImageSurface() {
 /*virtual*/ void ImageSurface::image_to_out() /*const*/ {
     assert( !finished );
 
-    cairo_status_t st= cairo_surface_write_to_png_stream( *this, collect_f, (void*)this );
-        //
-        // CAIRO_STATUS_SUCCESS (0)     ok
-        // CAIRO_STATUS_NO_MEMORY       out of memory
-        // (CAIRO_STATUS_SURFACE_TYPE_MISMATCH cannot happen)
-        // CAIRO_STATUS_WRITE_ERROR     error while writing (if returned by 'collect_f')
+    try {
+        cairo_status_t st= cairo_surface_write_to_png_stream( *this, collect_f, (void*)this );
+            //
+            // CAIRO_STATUS_SUCCESS (0)     ok
+            // CAIRO_STATUS_NO_MEMORY       out of memory
+            // (CAIRO_STATUS_SURFACE_TYPE_MISMATCH cannot happen)
+            // CAIRO_STATUS_WRITE_ERROR     error while writing (if returned by 'collect_f')
 
-    if (st) {
-        ostringstream os;
-        os << "Cairo error writing to image stream: " << cairo_status_to_string(st);
-        throw runtime_error( os.str().c_str() );
+        if (st) {
+            ostringstream os;
+            os << "Cairo error writing to image stream: " << cairo_status_to_string(st);
+            throw runtime_error( os.str().c_str() );
+        }
+    }
+    catch (...) {
+        throw runtime_error("Cairo exception when writing to image stream");
     }
 }
 
