@@ -232,6 +232,8 @@ TrackedData *TrackerBase::getData_must_release(const JDay &ot_orig,
           // away from 'available_data' and return nullptr
           //
           available_data.erase(it);
+          delete data;
+
           return nullptr;
         }
       }
