@@ -51,7 +51,8 @@ class Q3Engine::Track
   JDay getOriginTimeOfRun_(int x, NA_Level::Type &leveltype) const throw(E_USAGE);
 
   unsigned getRunSecs() const { return run_secs; }
-  void add(const char *mask_fn, unsigned refresh_secs, unsigned wiping[], bool relative_uv) throw(E_USAGE);
+  void add(const char *mask_fn, unsigned refresh_secs, unsigned wiping[], bool relative_uv,
+           uint number_to_keep) throw(E_USAGE);
 
   const std::string &getName() const { return name; }
   const std::string &getAlias() const { return alias; }

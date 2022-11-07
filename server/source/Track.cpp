@@ -82,7 +82,8 @@ Q3Engine::Track::~Track()
 void Q3Engine::Track::add(const char *mask_fn,
                           unsigned refresh_secs,
                           unsigned wiping[],
-                          bool relative_uv) throw(E_USAGE)
+                          bool relative_uv,
+                          uint number_to_keep) throw(E_USAGE)
 {
   // 09-Mar-2012 PKi: Pass track name too (used for logging only)
   //
@@ -95,9 +96,9 @@ void Q3Engine::Track::add(const char *mask_fn,
       ;
 
     if (it != watch.end())
-      watch.insert(it, new Sqd_Tracker(mask_fn, refresh_secs, wiping, relative_uv, getName()));
+      watch.insert(it, new Sqd_Tracker(mask_fn, refresh_secs, wiping, relative_uv, number_to_keep, getName()));
     else
-      watch.push_back(new Sqd_Tracker(mask_fn, refresh_secs, wiping, relative_uv, getName()));
+      watch.push_back(new Sqd_Tracker(mask_fn, refresh_secs, wiping, relative_uv, number_to_keep, getName()));
   }
   else if (ends_with(mask_fn, ".bz2"))
   {

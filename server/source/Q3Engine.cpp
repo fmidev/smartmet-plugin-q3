@@ -181,7 +181,10 @@ static void q3_config(const char *conf,
 
     unsigned wiping[] = {60, 180, 3600, 0};
     bool relative_uv = false;
-    const char *paramname[] = {"relative_uv", "wiping", "archwiping", "metawiping", nullptr, nullptr};
+    uint number_to_keep = 0;
+    const char *paramname[] = {
+      "relative_uv", "number_to_keep", "wiping", "archwiping", "metawiping", nullptr, nullptr
+    };
 
     const int SUBT = lua_gettop(L);  // absolute index to '{ runs=..., ... }' table
     Q3Engine::Track *t;
@@ -267,6 +270,8 @@ static void q3_config(const char *conf,
           {
             if (w == 0)
               relative_uv = lua_toboolean(L, -1);
+            else if (w == 1)
+              number_to_keep = lua_tointeger(L, -1);
             else
               wiping[w - 1] = lua_tointeger(L, -1);
           }
@@ -336,8 +341,9 @@ static void q3_config(const char *conf,
       lua_pop(L, 1);
 
       bool mask_relative_uv = relative_uv;
+      uint mask_number_to_keep = number_to_keep;
 
-      for (int w = 0; paramname[w]; w += ((w == 0) ? 1 : 2))
+      for (int w = 0; paramname[w]; w += ((w <= 1) ? 1 : 2))
       {
         lua_pushstring(L, paramname[w]);
         lua_gettable(L, -2);
@@ -345,13 +351,15 @@ static void q3_config(const char *conf,
         {
           if (w == 0)
             mask_relative_uv = lua_toboolean(L, -1);
+          else if (w == 1)
+            mask_number_to_keep = lua_tointeger(L, -1);
           else
             // Filemask specific wiping for archived data too is set using 'wiping' (not
             // 'archwiping'),
             // and the value is stored to last/additional array slot. When wiping, if the last array
             // value
             // is nonzero, it will be used instead of the global or track specific value
-            wiping[(w == 1) ? 3 : w - 1] = lua_tointeger(L, -1);
+            wiping[(w == 2) ? 3 : w - 2] = lua_tointeger(L, -1);
 //1=3, 3=2
 //0=3, 2=2
         }
@@ -366,7 +374,7 @@ static void q3_config(const char *conf,
       lua_pushinteger(L, 1);
       lua_gettable(L, -2);
       const char *mask_fn = lua_tostring(L, -1);  // 'rootdir=' already applied
-      t->add(mask_fn, refresh_secs, wiping, mask_relative_uv);
+      t->add(mask_fn, refresh_secs, wiping, mask_relative_uv, mask_number_to_keep);
 
       wiping[3] = 0;
 #if 1
