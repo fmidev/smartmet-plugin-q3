@@ -2,7 +2,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet q3 plugin
 Name: %{SPECNAME}
-Version: 22.10.19
+Version: 22.11.8
 Release: 1.el7.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -21,15 +21,15 @@ BuildRequires: bzip2-devel >= 1.0.6
 BuildRequires: libpng-devel >= 1.5.13
 BuildRequires: libjpeg-turbo-devel >= 1.2.90
 BuildRequires: smartmet-library-tron >= 22.6.17
-BuildRequires: smartmet-library-spine-devel >= 22.9.5
+BuildRequires: smartmet-library-spine-devel >= 22.10.26
 Requires: proj72 >= 7.2.2
 Requires: lua >= 5.1.4
 Requires: bzip2-libs >= 1.0.6
 Requires: libpng >= 1.5.13
 Requires: libjpeg-turbo >= 1.2.90
 Requires: smartmet-library-newbase >= 22.8.29
-Requires: smartmet-library-spine >= 22.9.5
-Requires: smartmet-server >= 22.10.5
+Requires: smartmet-library-spine >= 22.10.26
+Requires: smartmet-server >= 22.11.7
 Obsoletes: fmi-q3-lib
 Obsoletes: fmi-q3-config
 Obsoletes: fmi-q3-brainstorm
@@ -71,6 +71,8 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/smartmet/plugins/q3plugin.conf
 
 %changelog
+* Tue Nov  8 2022 Pertti Kinnia <pertti.kinnia@fmi.fi> - 22.11.8-1.el7.fmi
+- Fixed memory leak (BRAINSTORM-1460) and added number_to_keep config setting (BRAINSTORM-2426)
 * Wed Oct 19 2022 Pertti Kinnia <pertti.kinnia@fmi.fi> - 22.10.19-1.el7.fmi
 - Do not log use of track aliases, too much output. Logging must be controlled by a config setting or by a query which sets logging on (or off) if alias usage needs to be logged
 * Fri Oct  7 2022 Pertti Kinnia <pertti.kinnia@fmi.fi> - 22.10.7-1.el7.fmi
