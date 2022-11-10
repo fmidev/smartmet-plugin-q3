@@ -2,7 +2,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet q3 plugin
 Name: %{SPECNAME}
-Version: 22.11.8
+Version: 22.11.10
 Release: 1.el7.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -71,6 +71,8 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/smartmet/plugins/q3plugin.conf
 
 %changelog
+* Thu Nov 10 2022 Pertti Kinnia <pertti.kinnia@fmi.fi> - 22.11.10-1.el7.fmi
+- Set lua gc pause and step multiplier, still constant growth in memory usage
 * Tue Nov  8 2022 Pertti Kinnia <pertti.kinnia@fmi.fi> - 22.11.8-1.el7.fmi
 - Fixed memory leak (BRAINSTORM-1460) and added number_to_keep config setting (BRAINSTORM-2426)
 * Wed Oct 19 2022 Pertti Kinnia <pertti.kinnia@fmi.fi> - 22.10.19-1.el7.fmi

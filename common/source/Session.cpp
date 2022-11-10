@@ -804,6 +804,9 @@ int Session::init( lua_State *L ) {
 
     const int old_tos= lua_gettop(L);    
 
+    lua_gc(L, LUA_GCSETPAUSE, 50);
+    lua_gc(L, LUA_GCSETSTEPMUL, 400);
+
     // Declare 'LOG()' as a global function (for debugging); _before_ 'proto'.
     //
     lua_pushcfunction( L, Logger::LOG_ );
