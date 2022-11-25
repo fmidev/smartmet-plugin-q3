@@ -1110,6 +1110,6 @@ ERROR:
   return 0;  // never
 #else
   L_nilerr(err.c_str());
-  return 0;
+  return 2;
 #endif
 }
