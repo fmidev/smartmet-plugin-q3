@@ -86,7 +86,7 @@
 // NOTE: THIS CONFIG CURRENTLY ONLY AFFECTS THE SERVER. Metqu command line tool uses
 //      the 'nil,err' return idiom. --AKa 9-Dec-2010
 //
-#define CONFIG_TRACK_ERRORS_ENABLED
+//#define CONFIG_TRACK_ERRORS_ENABLED
 
 
 //---

@@ -2,7 +2,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet q3 plugin
 Name: %{SPECNAME}
-Version: 22.11.10
+Version: 22.11.25
 Release: 1.el7.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -21,15 +21,15 @@ BuildRequires: bzip2-devel >= 1.0.6
 BuildRequires: libpng-devel >= 1.5.13
 BuildRequires: libjpeg-turbo-devel >= 1.2.90
 BuildRequires: smartmet-library-tron >= 22.6.17
-BuildRequires: smartmet-library-spine-devel >= 22.10.26
+BuildRequires: smartmet-library-spine-devel >= 22.11.25
 Requires: proj72 >= 7.2.2
 Requires: lua >= 5.1.4
 Requires: bzip2-libs >= 1.0.6
 Requires: libpng >= 1.5.13
 Requires: libjpeg-turbo >= 1.2.90
-Requires: smartmet-library-newbase >= 22.8.29
-Requires: smartmet-library-spine >= 22.10.26
-Requires: smartmet-server >= 22.11.7
+Requires: smartmet-library-newbase >= 22.11.14
+Requires: smartmet-library-spine >= 22.11.25
+Requires: smartmet-server >= 22.11.25
 Obsoletes: fmi-q3-lib
 Obsoletes: fmi-q3-config
 Obsoletes: fmi-q3-brainstorm
@@ -71,6 +71,8 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/smartmet/plugins/q3plugin.conf
 
 %changelog
+* Fri Nov 25 2022 Pertti Kinnia <pertti.kinnia@fmi.fi> - 22.11.25-1.el7.fmi
+- Use r,err (nil,err) return when searching for matching data and no data is found. Call to luaL_error results to longjmp() to be called (at least when lua is build with c -compiler) and destructors are not called
 * Thu Nov 10 2022 Pertti Kinnia <pertti.kinnia@fmi.fi> - 22.11.10-1.el7.fmi
 - Set lua gc pause and step multiplier, still constant growth in memory usage
 * Tue Nov  8 2022 Pertti Kinnia <pertti.kinnia@fmi.fi> - 22.11.8-1.el7.fmi

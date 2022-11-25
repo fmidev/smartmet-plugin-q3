@@ -1109,6 +1109,7 @@ ERROR:
   luaL_error(L, err.c_str());
   return 0;  // never
 #else
-  return L_nilerr(err.c_str());
+  L_nilerr(err.c_str());
+  return 0;
 #endif
 }
