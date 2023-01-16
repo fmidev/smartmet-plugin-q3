@@ -2,7 +2,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet q3 plugin
 Name: %{SPECNAME}
-Version: 22.11.25
+Version: 23.1.16
 Release: 1.el7.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -71,6 +71,8 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/smartmet/plugins/q3plugin.conf
 
 %changelog
+* Mon Jan 16 2023 Pertti Kinnia <pertti.kinnia@fmi.fi> - 23.1.16-1.el7.fmi
+- MAXZ speedup by fetching Z outside grids_by_level loop (BRAINSTORM-2515). Some aviation lua files (listed in issue) were also updated; gridsize was not set, default 50x50 was used
 * Fri Nov 25 2022 Pertti Kinnia <pertti.kinnia@fmi.fi> - 22.11.25-1.el7.fmi
 - Use r,err (nil,err) return when searching for matching data and no data is found. Call to luaL_error results to longjmp() to be called (at least when lua is build with c -compiler) and destructors are not called
 * Thu Nov 10 2022 Pertti Kinnia <pertti.kinnia@fmi.fi> - 22.11.10-1.el7.fmi
