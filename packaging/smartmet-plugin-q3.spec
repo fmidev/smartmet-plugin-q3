@@ -2,7 +2,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet q3 plugin
 Name: %{SPECNAME}
-Version: 23.1.16
+Version: 23.1.19
 Release: 1.el7.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -71,6 +71,8 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/smartmet/plugins/q3plugin.conf
 
 %changelog
+* Thu Jan 19 2023 Pertti Kinnia <pertti.kinnia@fmi.fi> - 23.1.19-1.el7.fmi
+- areamask queries were slow in production. Removed lua gc settings (more aggressive, now back to using defaults) should they affect througput (BRAINSTORM-2522)
 * Mon Jan 16 2023 Pertti Kinnia <pertti.kinnia@fmi.fi> - 23.1.16-1.el7.fmi
 - MAXZ speedup by fetching Z outside grids_by_level loop (BRAINSTORM-2515). Some aviation lua files (listed in issue) were also updated; gridsize was not set, default 50x50 was used
 * Fri Nov 25 2022 Pertti Kinnia <pertti.kinnia@fmi.fi> - 22.11.25-1.el7.fmi
