@@ -160,6 +160,9 @@ static void wms_handler(SmartMet::Spine::Reactor &theReactor,
  */
 Plugin::Plugin(SmartMet::Spine::Reactor *server, const char *cfg_file)
     : Q3Server(cfg_file), SmartMetPlugin() {
+
+  using namespace boost::placeholders;
+
   assert(server);
   if (server->getRequiredAPIVersion() != SMARTMET_API_VERSION) {
     // Better to use 'stderr' for this than the logging system. Should not
