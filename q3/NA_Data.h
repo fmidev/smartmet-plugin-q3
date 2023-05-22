@@ -221,7 +221,7 @@ private:
 
 private:
   NA_Info &operator=(
-      const NA_Info &o); // not allowed (so we can keep the fields 'const')
+      const NA_Info &o) = delete;
 
 #ifndef NDEBUG
   void _INVARIANT(const char *file, unsigned line) const {
