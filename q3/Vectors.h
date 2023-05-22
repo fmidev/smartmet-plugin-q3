@@ -37,8 +37,10 @@ struct Point {
   double x, y;
 
   Point(double x_, double y_) : x(x_), y(y_) {}
-  Point(const Point &o) : x(o.x), y(o.y) {}
+  Point(const Point &o) = default;
   Point() : x(0.0), y(0.0) {}
+
+  Point& operator = (const Point&) = default;
 
   static constexpr double epsilon = 0.0000001;
 
