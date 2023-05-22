@@ -12,6 +12,8 @@ FLAGS += -Wno-variadic-macros -Wno-narrowing -mfpmath=sse -msse2 $(pkg_config --
 
 DEFINES = -DUNIX -D_REENTRANT -DSMOOTH_AND_STRETCH -DUSE_NEWBASE -DUSE_TRON -DUSE_UNSTABLE_GEOS_CPP_API
 
+CFLAGS += -DLUA_COMPAT_5_3
+
 LIBS += -L$(libdir) \
 	$(REQUIRED_LIBS) \
 	-lsmartmet-newbase \
