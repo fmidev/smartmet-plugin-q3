@@ -1114,7 +1114,7 @@ int Context::scale( lua_State *L ) {
     double sy= (lua_gettop(L)>1) ? lua_tonumber(L,2) : sx;
 
     if ((sx==0.0) || (sy==0.0)) {
-        luaL_error( L, "Scale needs to be non-zero (%lf, %lf)", sx, sy );
+        luaL_error( L, "Scale needs to be non-zero (%f, %f)", sx, sy );
     }
 
     cairo_scale(my, sx,sy);

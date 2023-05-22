@@ -515,7 +515,12 @@ int Q3Server::query(const map<string, string> &key_val,
 
   if (st != 0)
   {
-    err = lua_tostring(L, -1);
+    int index = (lua_gettop(L) == 2) ? 2 : -1;
+
+    if (lua_isnil(L, index) || (!lua_isstring(L, index)))
+      err = "Unknown error";
+    else
+      err = lua_tostring(L, index);
   }
   else
   {

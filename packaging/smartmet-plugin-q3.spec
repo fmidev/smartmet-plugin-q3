@@ -2,7 +2,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet q3 plugin
 Name: %{SPECNAME}
-Version: 22.10.7
+Version: 23.1.19
 Release: 1.el7.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -21,15 +21,15 @@ BuildRequires: bzip2-devel >= 1.0.6
 BuildRequires: libpng-devel >= 1.5.13
 BuildRequires: libjpeg-turbo-devel >= 1.2.90
 BuildRequires: smartmet-library-tron >= 22.6.17
-BuildRequires: smartmet-library-spine-devel >= 22.9.5
+BuildRequires: smartmet-library-spine-devel >= 22.11.25
 Requires: proj72 >= 7.2.2
 Requires: lua >= 5.1.4
 Requires: bzip2-libs >= 1.0.6
 Requires: libpng >= 1.5.13
 Requires: libjpeg-turbo >= 1.2.90
-Requires: smartmet-library-newbase >= 22.8.29
-Requires: smartmet-library-spine >= 22.9.5
-Requires: smartmet-server >= 22.10.5
+Requires: smartmet-library-newbase >= 22.11.14
+Requires: smartmet-library-spine >= 22.11.25
+Requires: smartmet-server >= 22.11.25
 Obsoletes: fmi-q3-lib
 Obsoletes: fmi-q3-config
 Obsoletes: fmi-q3-brainstorm
@@ -71,6 +71,18 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/smartmet/plugins/q3plugin.conf
 
 %changelog
+* Thu Jan 19 2023 Pertti Kinnia <pertti.kinnia@fmi.fi> - 23.1.19-1.el7.fmi
+- areamask queries were slow in production. Removed lua gc settings (more aggressive, now back to using defaults) should they affect througput (BRAINSTORM-2522)
+* Mon Jan 16 2023 Pertti Kinnia <pertti.kinnia@fmi.fi> - 23.1.16-1.el7.fmi
+- MAXZ speedup by fetching Z outside grids_by_level loop (BRAINSTORM-2515). Some aviation lua files (listed in issue) were also updated; gridsize was not set, default 50x50 was used
+* Fri Nov 25 2022 Pertti Kinnia <pertti.kinnia@fmi.fi> - 22.11.25-1.el7.fmi
+- Use r,err (nil,err) return when searching for matching data and no data is found. Call to luaL_error results to longjmp() to be called (at least when lua is build with c -compiler) and destructors are not called
+* Thu Nov 10 2022 Pertti Kinnia <pertti.kinnia@fmi.fi> - 22.11.10-1.el7.fmi
+- Set lua gc pause and step multiplier, still constant growth in memory usage
+* Tue Nov  8 2022 Pertti Kinnia <pertti.kinnia@fmi.fi> - 22.11.8-1.el7.fmi
+- Fixed memory leak (BRAINSTORM-1460) and added number_to_keep config setting (BRAINSTORM-2426)
+* Wed Oct 19 2022 Pertti Kinnia <pertti.kinnia@fmi.fi> - 22.10.19-1.el7.fmi
+- Do not log use of track aliases, too much output. Logging must be controlled by a config setting or by a query which sets logging on (or off) if alias usage needs to be logged
 * Fri Oct  7 2022 Pertti Kinnia <pertti.kinnia@fmi.fi> - 22.10.7-1.el7.fmi
 - Support for multiple track aliases; BRAINSTORM-2257
 - Logging track alias when track is used, not when initializing the query

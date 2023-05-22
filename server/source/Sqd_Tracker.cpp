@@ -44,7 +44,7 @@ using namespace std;
 */
 bool Sqd_Tracker::update(set<string> &seen_already) throw()
 {
-  set<string> current_files;
+  set<string> all_files, current_files;
   const char *fn_abs;
 
 #ifdef UNIX
@@ -62,14 +62,28 @@ bool Sqd_Tracker::update(set<string> &seen_already) throw()
 #error "Not implemented for Win32"
 #endif
   {
-    // Current set of files to update seen_already
-    current_files.insert(fn_abs);
+    all_files.insert(fn_abs);
+  }
 
+  if ((number_to_keep > 0) && (all_files.size() > number_to_keep))
+  {
+    // Current set of files to update seen_already
+    current_files.insert(prev(all_files.cend(), number_to_keep), all_files.cend());
+  }
+  else
+  {
+    current_files.swap(all_files);
+  }
+
+  for (auto fit = current_files.cbegin(); (fit != current_files.cend()); fit++)
+  {
     // Skip if filename known already
     //
     // "inserts val, but only if val doesn't already exist. The return value is an iterator to the
     // element inserted, and a boolean describing whether an insertion took place."
     //
+    fn_abs = fit->c_str();
+
     pair<set<string>::iterator, bool> p = seen_already.insert(fn_abs);
     if (!p.second)
     {

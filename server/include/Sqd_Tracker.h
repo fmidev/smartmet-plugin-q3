@@ -29,8 +29,10 @@ class Sqd_Tracker : public TrackerBase
               unsigned refresh_ms,
               unsigned wiping_[],
               bool relative_uv_,
+              uint number_to_keep_,
               const std::string &trackName_)
-      : TrackerBase(refresh_ms, wiping_, relative_uv_, trackName_), fn_abs_mask(fn_abs_mask_)
+      : TrackerBase(refresh_ms, wiping_, relative_uv_, trackName_), fn_abs_mask(fn_abs_mask_),
+        number_to_keep(number_to_keep_)
   {
     init();
   }
@@ -44,6 +46,7 @@ class Sqd_Tracker : public TrackerBase
   // data fields
   const std::string fn_abs_mask;
   // i.e. "/smartmet/data/hirlam/eurooppa/pinta/querydata/*_hirlam_eurooppa_pinta.sqd"
+  uint number_to_keep;
 };
 
 #endif

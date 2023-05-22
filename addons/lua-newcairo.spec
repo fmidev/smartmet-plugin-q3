@@ -16,7 +16,7 @@ Name: lua-newcairo
 # el5:      "Enterprise Linux 5.0"
 # fmi:      FMI
 #
-Version: 17.9.28
+Version: 22.10.19
 Release: 1.el7.fmi
 
 License: FMI
@@ -37,8 +37,8 @@ BuildRequires:	libstdc++-devel >= 4.8.5
 BuildRequires:	lua-devel >= 5.1.4
 Requires:       lua >= 5.1.4
 
-BuildRequires:  cairo-devel >= 1.14.8
-Requires:       cairo >= 1.14.8
+BuildRequires:  cairo-devel >= 1.15.12
+Requires:       cairo >= 1.15.12
 
 %description
 %{DESC}
@@ -92,6 +92,8 @@ Group: Development/Libraries
 
 #---
 %changelog
+* Wed Oct 19 2022 <pertti.kinnia@fmi.fi>
+- Catch cairo exception(s) when e.g surface is empty when writing surface to png stream; BRAINSTORM-2437
 * Thu Apr 20 2017 <mikko.visa@fmi.fi>
 - Rebuild, big changes in Q3
 * Fri Feb 3 2017 <mikko.visa@fmi.fi>

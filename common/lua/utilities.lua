@@ -337,10 +337,12 @@ function MAXZ( r, param, h_start, h_end, gs )
 	local m_h= matrix(gs,"Z")      -- heights of maximum values (-''-)
 
     for g in grids_by_level(r, {gridsize=gs}) do   -- validtime, projection defaults affect
+        local g_Z= g.Z
+
         for pos,v in points(g[param]) do
             assert( type.number(v) )
 
-            local h= g.Z[pos]
+            local h= g_Z[pos]
 
             if ((not h_start) or (h>=h_start)) and
                ((not h_end) or (h<=h_end)) and
