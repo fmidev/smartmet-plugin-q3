@@ -89,7 +89,7 @@ static float set_WD(float v) { // script -> SQD file (0 -> 360)
 
 #ifdef METQU
 SQD_Matrix::SQD_Matrix(SQD_Data *data, const JDay &vt, const NA_Level &lev,
-                       FmiParameterName e) throw(E_NO_MATCH)
+                       FmiParameterName e)
     : Matrix(data->getGridSize(), SQD_Tools::unit_by_id(e), data->isReadOnly()),
       fi(new_iter(data->getQD(), vt, lev, e)), proj(data->getProjection()),
       get_f(0), set_f(0)
@@ -121,7 +121,7 @@ SQD_Matrix::SQD_Matrix(SQD_Data *data, const JDay &vt, const NA_Level &lev,
 
 SQD_Matrix::SQD_Matrix(const SQD_Data *data, const JDay &vt,
                        const NA_Level &lev,
-                       FmiParameterName e) throw(E_NO_MATCH)
+                       FmiParameterName e)
     : Matrix(data->getGridSize(), SQD_Tools::unit_by_id(e), true /*read-only*/)
 #ifdef METQU
       ,

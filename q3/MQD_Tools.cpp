@@ -45,7 +45,7 @@ size_t getPageSize() {
  * 'length' is '(size_t)(-1)' for mapping till the end of the file
  */
 MemoryMap::MemoryMap(const char *fn, size_t start,
-                     size_t length_) throw(E_BAD_FILE /*,E_FATAL*/)
+                     size_t length_)
 #ifdef UNIX
     : fd(open(fn, O_RDONLY)), length(length_)
 #else

@@ -40,10 +40,10 @@ class SQD_Matrix : public Matrix {
 public:
 #ifdef METQU
   SQD_Matrix(SQD_Data *data, const JDay &vt, const NA_Level &lev,
-             FmiParameterName e) throw(E_NO_MATCH);
+             FmiParameterName e);
 #endif
   SQD_Matrix(const SQD_Data *data, const JDay &vt, const NA_Level &lev,
-             FmiParameterName e) throw(E_NO_MATCH);
+             FmiParameterName e);
 
   /*virtual*/ ~SQD_Matrix();
 

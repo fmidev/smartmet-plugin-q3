@@ -35,7 +35,7 @@
 struct T_String {
   typedef std::string ValueT;
 
-  static std::string create(lua_State *L, int idx) throw(E_USAGE) {
+  static std::string create(lua_State *L, int idx) {
     const char *s = lua_tostring(L, idx);
     if (!s) {
       throw E_LOG_USAGE("Expecting string, got: %s", L_typename(idx));
@@ -55,7 +55,7 @@ struct T_Level {
   // Note: conversion from string needed for MQD header handling.
   //
 #ifdef MQD_ENABLED
-  static NA_Level create(lua_State *L, int idx) throw(E_USAGE) {
+  static NA_Level create(lua_State *L, int idx) {
     const char *s = lua_tostring(L, idx);
     if (!s) {
       throw E_LOG_USAGE("Bad type for 'levels' (expecting string): %s",
@@ -76,7 +76,7 @@ struct T_Level {
 struct T_ApiParam {
   typedef ApiParam ValueT;
 
-  static ApiParam create(lua_State *L, int idx) throw(E_USAGE) {
+  static ApiParam create(lua_State *L, int idx) {
     const char *s = lua_tostring(L, idx);
     if (!s) {
       throw E_LOG_USAGE("Bad type for 'params' (expecting string): %s",
@@ -93,7 +93,7 @@ struct T_NativeParam {
   typedef NA_Param ValueT;
 
 #ifdef METQU
-  static NA_Param create(lua_State *L, int idx) throw(E_USAGE) {
+  static NA_Param create(lua_State *L, int idx) {
     const char *s = lua_tostring(L, idx);
     if (!s) {
       throw E_LOG_USAGE("Bad type for 'params' (expecting string): %s",
@@ -119,7 +119,7 @@ struct T_NativeParam {
 struct T_JDay {
   typedef JDay ValueT;
 
-  static JDay create(lua_State *L, int idx) throw(E_USAGE) {
+  static JDay create(lua_State *L, int idx) {
     JDay jday(L, idx);
     if (!jday) {
       throw E_LOG_USAGE("Bad value for 'times': %s", L_string_or_typename(idx));
@@ -143,7 +143,7 @@ struct T_JDay {
 template <typename T>
 std::vector<typename T::ValueT>
 vector_of_(lua_State *L, int idx,
-           bool allow_single_without_braces) throw(E_USAGE) {
+           bool allow_single_without_braces) {
 
   idx = L_ABS(idx); // make it an absolute index
   std::vector<typename T::ValueT> ret;
@@ -191,12 +191,12 @@ vector_of_(lua_State *L, int idx,
   return ret;
 };
 
-inline std::vector<JDay> vector_of_times(lua_State *L, int idx) throw(E_USAGE) {
+inline std::vector<JDay> vector_of_times(lua_State *L, int idx) {
   return vector_of_<T_JDay>(L, idx, true);
 }
 
 inline std::vector<ApiParam> vector_of_apiparams(lua_State *L,
-                                                 int idx) throw(E_USAGE) {
+                                                 int idx) {
   return vector_of_<T_ApiParam>(L, idx, true);
 }
 
@@ -205,7 +205,7 @@ inline std::vector<ApiParam> vector_of_apiparams(lua_State *L,
  */
 #ifdef MQD_ENABLED
 inline std::vector<NA_Param> vector_of_params(lua_State *L,
-                                              int idx) throw(E_USAGE) {
+                                              int idx) {
   return vector_of_<T_NativeParam>(L, idx, true);
 }
 #endif
@@ -215,7 +215,7 @@ inline std::vector<NA_Param> vector_of_params(lua_State *L,
  */
 #ifdef MQD_ENABLED
 inline std::vector<NA_Level> vector_of_levels(lua_State *L,
-                                              int idx) throw(E_USAGE) {
+                                              int idx) {
   return vector_of_<T_Level>(L, idx, false /* require {} */);
 }
 #endif
@@ -225,7 +225,7 @@ inline std::vector<NA_Level> vector_of_levels(lua_State *L,
  */
 #ifdef MQD_ENABLED
 inline std::vector<std::string> vector_of_strings(lua_State *L,
-                                                  int idx) throw(E_USAGE) {
+                                                  int idx) {
   return vector_of_<T_String>(L, idx, false /* require {} */);
 }
 #endif
@@ -239,7 +239,7 @@ inline std::vector<std::string> vector_of_strings(lua_State *L,
  */
 template <typename T>
 std::pair<typename T::ValueT, typename T::ValueT>
-pair_of_(lua_State *L, int idx) throw(E_USAGE) {
+pair_of_(lua_State *L, int idx) {
 
   idx = L_ABS(idx); // make it an absolute index
 
@@ -349,9 +349,9 @@ void sort_descending(std::vector<T> &vec, bool unique_only = false) {
 /*---=== Level reading ===---
  */
 
-NA_Level one_level(lua_State *L, int idx, const char *lt_name) throw(E_USAGE);
+NA_Level one_level(lua_State *L, int idx, const char *lt_name);
 void one_or_many_levels(lua_State *L, int idx, const char *lt_name,
-                        std::vector<NA_Level> &vec) throw(E_USAGE);
+                        std::vector<NA_Level> &vec);
 
 #endif
 // MORETOOLS_H

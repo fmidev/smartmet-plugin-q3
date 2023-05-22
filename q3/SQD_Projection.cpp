@@ -33,13 +33,13 @@ using namespace std;
 
 /*
  */
-SQD_Projection::SQD_Projection(const char *proj_) throw(std::exception)
+SQD_Projection::SQD_Projection(const char *proj_)
     : Projection_provider(), ap(NFmiAreaFactory::Create(proj_)) {
 
   INVARIANT();
 }
 
-SQD_Projection::SQD_Projection(const NFmiArea *area_) throw(std::exception)
+SQD_Projection::SQD_Projection(const NFmiArea *area_)
     : Projection_provider(), ap(area_->Clone()) {
   INVARIANT();
 }

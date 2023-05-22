@@ -20,7 +20,7 @@ const Projection Projection::NONE;
 
 /*
  */
-Projection::Projection(const char *proj_) throw(E_USAGE)
+Projection::Projection(const char *proj_)
     : proj(), creation_str(proj_ ? proj_ : "") {
   string reason;
 

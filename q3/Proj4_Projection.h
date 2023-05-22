@@ -23,7 +23,7 @@
  */
 class Proj4_Projection : public Projection_provider {
 public:
-  Proj4_Projection(const char *proj_) throw(E_USAGE, std::exception);
+  Proj4_Projection(const char *proj_);
 
   ~Proj4_Projection();
 

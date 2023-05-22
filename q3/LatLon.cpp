@@ -192,7 +192,7 @@ void LatLonBind::setup(lua_State *L) {
 
 /*
  */
-LatLon::LatLon(double lat_, double lon_) throw(E_USAGE) : lat(lat_), lon(lon_) {
+LatLon::LatLon(double lat_, double lon_) : lat(lat_), lon(lon_) {
   if (!within_range(lat_, lon_)) {
     throw E_LOG_USAGE("Bad latlon value (not in range): %lf %lf", lat_, lon_);
   }

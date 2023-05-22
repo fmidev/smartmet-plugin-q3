@@ -34,7 +34,7 @@ const char *TrackedData::four_Xs = "XXXX";
 TrackedData::TrackedData(const char *fn, const JDay &ot_given_,
                          const string_or_null &tmp_pattern_,
                          size_t tmp_threshold_,
-                         bool relative_uv_) throw(E_BAD_FILE, E_USAGE)
+                         bool relative_uv_)
     : source(fn), info_(0), ot_given(ot_given_), qd(0), tmp_fn(0)
 #ifndef METQU
       ,
@@ -55,7 +55,7 @@ TrackedData::TrackedData(const char *fn, const JDay &ot_given_,
 
 TrackedData::TrackedData(const char *fn, const NA_Info &info_given,
                          bool relative_uv_, const string_or_null &tmp_pattern_,
-                         size_t tmp_threshold_) throw(E_USAGE)
+                         size_t tmp_threshold_)
     : source(fn), info_(new NA_Info(info_given)), ot_given(), qd(0), tmp_fn(0)
 #ifndef METQU
       ,
@@ -189,7 +189,7 @@ void TrackedData::Wipe_LOCKED() /*throw(E_FATAL)*/ {
  * have had rights to view it in the directory listing), or if some jerk has
  * removed the file manually (which is okay).
  */
-NA_Data *TrackedData::Acquire(bool metaQuery) throw(E_BAD_FILE, E_BUG) {
+NA_Data *TrackedData::Acquire(bool metaQuery) {
 
 #ifndef METQU
   {

@@ -40,7 +40,7 @@ private:
 class LatLon : public LuaNew<LatLonBind> {
 public:
   LatLon() : lat(0.0), lon(0.0) { INVARIANT(); }
-  LatLon(double lat_, double lon_) throw(E_USAGE);
+  LatLon(double lat_, double lon_);
 
   bool operator==(const LatLon &o) const {
     return (lat == o.lat) && (lon == o.lon);

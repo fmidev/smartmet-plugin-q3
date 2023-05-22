@@ -68,7 +68,7 @@ static MatrixPos::offset_t align_up_4( MatrixPos::offset_t n ) {
 
 /*
  */
-MQD_Data::MQD_Data(const string &fn) throw(E_BAD_FILE)
+MQD_Data::MQD_Data(const string &fn)
     : NA_Data(read_info(fn.c_str())),
       mm(new MemoryMap(
           fn.c_str(), 0 /*TBD getBinaryOffset()*/,
@@ -170,7 +170,7 @@ MQD_Data::Tile &MQD_Data::getTile(const JDay &vt, const NA_Level &lev,
 
 const MQD_Data::Tile &MQD_Data::getTile(const JDay &vt, const NA_Level &lev,
                                         const NA_Param &p) const
-    throw(E_NO_MATCH) {
+    {
   int time_index = find_index<JDay>(getTimes(), vt);
   if (time_index < 0) {
     throw E_NO_MATCH(vt);
@@ -312,7 +312,7 @@ void MQD_Data::output(ostream &out, ProgressCallback *cb) const {
 /*
  * Extract header information from an MQD file.
  */
-NA_Info MQD_Data::read_info(const char *fn) throw(E_BAD_FILE /*,E_BUG*/) {
+NA_Info MQD_Data::read_info(const char *fn) {
   assert(fn);
 
   // Standard libraries for 'mqd_reader.lua'.

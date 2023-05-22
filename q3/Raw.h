@@ -42,7 +42,7 @@ public:
                      const std::vector<NA_Level> &required_levels,
                      const std::vector<ApiParam> &required_params,
                      bool height_true,
-                     const MatrixPos &default_gs) throw(E_USAGE);
+                     const MatrixPos &default_gs);
 #endif
 
 private:

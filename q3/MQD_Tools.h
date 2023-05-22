@@ -23,7 +23,7 @@
  */
 class MemoryMap {
 public:
-  MemoryMap(const char *fn, size_t offset, size_t length) throw(E_BAD_FILE);
+  MemoryMap(const char *fn, size_t offset, size_t length);
   ~MemoryMap();
 
   const void *getPointer() const { return offset_ptr; }

@@ -226,7 +226,7 @@ Grid::Grid(Raw_interface &r, const JDay &vt_, const NA_Level &lev_,
            ,
            std::vector<JDay> const *vtVec_,
            std::vector<NA_Level> const *levelVec_, LatLonList const *locs_,
-           bool flightRoute_, const DataIdList *dataIds_) throw(E_NO_MATCH)
+           bool flightRoute_, const DataIdList *dataIds_)
     : data(r.getData_rw()), vt(vt_), level(lev_), proj(proj_), gridsize(gs_),
       rkey(0), vtVec(vtVec_ ? *vtVec_ : std::vector<JDay>()),
       levelVec(levelVec_ ? *levelVec_ : std::vector<NA_Level>()),
@@ -277,7 +277,7 @@ Grid::Grid(const Raw_interface &r, const JDay &vt_, const NA_Level &lev_,
            ,
            std::vector<JDay> const *vtVec_,
            std::vector<NA_Level> const *levelVec_, LatLonList const *locs_,
-           bool flightRoute_, const DataIdList *dataIds_) throw(E_NO_MATCH)
+           bool flightRoute_, const DataIdList *dataIds_)
     :
 #ifdef METQU
       data(const_cast<NA_Data *>(r.getData()))
@@ -348,7 +348,7 @@ void Grid::setMatrix(const NA_Param &p, const Matrix &m) throw(E_READONLY,
 /*
  */
 #ifdef METQU
-void Grid::setMatrix(const NA_Param &p, float v) throw(E_READONLY, E_NO_MATCH) {
+void Grid::setMatrix(const NA_Param &p, float v) {
 
   Matrix *sm = new_ScalarMatrix(p);
   { sm->fill_with(v); }

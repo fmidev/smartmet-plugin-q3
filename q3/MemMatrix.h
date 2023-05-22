@@ -45,7 +45,7 @@ public:
 
     return data[n]; // reference to the float
   }
-  float &operator[](const MatrixPos &mi) throw(E_OUTSIDE) {
+  float &operator[](const MatrixPos &mi) {
     assert(!is_readonly); // script level must have checked it
     return data[offset(mi - getSize().getTop())];
   }
@@ -54,7 +54,7 @@ public:
   // variants as well (otherwise gcc does not see through them to 'Matrix').
   //
   float operator[](offset_t n) const throw() { return data[n]; }
-  float operator[](const MatrixPos &pos) const throw(E_OUTSIDE) {
+  float operator[](const MatrixPos &pos) const {
     return data[offset(pos)];
   }
 

@@ -23,7 +23,7 @@ public:
   Bz2_Tracker(const std::string &fn_abs_mask, uint_t refresh_ms,
               unsigned wiping_[], bool relative_uv_,
               const string_or_null &tmp_pattern_,
-              size_t tmp_threshold_) throw(E_USAGE);
+              size_t tmp_threshold_);
   ~Bz2_Tracker() {}
   TrackedData *getData_must_release(time_t ot) throw();
 

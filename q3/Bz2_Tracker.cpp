@@ -102,7 +102,7 @@ void Bz2_Tracker::cache_init(const char *fn) {
 Bz2_Tracker::Bz2_Tracker(const string &fn_abs_mask, uint_t refresh_ms_,
                          unsigned wiping_[], bool relative_uv_,
                          const string_or_null &tmp_pattern_,
-                         size_t tmp_threshold_) throw(E_USAGE)
+                         size_t tmp_threshold_)
     : TrackerBase(refresh_ms_, wiping_, relative_uv_, "TRACK"), base_path(),
       file_mask(), tmp_pattern(tmp_pattern_), tmp_threshold(tmp_threshold_),
       first_round(true), last_ot(0) {

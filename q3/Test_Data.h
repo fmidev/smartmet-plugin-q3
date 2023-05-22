@@ -21,7 +21,7 @@
  */
 class Test_Data : public NA_Data {
 public:
-  Test_Data() throw(E_BAD_FILE);
+  Test_Data();
   /*virtual*/ ~Test_Data() {}
 
   /*virtual*/ const Matrix *

@@ -53,8 +53,7 @@ static struct JustOnce_Test_Data { // note: must have unique name (otherwise
 
 /*
  */
-Test_Data::Test_Data() throw(
-    E_BAD_FILE) /*not really, but prototype requires as to...*/
+Test_Data::Test_Data()
     : NA_Data(*my_info) {
 
   INVARIANT();
