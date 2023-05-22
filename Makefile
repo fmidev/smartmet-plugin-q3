@@ -2,7 +2,7 @@ SUBNAME = q3
 SPEC = smartmet-plugin-$(SUBNAME)
 INCDIR = smartmet/plugins/$(SUBNAME)
 
-REQUIRES = geos gdal cairo
+REQUIRES = geos gdal cairo configpp
 
 include $(shell echo $${PREFIX-/usr})/share/smartmet/devel/makefile.inc
 
