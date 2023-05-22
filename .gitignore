@@ -7,6 +7,8 @@
 *.o
 *.obj
 
+/q3/*.lch
+
 # Precompiled Headers
 *.gch
 *.pch
