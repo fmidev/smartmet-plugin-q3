@@ -1992,7 +1992,7 @@ SQD_Data::push_NativeCross(lua_State *L, const std::vector<JDay> &vtVec,
       NFmiPoint p(fi.LatLon());
 
       if ((!area) || (area->IsInside(p)))
-        locations.push_back(LatLon(p.Y(), p.X()));
+        locations.push_back(LatLon(p.Y(), p.X(), true));
     }
   }
 
