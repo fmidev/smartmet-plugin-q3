@@ -2,7 +2,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet q3 plugin
 Name: %{SPECNAME}
-Version: 23.1.19
+Version: 24.1.31
 Release: 1.el7.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -20,16 +20,16 @@ BuildRequires: boost169-devel
 BuildRequires: bzip2-devel >= 1.0.6
 BuildRequires: libpng-devel >= 1.5.13
 BuildRequires: libjpeg-turbo-devel >= 1.2.90
-BuildRequires: smartmet-library-tron >= 22.6.17
-BuildRequires: smartmet-library-spine-devel >= 22.11.25
+BuildRequires: smartmet-library-tron >= 23.7.28
+BuildRequires: smartmet-library-spine-devel >= 24.1.30
 Requires: proj72 >= 7.2.2
 Requires: lua >= 5.1.4
 Requires: bzip2-libs >= 1.0.6
 Requires: libpng >= 1.5.13
 Requires: libjpeg-turbo >= 1.2.90
-Requires: smartmet-library-newbase >= 22.11.14
-Requires: smartmet-library-spine >= 22.11.25
-Requires: smartmet-server >= 22.11.25
+Requires: smartmet-library-newbase >= 24.1.30
+Requires: smartmet-library-spine >= 24.1.30
+Requires: smartmet-server >= 24.1.29
 Obsoletes: fmi-q3-lib
 Obsoletes: fmi-q3-config
 Obsoletes: fmi-q3-brainstorm
@@ -71,6 +71,8 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/smartmet/plugins/q3plugin.conf
 
 %changelog
+* Wed Jan 31 2024 Pertti Kinnia <pertti.kinnia@fmi.fi> - 24.1.31-1.el7.fmi
+- Allow missing point data coordinates (PAK-3114). Updated geos and gdal include paths
 * Thu Jan 19 2023 Pertti Kinnia <pertti.kinnia@fmi.fi> - 23.1.19-1.el7.fmi
 - areamask queries were slow in production. Removed lua gc settings (more aggressive, now back to using defaults) should they affect througput (BRAINSTORM-2522)
 * Mon Jan 16 2023 Pertti Kinnia <pertti.kinnia@fmi.fi> - 23.1.16-1.el7.fmi
