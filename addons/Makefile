@@ -39,7 +39,8 @@ ifneq "$(_PACKAGE)" ""
   ifeq "$(_PACKAGE)" "$(NEWCAIRO_PACKAGE)"
     RPM_METQU  = $(RPMBUILD)/RPMS/$(UNAME_P)/$(_PACKAGE)-$(VERSION)-$(RELEASE).$(UNAME_P).rpm
   else
-    RPM_METQU  = $(RPMBUILD)/RPMS/$(UNAME_P)/$(_PACKAGE)-metqu-$(VERSION)-$(RELEASE).$(UNAME_P).rpm
+#   RPM_METQU  = $(RPMBUILD)/RPMS/$(UNAME_P)/$(_PACKAGE)-metqu-$(VERSION)-$(RELEASE).$(UNAME_P).rpm
+    RPM_METQU  = $(RPMBUILD)/RPMS/$(UNAME_P)/$(_PACKAGE)-$(VERSION)-$(RELEASE).$(UNAME_P).rpm
   endif
   RPM_Q3     = $(RPMBUILD)/RPMS/$(UNAME_P)/$(_PACKAGE)-q3-$(VERSION)-$(RELEASE).$(UNAME_P).rpm
 endif
@@ -90,7 +91,7 @@ endif
 #---
 rpm:
 	$(MAKE) newcairo_rpm
-	$(MAKE) fminames_rpm
+#	$(MAKE) fminames_rpm
 	$(MAKE) areamask_rpm
 	@echo ""
 	@echo "*** All RPMs done ***"

@@ -18,8 +18,8 @@ Name: fmi-areamask
 # el5:      "Enterprise Linux 5.0"
 # fmi:      FMI
 #
-Version: 17.2.3
-Release: 1.el7.fmi
+Version: 24.3.14
+Release: 1.el8.fmi
 
 License: FMI
 Group: Development/Libraries
@@ -29,7 +29,7 @@ Packager: mikko.visa@fmi.fi
 Source: %{name}.tgz
 Buildroot: %{_tmppath}/%{name}-root
 
-Requires:       lua >= 5.1.4
+Requires:       lua >= 5.3.4
 
 %description
 %{DESC}
@@ -37,6 +37,8 @@ Requires:       lua >= 5.1.4
 #---
 %prep
 %setup -q -n %{name}
+
+%global debug_package %{nil}
 
 # Just Lua files - no compilation required
 #
@@ -49,32 +51,36 @@ Requires:       lua >= 5.1.4
 #
 %install
 rm -rf %{buildroot}
-install -d %{buildroot}/usr/share/lua/5.1/areamask/
-install -m 664 *.lua %{buildroot}/usr/share/lua/5.1/areamask/
-install -d %{buildroot}/usr/share/lua/5.1/q3server-addons/areamask/
-install -m 664 *.lua %{buildroot}/usr/share/lua/5.1/q3server-addons/areamask/
+install -d %{buildroot}/usr/share/lua/5.3/areamask/
+install -m 664 *.lua %{buildroot}/usr/share/lua/5.3/areamask/
+install -d %{buildroot}/usr/share/lua/5.3/q3server-addons/areamask/
+install -m 664 *.lua %{buildroot}/usr/share/lua/5.3/q3server-addons/areamask/
 
 %clean
 rm -rf %{buildroot}
+
+%files
+%{_datadir}/lua/5.3/areamask/*.lua
+%{_datadir}/lua/5.3/q3server-addons/areamask/*.lua
 
 # No files for the parent package (just for building)
 
 #---
 # Package for 'metqu' command line tool
 #
-%package metqu
+#%package metqu
 
-Summary: %{DESC} (for Metqu command line tool)
-Group: Development/Libraries
+#Summary: %{DESC} (for Metqu command line tool)
+#Group: Development/Libraries
 
-Requires:   metqu-virtual
+#Requires:   metqu-virtual
 
-%description metqu
-%{DESC} (for Metqu command line tool)
+#%description metqu
+#%{DESC} (for Metqu command line tool)
 
-%files metqu
-%defattr(-,root,root)
-%{_datadir}/lua/5.1/areamask/*.lua
+#%files metqu
+#%defattr(-,root,root)
+#%{_datadir}/lua/5.1/areamask/*.lua
 
 
 #---
@@ -93,7 +99,7 @@ Requires:   fmi-q3-virtual
 
 %files q3
 %defattr(-,root,root)
-%{_datadir}/lua/5.1/q3server-addons/areamask/*.lua
+%{_datadir}/lua/5.3/q3server-addons/areamask/*.lua
 
 
 #---

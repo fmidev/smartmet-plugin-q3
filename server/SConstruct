@@ -126,7 +126,7 @@ if DEBUG:
     ] )
 else:
     env.Append( CPPDEFINES="NDEBUG",
-                CPPFLAGS= ["-O2",
+                CPPFLAGS= ["-g", "-O2",
 
         # RELEASEFLAGS
         #

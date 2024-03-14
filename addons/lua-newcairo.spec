@@ -3,7 +3,7 @@
 #
 # Ref. <https://fedoraproject.org/wiki/How_to_create_an_RPM_package>
 #
-%define DESC=Cairo binding for Lua 5.1
+%define DESC Cairo binding for Lua 5.3
 
 Summary: %{DESC}
 Name: lua-newcairo
@@ -16,8 +16,8 @@ Name: lua-newcairo
 # el5:      "Enterprise Linux 5.0"
 # fmi:      FMI
 #
-Version: 22.10.19
-Release: 1.el7.fmi
+Version: 24.3.14
+Release: 1.el8.fmi
 
 License: FMI
 Group: Development/Libraries
@@ -34,8 +34,8 @@ Buildroot: %{_tmppath}/%{name}-root
 BuildRequires:	gcc-c++ >= 4.8.5
 BuildRequires:	libstdc++-devel >= 4.8.5
 
-BuildRequires:	lua-devel >= 5.1.4
-Requires:       lua >= 5.1.4
+BuildRequires:	lua-devel >= 5.3.4
+Requires:       lua >= 5.3.4
 
 BuildRequires:  cairo-devel >= 1.15.12
 Requires:       cairo >= 1.15.12
@@ -46,6 +46,8 @@ Requires:       cairo >= 1.15.12
 #---
 %prep
 %setup -q -n %{name}
+
+#%global debug_package %{nil}
 
 # Note: Only one '%build' per RPM. We must build both variants at once.
 #
@@ -61,17 +63,17 @@ make server VARIANT=release CUSTOM_FONT_PATH=%{_datadir}/q3server/fonts
 #
 %install
 rm -rf %{buildroot}
-install -d %{buildroot}/usr/lib64/lua/5.1
-install -m 664 lua51-newcairo.so %{buildroot}/usr/lib64/lua/5.1/newcairo.so
-install -d %{buildroot}/usr/lib64/lua/5.1/q3server-addons
-install -m 664 lua51-newcairo-server.so %{buildroot}/usr/lib64/lua/5.1/q3server-addons/newcairo.so
+install -d %{buildroot}/usr/lib64/lua/5.3
+install -m 664 lua53-newcairo.so %{buildroot}/usr/lib64/lua/5.3/newcairo.so
+install -d %{buildroot}/usr/lib64/lua/5.3/q3server-addons
+install -m 664 lua53-newcairo-server.so %{buildroot}/usr/lib64/lua/5.3/q3server-addons/newcairo.so
 
 %clean
 rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root)
-%{_libdir}/lua/5.1/newcairo.so
+%{_libdir}/lua/5.3/newcairo.so
 
 
 #---
@@ -87,7 +89,7 @@ Group: Development/Libraries
 
 %files q3
 %defattr(-,root,root)
-%{_libdir}/lua/5.1/q3server-addons/newcairo.so
+%{_libdir}/lua/5.3/q3server-addons/newcairo.so
 
 
 #---

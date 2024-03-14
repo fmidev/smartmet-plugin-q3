@@ -26,7 +26,7 @@ VARIANT=debug
 ifeq "$(VARIANT)" "debug"
   CFLAGS+=-O0 -g
 else
-  CFLAGS+=-O2
+  CFLAGS+=-O2 -g
 endif
 
 UBUNTU=$(shell uname -a | grep Ubuntu | wc -l)

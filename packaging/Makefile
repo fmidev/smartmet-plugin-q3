@@ -86,7 +86,7 @@ endif
 #---
 rpm:
 	$(MAKE) q3_rpm
-	$(MAKE) strict_rpm
+#	$(MAKE) strict_rpm
 	@echo ""
 	@echo "*** All RPMs done ***"
 	@echo ""
