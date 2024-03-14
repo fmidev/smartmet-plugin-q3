@@ -118,7 +118,7 @@ rm -rf %{buildroot}
 - Disabled LOG_OK, LOG_DEBUG, LOG_STAT and LOG_TIMING output
 * Sat Apr 18 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.4.18-1.el7.fmi
 - Upgraded to Boost 1.69
-* Thu Apr 17 2020 Pertti Kinnia <pertti.kinnia@fmi.fi> - 20.4.17-1.el7.fmi
+* Fri Apr 17 2020 Pertti Kinnia <pertti.kinnia@fmi.fi> - 20.4.17-1.el7.fmi
 - Fixed bug with sounding data and missing parameters in query when removing return data having missing pressure value (BS-1819)
 * Thu Apr  2 2020 Pertti Kinnia <pertti.kinnia@fmi.fi> - 20.4.2-1.el7.fmi
 - Skip duplicate metadata for sounding data (both hpa=850 and sounding=true matches); BS-1812
