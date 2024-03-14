@@ -42,9 +42,8 @@ LuaWrapper::LuaWrapper(bool ignore) : L(luaL_newstate())
   //
   for (const luaL_Reg *lib = stdlibs; lib->func; ++lib)
   {
-    lua_pushcfunction(L, lib->func);
-    lua_pushstring(L, lib->name);
-    lua_call(L, 1, 0);
+    luaL_requiref(L, lib->name, lib->func, 1);
+    lua_pop(L,1);
   }
 
   lua_getglobal(L, "debug");

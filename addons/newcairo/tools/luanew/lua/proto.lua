@@ -38,7 +38,6 @@ local ipairs=       ipairs
 local tostring=     tostring
 local tonumber=     tonumber
 local setmetatable= setmetatable
-local getfenv=      getfenv
 local error=        error
 local select=       select
 local unpack=       unpack
@@ -54,7 +53,7 @@ local LOG=          rawget(_G,"LOG")                -- available in 'q3' server
 
 module "proto"
 
-local m= getfenv()  -- my namespace which 'module' did
+local m= _ENV  -- my namespace which 'module' did
 assert( type(m)=="table" )
 
 -----
@@ -541,8 +540,3 @@ do
     c= constraint( "[{times=[uint|string|{uint|string,...}]}]", nil, 0 )
     assert(c)
 end
-
-
-                                   
-                                   
-                                   

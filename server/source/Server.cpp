@@ -351,12 +351,16 @@ int Q3Server::query(const map<string, string> &key_val,
   //
   if (key_val_as_globals)
   {
+    lua_rawgeti(L, LUA_REGISTRYINDEX, LUA_RIDX_GLOBALS);
+
     for (map<string, string>::const_iterator it = key_val.begin(); it != key_val.end(); ++it)
     {
       lua_pushstring(L, it->first.c_str());
       lua_pushstring(L, it->second.c_str());
-      lua_rawset(L, LUA_GLOBALSINDEX);
+      lua_rawset(L, -3);
     }
+
+    lua_pop(L, 1);
   }
 
   lua_pushcfunction(L, Session::init);
@@ -415,6 +419,8 @@ int Q3Server::query(const map<string, string> &key_val,
     //
     vector<string> names = itsEngine->getNames();
 
+    lua_rawgeti(L, LUA_REGISTRYINDEX, LUA_RIDX_GLOBALS);
+
     for (vector<string>::const_iterator it = names.begin(); it != names.end(); ++it)
     {
       const char *cstr = it->c_str();
@@ -426,8 +432,10 @@ int Q3Server::query(const map<string, string> &key_val,
 
       lua_pushstring(L, cstr);
       new (L) TrackProxy(track, (cstr != track->getName() ? cstr : ""));
-      lua_settable(L, LUA_GLOBALSINDEX);
+      lua_settable(L, -3);
     }
+
+    lua_pop(L, 1);
 
     lua_newtable(L);
     int i = 0;
@@ -457,10 +465,11 @@ int Q3Server::query(const map<string, string> &key_val,
 // (this is just to keep clean).
 //
 #if 1
+    lua_rawgeti(L, LUA_REGISTRYINDEX, LUA_RIDX_GLOBALS);
     lua_pushliteral(L, "_");
-    lua_rawget(L, LUA_GLOBALSINDEX);
+    lua_rawget(L, -2);
     L_ASSERT(lua_isnil(L, -1));
-    lua_pop(L, 1);
+    lua_pop(L, 2);
 #endif
 
     // Use a custom reader for transforming URL escapes

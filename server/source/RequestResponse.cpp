@@ -153,5 +153,5 @@ int RequestResponse::compile_code(lua_State *L, const char *block_name)
 
   struct my_reader_st my_st(code.c_str());
 
-  return lua_load(L, my_reader, (void *)&my_st, "=code");
+  return lua_load(L, my_reader, (void *)&my_st, "=code", NULL);
 }

@@ -72,7 +72,8 @@ env.Append(
     CPPPATH= [ "./include", 
                COMMON_PATH+"/include",
                ADDONS_PATH+"/newcairo/include",
-	       PREFIX+"/include/boost169"	       
+	       PREFIX+"/include/boost169",
+               PREFIX+"/libconfig17/include"
               ],
 
     CPPDEFINES= [ 
@@ -157,7 +158,7 @@ lib_env.Append( CPPDEFINES= ["USE_NEWBASE"] )
 # 14-Feb-2011 PKi: using multithreaded version of newbase
 #
 lib_env.Append( CPPPATH= [ PREFIX+"/include/smartmet", PREFIX+"/include/cairo",
-                           PREFIX+"/geos311/include", PREFIX+"/gdal35/include", PREFIX+"/proj72/include" ],
+                           PREFIX+"/geos311/include", PREFIX+"/gdal35/include", PREFIX+"/proj90/include" ],
                 LIBS=   ['smartmet-newbase']
                 )    
 
@@ -169,7 +170,7 @@ lib_env.Append( CPPDEFINES= [ "USE_TRON", "USE_UNSTABLE_GEOS_CPP_API" ],
                 LIBS= [ File( LIB_PREFIX+"libsmartmet-tron.so") ]
                 )
 
-lib_env.Append(LIBS= [ File( "/usr/proj72/lib/libproj.so") ])
+lib_env.Append(LIBS= [ File( "/usr/proj90/lib64/libproj.so") ])
 
 #---
 # Boost
@@ -202,13 +203,13 @@ lib_env.Append( LIBPATH= LIB_PREFIX+"/boost169",
 lib_env.Append( LIBS= [ "png", "jpeg", "z", "bz2", "pthread", "cairo" ] )
 
 #---
-# Lua 5.1
+# Lua 5.3
 #
-# Ubuntu has 'lua5.1' on pkg-config (and allows multiple versions to coexist)
+# Ubuntu has 'lua5.3' on pkg-config (and allows multiple versions to coexist)
 # Others have 'lua'
 #
-if os.system( PKG_CONFIG+" --exists lua5.1" )==0:
-    lib_env.ParseConfig( PKG_CONFIG+" --cflags --libs lua5.1" )
+if os.system( PKG_CONFIG+" --exists lua5.3" )==0:
+    lib_env.ParseConfig( PKG_CONFIG+" --cflags --libs lua5.3" )
 else:
     lib_env.ParseConfig( PKG_CONFIG+" --cflags --libs lua" )
     lib_env.Append( SHAREDLIBS="lua" )

@@ -12,6 +12,14 @@
 --
 local key_lookup= { ["origintimes"]=true, ["archorigintimes"]=true, ["allorigintimes"]=true, ["runs"]=true }
 
+-- lua5.1 ==> 5.3: For some reason global 'type' (table is set by type.lua) is a
+-- function (global function not replaced by the table) and thus type.xxx is not
+-- available. Using 'typetable' global/reference set by type.lua
+--
+-- TODO: Should fix the root of the problem though
+--
+local type= typetable
+
 --
 -- matrix|matrix2d = trackproxy_index( track_ud, str|jday_ud|int )
 --

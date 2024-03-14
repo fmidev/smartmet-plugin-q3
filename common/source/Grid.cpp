@@ -108,7 +108,7 @@ int GridBind::__index( lua_State *L ) throw() {
 
     // Check if the matrix is (still) cached
     //
-    lua_getfenv( L, 1 );
+    lua_getuservalue ( L, 1 );
     lua_pushvalue( L, 2 );  // 2nd ref of the string
     lua_gettable( L, -2 );
         //

@@ -16,9 +16,8 @@ LuaWrap::LuaWrap( const luaL_Reg *libs, const char *chunk, size_t chunk_size )
     }
 
     for( const luaL_Reg *lib= libs; lib->func; ++lib ) {
-        lua_pushcfunction(L, lib->func);
-        lua_pushstring(L, lib->name);
-        lua_call(L, 1, 0);
+        luaL_requiref(L, lib->name, lib->func, 1);
+        lua_pop(L,1);
     }
 
     // Define LOG (for debugging)

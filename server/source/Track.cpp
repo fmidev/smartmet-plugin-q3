@@ -863,10 +863,11 @@ int TrackProxyBind::call(lua_State *L) throw(E_ERROR)
   //
   if ((otindex > 0) && (!any_ot) && (!ot_absolute))
   {
+    lua_rawgeti(L, LUA_REGISTRYINDEX, LUA_RIDX_GLOBALS);
     lua_pushliteral(L, "origintime");
-    lua_rawget(L, LUA_GLOBALSINDEX);
+    lua_rawget(L, -2);
     ot_absolute = JDay(L, -1);
-    lua_pop(L, 1);
+    lua_pop(L, 2);
 
     if (!ot_absolute)
     {

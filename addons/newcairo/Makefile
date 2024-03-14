@@ -17,8 +17,8 @@ SERVER_OBJS=$(addprefix obj/2/,$(notdir $(SRCS:.cpp=.o)))
 LUANEW_SRCS=$(wildcard $(LUANEW_PATH)/source/*.cpp)
 LUANEW_OBJS=$(addprefix obj/,$(notdir $(LUANEW_SRCS:.cpp=.o)))
 
-FULL_SO=lua51-newcairo.so
-SERVER_SO=lua51-newcairo-server.so
+FULL_SO=lua53-newcairo.so
+SERVER_SO=lua53-newcairo-server.so
 
 CFLAGS=-Wall -W -fPIC -std=c++11
 
@@ -33,11 +33,11 @@ UBUNTU=$(shell uname -a | grep Ubuntu | wc -l)
    # 0 or 1
 
 # Centos and RHEL have 'pkg-config lua'
-# Ubuntu and Debian have 'pkg-config lua5.1'
+# Ubuntu and Debian have 'pkg-config lua5.3'
 #
-ifneq "$(shell pkg-config --exists lua5.1 && echo 1)" ""
-  CFLAGS+=$(shell pkg-config --cflags lua5.1)
-  LIBS+=$(shell pkg-config --libs lua5.1)
+ifneq "$(shell pkg-config --exists lua5.3 && echo 1)" ""
+  CFLAGS+=$(shell pkg-config --cflags lua5.3)
+  LIBS+=$(shell pkg-config --libs lua5.3)
 else
   CFLAGS+=$(shell pkg-config --cflags lua)
   LIBS+=$(shell pkg-config --libs lua)
@@ -53,7 +53,7 @@ CUSTOM_FONT_PATH=$(shell pwd)/fonts
 
 ifeq "$(shell uname -s)" "Darwin"
   SHARED=-bundle
-  LUA=lua51 -lstrict
+  LUA=lua53 -lstrict
 else
   SHARED=-shared
   LUA=lua -lstrict
@@ -68,7 +68,7 @@ endif
 
 #--
 all: $(FULL_SO) $(SERVER_SO)
-	LUA_CPATH=./lua51-?.so \
+	LUA_CPATH=./lua53-?.so \
 	  $(LUA) -e "require 'newcairo'; print(newcairo.version)"
 
 # 'standalone' is depricated name for "not server"
@@ -126,23 +126,23 @@ test:  $(ALL_OUT)
 test1: out/arc.png
 
 out/clip_image.png: examples/clip_image.lua $(FULL_SO) $(ROMEDALEN)
-	LUA_CPATH=./lua51-?.so \
+	LUA_CPATH=./lua53-?.so \
 	  $(LUA) $< $(ROMEDALEN) $@
 
 out/image.png: examples/image.lua $(FULL_SO) $(ROMEDALEN)
-	LUA_CPATH=./lua51-?.so \
+	LUA_CPATH=./lua53-?.so \
 	  $(LUA) $< $(ROMEDALEN) $@
 
 out/imagepattern.png: examples/imagepattern.lua $(FULL_SO) $(ROMEDALEN)
-	LUA_CPATH=./lua51-?.so \
+	LUA_CPATH=./lua53-?.so \
 	  $(LUA) $< $(ROMEDALEN) $@
 
 out/%.png: examples/%.lua $(FULL_SO)
-	LUA_CPATH=./lua51-?.so \
+	LUA_CPATH=./lua53-?.so \
 	  $(LUA) $< $@
 
 out/%.pdf: examples/%.lua $(FULL_SO)
-	LUA_CPATH=./lua51-?.so \
+	LUA_CPATH=./lua53-?.so \
 	  $(LUA) $< $@
 
 echo:

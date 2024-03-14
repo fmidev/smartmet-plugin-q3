@@ -137,7 +137,7 @@ void *LuaNew_base::push( lua_State *L, size_t bytes, const LuaNew_ID &ID, const 
         // [-1]: env.table 
         // [-2]: userdata
         
-        lua_setfenv( L, -2 );
+        lua_setuservalue( L, -2 );
     }
     
     return ud;      // proceed to C++ constructor
@@ -180,11 +180,12 @@ unsigned /*key*/ LuaNew_base::keep_alive( lua_State *L, int index_this, int inde
     int index_this_abs= L_ABS(index_this);
     L_GROW(3);
 
-    lua_getfenv( L, index_this_abs );
+    lua_getuservalue( L, index_this_abs );
     if (lua_isnil(L,-1)) {
+        lua_pop(L, 1);
         lua_newtable(L);
         lua_pushvalue(L,-1);    // 2nd ref
-        lua_setfenv( L, index_this_abs );
+        lua_setuservalue( L, index_this_abs );
     }
     L_ASSERT( lua_istable(L,-1) );
     
@@ -207,7 +208,7 @@ bool LuaNew_base::push_alive( lua_State *L, int index_this, unsigned key ) {
     L_GROW(2);
 
 L_START
-    lua_getfenv( L, index_this_abs );
+    lua_getuservalue( L, index_this_abs );
     if (lua_isnil(L,-1)) {
         lua_pop(L,1);
 L_MID(0)

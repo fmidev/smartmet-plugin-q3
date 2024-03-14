@@ -2,8 +2,8 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet q3 plugin
 Name: %{SPECNAME}
-Version: 24.1.31
-Release: 1.el7.fmi
+Version: 24.3.14
+Release: 1.el8.fmi
 License: MIT
 Group: SmartMet/Plugins
 URL: https://github.com/fmidev/smartmet-plugin-q3
@@ -14,22 +14,22 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires: scons
 BuildRequires: gcc-c++ >= 4.8.5
 BuildRequires: libstdc++-devel >= 4.8.5
-BuildRequires: proj72-devel >= 7.2.2
-BuildRequires: lua-devel >= 5.1.4
+BuildRequires: proj90-devel >= 9.0.1
+BuildRequires: lua-devel >= 5.3.4
 BuildRequires: boost169-devel
 BuildRequires: bzip2-devel >= 1.0.6
 BuildRequires: libpng-devel >= 1.5.13
 BuildRequires: libjpeg-turbo-devel >= 1.2.90
 BuildRequires: smartmet-library-tron >= 23.7.28
-BuildRequires: smartmet-library-spine-devel >= 24.1.30
-Requires: proj72 >= 7.2.2
-Requires: lua >= 5.1.4
+BuildRequires: smartmet-library-spine-devel >= 24.2.8
+Requires: proj90 >= 9.0.1
+Requires: lua >= 5.3.4
 Requires: bzip2-libs >= 1.0.6
 Requires: libpng >= 1.5.13
 Requires: libjpeg-turbo >= 1.2.90
-Requires: smartmet-library-newbase >= 24.1.30
-Requires: smartmet-library-spine >= 24.1.30
-Requires: smartmet-server >= 24.1.29
+Requires: smartmet-library-newbase >= 24.3.11
+Requires: smartmet-library-spine >= 24.2.8
+Requires: smartmet-server >= 24.2.22
 Obsoletes: fmi-q3-lib
 Obsoletes: fmi-q3-config
 Obsoletes: fmi-q3-brainstorm
@@ -71,6 +71,8 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/smartmet/plugins/q3plugin.conf
 
 %changelog
+* Thu Mar 14 2024 Pertti Kinnia <pertti.kinnia@fmi.fi> - 24.3.14-1.el8.fmi
+- Lua related changes for rhel8 (rhel7 lua 5.1 vs 5.3)
 * Wed Jan 31 2024 Pertti Kinnia <pertti.kinnia@fmi.fi> - 24.1.31-1.el7.fmi
 - Allow missing point data coordinates (PAK-3114). Updated geos and gdal include paths
 * Thu Jan 19 2023 Pertti Kinnia <pertti.kinnia@fmi.fi> - 23.1.19-1.el7.fmi

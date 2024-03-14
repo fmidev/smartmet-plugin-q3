@@ -47,11 +47,19 @@ static void push_proto( lua_State *L ) {
 */
 ProtoProxy proto_init( lua_State *L ) {
 
-    lua_pushliteral( L, "proto" );
-    lua_gettable( L, LUA_GLOBALSINDEX );
+    lua_rawgeti(L, LUA_REGISTRYINDEX, LUA_RIDX_GLOBALS);
 
     if (lua_isnil(L,-1)) {
         lua_pop(L,1);
+        luaL_error( L, "No globals: LUA_REGISTRYINDEX/LUA_RIDX_GLOBALS is nil" );
+    }
+    else {
+      lua_pushliteral( L, "proto" );
+      lua_gettable( L, -2 );
+    }
+
+    if (lua_isnil(L,-1)) {
+        lua_pop(L,2);
 
         // Initialize the precompiled block to 'proto' global and C++ binding.
         //
@@ -61,14 +69,18 @@ ProtoProxy proto_init( lua_State *L ) {
         }
         lua_call( L, 0 /*args*/, 0 /*results*/ );   // sets a global 'proto'
 
+        lua_rawgeti(L, LUA_REGISTRYINDEX, LUA_RIDX_GLOBALS);
         lua_pushliteral( L, "proto" );
-        lua_gettable( L, LUA_GLOBALSINDEX );
+        lua_gettable( L, -2 );
+        lua_remove( L, -2 );
         
         assert( lua_istable(L,-1) );
 
     } else if (!lua_istable(L,-1)) {
         luaL_error( L, "Unexpected 'proto': %s", lua_typename( L, lua_type(L,-1) ) );
     }
+    else
+      lua_remove( L, -2 );
     
     // [-1]: proto table
 

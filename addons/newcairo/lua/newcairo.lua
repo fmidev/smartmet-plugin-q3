@@ -8,6 +8,14 @@
 --
 local m, mod_name, METQU= ...
 
+-- lua5.1 ==> 5.3: For some reason global 'type' (table is set by type.lua) is a
+-- function (global function not replaced by the table) and thus type.xxx is not
+-- available. Using 'typetable' global/reference set by type.lua
+--
+-- TODO: Should fix the root of the problem though
+--
+local type= typetable
+
 assert( type(m)=="table" )
 assert( type(mod_name)=="string" )
 
@@ -38,7 +46,6 @@ local pairs=        pairs
 local ipairs=       ipairs
 local select=       select
 local rawset=       rawset
-local getfenv=      getfenv
 
 local math_floor=   math.floor
 local table_concat= table.concat
@@ -49,7 +56,7 @@ local proto=        assert( proto )
 
 module(mod_name)
 
-local G= getfenv()
+local G= _ENV
 assert(G)
 
 -- Copy 'm' fields (most of them) to the module namespace

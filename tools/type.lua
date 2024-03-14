@@ -126,6 +126,14 @@ type= {
 }
 setmetatable( type, type )
 
+-- lua5.1 ==> 5.3: For some reason global 'type' is a function e.g. in q3.lua
+-- (not replaced by the type table) and thus type.xxx is not available. Simply setting
+-- another global/reference to the table and using 'local type= typetable' where needed
+--
+-- TODO: Should properly fix the problem though
+--
+typetable= type
+
 -- Sanity check
 --
 assert( type(5) == "number" )

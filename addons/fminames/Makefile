@@ -23,19 +23,19 @@ else
   CFLAGS+=-O2
 endif
 
-FMINAMES_SO=lua51-fminames.so
+FMINAMES_SO=lua53-fminames.so
 
 UBUNTU=$(shell uname -a | grep Ubuntu | wc -l)
    # 0 or 1
 
 # Centos and RHEL have 'pkg-config lua'
-# Ubuntu and Debian have 'pkg-config lua5.1'
+# Ubuntu and Debian have 'pkg-config lua5.3'
 #
 # Linking to Lua libs.
 #
-ifneq "$(shell pkg-config --exists lua5.1 && echo 1)" ""
-  CFLAGS+=$(shell pkg-config --cflags lua5.1)
-  LIBS+=$(shell pkg-config --libs lua5.1)
+ifneq "$(shell pkg-config --exists lua5.3 && echo 1)" ""
+  CFLAGS+=$(shell pkg-config --cflags lua5.3)
+  LIBS+=$(shell pkg-config --libs lua5.3)
 else
   CFLAGS+=$(shell pkg-config --cflags lua)
   LIBS+=$(shell pkg-config --libs lua)
@@ -48,7 +48,7 @@ FMINAMES_A=/usr/lib64/libsmartmet-locus.so
 
 ifeq "$(shell uname -s)" "Darwin"
   SHARED=-bundle
-  LUA=lua51 -lstrict
+  LUA=lua53 -lstrict
 else
   SHARED=-shared
   LUA=lua -lstrict
@@ -82,7 +82,7 @@ clean:
 	-rm -rf *.so obj/*
 
 test:  $(FMINAMES_SO) test.lua
-	LUA_CPATH=./lua51-?.so \
+	LUA_CPATH=./lua53-?.so \
 	  $(LUA) test.lua
 
 echo:
