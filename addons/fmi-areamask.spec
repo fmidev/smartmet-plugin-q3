@@ -38,11 +38,9 @@ Requires:       lua >= 5.3.4
 %prep
 %setup -q -n %{name}
 
-%global debug_package %{nil}
-
 # Just Lua files - no compilation required
 #
-%build
+#%build
 
 #---
 # Note: We use the same file for both '-metqu' and '-q3' variants.
@@ -104,8 +102,9 @@ Requires:   fmi-q3-virtual
 
 #---
 %changelog
+* Thu Mar 14 2024 Pertti Kinnia <pertti.kinnia@fmi.fi> - 24.3.14-1.el8.fmi
+- Repackaged for rhel8, lua related changes (rhel7 lua 5.1 vs 5.3); BRAINSTORM-2608
 * Fri Feb 3 2017 <mikko.visa@fmi.fi>
 - Rebuild, GitHub packages and cleanup
 * Wed Nov 24 2010 <asko.kauppi@fmi.fi>
 - Packaging revise (each addon as a separate package).
-
