@@ -71,6 +71,12 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/smartmet/plugins/q3plugin.conf
 
 %changelog
+* Tue Apr  2 2024 Pertti Kinnia <pertti.kinnia@fmi.fi> - 24.4.2-1.el8.fmi
+- Cairo surface scaling calculation (ratios of image and grid x/y sizes) may result weird/wrong scaling value(s) unless ceil() is applied to them prior usage
+- Return type 'integer' as 'number' since integer type is not expected to be returned
+- For some reason global 'type' (table is set by type.lua) is a function (global function not replaced by the table) and thus type.xxx is not available. Using 'typetable' global/reference set by type.lua. Should fix the root of the problem though
+- Push parameter id as integer; pushing as number results decimal (e.g. 1382.0) values to be returned
+- Push JDay epoch as integer; pushing as number results decimal (e.g. 1712037600.0) values to be returned
 * Thu Mar 14 2024 Pertti Kinnia <pertti.kinnia@fmi.fi> - 24.3.14-1.el8.fmi
 - Lua related changes for rhel8 (rhel7 lua 5.1 vs 5.3)
 * Wed Jan 31 2024 Pertti Kinnia <pertti.kinnia@fmi.fi> - 24.1.31-1.el7.fmi
