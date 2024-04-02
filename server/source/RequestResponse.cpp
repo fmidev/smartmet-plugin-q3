@@ -151,7 +151,8 @@ int RequestResponse::compile_code(lua_State *L, const char *block_name)
 {
   assert(code != nullptr);
 
-  struct my_reader_st my_st(code.c_str());
+  std::string s("local type= typetable\n" + code);
+  struct my_reader_st my_st(s.c_str());
 
   return lua_load(L, my_reader, (void *)&my_st, "=code", NULL);
 }
