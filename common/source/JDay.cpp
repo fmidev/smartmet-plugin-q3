@@ -110,7 +110,10 @@ int JDayBind::index( lua_State *L ) {
             // Note: 'lua_Integer' would not have enough integer resolution in 32-bit mode.
             //       'lua_Number' (double) always has.
             //
-            lua_pushnumber( L, (double)t );
+            // rhel8/lua5.3: push epoch as integer, there's no 32-bit build;
+            // pushing as number results decimal (e.g. 1712037600.0) values to be returned
+            //
+            lua_pushinteger( L, t );
             return 1;
         }
     }
