@@ -508,7 +508,9 @@ static int getparamid( lua_State *L ) {
 	if (id == kFmiBadParameter)
     	lua_pushnil(L);
 	else
-    	lua_pushnumber(L,id);
+	// rhel8/lua5.3: push id as integer;
+	// pushing as number results decimal (e.g. 1382.0) values to be returned
+	lua_pushinteger(L,id);
 
     return 1;
 }
