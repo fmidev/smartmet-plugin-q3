@@ -69,6 +69,9 @@ local function new_type( v )
     if mt and mt.__type then
         return ot..":"..(mt.__type)
     end
+
+    if (ot == "integer") then return "number" end
+
     return ot
 end
 
@@ -110,7 +113,11 @@ type= {
   userdate= LTF_mt "userdata",
   table= LTF_mt "table",
 
-  __call= function(_,...) return new_type(...) end,     -- system function
+  __call= function(_,...)
+           local t= new_type(...)  -- system function
+           if (t == "integer") then return "number" end
+           return t
+          end,
 
   -- Use the 'proto.*' type system for us, too
   --
