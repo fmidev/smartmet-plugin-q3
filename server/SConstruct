@@ -87,7 +87,7 @@ env.Append(
         "-rdynamic",
         "-Wall",
         "-W",
-        "-std=c++11",
+        "-std=c++17",
         "-Wno-unused-parameter",
         # 10-Jan-2014 PKi: For including precompiled lua chunks
         #
@@ -135,7 +135,7 @@ else:
 
 # 10-Jan-2014 PKi
 #
-env.Append( CPPFLAGS=[ "-std=c++0x" ] )
+env.Append( CPPFLAGS=[ "-std=c++17" ] )
 
 #---
 # Only 'libfmi-q3' will need to link to Newbase, Tron etc.
@@ -158,7 +158,7 @@ lib_env.Append( CPPDEFINES= ["USE_NEWBASE"] )
 # 14-Feb-2011 PKi: using multithreaded version of newbase
 #
 lib_env.Append( CPPPATH= [ PREFIX+"/include/smartmet", PREFIX+"/include/cairo",
-                           PREFIX+"/geos311/include", PREFIX+"/gdal35/include", PREFIX+"/proj90/include" ],
+                           PREFIX+"/geos312/include", PREFIX+"/gdal38/include", PREFIX+"/proj94/include" ],
                 LIBS=   ['smartmet-newbase']
                 )    
 
@@ -170,7 +170,7 @@ lib_env.Append( CPPDEFINES= [ "USE_TRON", "USE_UNSTABLE_GEOS_CPP_API" ],
                 LIBS= [ File( LIB_PREFIX+"libsmartmet-tron.so") ]
                 )
 
-lib_env.Append(LIBS= [ File( "/usr/proj90/lib64/libproj.so") ])
+lib_env.Append(LIBS= [ File( "/usr/proj94/lib64/libproj.so") ])
 
 #---
 # Boost

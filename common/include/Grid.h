@@ -59,7 +59,7 @@ class Grid : public LuaNew<GridBind> {
         , LatLonList const *locs = nullptr
 		, bool flightRoute = false
 		, const DataIdList *dataIds = nullptr
-    	) throw(E_NO_MATCH);
+    	);
 
     void set_rkey(unsigned rk) {
         assert( rkey==0 );

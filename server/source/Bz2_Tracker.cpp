@@ -115,7 +115,7 @@ Bz2_Tracker::Bz2_Tracker(const string &fn_abs_mask,
                          unsigned wiping_[],
                          bool relative_uv_,
                          const string_or_null &tmp_pattern_,
-                         size_t tmp_threshold_) throw(E_USAGE)
+                         size_t tmp_threshold_)
     : TrackerBase(refresh_ms_, wiping_, relative_uv_, "TRACK"),
       base_path(),
       file_mask(),

@@ -330,7 +330,7 @@ class Matrix : public ApiMatrix, public LuaNew<MatrixBind> {
 
     float operator[]( offset_t n ) const throw() { return get_value_n(n); }   // forward to class specific function
 
-    float operator[]( const MatrixPos &mi ) const throw(E_OUTSIDE) {
+    float operator[]( const MatrixPos &mi ) const {
         MatrixPos p= mi - getSize().getTop();    // move coordinates so that (0,0) is [0]
         return get_value_n( offset(p) );
     }
@@ -341,10 +341,10 @@ class Matrix : public ApiMatrix, public LuaNew<MatrixBind> {
     /*
     * Write operations. 
     */
-    void copy_from( const Matrix &m ) throw (E_READONLY);
+    void copy_from( const Matrix &m );
     
-    void fit_from_same_projection( const Matrix &m ) throw(E_READONLY);
-    void fit_from_( const Matrix &m ) throw(E_READONLY);
+    void fit_from_same_projection( const Matrix &m );
+    void fit_from_( const Matrix &m );
 
     float at_( double dx, double dy ) const throw();
 
@@ -372,7 +372,7 @@ class Matrix : public ApiMatrix, public LuaNew<MatrixBind> {
     * Returns 'true' if the write succeeds; 'false' if read-only matrix
     *       Throws an exception if 'pos' is outside of bounds.
     */    
-    void set_value( const MatrixPos &pos, float v ) throw(E_OUTSIDE) {
+    void set_value( const MatrixPos &pos, float v ) {
         assert( !is_readonly );
         set_value_n( offset( pos - size.getTop() ), v );
     }

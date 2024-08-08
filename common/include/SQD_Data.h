@@ -33,7 +33,7 @@ class NFmiFastQueryInfo;
 */
 class SQD_Data : public NA_Data {
   public:
-    SQD_Data( const char *fn, bool relative_uv ) throw( E_BAD_FILE, std::exception );
+    SQD_Data( const char *fn, bool relative_uv );
 
 #ifdef METQU
     SQD_Data( const NA_Info &info ) throw();    // create new, values not initialized
@@ -59,7 +59,7 @@ class SQD_Data : public NA_Data {
 							  , const DataIdList *dataIds = nullptr
                               ) CONST_IF_SERVER throw();
 
-    static NA_Info read_info( const char *fn ) throw(E_BAD_FILE);
+    static NA_Info read_info( const char *fn );
     
     /*virtual*/ bool providesPressureLevelsFromHybrid() const;
 
@@ -70,7 +70,7 @@ class SQD_Data : public NA_Data {
 
   private:
     void setIter( NFmiFastQueryInfo &fi, const JDay &vt, const NA_Level &lev, const NA_Param &param,
-                  bool &exact_time, bool &exact_level ) throw(E_NO_MATCH);
+                  bool &exact_time, bool &exact_level );
 
     void setIter_exact( NFmiFastQueryInfo &fi, const JDay &vt, const NA_Level &lev, const NA_Param &param ) throw();
 

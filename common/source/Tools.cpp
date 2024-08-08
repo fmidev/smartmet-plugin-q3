@@ -469,7 +469,7 @@ BAD_UTF8:
 
 /*
 */
-NA_Level one_level( lua_State *L, int idx, const char *lt_name ) throw(E_USAGE) {
+NA_Level one_level( lua_State *L, int idx, const char *lt_name ) {
     assert(lt_name);
 
     bool true_only= (strcmp( lt_name, "ground" )==0 || strcmp( lt_name, "sounding" )==0);     // approve 'true' only
@@ -543,7 +543,7 @@ NA_Level one_level( lua_State *L, int idx, const char *lt_name ) throw(E_USAGE) 
 *
 * If the value in 'idx' is not as expected, 'E_USAGE' is thrown.
 */
-void one_or_many_levels( lua_State *L, int idx, const char *lt_name, vector<NA_Level> &vec ) throw(E_USAGE) {
+void one_or_many_levels( lua_State *L, int idx, const char *lt_name, vector<NA_Level> &vec ) {
 
     bool true_only= (strcmp(lt_name,"ground")==0 || strcmp(lt_name,"sounding")==0);     // approve 'true' only
 

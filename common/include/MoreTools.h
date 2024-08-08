@@ -36,7 +36,7 @@
 struct T_String {
     typedef std::string ValueT;
 
-    static std::string create( lua_State *L, int idx ) throw(E_USAGE) {
+    static std::string create( lua_State *L, int idx ) {
         const char *s= lua_tostring(L,idx);
         if (!s) {
             throw E_LOG_USAGE( "Expecting string, got: %s", L_typename(idx) );
@@ -79,7 +79,7 @@ struct T_Level {
 struct T_ApiParam {
     typedef ApiParam ValueT;
 
-    static ApiParam create( lua_State *L, int idx ) throw(E_USAGE) {
+    static ApiParam create( lua_State *L, int idx ) {
         const char *s= lua_tostring(L,idx);
         if (!s) {
             throw E_LOG_USAGE( "Bad type for 'params' (expecting string): %s", L_typename(idx) );
@@ -120,7 +120,7 @@ struct T_NativeParam {
 struct T_JDay {
     typedef JDay ValueT;
 
-    static JDay create( lua_State *L, int idx ) throw(E_USAGE) {
+    static JDay create( lua_State *L, int idx ) {
         JDay jday( L, idx );
         if (!jday) {
             throw E_LOG_USAGE( "Bad value for 'times': %s", L_string_or_typename(idx) );
@@ -145,7 +145,7 @@ struct T_JDay {
 *       E_USAGE if the provided values are not valid for this type.
 */
 template<typename T>
-std::vector<typename T::ValueT> vector_of_( lua_State *L, int idx, bool allow_single_without_braces ) throw(E_USAGE) {
+std::vector<typename T::ValueT> vector_of_( lua_State *L, int idx, bool allow_single_without_braces ) {
 
     idx= L_ABS(idx);    // make it an absolute index
     std::vector<typename T::ValueT> ret;
@@ -195,11 +195,11 @@ std::vector<typename T::ValueT> vector_of_( lua_State *L, int idx, bool allow_si
 };
 
 
-inline std::vector<JDay> vector_of_times( lua_State *L, int idx ) throw(E_USAGE) {
+inline std::vector<JDay> vector_of_times( lua_State *L, int idx ) {
     return vector_of_<T_JDay>( L, idx, true );
 }
 
-inline std::vector<ApiParam> vector_of_apiparams( lua_State *L, int idx ) throw(E_USAGE) {
+inline std::vector<ApiParam> vector_of_apiparams( lua_State *L, int idx ) {
     return vector_of_<T_ApiParam>( L, idx, true );
 }
 
@@ -207,7 +207,7 @@ inline std::vector<ApiParam> vector_of_apiparams( lua_State *L, int idx ) throw(
 * Note: THIS IS NEEDED FOR MQD HEADER HANDLING ONLY. 
 */
 #ifdef MQD_ENABLED
-inline std::vector<NA_Param> vector_of_params( lua_State *L, int idx ) throw(E_USAGE) {
+inline std::vector<NA_Param> vector_of_params( lua_State *L, int idx ) {
     return vector_of_<T_NativeParam>( L, idx, true );
 }
 #endif
@@ -239,7 +239,7 @@ inline std::vector<std::string> vector_of_strings( lua_State *L, int idx ) throw
 * Throws: E_USAGE if the entries aren't as expected.
 */
 template<typename T>
-std::pair<typename T::ValueT,typename T::ValueT> pair_of_( lua_State *L, int idx ) throw(E_USAGE) {
+std::pair<typename T::ValueT,typename T::ValueT> pair_of_( lua_State *L, int idx ) {
 
     idx= L_ABS(idx);    // make it an absolute index
 
@@ -344,8 +344,8 @@ void sort_descending( std::vector<T> &vec, bool unique_only=false ) {
 /*---=== Level reading ===---
 */
 
-NA_Level one_level( lua_State *L, int idx, const char *lt_name ) throw(E_USAGE);
-void one_or_many_levels( lua_State *L, int idx, const char *lt_name, std::vector<NA_Level> &vec ) throw(E_USAGE);
+NA_Level one_level( lua_State *L, int idx, const char *lt_name );
+void one_or_many_levels( lua_State *L, int idx, const char *lt_name, std::vector<NA_Level> &vec );
 
 
 #endif

@@ -256,7 +256,7 @@ static void matrix_fill(MemMatrix &m, const NFmiDataMatrix<float> &from) {
  */
 void SQD_Data::setIter(NFmiFastQueryInfo &fi, const JDay &vt,
                        const NA_Level &lev, const NA_Param &p, bool &exact_time,
-                       bool &exact_level) throw(E_NO_MATCH) {
+                       bool &exact_level) {
   // Note: 'p' is one of the available params of 'this' and must carry its id.
   //       (native name having ':NNN' tail)
 
@@ -353,7 +353,7 @@ static vector<JDay> getTimes(NFmiQueryInfo &info) /*throw(E_BUG)*/
  */
 static vector<NA_Level> getLevels(const NFmiQueryInfo &info,
                                   const char *fn_debug, bool &revorder,
-                                  string &nativeLevelType) throw(E_BAD_FILE) {
+                                  string &nativeLevelType) {
   vector<NA_Level> vec;
 
   // We need 'FastQueryInfo()' for 'HeightValueAvailable()' and others.
@@ -737,8 +737,7 @@ static vector<NA_Param> getParams(NFmiQueryInfo &info, bool &has_326,
 
 /*
  */
-SQD_Data::SQD_Data(const char *fn, bool relative_uv) throw(E_BAD_FILE,
-                                                           std::exception)
+SQD_Data::SQD_Data(const char *fn, bool relative_uv)
     : NA_Data(read_info(fn)), qd(new NFmiQueryData(fn))
 #ifdef METQU
       ,
@@ -987,7 +986,7 @@ void SQD_Data::output(ostream &out,
 
 /*
  */
-NA_Info SQD_Data::read_info(const char *fn) throw(E_BAD_FILE) {
+NA_Info SQD_Data::read_info(const char *fn) {
   NFmiQueryInfo info;
 
   // Seems this can ignite:

@@ -2,7 +2,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet q3 plugin
 Name: %{SPECNAME}
-Version: 24.3.14
+Version: 24.8.8
 Release: 1.el8.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -20,16 +20,16 @@ BuildRequires: boost169-devel
 BuildRequires: bzip2-devel >= 1.0.6
 BuildRequires: libpng-devel >= 1.5.13
 BuildRequires: libjpeg-turbo-devel >= 1.2.90
-BuildRequires: smartmet-library-tron >= 23.7.28
-BuildRequires: smartmet-library-spine-devel >= 24.2.8
+BuildRequires: smartmet-library-tron >= 24.8.7
+BuildRequires: smartmet-library-spine-devel >= 24.8.7
 Requires: proj90 >= 9.0.1
 Requires: lua >= 5.3.4
 Requires: bzip2-libs >= 1.0.6
 Requires: libpng >= 1.5.13
 Requires: libjpeg-turbo >= 1.2.90
-Requires: smartmet-library-newbase >= 24.3.11
-Requires: smartmet-library-spine >= 24.2.8
-Requires: smartmet-server >= 24.2.22
+Requires: smartmet-library-newbase >= 24.8.7
+Requires: smartmet-library-spine >= 24.8.7
+Requires: smartmet-server >= 24.8.7
 Obsoletes: fmi-q3-lib
 Obsoletes: fmi-q3-config
 Obsoletes: fmi-q3-brainstorm
@@ -71,6 +71,9 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/smartmet/plugins/q3plugin.conf
 
 %changelog
+* Thu Aug  8 2024 Pertti Kinnia <pertti.kinnia@fmi.fi> - 24.8.8-1.el8.fmi
+- Changes for c++17 build
+
 * Tue Apr  2 2024 Pertti Kinnia <pertti.kinnia@fmi.fi> - 24.4.2-1.el8.fmi
 - Cairo surface scaling calculation (ratios of image and grid x/y sizes) may result weird/wrong scaling value(s) unless ceil() is applied to them prior usage
 - Return type 'integer' as 'number' since integer type is not expected to be returned

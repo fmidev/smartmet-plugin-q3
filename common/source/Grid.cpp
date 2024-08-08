@@ -284,7 +284,7 @@ Grid::Grid( const Raw_interface &r, const JDay &vt_, const NA_Level &lev_, const
           , LatLonList const *locs_
           , bool flightRoute_
           , const DataIdList *dataIds_
-		  ) throw(E_NO_MATCH)
+		  )
     : 
 #ifdef METQU
     data( const_cast<NA_Data*>( r.getData() ) )
