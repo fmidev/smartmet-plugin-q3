@@ -14,7 +14,7 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires: scons
 BuildRequires: gcc-c++ >= 4.8.5
 BuildRequires: libstdc++-devel >= 4.8.5
-BuildRequires: proj90-devel >= 9.0.1
+BuildRequires: proj94-devel >= 9.0.1
 BuildRequires: lua-devel >= 5.3.4
 BuildRequires: boost169-devel
 BuildRequires: bzip2-devel >= 1.0.6
