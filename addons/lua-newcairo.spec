@@ -16,7 +16,7 @@ Name: lua-newcairo
 # el5:      "Enterprise Linux 5.0"
 # fmi:      FMI
 #
-Version: 24.3.14
+Version: 24.8.8
 Release: 1.el8.fmi
 
 License: FMI
@@ -94,6 +94,8 @@ Group: Development/Libraries
 
 #---
 %changelog
+* Thu Aug  8 2024 Pertti Kinnia <pertti.kinnia@fmi.fi> - 24.8.8-1.el8.fmi
+- c++17 rebuild
 * Thu Mar 14 2024 Pertti Kinnia <pertti.kinnia@fmi.fi> - 24.3.14-1.el8.fmi
 - Repackaged for rhel8, lua related changes (rhel7 lua 5.1 vs 5.3); BRAINSTORM-2608
 * Wed Oct 19 2022 <pertti.kinnia@fmi.fi>

@@ -14,7 +14,7 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires: scons
 BuildRequires: gcc-c++ >= 4.8.5
 BuildRequires: libstdc++-devel >= 4.8.5
-BuildRequires: proj94-devel >= 9.0.1
+BuildRequires: proj94-devel >= 9.4.1
 BuildRequires: lua-devel >= 5.3.4
 BuildRequires: boost169-devel
 BuildRequires: bzip2-devel >= 1.0.6
@@ -22,7 +22,7 @@ BuildRequires: libpng-devel >= 1.5.13
 BuildRequires: libjpeg-turbo-devel >= 1.2.90
 BuildRequires: smartmet-library-tron >= 24.8.7
 BuildRequires: smartmet-library-spine-devel >= 24.8.7
-Requires: proj90 >= 9.0.1
+Requires: proj94 >= 9.4.1
 Requires: lua >= 5.3.4
 Requires: bzip2-libs >= 1.0.6
 Requires: libpng >= 1.5.13
