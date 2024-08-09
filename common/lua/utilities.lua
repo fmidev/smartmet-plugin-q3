@@ -2231,7 +2231,7 @@ local function queryimage(dqargs,lqargs,pqargs)
 	local levels= dqargs.levels or { 0 }
 	local times= dqargs.times or { NOW }
 
-	local cs,cr= newcairo.surface( math.ceil(x_max*xscale), math.ceil(y_max*yscale) )
+	local cs,cr= newcairo.surface( x_max*xscale, y_max*yscale )
 
 	scale_to_grid( cr, gs, 0,0, cs.width, cs.height )
 
@@ -2630,7 +2630,7 @@ local function checkpqargs(dqargs,pqargs)
 			if type(pqargs[fld])=="string" then
 				if fld=="size" then
 		 			pqargs.size= { tonumber_all(string.match(pqargs.size,"^(%d+),(%d+)$")) }
-					if #pqargs.size~=2 then error("Invalid picture size, size=\"x,y\" expected") end
+					if #pqargs.size~=2 then error("Invalid image size, size=\"x,y\" expected") end
 				elseif #dqargs.parameters==1 then
 					pqargs.contours= {}
 					pqargs.contours[dqargs.parameters[1]]= { pqargs.contour }
@@ -2648,7 +2648,7 @@ local function checkpqargs(dqargs,pqargs)
 	end
 
 	if pqargs.size==nil then
-		error("Picture size missing")
+		error("Image size missing")
 	elseif pqargs.contours==nil then
 		error("Contour descriptor(s) missing")
 	end

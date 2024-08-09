@@ -167,6 +167,8 @@ function surface( ... )
     end
 
     local w,h,opt= ...
+    w= math_floor(w) -- lua5.3: width and height must converted to integer
+    h= math_floor(h)
     local format= opt and opt.format or nil
     local METQU_opt_filename= METQU and (opt and opt.filename) or nil
 
