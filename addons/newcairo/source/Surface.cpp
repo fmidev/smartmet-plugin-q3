@@ -360,8 +360,8 @@ int Surface::contents( lua_State *L ) {
     my.io->seekg( 0, ios::end );
     size_t len= my.io->tellg();
 
-#if 1
-    cerr << "Picture size: " << len << endl;
+#if 0
+    cerr << "Image size: " << len << endl;
 #endif
 
     // Get the whole contents in one go (files should be within reasonable size, compared
