@@ -16,7 +16,7 @@ Name: lua-newcairo
 # el5:      "Enterprise Linux 5.0"
 # fmi:      FMI
 #
-Version: 24.8.8
+Version: 24.8.9
 Release: 1.el8.fmi
 
 License: FMI
@@ -94,6 +94,9 @@ Group: Development/Libraries
 
 #---
 %changelog
+* Fri Aug  9 2024 Pertti Kinnia <pertti.kinnia@fmi.fi> - 24.8.9-1.el8.fmi
+- lua5.3: cairo surface width and height must be converted to integer
+
 * Thu Aug  8 2024 Pertti Kinnia <pertti.kinnia@fmi.fi> - 24.8.8-1.el8.fmi
 - c++17 rebuild
 * Thu Mar 14 2024 Pertti Kinnia <pertti.kinnia@fmi.fi> - 24.3.14-1.el8.fmi

@@ -2,7 +2,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet q3 plugin
 Name: %{SPECNAME}
-Version: 24.8.8
+Version: 24.8.9
 Release: 1.el8.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -71,6 +71,9 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/smartmet/plugins/q3plugin.conf
 
 %changelog
+* Fri Aug  9 2024 Pertti Kinnia <pertti.kinnia@fmi.fi> - 24.8.9-1.el8.fmi
+- lua5.3: cairo surface width and height must be converted to integer
+
 * Thu Aug  8 2024 Pertti Kinnia <pertti.kinnia@fmi.fi> - 24.8.8-1.el8.fmi
 - Changes for c++17 build
 
