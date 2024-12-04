@@ -15,8 +15,8 @@
 #include "Proto.h"
 
 extern "C" {
-#include "lauxlib.h"
-#include "lua.h"
+#include "luajit-2.1/lauxlib.h"
+#include "luajit-2.1/lua.h"
 }
 
 using namespace std;

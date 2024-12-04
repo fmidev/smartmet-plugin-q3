@@ -14,7 +14,7 @@
 #include "Tools.h"  // string_or_null
 
 extern "C" {
-    #include "lua.h"
+    #include "luajit-2.1/lua.h"
 }
 
 class Session {

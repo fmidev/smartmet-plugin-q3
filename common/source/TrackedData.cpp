@@ -33,7 +33,7 @@ const char *TrackedData::four_Xs= "XXXX";
 * Note:
 *       To actually load the data, caller must call 'Acquire'
 */
-TrackedData::TrackedData( const char *fn, const JDay &ot_given_, const string_or_null &tmp_pattern_, size_t tmp_threshold_, bool relative_uv_ ) throw( E_BAD_FILE, E_USAGE )
+TrackedData::TrackedData( const char *fn, const JDay &ot_given_, const string_or_null &tmp_pattern_, size_t tmp_threshold_, bool relative_uv_ )
     : source(fn), info_(0), ot_given(ot_given_), qd(0), tmp_fn(0)
 #ifndef METQU
     , qd_m(), refcount(0), last_acquired(0), meta_acquired(0)
@@ -50,7 +50,7 @@ TrackedData::TrackedData( const char *fn, const JDay &ot_given_, const string_or
     INVARIANT();
 }
 
-TrackedData::TrackedData( const char *fn, const NA_Info &info_given, bool relative_uv_, const string_or_null &tmp_pattern_, size_t tmp_threshold_ ) throw( E_USAGE )
+TrackedData::TrackedData( const char *fn, const NA_Info &info_given, bool relative_uv_, const string_or_null &tmp_pattern_, size_t tmp_threshold_ )
     : source(fn), info_(new NA_Info(info_given)), ot_given(), qd(0), tmp_fn(0)
 #ifndef METQU
     , qd_m(), refcount(0), last_acquired(0), meta_acquired(0)
@@ -175,7 +175,7 @@ LOG_OK( "Wipe_LOCKED(%d: %s)", (int) pthread_self(), fn_f );
 *           rights to view it in the directory listing), or if some jerk has removed
 *           the file manually (which is okay).
 */
-NA_Data *TrackedData::Acquire(bool metaQuery) throw(E_BAD_FILE, E_BUG) {
+NA_Data *TrackedData::Acquire(bool metaQuery) {
 
 #ifndef METQU
     { ClaimMutex lock( qd_m );

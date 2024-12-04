@@ -11,7 +11,7 @@
 #include <cairo.h>
 
 extern "C" {
-# include <lua.h>
+# include <luajit-2.1/lua.h>
 }
 
 #ifndef NDEBUG
@@ -19,7 +19,7 @@ extern "C" {
 #endif
 
 class out_of_memory : public std::exception {
-    /*virtual*/ const char *what() const throw() { return "out of memory"; }
+    /*virtual*/ const char *what() const noexcept { return "out of memory"; }
 };
 
 inline void status_check( lua_State *L, cairo_status_t st ) {

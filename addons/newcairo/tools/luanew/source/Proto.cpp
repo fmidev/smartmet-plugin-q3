@@ -4,8 +4,8 @@
 #include "Proto.h"
 
 extern "C" {
-  #include "lualib.h"
-  #include "lauxlib.h"
+  #include "luajit-2.1/lualib.h"
+  #include "luajit-2.1/lauxlib.h"
 }
 
 #include "assert.h"

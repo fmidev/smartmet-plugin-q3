@@ -35,7 +35,7 @@ SubMatrix::~SubMatrix() {
 
 /*
 */
-/*virtual*/ float SubMatrix::get_value_n( offset_t n ) const throw() {
+/*virtual*/ float SubMatrix::get_value_n( offset_t n ) const noexcept {
     xy_t xs= getSize().getXS();
     xy_t y= n/xs;
     xy_t x= n%xs;
@@ -78,7 +78,7 @@ SubMatrix::~SubMatrix() {
 * Writes outside of the parent matrix are quietly ignored (allows use of the
 * peekhole also at edges).
 */
-/*virtual*/ void SubMatrix::set_value_n( offset_t n, float v ) throw() {
+/*virtual*/ void SubMatrix::set_value_n( offset_t n, float v ) noexcept {
     (void)n; (void)v;
     assert( false );    // upper levels should have checked
 }

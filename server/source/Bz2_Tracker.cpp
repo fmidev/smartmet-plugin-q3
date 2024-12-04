@@ -115,7 +115,7 @@ Bz2_Tracker::Bz2_Tracker(const string &fn_abs_mask,
                          unsigned wiping_[],
                          bool relative_uv_,
                          const string_or_null &tmp_pattern_,
-                         size_t tmp_threshold_) throw(E_USAGE)
+                         size_t tmp_threshold_)
     : TrackerBase(refresh_ms_, wiping_, relative_uv_, "TRACK"),
       base_path(),
       file_mask(),
@@ -148,7 +148,7 @@ Bz2_Tracker::Bz2_Tracker(const string &fn_abs_mask,
 /*
 * 'update()' called from 'TrackerBase' polling thread.
 */
-bool Bz2_Tracker::update(set<string> &seen_already) throw()
+bool Bz2_Tracker::update(set<string> &seen_already) noexcept
 {
   assert(cache);
 
@@ -177,7 +177,7 @@ bool Bz2_Tracker::update(set<string> &seen_already) throw()
 * Returns:  true if a cache file existed
 *           false if we're running with memory caching only (nothing to initialize)
 */
-bool Bz2_Tracker::update_from_cache(set<string> &seen_already) throw()
+bool Bz2_Tracker::update_from_cache(set<string> &seen_already) noexcept
 {
   assert(cache);
 
@@ -238,7 +238,7 @@ bool Bz2_Tracker::update_from_cache(set<string> &seen_already) throw()
 *
 * Returns the most recent origintime in the newly found data.
 */
-void Bz2_Tracker::update_subpath(const char *path_abs, set<string> &seen_already) throw()
+void Bz2_Tracker::update_subpath(const char *path_abs, set<string> &seen_already) noexcept
 {
   const char *mask = file_mask.c_str();
 

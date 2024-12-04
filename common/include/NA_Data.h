@@ -67,7 +67,7 @@ class NA_Info {
 			 const double dx_ = 0,
 			 const double dy_ = 0,
 			 const bool gridData_ = true
-           ) throw();
+           ) noexcept;
 
     JDay getLoadTime() const { return loadTime; }
     JDay getModificationTime() const { return modificationTime; }

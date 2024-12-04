@@ -72,7 +72,8 @@ env.Append(
     CPPPATH= [ "./include", 
                COMMON_PATH+"/include",
                ADDONS_PATH+"/newcairo/include",
-	       PREFIX+"/include/boost169"	       
+               PREFIX+"/include/boost169",
+               PREFIX+"/libconfig17/include"
               ],
 
     CPPDEFINES= [ 
@@ -86,7 +87,7 @@ env.Append(
         "-rdynamic",
         "-Wall",
         "-W",
-        "-std=c++11",
+        "-std=c++17",
         "-Wno-unused-parameter",
         # 10-Jan-2014 PKi: For including precompiled lua chunks
         #
@@ -125,7 +126,7 @@ if DEBUG:
     ] )
 else:
     env.Append( CPPDEFINES="NDEBUG",
-                CPPFLAGS= ["-O2",
+                CPPFLAGS= [ "-g", "-O2",
 
         # RELEASEFLAGS
         #
@@ -134,7 +135,7 @@ else:
 
 # 10-Jan-2014 PKi
 #
-env.Append( CPPFLAGS=[ "-std=c++0x" ] )
+env.Append( CPPFLAGS=[ "-std=c++17" ] )
 
 #---
 # Only 'libfmi-q3' will need to link to Newbase, Tron etc.
@@ -157,7 +158,7 @@ lib_env.Append( CPPDEFINES= ["USE_NEWBASE"] )
 # 14-Feb-2011 PKi: using multithreaded version of newbase
 #
 lib_env.Append( CPPPATH= [ PREFIX+"/include/smartmet", PREFIX+"/include/cairo",
-                           PREFIX+"/geos311/include", PREFIX+"/gdal35/include", PREFIX+"/proj72/include" ],
+                           PREFIX+"/geos312/include", PREFIX+"/gdal38/include", PREFIX+"/proj94/include" ],
                 LIBS=   ['smartmet-newbase']
                 )    
 
@@ -169,7 +170,7 @@ lib_env.Append( CPPDEFINES= [ "USE_TRON", "USE_UNSTABLE_GEOS_CPP_API" ],
                 LIBS= [ File( LIB_PREFIX+"libsmartmet-tron.so") ]
                 )
 
-lib_env.Append(LIBS= [ File( "/usr/proj72/lib/libproj.so") ])
+lib_env.Append(LIBS= [ File( "/usr/proj94/lib64/libproj.so") ])
 
 #---
 # Boost
@@ -207,8 +208,8 @@ lib_env.Append( LIBS= [ "png", "jpeg", "z", "bz2", "pthread", "cairo" ] )
 # Ubuntu has 'lua5.1' on pkg-config (and allows multiple versions to coexist)
 # Others have 'lua'
 #
-if os.system( PKG_CONFIG+" --exists lua5.1" )==0:
-    lib_env.ParseConfig( PKG_CONFIG+" --cflags --libs lua5.1" )
+if os.system( PKG_CONFIG+" --exists luajit" )==0:
+    lib_env.ParseConfig( PKG_CONFIG+" --cflags --libs luajit" )
 else:
     lib_env.ParseConfig( PKG_CONFIG+" --cflags --libs lua" )
     lib_env.Append( SHAREDLIBS="lua" )
@@ -226,7 +227,7 @@ lib_env.Append( CPPFLAGS=[ "-mfpmath=sse", "-msse2" ] )
 # Note: '-o -' will only work on Unix-like systems (not Windows). Windows
 #       needs to use a temporary file since it's stdout is not binary.
 #
-lib_env["BUILDERS"]["LuaPrecompiled"]= Builder( action = "luac -o - $SOURCE | lua "+BIN2C_LUA+" -o $TARGET") 
+lib_env["BUILDERS"]["LuaPrecompiled"]= Builder( action = "luajit -b $SOURCE - | luajit "+BIN2C_LUA+" -o $TARGET")
 
 for fn in Glob("lua/*.lua") + Glob(COMMON_PATH+"/lua/*.lua") + Glob(LUANEW_PATH+"/lua/*.lua") + [TOOLS_PATH+"/assert.lua", TOOLS_PATH+"/type.lua"]:
     s= os.path.basename( str(fn) )

@@ -31,9 +31,9 @@
     // keep this for Ubuntu (Centos seems to be giving 'string.h' from some system headers)
 
 extern "C" {
-  #include "lua.h"
-  #include "lualib.h"
-  #include "lauxlib.h"
+  #include "luajit-2.1/lua.h"
+  #include "luajit-2.1/lualib.h"
+  #include "luajit-2.1/lauxlib.h"
 }
 
 #ifdef METQU

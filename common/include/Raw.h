@@ -43,7 +43,7 @@ struct RawBind {
                             const std::vector<NA_Level> &required_levels,
                             const std::vector<ApiParam> &required_params,
                             bool height_true,
-                            const MatrixPos &default_gs ) throw(E_USAGE);
+                            const MatrixPos &default_gs );
 #endif
 
   private:
@@ -85,10 +85,10 @@ class Raw_interface : public LuaNew<RawBind> {
 */
 class Raw : public Raw_interface {
   public:
-    Raw( TrackedData *td_, const NA_Level &def_level_, const MatrixPos &def_gridsize_= MatrixPos::ZERO, bool metaQuery = false ) throw();  // from disk (read-only; server)
+    Raw( TrackedData *td_, const NA_Level &def_level_, const MatrixPos &def_gridsize_= MatrixPos::ZERO, bool metaQuery = false ) noexcept;  // from disk (read-only; server)
 
 #ifdef METQU
-    Raw( const NA_Info &info ) throw();      // from scratch (read-write)
+    Raw( const NA_Info &info ) noexcept;      // from scratch (read-write)
     bool /*not cancelled*/ fill_from( lua_State *L, const Raw_interface &r_from, NA_Data::ProgressCallback *cb );
 #endif
 

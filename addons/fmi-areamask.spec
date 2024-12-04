@@ -18,8 +18,8 @@ Name: fmi-areamask
 # el5:      "Enterprise Linux 5.0"
 # fmi:      FMI
 #
-Version: 17.2.3
-Release: 1.el7.fmi
+Version: 24.12.3
+Release: 1.el8.fmi
 
 License: FMI
 Group: Development/Libraries
@@ -33,6 +33,8 @@ Requires:       lua >= 5.1.4
 
 %description
 %{DESC}
+
+%global debug_package %{nil}
 
 #---
 %prep
@@ -98,6 +100,8 @@ Requires:   fmi-q3-virtual
 
 #---
 %changelog
+* Tue Dec  3 2024 Pertti Kinnia <pertti.kinnia@fmi.fi>
+- Rebuild
 * Fri Feb 3 2017 <mikko.visa@fmi.fi>
 - Rebuild, GitHub packages and cleanup
 * Wed Nov 24 2010 <asko.kauppi@fmi.fi>

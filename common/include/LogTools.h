@@ -24,7 +24,7 @@ class JDay;
 
 extern "C"
 {
-#include "lua.h"
+#include "luajit-2.1/lua.h"
 }
 
 #include <stdint.h>
@@ -242,13 +242,13 @@ class E_ANY : public std::exception
 
   // Needed for 'std::exception' derivation (otherwise "looser throw specifier")
   //
-  /*virtual*/ ~E_ANY() throw() {}
+  /*virtual*/ ~E_ANY() noexcept {}
 
   // Create the 'what()' message only if needed (= if the catcher asks for it)
   //
   // Note: We must keep it in a member, to provide lifespan.
   //
-  /*virtual*/ const char *what() const throw()
+  /*virtual*/ const char *what() const noexcept
   {
     // Note: Using 'ostringstream' makes no limits to the length of the message.
     //       'string_fmt()' would have an internal limit (and truncate longer stuff).
@@ -272,7 +272,7 @@ class E_ANY : public std::exception
 
   // Only the message (no file & line)
   //
-  const char *what_nosource() const throw() { return msg.c_str(); }
+  const char *what_nosource() const noexcept { return msg.c_str(); }
 
  protected:
   static std::string to_str(const MatrixSize &sz);

@@ -256,7 +256,7 @@ static void matrix_fill(MemMatrix &m, const NFmiDataMatrix<float> &from) {
  */
 void SQD_Data::setIter(NFmiFastQueryInfo &fi, const JDay &vt,
                        const NA_Level &lev, const NA_Param &p, bool &exact_time,
-                       bool &exact_level) throw(E_NO_MATCH) {
+                       bool &exact_level) {
   // Note: 'p' is one of the available params of 'this' and must carry its id.
   //       (native name having ':NNN' tail)
 
@@ -308,7 +308,7 @@ void SQD_Data::setIter(NFmiFastQueryInfo &fi, const JDay &vt,
  * Set an iterator to 'NFmiQueryData', knowing the time, level, param exist.
  */
 void SQD_Data::setIter_exact(NFmiFastQueryInfo &fi, const JDay &vt,
-                             const NA_Level &lev, const NA_Param &p) throw() {
+                             const NA_Level &lev, const NA_Param &p) noexcept {
   bool exact_time, exact_level;
 
   try {
@@ -353,7 +353,7 @@ static vector<JDay> getTimes(NFmiQueryInfo &info) /*throw(E_BUG)*/
  */
 static vector<NA_Level> getLevels(const NFmiQueryInfo &info,
                                   const char *fn_debug, bool &revorder,
-                                  string &nativeLevelType) throw(E_BAD_FILE) {
+                                  string &nativeLevelType) {
   vector<NA_Level> vec;
 
   // We need 'FastQueryInfo()' for 'HeightValueAvailable()' and others.
@@ -737,8 +737,7 @@ static vector<NA_Param> getParams(NFmiQueryInfo &info, bool &has_326,
 
 /*
  */
-SQD_Data::SQD_Data(const char *fn, bool relative_uv) throw(E_BAD_FILE,
-                                                           std::exception)
+SQD_Data::SQD_Data(const char *fn, bool relative_uv)
     : NA_Data(read_info(fn)), qd(new NFmiQueryData(fn))
 #ifdef METQU
       ,
@@ -750,7 +749,7 @@ SQD_Data::SQD_Data(const char *fn, bool relative_uv) throw(E_BAD_FILE,
 }
 
 #ifdef METQU
-SQD_Data::SQD_Data(const NA_Info &info) throw()
+SQD_Data::SQD_Data(const NA_Info &info) noexcept
     : NA_Data(info), qd(new_qd(info, info.getExtra_sqd_gridsize())),
       is_readonly(false) // read-write
 {
@@ -771,7 +770,7 @@ SQD_Data::~SQD_Data() {
  */
 #ifdef METQU
 NFmiQueryData *SQD_Data::new_qd(const NA_Info &info,
-                                const MatrixPos &gs) throw(E_USAGE) {
+                                const MatrixPos &gs) {
   int prod_num = info.getExtra_sqd_producer(); // 0 if none
 
   bool host_326 = info.getExtra_sqd_combo326();
@@ -987,7 +986,7 @@ void SQD_Data::output(ostream &out,
 
 /*
  */
-NA_Info SQD_Data::read_info(const char *fn) throw(E_BAD_FILE) {
+NA_Info SQD_Data::read_info(const char *fn) {
   NFmiQueryInfo info;
 
   // Seems this can ignite:
@@ -1175,8 +1174,7 @@ SQD_Data::push_NativeMatrix(lua_State *L, const JDay &vt, const NA_Level &lev,
                             ,
                             const Projection *target_proj,
                             const MatrixPos *target_gs, bool *target_ready,
-                            const DataIdList *dataIds) CONST_IF_SERVER
-    throw(/*E_BUG*/) {
+                            const DataIdList *dataIds) CONST_IF_SERVER noexcept {
   CONST_IF_SERVER Matrix *m;
 
   //---
@@ -1354,8 +1352,7 @@ SQD_Data::push_NativeMatrix_e(lua_State *L, const JDay &vt, const NA_Level &lev,
                               ,
                               const Projection *target_proj,
                               const MatrixPos *target_gs, bool *target_ready,
-                              const DataIdList *dataIds_) CONST_IF_SERVER
-    throw(/*E_BUG*/) {
+                              const DataIdList *dataIds_) CONST_IF_SERVER noexcept {
   try {
 
     // 07-Apr-2015 PKi: Handling point data (e.g. observations) too

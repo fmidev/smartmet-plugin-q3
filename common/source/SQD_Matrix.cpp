@@ -89,7 +89,7 @@ static float set_WD( float v ) {    // script -> SQD file (0 -> 360)
 /*---=== SQD_Matrix ===---*/
 
 #ifdef METQU
-SQD_Matrix::SQD_Matrix( SQD_Data *data, const JDay &vt, const NA_Level &lev, FmiParameterName e ) throw(E_NO_MATCH)
+SQD_Matrix::SQD_Matrix( SQD_Data *data, const JDay &vt, const NA_Level &lev, FmiParameterName e )
 : Matrix( data->getGridSize(), SQD_Tools::unit_by_id(e), data->isReadOnly() ),
   fi( new_iter( data->getQD(), vt, lev, e ) ),
   proj( data->getProjection() ),
@@ -118,7 +118,7 @@ SQD_Matrix::SQD_Matrix( SQD_Data *data, const JDay &vt, const NA_Level &lev, Fmi
 }
 #endif
 
-SQD_Matrix::SQD_Matrix( const SQD_Data *data, const JDay &vt, const NA_Level &lev, FmiParameterName e ) throw(E_NO_MATCH)
+SQD_Matrix::SQD_Matrix( const SQD_Data *data, const JDay &vt, const NA_Level &lev, FmiParameterName e )
   : Matrix( data->getGridSize(), SQD_Tools::unit_by_id(e), true /*read-only*/ )
 #ifdef METQU
   , fi( new_iter( const_cast<SQD_Data*>(data)->getQD(), vt, lev, e ) )
@@ -165,7 +165,7 @@ SQD_Matrix::~SQD_Matrix() {
 
 /*
 */
-float SQD_Matrix::get_value_n( offset_t n ) const throw() {
+float SQD_Matrix::get_value_n( offset_t n ) const noexcept {
     fi->LocationIndex(n); 
     float v= fi->FloatValue();
 
@@ -235,7 +235,7 @@ float SQD_Matrix::get_value_n( offset_t n ) const throw() {
 /*
 */
 #ifdef METQU
-void SQD_Matrix::set_value_n( offset_t n, float v ) throw() {
+void SQD_Matrix::set_value_n( offset_t n, float v ) noexcept {
     assert( !isReadOnly() );    // upper levels should have checked
 
     fi->LocationIndex(n); 

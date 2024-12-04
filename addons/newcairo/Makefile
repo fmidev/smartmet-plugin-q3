@@ -20,7 +20,7 @@ LUANEW_OBJS=$(addprefix obj/,$(notdir $(LUANEW_SRCS:.cpp=.o)))
 FULL_SO=lua51-newcairo.so
 SERVER_SO=lua51-newcairo-server.so
 
-CFLAGS=-Wall -W -fPIC -std=c++11
+CFLAGS=-Wall -W -fPIC -std=c++17
 
 VARIANT=debug
 ifeq "$(VARIANT)" "debug"
@@ -35,9 +35,9 @@ UBUNTU=$(shell uname -a | grep Ubuntu | wc -l)
 # Centos and RHEL have 'pkg-config lua'
 # Ubuntu and Debian have 'pkg-config lua5.1'
 #
-ifneq "$(shell pkg-config --exists lua5.1 && echo 1)" ""
-  CFLAGS+=$(shell pkg-config --cflags lua5.1)
-  LIBS+=$(shell pkg-config --libs lua5.1)
+ifneq "$(shell pkg-config --exists luajit && echo 1)" ""
+ CFLAGS+=$(shell pkg-config --cflags luajit)
+ LIBS+=$(shell pkg-config --libs luajit)
 else
   CFLAGS+=$(shell pkg-config --cflags lua)
   LIBS+=$(shell pkg-config --libs lua)
@@ -84,7 +84,7 @@ $(SERVER_SO): $(SERVER_OBJS) $(LUANEW_OBJS)
 	g++ -o $@ $(SHARED) $(LIBS) $^
 
 obj/%.lch: lua/%.lua
-	luac -o delme $< && lua $(BIN2C) delme -o $@
+	luajit -b $< delme && luajit $(BIN2C) delme -o $@
 	@rm delme
 
 obj/1/NewCairo.o: obj/newcairo.lch
@@ -107,7 +107,7 @@ obj/%.o: $(LUANEW_PATH)/source/%.cpp obj/proto.lch
 	g++ -c -o $@ $(CFLAGS) -I $(LUANEW_PATH)/include -I obj $<
 
 obj/%.lch: $(LUANEW_PATH)/lua/%.lua
-	luac -o delme $< && lua $(BIN2C) delme -o $@
+	luajit -b $< delme && luajit $(BIN2C) delme -o $@
 	@rm delme
 
 clean:

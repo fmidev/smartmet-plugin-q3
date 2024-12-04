@@ -43,7 +43,7 @@ class Projection_provider {
 class Projection {
   public:
     Projection() : proj(0), creation_str("") { INVARIANT(); }    // empty (no) projection
-    Projection( const char *s ) throw(E_USAGE);
+    Projection( const char *s );
     Projection( const Projection & );
     ~Projection();
 

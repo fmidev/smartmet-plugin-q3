@@ -43,7 +43,7 @@ NA_Info::NA_Info(
         const double dx_,
         const double dy_,
 		const bool gridData_
-        ) throw()
+        ) noexcept
 : loadTime(loadTime_),
   modificationTime(modificationTime_),
   ot( ot_ ), 

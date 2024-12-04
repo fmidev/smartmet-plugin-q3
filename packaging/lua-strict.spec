@@ -1,7 +1,7 @@
 #
 # lua-strict.spec
 #
-%define DESC=Lua addon allowing '-lstrict' checking for uninitialized variable names.
+%define DESC Lua addon allowing '-lstrict' checking for uninitialized variable names.
 
 Summary: %{DESC}
 Name: lua-strict
@@ -15,7 +15,7 @@ Name: lua-strict
 # fmi:      FMI
 #
 Version: 5.1
-Release: 2.el7.fmi
+Release: 1.el8.fmi
 
 License: MIT
 Group: Development/Libraries
@@ -33,6 +33,8 @@ Requires:       lua >= 5.1.4-4.1
 #---
 %prep
 %setup -q -n %{name}
+
+%global debug_package %{nil}
 
 # Note: Nothing to compile.
 #

@@ -26,18 +26,18 @@ class Bz2_Tracker : public TrackerBase
               unsigned wiping_[],
               bool relative_uv_,
               const string_or_null &tmp_pattern_,
-              size_t tmp_threshold_) throw(E_USAGE);
+              size_t tmp_threshold_);
   ~Bz2_Tracker() {}
-  TrackedData *getData_must_release(time_t ot) throw();
+  TrackedData *getData_must_release(time_t ot) noexcept;
 
   static void cache_init(const char *fn);
 
   bool archived() const { return true; }
   // private funcs
  private:
-  /*virtual*/ bool update(std::set<std::string> &seen_already) throw();
-  bool update_from_cache(std::set<std::string> &seen_already) throw();
-  void update_subpath(const char *path_abs, std::set<std::string> &seen_already) throw();
+  /*virtual*/ bool update(std::set<std::string> &seen_already) noexcept;
+  bool update_from_cache(std::set<std::string> &seen_already) noexcept;
+  void update_subpath(const char *path_abs, std::set<std::string> &seen_already) noexcept;
 
   /*virtual*/ std::string id_str() const { return base_path + "**/" + file_mask; }
   // data members

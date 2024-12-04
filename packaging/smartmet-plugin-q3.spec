@@ -2,8 +2,8 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet q3 plugin
 Name: %{SPECNAME}
-Version: 24.1.31
-Release: 1.el7.fmi
+Version: 24.12.3
+Release: 1.el8.fmi
 License: MIT
 Group: SmartMet/Plugins
 URL: https://github.com/fmidev/smartmet-plugin-q3
@@ -14,22 +14,22 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires: scons
 BuildRequires: gcc-c++ >= 4.8.5
 BuildRequires: libstdc++-devel >= 4.8.5
-BuildRequires: proj72-devel >= 7.2.2
+BuildRequires: proj94-devel >= 9.4.1
 BuildRequires: lua-devel >= 5.1.4
 BuildRequires: boost169-devel
 BuildRequires: bzip2-devel >= 1.0.6
 BuildRequires: libpng-devel >= 1.5.13
 BuildRequires: libjpeg-turbo-devel >= 1.2.90
-BuildRequires: smartmet-library-tron >= 23.7.28
-BuildRequires: smartmet-library-spine-devel >= 24.1.30
-Requires: proj72 >= 7.2.2
+BuildRequires: smartmet-library-tron >= 24.8.7
+BuildRequires: smartmet-library-spine-devel >= 24.11.27
+Requires: proj94 >= 9.4.1
 Requires: lua >= 5.1.4
 Requires: bzip2-libs >= 1.0.6
 Requires: libpng >= 1.5.13
 Requires: libjpeg-turbo >= 1.2.90
-Requires: smartmet-library-newbase >= 24.1.30
-Requires: smartmet-library-spine >= 24.1.30
-Requires: smartmet-server >= 24.1.29
+Requires: smartmet-library-newbase >= 24.12.3
+Requires: smartmet-library-spine >= 24.11.27
+Requires: smartmet-server >= 24.11.27
 Obsoletes: fmi-q3-lib
 Obsoletes: fmi-q3-config
 Obsoletes: fmi-q3-brainstorm
@@ -71,6 +71,8 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/smartmet/plugins/q3plugin.conf
 
 %changelog
+* Tue Dec  3 2024 Pertti Kinnia <pertti.kinnia@fmi.fi> - 24.12.3-1.el8.fmi
+- Using luajit. Changes made to master (rhel7) source and pushed to branch master-PAK-4164-luajit
 * Wed Jan 31 2024 Pertti Kinnia <pertti.kinnia@fmi.fi> - 24.1.31-1.el7.fmi
 - Allow missing point data coordinates (PAK-3114). Updated geos and gdal include paths
 * Thu Jan 19 2023 Pertti Kinnia <pertti.kinnia@fmi.fi> - 23.1.19-1.el7.fmi
@@ -116,7 +118,7 @@ rm -rf %{buildroot}
 - Disabled LOG_OK, LOG_DEBUG, LOG_STAT and LOG_TIMING output
 * Sat Apr 18 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.4.18-1.el7.fmi
 - Upgraded to Boost 1.69
-* Thu Apr 17 2020 Pertti Kinnia <pertti.kinnia@fmi.fi> - 20.4.17-1.el7.fmi
+* Fri Apr 17 2020 Pertti Kinnia <pertti.kinnia@fmi.fi> - 20.4.17-1.el7.fmi
 - Fixed bug with sounding data and missing parameters in query when removing return data having missing pressure value (BS-1819)
 * Thu Apr  2 2020 Pertti Kinnia <pertti.kinnia@fmi.fi> - 20.4.2-1.el7.fmi
 - Skip duplicate metadata for sounding data (both hpa=850 and sounding=true matches); BS-1812

@@ -34,7 +34,7 @@ struct NA_Level {
     };
 
 #ifdef MQD_ENABLED
-    NA_Level( const char *s ) throw(E_USAGE);
+    NA_Level( const char *s );
 #endif
     //NA_Level( const char *lt, double lv ) throw(E_USAGE);
     NA_Level( enum Type lt_, double lv_=NAN );

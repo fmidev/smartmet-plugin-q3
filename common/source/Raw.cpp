@@ -66,7 +66,7 @@ static NA_Level process_def_level( const NA_Level &lev ) {
 * Note: 'td' is _already_ acquired by its inception. We make another acquire to get the 'qd' pointer.
 *       This means the GC or 'Raw' must do _two_ releases to really let the data go.
 */
-Raw::Raw( TrackedData *td_, const NA_Level &def_level_, const MatrixPos &def_gridsize_, bool metaQuery ) throw()
+Raw::Raw( TrackedData *td_, const NA_Level &def_level_, const MatrixPos &def_gridsize_, bool metaQuery ) noexcept
     : td(td_)
     , qd(td->Acquire(metaQuery))
     , def_level( process_def_level(def_level_) )

@@ -280,7 +280,7 @@ int VectorBind::tostring( lua_State *L ) {
 * makes sure all calculations will automatically get their values rightly adjusted
 * (i.e. multiplication by negatives will turn the direction around).
 */
-Vector::Vector( double x_or_abs, double y_or_deg, bool polar_ ) throw()
+Vector::Vector( double x_or_abs, double y_or_deg, bool polar_ ) noexcept
     : v1(x_or_abs), v2(y_or_deg), polar(polar_) {
 
     if (polar_) {

@@ -35,22 +35,22 @@ class MQD_Matrix : public Matrix {
 
     /*virtual*/ ~MQD_Matrix() {}
 
-    /*virtual*/ float get_value_n( offset_t n ) const throw();
+    /*virtual*/ float get_value_n( offset_t n ) const noexcept;
 
 #ifdef METQU
-    /*virtual*/ void set_value_n( offset_t n, float v ) throw();
+    /*virtual*/ void set_value_n( offset_t n, float v ) noexcept;
 #else
-    /*virtual*/ void set_value_n( offset_t n, float v ) throw() {
+    /*virtual*/ void set_value_n( offset_t n, float v ) noexcept {
         throw E_LOG_BUG0( "Trying to write an MQD_Matrix" );
     }
 #endif
 
-    /*virtual*/ const float *getData() const throw();
+    /*virtual*/ const float *getData() const noexcept;
 
 #ifdef METQU
-    /*virtual*/ float *getData() throw();
+    /*virtual*/ float *getData() noexcept;
 #else
-    /*virtual*/ float *getData() throw() {
+    /*virtual*/ float *getData() noexcept {
         throw E_LOG_BUG0( "Trying to write an MQD_Matrix" );
     }
 #endif

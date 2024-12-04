@@ -3,7 +3,7 @@
 #
 # Ref. <https://fedoraproject.org/wiki/How_to_create_an_RPM_package>
 #
-%define DESC=Cairo binding for Lua 5.1
+%define DESC Cairo binding for Lua 5.1
 
 Summary: %{DESC}
 Name: lua-newcairo
@@ -16,8 +16,8 @@ Name: lua-newcairo
 # el5:      "Enterprise Linux 5.0"
 # fmi:      FMI
 #
-Version: 22.10.19
-Release: 1.el7.fmi
+Version: 24.12.3
+Release: 1.el8.fmi
 
 License: FMI
 Group: Development/Libraries
@@ -42,6 +42,8 @@ Requires:       cairo >= 1.15.12
 
 %description
 %{DESC}
+
+%global debug_package %{nil}
 
 #---
 %prep
@@ -92,6 +94,8 @@ Group: Development/Libraries
 
 #---
 %changelog
+* Tue Dec  3 2024 Pertti Kinnia <pertti.kinnia@fmi.fi> - 24.12.3-1.el8.fmi
+- Using luajit. Changes made to master (rhel7) source and pushed to branch master-PAK-4164-luajit
 * Wed Oct 19 2022 <pertti.kinnia@fmi.fi>
 - Catch cairo exception(s) when e.g surface is empty when writing surface to png stream; BRAINSTORM-2437
 * Thu Apr 20 2017 <mikko.visa@fmi.fi>

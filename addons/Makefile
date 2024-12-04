@@ -90,7 +90,7 @@ endif
 #---
 rpm:
 	$(MAKE) newcairo_rpm
-	$(MAKE) fminames_rpm
+#	$(MAKE) fminames_rpm
 	$(MAKE) areamask_rpm
 	@echo ""
 	@echo "*** All RPMs done ***"
