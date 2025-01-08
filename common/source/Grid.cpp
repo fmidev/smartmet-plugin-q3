@@ -121,7 +121,13 @@ int GridBind::__index( lua_State *L ) noexcept {
 
         CONST_IF_SERVER ApiMatrix *mb= my.push_Matrix( L, ApiParam(s) );
         if (!mb) {
-            luaL_error( L, "Unknown parameter: %s", s );
+            // For some reason (some stack issue ?) with luajit/rhel8 luaL_error() crashes here.
+            //
+            // Note: the error set here is lost (not used)
+            //   - native api call (raw.param) calls luaL_error since nil matrix is returned
+            //   - dataquery().query() returns an empty matrix ( [] ) since api call fails
+            //
+            return L_nilerr_fmt( "Unknown parameter: %s", s);
         }
         // [-1]: 'Matrix' or 'VectorMatrix' return value
 

@@ -561,8 +561,9 @@ int RawBind::__index( lua_State *L ) {
     lua_pushstring( L,s );
     lua_gettable( L, -2 );      // leads to 'GridBind::index()'
     
-    L_ASSERT( (Matrix::instance(L,-1)!=nullptr) || (VectorMatrix::instance(L,-1)!=nullptr) );
-    
+    if ((! Matrix::instance(L, -1)) && (! VectorMatrix::instance(L, -1)))
+        luaL_error( L, (std::string("Unknown parameter: ") + s).c_str());
+
     // Note: Lua will clean out the reference to grid, but keep it alive via the matrix
     //      returned.
     //
