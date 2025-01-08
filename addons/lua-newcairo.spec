@@ -16,7 +16,7 @@ Name: lua-newcairo
 # el5:      "Enterprise Linux 5.0"
 # fmi:      FMI
 #
-Version: 24.12.3
+Version: 25.1.8
 Release: 1.el8.fmi
 
 License: FMI
@@ -34,7 +34,8 @@ Buildroot: %{_tmppath}/%{name}-root
 BuildRequires:	gcc-c++ >= 4.8.5
 BuildRequires:	libstdc++-devel >= 4.8.5
 
-BuildRequires:	lua-devel >= 5.1.4
+BuildRequires:	luajit-devel >= 2.1.0
+Requires:       luajit >= 2.1.0
 Requires:       lua >= 5.1.4
 
 BuildRequires:  cairo-devel >= 1.15.12
@@ -94,6 +95,8 @@ Group: Development/Libraries
 
 #---
 %changelog
+* Wed Jan  8 2025 Pertti Kinnia <pertti.kinnia@fmi.fi> - 25.1.8-1.el8.fmi
+- Dependencies updated (for luajit)
 * Tue Dec  3 2024 Pertti Kinnia <pertti.kinnia@fmi.fi> - 24.12.3-1.el8.fmi
 - Using luajit. Changes made to master (rhel7) source and pushed to branch master-PAK-4164-luajit
 * Wed Oct 19 2022 <pertti.kinnia@fmi.fi>

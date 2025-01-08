@@ -15,7 +15,7 @@ BuildRequires: scons
 BuildRequires: gcc-c++ >= 4.8.5
 BuildRequires: libstdc++-devel >= 4.8.5
 BuildRequires: proj94-devel >= 9.4.1
-BuildRequires: lua-devel >= 5.1.4
+BuildRequires: luajit-devel >= 2.1.0
 BuildRequires: boost169-devel
 BuildRequires: bzip2-devel >= 1.0.6
 BuildRequires: libpng-devel >= 1.5.13
@@ -23,6 +23,7 @@ BuildRequires: libjpeg-turbo-devel >= 1.2.90
 BuildRequires: smartmet-library-tron >= 24.8.7
 BuildRequires: smartmet-library-spine-devel >= 24.11.27
 Requires: proj94 >= 9.4.1
+Requires: luajit >= 2.1.0
 Requires: lua >= 5.1.4
 Requires: bzip2-libs >= 1.0.6
 Requires: libpng >= 1.5.13
