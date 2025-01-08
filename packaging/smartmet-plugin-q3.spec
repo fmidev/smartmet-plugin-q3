@@ -2,7 +2,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet q3 plugin
 Name: %{SPECNAME}
-Version: 24.12.3
+Version: 25.1.8
 Release: 1.el8.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -27,7 +27,7 @@ Requires: lua >= 5.1.4
 Requires: bzip2-libs >= 1.0.6
 Requires: libpng >= 1.5.13
 Requires: libjpeg-turbo >= 1.2.90
-Requires: smartmet-library-newbase >= 24.12.3
+Requires: smartmet-library-newbase >= 24.12.16
 Requires: smartmet-library-spine >= 24.11.27
 Requires: smartmet-server >= 24.11.27
 Obsoletes: fmi-q3-lib
@@ -71,6 +71,9 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/smartmet/plugins/q3plugin.conf
 
 %changelog
+* Wed Jan  8 2025 Pertti Kinnia <pertti.kinnia@fmi.fi> - 25.1.8-1.el8.fmi
+- Do not call luaL_error() on missing parameter since for some reason (some stack issue ?) it crashes with luajit/rhel8 (BRAINSTORM-3099)
+- Added open/init for luajit library (and for the rest of the libs from luajit's lib_init.c)
 * Tue Dec  3 2024 Pertti Kinnia <pertti.kinnia@fmi.fi> - 24.12.3-1.el8.fmi
 - Using luajit. Changes made to master (rhel7) source and pushed to branch master-PAK-4164-luajit
 * Wed Jan 31 2024 Pertti Kinnia <pertti.kinnia@fmi.fi> - 24.1.31-1.el7.fmi
