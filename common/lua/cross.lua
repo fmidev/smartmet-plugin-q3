@@ -171,11 +171,16 @@ function cross( a, param, loc, time, levels, flightroute, use_q3 )
             -- 21-Sep-2011 PKi: Use newbase ?
             if (use_newbase) then
                 local m,e= a{ [lt]=lv, time=t, location=latlon, [cross]=true }
+                local mp
                 -- 11-Oct-2011 PKi: Report the error if set
-                if ((m == nil) and (e ~= nil)) then
-                    error(e)
+                if (not m) then
+                    error(e and e or "Unknown error when fetching data")
                 end
-                return (m and m[param]) or nil
+                mp = m[param]
+                if (not mp) then
+                    error("Unknown parameter: " .. param, 0)
+                end
+                return mp
             end
 	
             -- 28-Sep-2011 PKi: Added nil checks to avoid runtime errors
