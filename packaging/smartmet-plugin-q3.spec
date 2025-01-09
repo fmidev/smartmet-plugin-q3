@@ -2,7 +2,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet q3 plugin
 Name: %{SPECNAME}
-Version: 25.1.8
+Version: 25.1.9
 Release: 1.el8.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -72,6 +72,8 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/smartmet/plugins/q3plugin.conf
 
 %changelog
+* Thu Jan  9 2025 Pertti Kinnia <pertti.kinnia@fmi.fi> - 25.1.9-1.el8.fmi
+- Fixed cross() to call error() on nil result since instead of calling luaL_error() fetching data for missing parameter now returns nil matrix (BRAINSTORM-3104)
 * Wed Jan  8 2025 Pertti Kinnia <pertti.kinnia@fmi.fi> - 25.1.8-1.el8.fmi
 - Do not call luaL_error() on missing parameter since for some reason (some stack issue ?) it crashes with luajit/rhel8 (BRAINSTORM-3099)
 - Added open/init for luajit library (and for the rest of the libs from luajit's lib_init.c)
