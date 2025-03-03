@@ -158,7 +158,7 @@ lib_env.Append( CPPDEFINES= ["USE_NEWBASE"] )
 # 14-Feb-2011 PKi: using multithreaded version of newbase
 #
 lib_env.Append( CPPPATH= [ PREFIX+"/include/smartmet", PREFIX+"/include/cairo",
-                           PREFIX+"/geos312/include", PREFIX+"/gdal38/include", PREFIX+"/proj94/include" ],
+                           PREFIX+"/geos313/include", PREFIX+"/gdal310/include", PREFIX+"/proj95/include" ],
                 LIBS=   ['smartmet-newbase']
                 )    
 
@@ -170,7 +170,7 @@ lib_env.Append( CPPDEFINES= [ "USE_TRON", "USE_UNSTABLE_GEOS_CPP_API" ],
                 LIBS= [ File( LIB_PREFIX+"libsmartmet-tron.so") ]
                 )
 
-lib_env.Append(LIBS= [ File( "/usr/proj94/lib64/libproj.so") ])
+lib_env.Append(LIBS= [ File( "/usr/proj95/lib64/libproj.so") ])
 
 #---
 # Boost

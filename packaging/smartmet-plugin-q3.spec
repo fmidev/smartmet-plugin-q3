@@ -2,7 +2,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet q3 plugin
 Name: %{SPECNAME}
-Version: 25.1.9
+Version: 25.3.3
 Release: 1.el8.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -14,23 +14,23 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires: scons
 BuildRequires: gcc-c++ >= 4.8.5
 BuildRequires: libstdc++-devel >= 4.8.5
-BuildRequires: proj94-devel >= 9.4.1
+BuildRequires: proj95-devel >= 9.5.1
 BuildRequires: luajit-devel >= 2.1.0
 BuildRequires: boost169-devel
 BuildRequires: bzip2-devel >= 1.0.6
 BuildRequires: libpng-devel >= 1.5.13
 BuildRequires: libjpeg-turbo-devel >= 1.2.90
-BuildRequires: smartmet-library-tron >= 24.8.7
-BuildRequires: smartmet-library-spine-devel >= 24.11.27
-Requires: proj94 >= 9.4.1
+BuildRequires: smartmet-library-tron >= 25.2.18
+BuildRequires: smartmet-library-spine-devel >= 25.2.18
+Requires: proj95 >= 9.5.1
 Requires: luajit >= 2.1.0
 Requires: lua >= 5.1.4
 Requires: bzip2-libs >= 1.0.6
 Requires: libpng >= 1.5.13
 Requires: libjpeg-turbo >= 1.2.90
-Requires: smartmet-library-newbase >= 24.12.16
-Requires: smartmet-library-spine >= 24.11.27
-Requires: smartmet-server >= 24.11.27
+Requires: smartmet-library-newbase >= 25.2.18
+Requires: smartmet-library-spine >= 25.2.18
+Requires: smartmet-server >= 25.2.18
 Obsoletes: fmi-q3-lib
 Obsoletes: fmi-q3-config
 Obsoletes: fmi-q3-brainstorm
@@ -72,6 +72,8 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/smartmet/plugins/q3plugin.conf
 
 %changelog
+* Mon Mar  3 2025 Pertti Kinnia <pertti.kinnia@fmi.fi> - 25.3.3-1.el8.fmi
+- Repackaged due to geos/proj/gdal update
 * Thu Jan  9 2025 Pertti Kinnia <pertti.kinnia@fmi.fi> - 25.1.9-1.el8.fmi
 - Fixed cross() to call error() on nil result since instead of calling luaL_error() fetching data for missing parameter now returns nil matrix (BRAINSTORM-3104)
 * Wed Jan  8 2025 Pertti Kinnia <pertti.kinnia@fmi.fi> - 25.1.8-1.el8.fmi
