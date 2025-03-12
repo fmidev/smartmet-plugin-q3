@@ -261,7 +261,7 @@ for fn in Glob("source/*.cpp") + Glob(COMMON_PATH+"/source/*.cpp") + Glob(LUANEW
     if s=="Plugin.cpp":
         bs_objs += bs_env.SharedObject( OBJDIR+"/"+ s.replace(".cpp",""), fn ) 
     else:
-		lib_objs += lib_env.SharedObject( OBJDIR+"/"+ s.replace(".cpp",""), fn )
+        lib_objs += lib_env.SharedObject( OBJDIR+"/"+ s.replace(".cpp",""), fn )
 
 #---
 # Final outcome
