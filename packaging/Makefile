@@ -27,8 +27,8 @@ ifneq "$(_PACKAGE)" ""
   SPEC      = $(_PACKAGE).spec
   SOURCE_DIR = $(RPMBUILD)/SOURCES/$(_PACKAGE)
   SOURCE_TGZ = $(SOURCE_DIR).tgz
-  VERSION   := $(shell grep "^Version:" $(SPEC) | cut -d\  -f 2)
-  RELEASE   := $(shell grep "^Release:" $(SPEC) | cut -d\  -f 2)
+  VERSION   := $(shell rpm --specfile $(SPEC) --query --queryformat "%{VERSION}\n" 2>/dev/null | head -1)
+  RELEASE   := $(shell rpm --specfile $(SPEC) --query --queryformat "%{RELEASE}\n" 2>/dev/null | head -1)
   #
   # This section defines, what goes in the source tarballs (paths based in '../')
   #
