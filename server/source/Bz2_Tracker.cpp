@@ -190,7 +190,7 @@ bool Bz2_Tracker::update_from_cache(set<string> &seen_already) noexcept
   const char *id = id_s.c_str();  // <basepath>**/<filename>
 
   unsigned count = 0;
-  uint64_t t0 = now_ms();
+  uint64_t t0 [[maybe_unused]] = now_ms();
 
   {
     ClaimMutex lock(cache->mapping_m);
