@@ -15,7 +15,7 @@ Name: lua-strict
 # fmi:      FMI
 #
 Version: 5.1
-Release: 1.el8.fmi
+Release: 1%{?dist}.fmi
 
 License: MIT
 Group: Development/Libraries

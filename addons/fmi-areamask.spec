@@ -19,7 +19,7 @@ Name: fmi-areamask
 # fmi:      FMI
 #
 Version: 24.12.3
-Release: 1.el8.fmi
+Release: 1%{?dist}.fmi
 
 License: FMI
 Group: Development/Libraries

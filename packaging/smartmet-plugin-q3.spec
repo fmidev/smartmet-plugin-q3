@@ -3,7 +3,7 @@
 Summary: SmartMet q3 plugin
 Name: %{SPECNAME}
 Version: 25.3.3
-Release: 1.el8.fmi
+Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
 URL: https://github.com/fmidev/smartmet-plugin-q3
@@ -11,12 +11,16 @@ Vendor: Finnish Meteorological Institute
 Source: %{name}.tgz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
-BuildRequires: scons
+BuildRequires: /usr/bin/scons
 BuildRequires: gcc-c++ >= 4.8.5
 BuildRequires: libstdc++-devel >= 4.8.5
 BuildRequires: proj95-devel >= 9.5.1
 BuildRequires: luajit-devel >= 2.1.0
+%if 0%{?rhel} && 0%{rhel} < 9
 BuildRequires: boost169-devel
+%else
+BuildRequires: boost-devel
+%endif
 BuildRequires: bzip2-devel >= 1.0.6
 BuildRequires: libpng-devel >= 1.5.13
 BuildRequires: libjpeg-turbo-devel >= 1.2.90
