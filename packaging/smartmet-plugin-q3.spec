@@ -2,7 +2,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet q3 plugin
 Name: %{SPECNAME}
-Version: 25.3.3
+Version: 25.4.29
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -24,7 +24,7 @@ BuildRequires: boost-devel
 BuildRequires: bzip2-devel >= 1.0.6
 BuildRequires: libpng-devel >= 1.5.13
 BuildRequires: libjpeg-turbo-devel >= 1.2.90
-BuildRequires: smartmet-library-tron >= 25.2.18
+BuildRequires: smartmet-library-tron-devel >= 25.2.18
 BuildRequires: smartmet-library-spine-devel >= 25.2.18
 Requires: proj95 >= 9.5.1
 Requires: luajit >= 2.1.0
@@ -33,6 +33,7 @@ Requires: bzip2-libs >= 1.0.6
 Requires: libpng >= 1.5.13
 Requires: libjpeg-turbo >= 1.2.90
 Requires: smartmet-library-newbase >= 25.2.18
+Requires: smartmet-library-tron >= 25.2.18
 Requires: smartmet-library-spine >= 25.2.18
 Requires: smartmet-server >= 25.2.18
 Obsoletes: fmi-q3-lib
@@ -76,6 +77,8 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/smartmet/plugins/q3plugin.conf
 
 %changelog
+* Tue Apr 29 2025 Pertti Kinnia <pertti.kinnia@fmi.fi> - 25.4.29-1.el8.fmi
+- Added tron library runtime dependency and fixed build dependency to devel package
 * Mon Mar  3 2025 Pertti Kinnia <pertti.kinnia@fmi.fi> - 25.3.3-1.el8.fmi
 - Repackaged due to geos/proj/gdal update
 * Thu Jan  9 2025 Pertti Kinnia <pertti.kinnia@fmi.fi> - 25.1.9-1.el8.fmi
