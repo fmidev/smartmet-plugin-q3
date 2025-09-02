@@ -3,7 +3,7 @@
 Summary: SmartMet q3 plugin
 Name: %{SPECNAME}
 Version: 25.9.2
-Release: 1%{?dist}.fmi
+Release: 2%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
 URL: https://github.com/fmidev/smartmet-plugin-q3
@@ -34,7 +34,7 @@ Requires: libpng >= 1.5.13
 Requires: libjpeg-turbo >= 1.2.90
 Requires: smartmet-library-newbase >= 25.2.18
 Requires: smartmet-library-tron >= 25.2.18
-Requires: smartmet-library-spine >= 25.2.18
+Requires: smartmet-library-spine >= 25.9.1
 Requires: smartmet-server >= 25.2.18
 Obsoletes: fmi-q3-lib
 Obsoletes: fmi-q3-config
@@ -77,7 +77,7 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/smartmet/plugins/q3plugin.conf
 
 %changelog
-* Tue Sep  2 2025 Andris Pavēnis <andris.pavenis@fmi.fi> - 25.9.2-1
+* Tue Sep  2 2025 Andris Pavēnis <andris.pavenis@fmi.fi> - 25.9.2-2
 - Repackage due to smartmet-library-spine ABI changes
 * Tue Apr 29 2025 Pertti Kinnia <pertti.kinnia@fmi.fi> - 25.4.29-1.el8.fmi
 - Added tron library runtime dependency and fixed build dependency to devel package
