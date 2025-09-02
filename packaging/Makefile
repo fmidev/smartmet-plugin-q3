@@ -17,7 +17,7 @@ STRICT_PACKAGE =    lua-strict
 # We build the RPMs locally. Makefile creates this directory unless already there.
 #
 RPMBUILD=$(HOME)/rpmbuild
-UNAME_P = $(shell uname -p)
+UNAME_P := $(shell rpm --eval %{_build_arch})
 
 # The Makefile is run with '_PACKAGE=' to build a certain package. 
 #
