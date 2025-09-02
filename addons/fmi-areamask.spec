@@ -18,7 +18,7 @@ Name: fmi-areamask
 # el5:      "Enterprise Linux 5.0"
 # fmi:      FMI
 #
-Version: 24.12.3
+Version: 25.9.2
 Release: 1%{?dist}.fmi
 
 License: FMI
@@ -100,6 +100,8 @@ Requires:   fmi-q3-virtual
 
 #---
 %changelog
+* Tue Sep  2 2025 Andris Pavēnis <andris.pavenis@fmi.fi> - 25.9.2-1
+- Repackage due to smartmet-library-spine ABI changes
 * Tue Dec  3 2024 Pertti Kinnia <pertti.kinnia@fmi.fi>
 - Rebuild
 * Fri Feb 3 2017 <mikko.visa@fmi.fi>

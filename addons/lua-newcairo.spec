@@ -16,7 +16,7 @@ Name: lua-newcairo
 # el5:      "Enterprise Linux 5.0"
 # fmi:      FMI
 #
-Version: 25.1.8
+Version: 25.9.2
 Release: 1%{dist}.fmi
 
 License: FMI
@@ -95,6 +95,8 @@ Group: Development/Libraries
 
 #---
 %changelog
+* Tue Sep  2 2025 Andris Pavēnis <andris.pavenis@fmi.fi> - 25.9.2-1
+- Repackage due to smartmet-library-spine ABI changes
 * Wed Jan  8 2025 Pertti Kinnia <pertti.kinnia@fmi.fi> - 25.1.8-1.el8.fmi
 - Dependencies updated (for luajit)
 * Tue Dec  3 2024 Pertti Kinnia <pertti.kinnia@fmi.fi> - 24.12.3-1.el8.fmi

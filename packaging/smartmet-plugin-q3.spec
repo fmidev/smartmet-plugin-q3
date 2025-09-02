@@ -2,7 +2,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet q3 plugin
 Name: %{SPECNAME}
-Version: 25.4.29
+Version: 25.9.2
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -77,6 +77,8 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/smartmet/plugins/q3plugin.conf
 
 %changelog
+* Tue Sep  2 2025 Andris Pavēnis <andris.pavenis@fmi.fi> - 25.9.2-1
+- Repackage due to smartmet-library-spine ABI changes
 * Tue Apr 29 2025 Pertti Kinnia <pertti.kinnia@fmi.fi> - 25.4.29-1.el8.fmi
 - Added tron library runtime dependency and fixed build dependency to devel package
 * Mon Mar  3 2025 Pertti Kinnia <pertti.kinnia@fmi.fi> - 25.3.3-1.el8.fmi
