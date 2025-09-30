@@ -13,8 +13,8 @@
 #include "RequestResponse.hpp"
 
 extern "C" {
-# include "lua.h"
-# include "lauxlib.h"
+# include "luajit-2.1/lua.h"
+# include "luajit-2.1/lauxlib.h"
 }
 
 #include <map>

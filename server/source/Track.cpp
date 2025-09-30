@@ -83,7 +83,7 @@ void Q3Engine::Track::add(const char *mask_fn,
                           unsigned refresh_secs,
                           unsigned wiping[],
                           bool relative_uv,
-                          uint number_to_keep) throw(E_USAGE)
+                          uint number_to_keep)
 {
   // 09-Mar-2012 PKi: Pass track name too (used for logging only)
   //
@@ -128,7 +128,7 @@ TrackedData *Q3Engine::Track::getData_must_release_(const JDay &ot,
                                                     bool only_pressure,  // mode==ONLY_PRESSURE
                                                     bool archivedData,
                                                     bool metaQuery,
-                                                    std::string &err) const throw()
+                                                    std::string &err) const noexcept
 {
   TrackedData *d = 0;
   TrackedData *d2 = 0;  // 2nd choice for ONLY_PRESSURE: first hybrid data match
@@ -313,7 +313,7 @@ TrackedData *Q3Engine::Track::getData_must_release_(const JDay &ot,
  *      returned is being used.
  */
 vector<JDay> Q3Engine::Track::getOriginTimes(
-    const TrackerBase::OriginTimeQuery originTimeQuery) const throw()
+    const TrackerBase::OriginTimeQuery originTimeQuery) const noexcept
 {
   vector<JDay> vec;
 
@@ -326,7 +326,7 @@ vector<JDay> Q3Engine::Track::getOriginTimes(
   return vec;
 }
 
-vector<TrackedData *> Q3Engine::Track::getOriginTimeDatas(const JDay &ot) const throw()
+vector<TrackedData *> Q3Engine::Track::getOriginTimeDatas(const JDay &ot) const noexcept
 {
   vector<TrackedData *> vec;
 
@@ -350,7 +350,7 @@ vector<TrackedData *> Q3Engine::Track::getOriginTimeDatas(const JDay &ot) const 
 *           origintime of the latest, 2nd latest, ... run (which always exists)
 *           0 for no data (at all, or not so many origintimes available)
 */
-JDay Q3Engine::Track::getOriginTimeOfRun_(int x, NA_Level::Type &leveltype) const throw(E_USAGE)
+JDay Q3Engine::Track::getOriginTimeOfRun_(int x, NA_Level::Type &leveltype) const
 {
   assert(x <= 0);
   const unsigned abs_x = (unsigned)(-x);
@@ -529,7 +529,7 @@ static unsigned char track_proxy_chunk[] =
 * (**): Demanding 'flight=true' is valid only if 'CONFIG_FLIGHT_LEVELS_API' is defined.
 *       Otherwise, script is expected to use 'hpa=true' and 'hpa= { fl_hpa(uint), ... }'.
 */
-int TrackProxyBind::call(lua_State *L) throw(E_ERROR)
+int TrackProxyBind::call(lua_State *L)
 {
   if (lua_type(L, 2) != LUA_TSTRING)
   {

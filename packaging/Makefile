@@ -17,7 +17,7 @@ STRICT_PACKAGE =    lua-strict
 # We build the RPMs locally. Makefile creates this directory unless already there.
 #
 RPMBUILD=$(HOME)/rpmbuild
-UNAME_P = $(shell uname -p)
+UNAME_P := $(shell rpm --eval %{_build_arch})
 
 # The Makefile is run with '_PACKAGE=' to build a certain package. 
 #
@@ -27,8 +27,8 @@ ifneq "$(_PACKAGE)" ""
   SPEC      = $(_PACKAGE).spec
   SOURCE_DIR = $(RPMBUILD)/SOURCES/$(_PACKAGE)
   SOURCE_TGZ = $(SOURCE_DIR).tgz
-  VERSION   := $(shell grep "^Version:" $(SPEC) | cut -d\  -f 2)
-  RELEASE   := $(shell grep "^Release:" $(SPEC) | cut -d\  -f 2)
+  VERSION   := $(shell rpm --specfile $(SPEC) --query --queryformat "%{VERSION}\n" 2>/dev/null | head -1)
+  RELEASE   := $(shell rpm --specfile $(SPEC) --query --queryformat "%{RELEASE}\n" 2>/dev/null | head -1)
   #
   # This section defines, what goes in the source tarballs (paths based in '../')
   #

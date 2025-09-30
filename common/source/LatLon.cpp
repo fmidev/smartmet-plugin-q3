@@ -203,7 +203,7 @@ void LatLonBind::setup( lua_State *L ) {
 
 /*
 */
-LatLon::LatLon( double lat_, double lon_, bool allowMissing ) throw(E_USAGE) : lat(lat_), lon(lon_) {
+LatLon::LatLon( double lat_, double lon_, bool allowMissing ) : lat(lat_), lon(lon_) {
     if ( (!allowMissing) || (lat_ != kFloatMissing) || (lon_ != kFloatMissing) )
     {
         if ( !within_range(lat_,lon_) )

@@ -21,7 +21,7 @@ AREAMASK_SOURCES = areamask
 # We build the RPMs locally. Makefile creates this directory unless already there.
 #
 RPMBUILD=$(HOME)/rpmbuild
-UNAME_P = $(shell uname -p)
+UNAME_P = $(shell rpm --eval %{_build_arch})
     # x86_64
 
 # These are given values by 'make rpm' and alike
@@ -33,8 +33,8 @@ ifneq "$(_PACKAGE)" ""
   SPEC      = $(_PACKAGE).spec
   SOURCE_DIR = $(RPMBUILD)/SOURCES/$(_PACKAGE)
   SOURCE_TGZ = $(SOURCE_DIR).tgz
-  VERSION   := $(shell grep "^Version:" $(SPEC) | cut -d\  -f 2)
-  RELEASE   := $(shell grep "^Release:" $(SPEC) | cut -d\  -f 2)
+  VERSION   := $(shell rpm --specfile $(SPEC) --query --queryformat "%{VERSION}\n" 2>/dev/null | head -1)
+  RELEASE   := $(shell rpm --specfile $(SPEC) --query --queryformat "%{RELEASE}\n" 2>/dev/null | head -1)
   
   ifeq "$(_PACKAGE)" "$(NEWCAIRO_PACKAGE)"
     RPM_METQU  = $(RPMBUILD)/RPMS/$(UNAME_P)/$(_PACKAGE)-$(VERSION)-$(RELEASE).$(UNAME_P).rpm
@@ -90,7 +90,7 @@ endif
 #---
 rpm:
 	$(MAKE) newcairo_rpm
-	$(MAKE) fminames_rpm
+#	$(MAKE) fminames_rpm
 	$(MAKE) areamask_rpm
 	@echo ""
 	@echo "*** All RPMs done ***"

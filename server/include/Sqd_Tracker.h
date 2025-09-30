@@ -41,7 +41,7 @@ class Sqd_Tracker : public TrackerBase
   /*virtual*/ std::string id_str() const { return fn_abs_mask; }
  private:
   // private funcs
-  bool update(std::set<std::string> &seen_already) throw();
+  bool update(std::set<std::string> &seen_already) noexcept;
 
   // data fields
   const std::string fn_abs_mask;

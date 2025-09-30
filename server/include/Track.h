@@ -42,17 +42,16 @@ class Q3Engine::Track
                                      bool only_pressure,
                                      bool archivedData,
                                      bool metaQuery,
-                                     std::string &err) const throw();
+                                     std::string &err) const noexcept;
 
-  std::vector<JDay> getOriginTimes(const TrackerBase::OriginTimeQuery originTimeQuery) const
-      throw();
-  std::vector<TrackedData *> getOriginTimeDatas(const JDay &ot) const throw();
+  std::vector<JDay> getOriginTimes(const TrackerBase::OriginTimeQuery originTimeQuery) const noexcept;
+  std::vector<TrackedData *> getOriginTimeDatas(const JDay &ot) const noexcept;
 
-  JDay getOriginTimeOfRun_(int x, NA_Level::Type &leveltype) const throw(E_USAGE);
+  JDay getOriginTimeOfRun_(int x, NA_Level::Type &leveltype) const;
 
   unsigned getRunSecs() const { return run_secs; }
   void add(const char *mask_fn, unsigned refresh_secs, unsigned wiping[], bool relative_uv,
-           uint number_to_keep) throw(E_USAGE);
+           uint number_to_keep);
 
   const std::string &getName() const { return name; }
   const std::string &getAlias() const { return alias; }
@@ -91,7 +90,7 @@ struct TrackProxyBind
   typedef TrackProxy CAST_T;
 
  private:
-  static int call(lua_State *L) throw(E_ERROR);
+  static int call(lua_State *L);
 };
 
 class TrackProxy : public LuaNew<TrackProxyBind>

@@ -360,7 +360,7 @@ int Surface::contents( lua_State *L ) {
     my.io->seekg( 0, ios::end );
     size_t len= my.io->tellg();
 
-#if 1
+#if 0
     cerr << "Picture size: " << len << endl;
 #endif
 

@@ -328,7 +328,7 @@ for s,line_n in lines(conf_s) do
 
         -- Apply 'rootdir' if given and the mask is not starting with '/' or '~/'
         --
-        if rootdir and (not mask:match("^\~?/")) then
+        if rootdir and (not mask:match("^~?/")) then
             mask= (rootdir.."/"..mask):gsub("//+","/")     -- multiple slashes to one
         end
         

@@ -25,7 +25,7 @@ static const size_t tmp_threshold= 1*GB;                   // How much free shou
 
 /*
 */
-TrackedDataSet::TrackedDataSet( const char *fn_mask ) throw(E_USAGE) 
+TrackedDataSet::TrackedDataSet( const char *fn_mask )
     : line()
 {
     set<JDay> used_ots;
@@ -135,7 +135,7 @@ TrackedDataSet::~TrackedDataSet() {
 *       the 'TrackedDataSet' object does. They need not and MUST NOT BE 
 *       DELETED by the caller.
 */
-TrackedData *TrackedDataSet::getData( unsigned &i, const JDay &ot ) const throw() {
+TrackedData *TrackedDataSet::getData( unsigned &i, const JDay &ot ) const noexcept {
 
     unsigned n= line.size();
 
@@ -161,7 +161,7 @@ TrackedData *TrackedDataSet::getData( unsigned &i, const JDay &ot ) const throw(
 *
 * 0: latest, 1: 2nd latest, ...
 */
-TrackedData *TrackedDataSet::getData_latest( unsigned i ) const throw() {
+TrackedData *TrackedDataSet::getData_latest( unsigned i ) const noexcept {
 
     if (i<line.size()) {
         return line[i];     // [0] is the most recent

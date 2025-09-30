@@ -17,7 +17,7 @@ Name: fmi-fminames
 # fmi:      FMI
 #
 Version: 17.2.3
-Release: 1.el7.fmi
+Release: 1%{dist}.fmi
 
 License: FMI
 Group: Development/Libraries

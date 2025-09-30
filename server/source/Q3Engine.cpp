@@ -69,6 +69,12 @@ static void q3_config(const char *conf,
       // These required by 'proto'
       {LUA_MATHLIBNAME, luaopen_math},     // 'math.*'
       {LUA_LOADLIBNAME, luaopen_package},  // 'module' and 'package.*'
+
+      // luajit, rest of the libs from luajit's lib_init.c
+      {LUA_DBLIBNAME,	luaopen_debug},
+      {LUA_BITLIBNAME,	luaopen_bit},
+      {LUA_JITLIBNAME,	luaopen_jit},
+
       {nullptr, nullptr}};
 
   LuaWrap L(my_stdlibs, config_chunk, sizeof(config_chunk));

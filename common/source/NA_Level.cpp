@@ -97,7 +97,7 @@ string NA_Level::toString(bool getLongName) const {
 *       don't need this.
 */
 #ifdef MQD_ENABLED
-NA_Level::NA_Level( const char *sc ) throw(E_USAGE) :lt(), lv() {
+NA_Level::NA_Level( const char *sc ) : lt(), lv() {
     assert(sc);
     
     if (strcmp(sc,"ground")==0) {

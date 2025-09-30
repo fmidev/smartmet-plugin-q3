@@ -297,15 +297,15 @@ class Matrix : public ApiMatrix, public LuaNew<MatrixBind> {
     /*virtual*/ ~Matrix() {}
 
   protected:
-    Matrix( const MatrixSize &size_, const NA_Param::Unit &unit_, bool ro ) throw()
+    Matrix( const MatrixSize &size_, const NA_Param::Unit &unit_, bool ro ) noexcept
         : ApiMatrix(), LuaNew<MatrixBind>(), size(size_), unit(unit_), is_readonly(ro)
     { /* our invariant called by derived classes */ }
 
-    Matrix( const MatrixPos &gridsize, const NA_Level &level_, FmiParameterName param_, const NA_Param::Unit &unit_, bool ro ) throw()
+    Matrix( const MatrixPos &gridsize, const NA_Level &level_, FmiParameterName param_, const NA_Param::Unit &unit_, bool ro ) noexcept
         : ApiMatrix(), LuaNew<MatrixBind>(), size(gridsize), level(level_), param(param_), unit(unit_), is_readonly(ro)
     { /* our invariant called by derived classes */ }
 
-    Matrix( const NA_Param::Unit &unit_, bool ro ) throw()
+    Matrix( const NA_Param::Unit &unit_, bool ro ) noexcept
         : ApiMatrix(), LuaNew<MatrixBind>(), size(MatrixPos::ZERO), unit(unit_), is_readonly(ro)
     { /* our invariant called by derived classes */ }
 
@@ -326,11 +326,11 @@ class Matrix : public ApiMatrix, public LuaNew<MatrixBind> {
     // Called other than 'operator[]' to allow this to be virtual and 'operator[](const Matrixpos&)' not
     // (otherwise, if we are, it must, though we don't wish it to be). Got it? :)
     //
-    virtual float get_value_n( offset_t n ) const throw()= 0;
+    virtual float get_value_n( offset_t n ) const noexcept = 0;
 
-    float operator[]( offset_t n ) const throw() { return get_value_n(n); }   // forward to class specific function
+    float operator[]( offset_t n ) const noexcept { return get_value_n(n); }   // forward to class specific function
 
-    float operator[]( const MatrixPos &mi ) const throw(E_OUTSIDE) {
+    float operator[]( const MatrixPos &mi ) const {
         MatrixPos p= mi - getSize().getTop();    // move coordinates so that (0,0) is [0]
         return get_value_n( offset(p) );
     }
@@ -341,15 +341,15 @@ class Matrix : public ApiMatrix, public LuaNew<MatrixBind> {
     /*
     * Write operations. 
     */
-    void copy_from( const Matrix &m ) throw (E_READONLY);
+    void copy_from( const Matrix &m );
     
-    void fit_from_same_projection( const Matrix &m ) throw(E_READONLY);
-    void fit_from_( const Matrix &m ) throw(E_READONLY);
+    void fit_from_same_projection( const Matrix &m );
+    void fit_from_( const Matrix &m );
 
-    float at_( double dx, double dy ) const throw();
+    float at_( double dx, double dy ) const noexcept;
 
 #ifdef METQU
-    void fill_with( float v ) throw(E_READONLY);
+    void fill_with( float v );
 #endif
 
     /*
@@ -364,7 +364,7 @@ class Matrix : public ApiMatrix, public LuaNew<MatrixBind> {
     * Note: Needs to be of different name than 'set_value()' because
     *       this is virtual and 'set_value()' is not.
     */
-    virtual void set_value_n( offset_t n, float v ) throw() = 0;
+    virtual void set_value_n( offset_t n, float v ) noexcept = 0;
 
     /*
     * Ease of use - function that leads to (virtual) 'set_value_n()'.
@@ -372,7 +372,7 @@ class Matrix : public ApiMatrix, public LuaNew<MatrixBind> {
     * Returns 'true' if the write succeeds; 'false' if read-only matrix
     *       Throws an exception if 'pos' is outside of bounds.
     */    
-    void set_value( const MatrixPos &pos, float v ) throw(E_OUTSIDE) {
+    void set_value( const MatrixPos &pos, float v ) {
         assert( !is_readonly );
         set_value_n( offset( pos - size.getTop() ), v );
     }
@@ -380,8 +380,8 @@ class Matrix : public ApiMatrix, public LuaNew<MatrixBind> {
     /*
     * Block access (for SSE enabled compilation must be 16-byte aligned)
     */
-    virtual const float *getData() const throw() = 0;
-    virtual float *getData() throw() = 0;
+    virtual const float *getData() const noexcept = 0;
+    virtual float *getData() noexcept = 0;
 
     FmiParameterName getParam() const { return param; }
     string_or_null getParamStr() const {

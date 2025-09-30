@@ -51,7 +51,7 @@ class MemoryMap;
 */
 class MQD_Data : public NA_Data {
   public:
-    MQD_Data( const std::string &fn ) throw(E_BAD_FILE);
+    MQD_Data( const std::string &fn );
     ~MQD_Data();
 
 #ifdef METQU
@@ -141,9 +141,9 @@ class MQD_Data : public NA_Data {
     /*virtual*/ CONST_IF_SERVER Matrix *push_NativeMatrix( lua_State *L, 
                                 const JDay &vt,
                                 const NA_Level &lev,
-                                const NA_Param &p ) CONST_IF_SERVER throw();
+                                const NA_Param &p ) CONST_IF_SERVER noexcept;
 
-    static NA_Info read_info( const char *fn ) throw(E_BAD_FILE);
+    static NA_Info read_info( const char *fn );
 
     // We don't calculate pressure levels from hybrid data (at least, not yet).
     //
@@ -152,11 +152,9 @@ class MQD_Data : public NA_Data {
     // public for 'MQD_Matrix'
     //
 #ifdef METQU
-    Tile &getTile( const JDay &vt, const NA_Level &lev, const NA_Param &p )
-        throw( E_READONLY, E_NO_MATCH );
+    Tile &getTile( const JDay &vt, const NA_Level &lev, const NA_Param &p );
 #endif
-    const Tile &getTile( const JDay &vt, const NA_Level &lev, const NA_Param &p ) const
-        throw( E_NO_MATCH );
+    const Tile &getTile( const JDay &vt, const NA_Level &lev, const NA_Param &p ) const;
 
   private:
 

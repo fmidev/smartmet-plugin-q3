@@ -18,8 +18,8 @@ Name: fmi-areamask
 # el5:      "Enterprise Linux 5.0"
 # fmi:      FMI
 #
-Version: 17.2.3
-Release: 1.el7.fmi
+Version: 25.9.2
+Release: 1%{?dist}.fmi
 
 License: FMI
 Group: Development/Libraries
@@ -33,6 +33,8 @@ Requires:       lua >= 5.1.4
 
 %description
 %{DESC}
+
+%global debug_package %{nil}
 
 #---
 %prep
@@ -98,6 +100,10 @@ Requires:   fmi-q3-virtual
 
 #---
 %changelog
+* Tue Sep  2 2025 Andris Pavēnis <andris.pavenis@fmi.fi> - 25.9.2-1
+- Repackage due to smartmet-library-spine ABI changes
+* Tue Dec  3 2024 Pertti Kinnia <pertti.kinnia@fmi.fi>
+- Rebuild
 * Fri Feb 3 2017 <mikko.visa@fmi.fi>
 - Rebuild, GitHub packages and cleanup
 * Wed Nov 24 2010 <asko.kauppi@fmi.fi>

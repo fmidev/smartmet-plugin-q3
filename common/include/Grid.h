@@ -26,9 +26,9 @@ struct GridBind {
     typedef Grid CAST_T;
 
   private:
-    static int __index( lua_State *L ) throw();
+    static int __index( lua_State *L ) noexcept;
 #ifdef METQU
-    static int __newindex( lua_State *L ) throw();
+    static int __newindex( lua_State *L ) noexcept;
 #endif
 };
 
@@ -48,7 +48,7 @@ class Grid : public LuaNew<GridBind> {
         , LatLonList const *locs = nullptr
 		, bool flightRoute = false
 		, const DataIdList *dataIds = nullptr
-        ) throw(E_NO_MATCH);
+        );
 #endif
     Grid( const Raw_interface &r_, const JDay &vt, const NA_Level &lev, const Projection &projection, const MatrixPos &gs= MatrixPos::ZERO
         //
@@ -59,7 +59,7 @@ class Grid : public LuaNew<GridBind> {
         , LatLonList const *locs = nullptr
 		, bool flightRoute = false
 		, const DataIdList *dataIds = nullptr
-    	) throw(E_NO_MATCH);
+    	);
 
     void set_rkey(unsigned rk) {
         assert( rkey==0 );
@@ -76,8 +76,8 @@ class Grid : public LuaNew<GridBind> {
     NA_Info getInfo() const { return *data; }   // does a copy
 
 #ifdef METQU
-    void setMatrix( const NA_Param &param, const Matrix &m ) throw(E_READONLY, E_BAD_SIZE, E_NO_MATCH);
-    void setMatrix( const NA_Param &param, float v ) throw(E_READONLY, E_NO_MATCH);
+    void setMatrix( const NA_Param &param, const Matrix &m );
+    void setMatrix( const NA_Param &param, float v );
 
     Matrix *new_ScalarMatrix( const NA_Param &p ) {   // caller must 'delete'
         return push_ScalarMatrix( 0, p );

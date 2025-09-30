@@ -49,7 +49,7 @@ static struct JustOnce_Test_Data {  // note: must have unique name (otherwise ru
 
 /*
 */
-Test_Data::Test_Data() throw(E_BAD_FILE) /*not really, but prototype requires as to...*/ : NA_Data(*my_info) {
+Test_Data::Test_Data() : NA_Data(*my_info) {
 
     INVARIANT();
 }
@@ -109,7 +109,7 @@ const Matrix *Test_Data::push_TestMatrix( lua_State *L,
                                 const JDay &vt, 
                                 const NA_Level &lev, 
                                 const NA_Param &p,
-                                const MatrixPos &gs ) const throw() {
+                                const MatrixPos &gs ) const noexcept {
     (void)lev;  // not used
 
 //LOG_DEBUG( "Lev: %d %lf", (int)lev.getType(), lev.getValue() );

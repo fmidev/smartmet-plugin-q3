@@ -21,7 +21,7 @@
 */
 class Test_Data : public NA_Data {
   public:
-    Test_Data() throw(E_BAD_FILE);
+    Test_Data();
     /*virtual*/ ~Test_Data() {}
 
     /*virtual*/ const Matrix *push_NativeMatrix( lua_State *L, 
@@ -35,7 +35,7 @@ class Test_Data : public NA_Data {
 							  , const MatrixPos *target_gs_orig = nullptr
 							  , bool  *target_ready = nullptr
 							  , const DataIdList *dataIds = nullptr
-                              ) const throw() {
+                              ) const noexcept {
         return push_TestMatrix( L, vt, lev, p, MatrixPos(50,50) );
     }
 
@@ -45,7 +45,7 @@ class Test_Data : public NA_Data {
                                 const NA_Param &p,
                                 const Projection &proj_,
                                 const MatrixPos &target_gs,
-                                const DataIdList *dataIds = nullptr ) const throw() {
+                                const DataIdList *dataIds = nullptr ) const noexcept {
         (void)proj_;     // not used
         return push_TestMatrix( L, vt, lev, p, target_gs );
     }
@@ -57,7 +57,7 @@ class Test_Data : public NA_Data {
                                 const JDay &vt, 
                                 const NA_Level &lev, 
                                 const NA_Param &p,
-                                const MatrixPos &gs ) const throw();
+                                const MatrixPos &gs ) const noexcept;
                                 
     // data fields:
 
