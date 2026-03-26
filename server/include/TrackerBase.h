@@ -39,14 +39,14 @@ class TrackerBase
 
   TrackedData *getData_must_release(const JDay &origin_time,
                                     bool archivedData,
-                                    bool metaQuery) throw();
-  std::vector<JDay> getOriginTimes_sort() const throw();
+                                    bool metaQuery) noexcept;
+  std::vector<JDay> getOriginTimes_sort() const noexcept;
   void addOriginTimes_unsorted(std::vector<JDay> &vec,
-                               OriginTimeQuery originTimeQuery = Current) const throw();
-  void addDatas_must_release(const JDay &ot, std::vector<TrackedData *> &vec) const throw();
+                               OriginTimeQuery originTimeQuery = Current) const noexcept;
+  void addDatas_must_release(const JDay &ot, std::vector<TrackedData *> &vec) const noexcept;
 
-  JDay getLastOriginTime_fast(NA_Level::Type &leveltype) const throw();
-  JDay getFirstOriginTime_fast() const throw();
+  JDay getLastOriginTime_fast(NA_Level::Type &leveltype) const noexcept;
+  JDay getFirstOriginTime_fast() const noexcept;
 
   virtual bool archived() const { return false; }
  protected:
@@ -54,7 +54,7 @@ class TrackerBase
 
   void init();  // to be called by derived constructors, once they're all done
 
-  virtual bool update(std::set<std::string> &seen_already) throw() = 0;
+  virtual bool update(std::set<std::string> &seen_already) noexcept = 0;
 
   virtual std::string id_str() const = 0;
 
@@ -64,7 +64,7 @@ class TrackerBase
   static void *polling_thread(void *me_v);
   void wait_until_initialized() const;
 
-  JDay getLastOriginTime_LOCKED(NA_Level::Type &leveltype) const throw();
+  JDay getLastOriginTime_LOCKED(NA_Level::Type &leveltype) const noexcept;
 
   // data fields
   volatile bool initialized;

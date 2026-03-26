@@ -2,8 +2,8 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet q3 plugin
 Name: %{SPECNAME}
-Version: 23.1.19
-Release: 1.el7.fmi
+Version: 25.9.30
+Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
 URL: https://github.com/fmidev/smartmet-plugin-q3
@@ -11,25 +11,31 @@ Vendor: Finnish Meteorological Institute
 Source: %{name}.tgz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
-BuildRequires: scons
+BuildRequires: /usr/bin/scons
 BuildRequires: gcc-c++ >= 4.8.5
 BuildRequires: libstdc++-devel >= 4.8.5
-BuildRequires: proj72-devel >= 7.2.2
-BuildRequires: lua-devel >= 5.1.4
+BuildRequires: proj95-devel >= 9.5.1
+BuildRequires: luajit-devel >= 2.1.0
+%if 0%{?rhel} && 0%{rhel} < 9
 BuildRequires: boost169-devel
+%else
+BuildRequires: boost-devel
+%endif
 BuildRequires: bzip2-devel >= 1.0.6
 BuildRequires: libpng-devel >= 1.5.13
 BuildRequires: libjpeg-turbo-devel >= 1.2.90
-BuildRequires: smartmet-library-tron >= 22.6.17
-BuildRequires: smartmet-library-spine-devel >= 22.11.25
-Requires: proj72 >= 7.2.2
+BuildRequires: smartmet-library-tron-devel >= 25.2.18
+BuildRequires: smartmet-library-spine-devel >= 25.9.16
+Requires: proj95 >= 9.5.1
+Requires: luajit >= 2.1.0
 Requires: lua >= 5.1.4
 Requires: bzip2-libs >= 1.0.6
 Requires: libpng >= 1.5.13
 Requires: libjpeg-turbo >= 1.2.90
-Requires: smartmet-library-newbase >= 22.11.14
-Requires: smartmet-library-spine >= 22.11.25
-Requires: smartmet-server >= 22.11.25
+Requires: smartmet-library-newbase >= 25.3.20
+Requires: smartmet-library-tron >= 25.2.18
+Requires: smartmet-library-spine >= 25.9.16
+Requires: smartmet-server >= 25.9.9
 Obsoletes: fmi-q3-lib
 Obsoletes: fmi-q3-config
 Obsoletes: fmi-q3-brainstorm
@@ -71,6 +77,23 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/smartmet/plugins/q3plugin.conf
 
 %changelog
+* Tue Sep 30 2025 Mika Heiskanen <mika.heiskanen@fmi.fi> - 25.9.30-1.fmi
+- Repackaged due to ABI changes
+* Tue Sep  2 2025 Andris Pavēnis <andris.pavenis@fmi.fi> - 25.9.2-2
+- Repackage due to smartmet-library-spine ABI changes
+* Tue Apr 29 2025 Pertti Kinnia <pertti.kinnia@fmi.fi> - 25.4.29-1.el8.fmi
+- Added tron library runtime dependency and fixed build dependency to devel package
+* Mon Mar  3 2025 Pertti Kinnia <pertti.kinnia@fmi.fi> - 25.3.3-1.el8.fmi
+- Repackaged due to geos/proj/gdal update
+* Thu Jan  9 2025 Pertti Kinnia <pertti.kinnia@fmi.fi> - 25.1.9-1.el8.fmi
+- Fixed cross() to call error() on nil result since instead of calling luaL_error() fetching data for missing parameter now returns nil matrix (BRAINSTORM-3104)
+* Wed Jan  8 2025 Pertti Kinnia <pertti.kinnia@fmi.fi> - 25.1.8-1.el8.fmi
+- Do not call luaL_error() on missing parameter since for some reason (some stack issue ?) it crashes with luajit/rhel8 (BRAINSTORM-3099)
+- Added open/init for luajit library (and for the rest of the libs from luajit's lib_init.c)
+* Tue Dec  3 2024 Pertti Kinnia <pertti.kinnia@fmi.fi> - 24.12.3-1.el8.fmi
+- Using luajit. Changes made to master (rhel7) source and pushed to branch master-PAK-4164-luajit
+* Wed Jan 31 2024 Pertti Kinnia <pertti.kinnia@fmi.fi> - 24.1.31-1.el7.fmi
+- Allow missing point data coordinates (PAK-3114). Updated geos and gdal include paths
 * Thu Jan 19 2023 Pertti Kinnia <pertti.kinnia@fmi.fi> - 23.1.19-1.el7.fmi
 - areamask queries were slow in production. Removed lua gc settings (more aggressive, now back to using defaults) should they affect througput (BRAINSTORM-2522)
 * Mon Jan 16 2023 Pertti Kinnia <pertti.kinnia@fmi.fi> - 23.1.16-1.el7.fmi
@@ -114,7 +137,7 @@ rm -rf %{buildroot}
 - Disabled LOG_OK, LOG_DEBUG, LOG_STAT and LOG_TIMING output
 * Sat Apr 18 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.4.18-1.el7.fmi
 - Upgraded to Boost 1.69
-* Thu Apr 17 2020 Pertti Kinnia <pertti.kinnia@fmi.fi> - 20.4.17-1.el7.fmi
+* Fri Apr 17 2020 Pertti Kinnia <pertti.kinnia@fmi.fi> - 20.4.17-1.el7.fmi
 - Fixed bug with sounding data and missing parameters in query when removing return data having missing pressure value (BS-1819)
 * Thu Apr  2 2020 Pertti Kinnia <pertti.kinnia@fmi.fi> - 20.4.2-1.el7.fmi
 - Skip duplicate metadata for sounding data (both hpa=850 and sounding=true matches); BS-1812

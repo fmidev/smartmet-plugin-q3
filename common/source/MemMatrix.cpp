@@ -12,23 +12,23 @@
 * Note: 'data' needs to be 16 byte aligned for SSE access. Traditional C++ 'new' does not provide
 *       alignment guarantees (at least not 16 bytes for an array of floats).
 */
-MemMatrix::MemMatrix( const MatrixSize &size_, const NA_Param::Unit &unit_, const Projection &proj_ ) throw()
+MemMatrix::MemMatrix( const MatrixSize &size_, const NA_Param::Unit &unit_, const Projection &proj_ ) noexcept
     : Matrix(size_, unit_, false /*rw*/), 
       data( sse_alloc( sizeof(float)*getN() )), proj(proj_) { /*not initialized*/ INVARIANT(); }
 
-MemMatrix::MemMatrix( const MatrixPos &gridsize, const NA_Level &level_, FmiParameterName param_, const NA_Param::Unit &unit_, const Projection &proj_ ) throw()
+MemMatrix::MemMatrix( const MatrixPos &gridsize, const NA_Level &level_, FmiParameterName param_, const NA_Param::Unit &unit_, const Projection &proj_ ) noexcept
     : Matrix(gridsize, level_, param_, unit_, false /*rw*/), 
       data( sse_alloc( sizeof(float)*getN() )), proj(proj_) { /*not initialized*/ INVARIANT(); }
 
-MemMatrix::MemMatrix( const MatrixSize &size_, float v, const NA_Param::Unit &unit_, const Projection &proj_ ) throw()
+MemMatrix::MemMatrix( const MatrixSize &size_, float v, const NA_Param::Unit &unit_, const Projection &proj_ ) noexcept
     : Matrix(size_, unit_, false /*rw*/), 
       data( sse_alloc( sizeof(float)*getN() )), proj(proj_) { fill(v); INVARIANT(); }
 
-MemMatrix::MemMatrix( const MatrixPos &gridsize, float v, const NA_Level &level_, FmiParameterName param_, const NA_Param::Unit &unit_, const Projection &proj_ ) throw()
+MemMatrix::MemMatrix( const MatrixPos &gridsize, float v, const NA_Level &level_, FmiParameterName param_, const NA_Param::Unit &unit_, const Projection &proj_ ) noexcept
     : Matrix(gridsize, level_, param_, unit_, false /*rw*/), 
       data( sse_alloc( sizeof(float)*getN() )), proj(proj_) { fill(v); INVARIANT(); }
 
-MemMatrix::MemMatrix( const Matrix &o ) throw()
+MemMatrix::MemMatrix( const Matrix &o ) noexcept
     : Matrix(o.getSize(), o.getUnit(), false /*rw*/), 
       data( sse_alloc( sizeof(float)*getN() )), proj(o.getProjection()) {
 

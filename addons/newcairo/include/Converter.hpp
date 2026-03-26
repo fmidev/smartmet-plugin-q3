@@ -15,7 +15,7 @@
 #include <iostream>
 
 extern "C" {
-# include <lua.h>
+# include <luajit-2.1/lua.h>
 }
 
 /*---=== Converter ===---

@@ -43,15 +43,15 @@ struct TDSBind {
 */
 class TrackedDataSet : public LuaNew<TDSBind> {
   public:
-    TrackedDataSet( const char *fn_mask ) throw(E_USAGE);
+    TrackedDataSet( const char *fn_mask );
     ~TrackedDataSet();
 
     // Set 'i' to 0 before first iteration. Gives matching data until nullptr.
     //
-    TrackedData *getData( unsigned &i, const JDay &ot ) const throw();    // 'empty' ot for any origintime
+    TrackedData *getData( unsigned &i, const JDay &ot ) const noexcept;    // 'empty' ot for any origintime
 
-    std::vector<JDay> getOriginTimes() const throw();
-    TrackedData *getData_latest( unsigned i ) const throw();
+    std::vector<JDay> getOriginTimes() const noexcept;
+    TrackedData *getData_latest( unsigned i ) const noexcept;
 
   private:
     /*const*/ std::vector< TrackedData* > line;      // in origintime order (latest first)

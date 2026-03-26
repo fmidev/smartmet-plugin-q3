@@ -39,25 +39,25 @@ class NFmiFastQueryInfo;
 class SQD_Matrix : public Matrix {
   public:
 #ifdef METQU
-    SQD_Matrix( SQD_Data *data, const JDay &vt, const NA_Level &lev, FmiParameterName e ) throw(E_NO_MATCH);
+    SQD_Matrix( SQD_Data *data, const JDay &vt, const NA_Level &lev, FmiParameterName e );
 #endif
-    SQD_Matrix( const SQD_Data *data, const JDay &vt, const NA_Level &lev, FmiParameterName e ) throw(E_NO_MATCH);
+    SQD_Matrix( const SQD_Data *data, const JDay &vt, const NA_Level &lev, FmiParameterName e );
 
     /*virtual*/ ~SQD_Matrix();
 
-    /*virtual*/ float get_value_n( offset_t n ) const throw();
+    /*virtual*/ float get_value_n( offset_t n ) const noexcept;
 
 #ifdef METQU
-    /*virtual*/ void set_value_n( offset_t n, float v ) throw();
+    /*virtual*/ void set_value_n( offset_t n, float v ) noexcept;
 #else
-    /*virtual*/ void set_value_n( offset_t n, float v ) throw() {
+    /*virtual*/ void set_value_n( offset_t n, float v ) noexcept {
         throw E_LOG_BUG0( "Trying to write an SQD_Matrix" );
     }
 #endif
 
-    /*virtual*/ const float *getData() const throw() { return 0; /* no SSE compatible block */ }
+    /*virtual*/ const float *getData() const noexcept { return 0; /* no SSE compatible block */ }
 
-    /*virtual*/ float *getData() throw() { 
+    /*virtual*/ float *getData() noexcept { 
 #ifdef METQU
         assert( !isReadOnly() );    // upper levels should have taken care
         return 0;   // no SSE compatible block (always use 'get_value_n()')

@@ -7,7 +7,7 @@
 #define PROTO_H
 
 extern "C" {
-  #include "lua.h"
+  #include "luajit-2.1/lua.h"
 }
 
 /*

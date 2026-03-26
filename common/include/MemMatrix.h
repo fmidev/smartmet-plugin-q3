@@ -18,15 +18,15 @@
 */
 class MemMatrix : public Matrix {
   public:
-    MemMatrix( const MatrixSize &size_, const NA_Param::Unit &unit_, const Projection &proj_ ) throw();
-    MemMatrix( const MatrixPos &gridsize, const NA_Level &level_, FmiParameterName param_, const NA_Param::Unit &unit_, const Projection &proj_ ) throw();
-    MemMatrix( const MatrixSize &size_, float v, const NA_Param::Unit &unit_, const Projection &proj_ ) throw();
-    MemMatrix( const MatrixPos &gridsize, float v, const NA_Level &level_, FmiParameterName param_, const NA_Param::Unit &unit_, const Projection &proj_ ) throw();
+    MemMatrix( const MatrixSize &size_, const NA_Param::Unit &unit_, const Projection &proj_ ) noexcept;
+    MemMatrix( const MatrixPos &gridsize, const NA_Level &level_, FmiParameterName param_, const NA_Param::Unit &unit_, const Projection &proj_ ) noexcept;
+    MemMatrix( const MatrixSize &size_, float v, const NA_Param::Unit &unit_, const Projection &proj_ ) noexcept;
+    MemMatrix( const MatrixPos &gridsize, float v, const NA_Level &level_, FmiParameterName param_, const NA_Param::Unit &unit_, const Projection &proj_ ) noexcept;
 
-    MemMatrix( const Matrix &o ) throw();     // copy constructor from _any_ matrix (also 'SQD_Matrix' and 'MQD_Matrix')
+    MemMatrix( const Matrix &o ) noexcept; // copy constructor from _any_ matrix (also 'SQD_Matrix' and 'MQD_Matrix')
     /*virtual*/ ~MemMatrix();
 
-    /*virtual*/ float get_value_n( offset_t n ) const throw() {
+    /*virtual*/ float get_value_n( offset_t n ) const noexcept {
         return data[n];
     }
 
@@ -34,12 +34,12 @@ class MemMatrix : public Matrix {
     // the code look neater than extensive use of 'set_value_n()'. We cannot use this for the
     // base 'Matrix' type since 'SQD_Matrix' cannot expose a memory location.
     //  
-    float &operator[]( offset_t n ) throw() {
+    float &operator[]( offset_t n ) noexcept {
         assert( !is_readonly );     // script level must have checked it
 
         return data[n];     // reference to the float
     }
-    float &operator[]( const MatrixPos &mi ) throw(E_OUTSIDE) {
+    float &operator[]( const MatrixPos &mi ) {
         assert( !is_readonly );     // script level must have checked it
         return data[ offset( mi - getSize().getTop() ) ];
     }
@@ -47,16 +47,16 @@ class MemMatrix : public Matrix {
     // Since non-const 'operator[]' are defined, seems we need to define the const variants
     // as well (otherwise gcc does not see through them to 'Matrix').
     //
-    float operator[]( offset_t n ) const throw() { return data[n]; }
-    float operator[]( const MatrixPos &pos ) const throw(E_OUTSIDE) { return data[ offset(pos) ]; }
+    float operator[]( offset_t n ) const noexcept { return data[n]; }
+    float operator[]( const MatrixPos &pos ) const { return data[ offset(pos) ]; }
 
-    /*virtual*/ void set_value_n( offset_t n, float v ) throw() {
+    /*virtual*/ void set_value_n( offset_t n, float v ) noexcept {
         assert( !is_readonly );     // script level must have checked it
         data[n]= v;
     }
 
-    /*virtual*/ const float *getData() const throw() { return data; }   // SSE aligned
-    /*virtual*/ float *getData() throw() { 
+    /*virtual*/ const float *getData() const noexcept { return data; }   // SSE aligned
+    /*virtual*/ float *getData() noexcept { 
         assert( !is_readonly );     // script level must have checked it
         return data;
     }

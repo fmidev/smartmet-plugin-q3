@@ -67,7 +67,9 @@ class NA_Info {
 			 const double dx_ = 0,
 			 const double dy_ = 0,
 			 const bool gridData_ = true
-           ) throw();
+           ) noexcept;
+
+    NA_Info(const NA_Info&) = default;
 
     JDay getLoadTime() const { return loadTime; }
     JDay getModificationTime() const { return modificationTime; }
@@ -213,7 +215,7 @@ enum FmiProducerName
     std::map<std::string,std::string> extra;
 
   private:
-    NA_Info &operator=( const NA_Info &o );     // not allowed (so we can keep the fields 'const')
+    NA_Info &operator=( const NA_Info &o ) = delete;     // not allowed (so we can keep the fields 'const')
 
 #ifndef NDEBUG
     void _INVARIANT( const char *file, unsigned line ) const {

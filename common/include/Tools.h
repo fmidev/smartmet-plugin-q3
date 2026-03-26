@@ -31,9 +31,9 @@
     // keep this for Ubuntu (Centos seems to be giving 'string.h' from some system headers)
 
 extern "C" {
-  #include "lua.h"
-  #include "lualib.h"
-  #include "lauxlib.h"
+  #include "luajit-2.1/lua.h"
+  #include "luajit-2.1/lualib.h"
+  #include "luajit-2.1/lauxlib.h"
 }
 
 #ifdef METQU
@@ -192,6 +192,7 @@ class string_or_null : public std::string {
     string_or_null() : std::string(""), is_null(true) {}
     string_or_null( const char *s ) : std::string(s?s:""), is_null(s==0) {}
     string_or_null( const std::string &s ) : std::string(s), is_null(false) {}
+    string_or_null( const string_or_null&) = default;
 
     const char *c_str() const { return is_null ? 0 : std::string::c_str(); }    
 

@@ -17,7 +17,7 @@ Name: fmi-metqu
 # fmi:      FMI
 #
 Version: 18.1.9
-Release: 1.el7.fmi
+Release: 1%{?dist}.fmi
 
 License: FMI
 Group: Development/Libraries

@@ -18,7 +18,7 @@ debug:
 
 #---
 bs_release:
-	scons $(SCONS_FLAGS) $(BS_PLUGIN_SO)
+	scons -j7 $(SCONS_FLAGS) $(BS_PLUGIN_SO)
 
 bs_debug:
 	scons debug=1 $(SCONS_FLAGS) $(BS_PLUGIN_SO)

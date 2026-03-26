@@ -163,6 +163,8 @@ static void wms_handler(SmartMet::Spine::Reactor &theReactor,
 Plugin::Plugin(SmartMet::Spine::Reactor *server, const char *cfg_file)
     : Q3Server(cfg_file), SmartMetPlugin()
 {
+  namespace p = boost::placeholders;
+
   assert(server);
   if (server->getRequiredAPIVersion() != SMARTMET_API_VERSION)
   {
@@ -174,17 +176,17 @@ Plugin::Plugin(SmartMet::Spine::Reactor *server, const char *cfg_file)
 
   // Queries will start coming in after this.
   //
-  server->addContentHandler(this, "/q3", boost::bind(&::native_handler, _1, _2, _3));
+  server->addContentHandler(this, "/q3", boost::bind(&::native_handler, p::_1, p::_2, p::_3));
 
   // Note: In order to serve also the 'http://.../q3/' URL (without any params)
   //      we need this.
   //
-  server->addContentHandler(this, "/q3/", boost::bind(&::native_handler, _1, _2, _3));
+  server->addContentHandler(this, "/q3/", boost::bind(&::native_handler, p::_1, p::_2, p::_3));
 
 // Do we provide an OGC compatibility front-end?
 //
 #ifdef ENABLE_OGC_WMS
-  server->addContentHandler(this, "/q3_wms", boost::bind(&::wms_handler, _1, _2, _3));
+  server->addContentHandler(this, "/q3_wms", boost::bind(&::wms_handler, p::_1, p::_2, p::_3));
 #endif
 
   // This DOES go to q3 log. Keep it around to see when restarts have happened.

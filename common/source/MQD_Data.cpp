@@ -69,7 +69,7 @@ static MatrixPos::offset_t align_up_4( MatrixPos::offset_t n ) {
 
 /*
 */
-MQD_Data::MQD_Data( const string &fn ) throw(E_BAD_FILE)
+MQD_Data::MQD_Data( const string &fn )
     : NA_Data( read_info(fn.c_str()) ), 
       mm( new MemoryMap( fn.c_str(), 0 /*TBD getBinaryOffset()*/, 0 /*TBD getBinaryLength()*/ )),  // mmap to the end of the file
 #ifdef METQU
@@ -153,7 +153,6 @@ bool MQD_Data::is_mqd_file( const char *fn ) {
 */
 #ifdef METQU
 MQD_Data::Tile &MQD_Data::getTile( const JDay &vt, const NA_Level &lev, const NA_Param &p ) 
-    throw( E_READONLY, E_NO_MATCH )
 {
     if (is_readonly) {
         throw E_READONLY();
@@ -169,7 +168,6 @@ MQD_Data::Tile &MQD_Data::getTile( const JDay &vt, const NA_Level &lev, const NA
 #endif
 
 const MQD_Data::Tile &MQD_Data::getTile( const JDay &vt, const NA_Level &lev, const NA_Param &p ) const
-    throw( E_NO_MATCH )
 {
     int time_index= find_index<JDay>( getTimes(), vt );
     if (time_index<0) {
@@ -302,7 +300,7 @@ void MQD_Data::output( ostream &out, ProgressCallback *cb ) const {
 /*
 * Extract header information from an MQD file.
 */
-NA_Info MQD_Data::read_info( const char *fn ) throw(E_BAD_FILE/*,E_BUG*/) { 
+NA_Info MQD_Data::read_info( const char *fn ) { 
     assert(fn);
 
     // Standard libraries for 'mqd_reader.lua'.
@@ -476,7 +474,7 @@ size_t MQD_Data::getBinaryLength() const {
 CONST_IF_SERVER Matrix *MQD_Data::push_NativeMatrix( lua_State *L, 
                     const JDay &vt,
                     const NA_Level &lev,
-                    const NA_Param &p ) CONST_IF_SERVER throw(/*E_BUG*/) {
+                    const NA_Param &p ) CONST_IF_SERVER noexcept {
                     
     // Give a proxy matrix to the data (allowing to change it unless we're read-only).
     //

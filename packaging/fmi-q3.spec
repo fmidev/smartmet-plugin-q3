@@ -19,7 +19,7 @@ Name: fmi-q3
 # fmi:      FMI
 #
 Version: 18.4.16
-Release: 1.el7.fmi
+Release: 1%{?dist}.fmi
 
 License: FMI
 Group: Development/Libraries

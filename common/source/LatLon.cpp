@@ -203,11 +203,15 @@ void LatLonBind::setup( lua_State *L ) {
 
 /*
 */
-LatLon::LatLon( double lat_, double lon_ ) throw(E_USAGE) : lat(lat_), lon(lon_) {
-    if (!within_range(lat_,lon_)) {
-        throw E_LOG_USAGE( "Bad latlon value (not in range): %lf %lf", lat_, lon_ );
+LatLon::LatLon( double lat_, double lon_, bool allowMissing ) : lat(lat_), lon(lon_) {
+    if ( (!allowMissing) || (lat_ != kFloatMissing) || (lon_ != kFloatMissing) )
+    {
+        if ( !within_range(lat_,lon_) )
+        {
+            throw E_LOG_USAGE( "Bad latlon value (not in range): %lf %lf", lat_, lon_ );
+        }
+        INVARIANT();
     }
-    INVARIANT();
 }
 
 

@@ -84,6 +84,7 @@ address sizes	: 36 bits physical, 48 bits virtual
 power management:
 <<
 */
+[[maybe_unused]]
 static string cpu_info()
 {
   unsigned cores = 0;
@@ -134,6 +135,7 @@ $ more /proc/loadavg
 0.04 0.02 0.00 1/105 7584
 <<
 */
+[[maybe_unused]]
 static string cpu_stat()
 {
   double avg[3];
@@ -199,6 +201,7 @@ HugePages_Rsvd:      0
 Hugepagesize:     2048 kB
 <<
 */
+[[maybe_unused]]
 static string mem_stat(bool initial)
 {
 #ifdef __linux__
@@ -405,6 +408,7 @@ meru:/smartmet/brainstorm 87G   60G   28G  69% /smartmet/brainstorm
 suuli:/arch/pal       1.5T  1.3T  229G  85% /smartmet/archive
 <<
 */
+[[maybe_unused]]
 static string_or_null disk_usage(const char *path)
 {
   struct statvfs d;
@@ -445,7 +449,7 @@ static string_or_null disk_usage(const char *path)
 ...
 <<
 */
-static string_or_null net_usage(const char *ethX)
+[[maybe_unused]] static string_or_null net_usage(const char *ethX) 
 {
   return "";  // TBD - if needed
 }
@@ -539,14 +543,14 @@ void *HealthCheck::thread(void *me_v)
     }
     for (vector<string>::const_iterator it = my.paths.begin(); it != my.paths.end(); ++it)
     {
-      const char *path = it->c_str();
+      const char *path [[maybe_unused]] = it->c_str();
       LOG_STAT("DISK %s %s", path, disk_usage(path).c_str());
     }
     for (vector<string>::const_iterator it = my.net_interfaces.begin();
          it != my.net_interfaces.end();
          ++it)
     {
-      const char *ethX = it->c_str();
+      const char *ethX [[maybe_unused]] = it->c_str();
       LOG_STAT("NET %s %s", ethX, net_usage(ethX).c_str());
     }
   }

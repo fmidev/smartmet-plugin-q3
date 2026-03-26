@@ -1816,7 +1816,7 @@ int MatrixBind::tostring( lua_State *L ) {
 *
 * Note: Size of the target matrix is not changed.
 */
-void Matrix::copy_from( const Matrix &o ) throw(E_READONLY) {
+void Matrix::copy_from( const Matrix &o ) {
 
     if (isReadOnly()) {
         throw E_READONLY();
@@ -1848,7 +1848,7 @@ void Matrix::copy_from( const Matrix &o ) throw(E_READONLY) {
 * Fill a matrix with one value (without changing its size).
 */
 #ifdef METQU
-void Matrix::fill_with( float v ) throw(E_READONLY) {
+void Matrix::fill_with( float v ) {
     if (isReadOnly()) {
         throw E_READONLY();
     }
@@ -2013,7 +2013,7 @@ static double within_triangle( double a, double b, double dist_ab, double c, dou
 /*
 * Interpolation of values _anywhere_ within the matrix area (0..1, 0..1) coordinates.
 */
-float Matrix::at_( double fx, double fy ) const throw() {
+float Matrix::at_( double fx, double fy ) const noexcept {
 
     NA_Param::e_Interpolation method= unit.getMethod();
 
@@ -2119,7 +2119,7 @@ float Matrix::at_( double fx, double fy ) const throw() {
 *
 * Note: The matrices must have same projection.
 */
-void Matrix::fit_from_same_projection( const Matrix &o ) throw(E_READONLY) {
+void Matrix::fit_from_same_projection( const Matrix &o ) {
 
 #ifndef NDEBUG
     NA_Param::e_Interpolation o_method= o.getUnit().getMethod();
@@ -2161,7 +2161,7 @@ void Matrix::fit_from_same_projection( const Matrix &o ) throw(E_READONLY) {
 /*
 * Fill the matrix from another, with projection information applied.
 */
-void Matrix::fit_from_( const Matrix &o ) throw(E_READONLY) {
+void Matrix::fit_from_( const Matrix &o ) {
 
     if (isReadOnly()) {
         throw E_READONLY();

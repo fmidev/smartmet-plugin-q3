@@ -78,7 +78,7 @@ void GridBind::setup( lua_State *L ) {
 * be used to backtrace to projection and siblings. Note that THIS link
 * cannot be weak.
 */
-int GridBind::__index( lua_State *L ) throw() {
+int GridBind::__index( lua_State *L ) noexcept {
 
     const unsigned my_index= 1;
     Grid &my= *Grid::instance(L,my_index);
@@ -121,7 +121,13 @@ int GridBind::__index( lua_State *L ) throw() {
 
         CONST_IF_SERVER ApiMatrix *mb= my.push_Matrix( L, ApiParam(s) );
         if (!mb) {
-            luaL_error( L, "Unknown parameter: %s", s );
+            // For some reason (some stack issue ?) with luajit/rhel8 luaL_error() crashes here.
+            //
+            // Note: the error set here is lost (not used)
+            //   - native api call (raw.param) calls luaL_error since nil matrix is returned
+            //   - dataquery().query() returns an empty matrix ( [] ) since api call fails
+            //
+            return L_nilerr_fmt( "Unknown parameter: %s", s);
         }
         // [-1]: 'Matrix' or 'VectorMatrix' return value
 
@@ -159,7 +165,7 @@ int GridBind::__index( lua_State *L ) throw() {
 *      are written on each other.
 */
 #ifdef METQU
-int GridBind::__newindex( lua_State *L ) throw() {
+int GridBind::__newindex( lua_State *L ) noexcept {
 
     Grid &my= *Grid::instance(L,1);
 
@@ -229,7 +235,7 @@ Grid::Grid( Raw_interface &r, const JDay &vt_, const NA_Level &lev_, const Proje
           , LatLonList const *locs_
           , bool flightRoute_
           , const DataIdList *dataIds_
-		  ) throw(E_NO_MATCH)
+		  )
     : data( r.getData_rw() ), vt(vt_), level(lev_), proj(proj_), gridsize(gs_), rkey(0) 
     , vtVec(vtVec_ ? *vtVec_ : std::vector<JDay>())
     , levelVec(levelVec_ ? *levelVec_ : std::vector<NA_Level>())
@@ -284,7 +290,7 @@ Grid::Grid( const Raw_interface &r, const JDay &vt_, const NA_Level &lev_, const
           , LatLonList const *locs_
           , bool flightRoute_
           , const DataIdList *dataIds_
-		  ) throw(E_NO_MATCH)
+		  )
     : 
 #ifdef METQU
     data( const_cast<NA_Data*>( r.getData() ) )
@@ -344,7 +350,7 @@ Grid::Grid( const Raw_interface &r, const JDay &vt_, const NA_Level &lev_, const
 /*
 */
 #ifdef METQU
-void Grid::setMatrix( const NA_Param &p, const Matrix &m ) throw(E_READONLY, E_BAD_SIZE, E_NO_MATCH) {
+void Grid::setMatrix( const NA_Param &p, const Matrix &m ) {
 
     Matrix *sm= new_ScalarMatrix(p);
     {
@@ -357,7 +363,7 @@ void Grid::setMatrix( const NA_Param &p, const Matrix &m ) throw(E_READONLY, E_B
 /*
 */
 #ifdef METQU
-void Grid::setMatrix( const NA_Param &p, float v ) throw(E_READONLY, E_NO_MATCH) {
+void Grid::setMatrix( const NA_Param &p, float v ) {
 
     Matrix *sm= new_ScalarMatrix(p);
     {

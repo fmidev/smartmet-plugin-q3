@@ -57,9 +57,9 @@ struct VectorBind {
 */
 class Vector : public LuaNew<VectorBind> {
   public:
-    Vector( double x_or_abs, double y_or_deg, bool polar_ ) throw();
+    Vector( double x_or_abs, double y_or_deg, bool polar_ ) noexcept;
     
-    Vector() throw() {}      // leave uninitialized (called when 'VectorMatrix' constructor does 'new')
+    Vector() noexcept {}      // leave uninitialized (called when 'VectorMatrix' constructor does 'new')
     /*virtual*/ ~Vector() {}
 
     // Do operators here, since we need to manage polar/cartesian in a unified manner.

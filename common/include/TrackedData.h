@@ -26,11 +26,11 @@
 */
 class TrackedData {
   public:
-    TrackedData( const char *fn, const JDay &ot_given_, const string_or_null &tmp_pattern_, size_t tmp_threshold, bool relative_uv ) throw (E_BAD_FILE, E_USAGE);
-    TrackedData( const char *fn, const NA_Info &info_given, bool relative_uv_, const string_or_null &tmp_pattern_=0, size_t tmp_threshold_=0 ) throw (E_USAGE);
+    TrackedData( const char *fn, const JDay &ot_given_, const string_or_null &tmp_pattern_, size_t tmp_threshold, bool relative_uv );
+    TrackedData( const char *fn, const NA_Info &info_given, bool relative_uv_, const string_or_null &tmp_pattern_=0, size_t tmp_threshold_=0 );
     ~TrackedData();
 
-    NA_Data *Acquire(bool metaQuery = false) throw(E_BAD_FILE, E_BUG);   // get data with increasing reference count
+    NA_Data *Acquire(bool metaQuery = false);   // get data with increasing reference count
                                // and automatic (on demand) expansion of BZ2 data
 #ifdef METQU
     void Release() {}   // nothing to do (no refcounts)
