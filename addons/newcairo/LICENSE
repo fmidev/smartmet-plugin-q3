@@ -1,9 +1,0 @@
-
-NewCairo is proprietary code by Ilmatieteen Laitos (fmi.fi) (c) 2010
-
-...change this to state the open source license (i.e. MIT - the same
-as Lua 5.1 uses) if the code is eventually opened up...
-
-libcairo is dual licensed either as LGPL or Mozilla Public License (we'd use LGPL and link to the library dynamically).
-
---AKa 25-Jan-10

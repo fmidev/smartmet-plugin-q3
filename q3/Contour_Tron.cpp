@@ -8,7 +8,7 @@
 #error "Shouldn't even read this file in."
 #endif
 
-#include <geos/geom/Coordinate.inl>
+#include <geos/geom/Coordinate.h>
 
 #include "Contour.h"
 

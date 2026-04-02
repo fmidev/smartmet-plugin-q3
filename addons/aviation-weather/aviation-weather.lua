@@ -1,1 +1,0 @@
-return "aviation-weather plugin latautui!"

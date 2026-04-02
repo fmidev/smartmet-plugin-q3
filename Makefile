@@ -6,20 +6,20 @@ REQUIRES = geos gdal cairo configpp
 
 include $(shell echo $${PREFIX-/usr})/share/smartmet/devel/makefile.inc
 
-FLAGS += -Wno-variadic-macros -Wno-narrowing -mfpmath=sse -msse2 $(pkg_config --cflags lua)
+FLAGS += -Wno-variadic-macros -Wno-narrowing -mfpmath=sse -msse2
 
 # Compiler options
 
 DEFINES = -DUNIX -D_REENTRANT -DSMOOTH_AND_STRETCH -DUSE_NEWBASE -DUSE_TRON -DUSE_UNSTABLE_GEOS_CPP_API
 
-CFLAGS += -DLUA_COMPAT_5_3
+INCLUDES += $(shell pkg-config --cflags-only-I luajit)
 
 LIBS += -L$(libdir) \
 	$(REQUIRED_LIBS) \
 	-lsmartmet-newbase \
 	-lsmartmet-spine \
 	-lsmartmet-tron \
-	$(shell pkg-config --libs lua)
+	$(shell pkg-config --libs luajit)
 
 # What to install
 
@@ -86,6 +86,6 @@ obj/%.o: %.cpp $(LCHS)
 	$(CXX) $(CFLAGS) $(INCLUDES) -c -MD -MF $(patsubst obj/%.o, obj/%.d, $@) -MT $@ -o $@ $<
 
 q3/%.lch: lua/%.lua
-	luac -o - $< | lua bin2c.lua -o $@
+	luajit -b $< - | luajit bin2c.lua -o $@
 
 -include $(wildcard obj/*.d)
