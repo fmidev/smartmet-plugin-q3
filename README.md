@@ -1,5 +1,7 @@
 # SmartMet Plugin Q3
 
+Part of [SmartMet Server](https://github.com/fmidev/smartmet-server). See the [SmartMet Server documentation](https://github.com/fmidev/smartmet-server) for a full overview of the ecosystem.
+
 Q3 is a [SmartMet Server](https://github.com/fmidev/smartmet-server) plugin that provides a Lua scripting interface for querying and processing weather data. Client requests are HTTP GET calls where the `code` parameter is a Lua script. The script runs in a sandboxed LuaJIT state with access to configured data tracks, matrix math, coordinate functions, and Cairo graphics.
 
 Q3 reads FMI querydata (SQD) files, which are a grid-based binary format used by the Finnish Meteorological Institute. It is primarily used to serve aviation weather products and other derived weather products that require custom Lua calculations.
