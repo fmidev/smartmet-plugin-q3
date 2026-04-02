@@ -59,9 +59,7 @@ rm -rf %{buildroot}
 install -d %{buildroot}%{_datadir}/smartmet/plugins
 install -m 775 q3.so %{buildroot}%{_datadir}/smartmet/plugins/
 install -d %{buildroot}%{_sysconfdir}/smartmet/plugins
-install -m 664 packaging/q3plugin.conf %{buildroot}%{_sysconfdir}/smartmet/plugins/
-install -d %{buildroot}%{_datadir}/q3plugin
-install -m 664 packaging/testbed.html %{buildroot}%{_datadir}/q3plugin/
+install -m 664 cnf/q3plugin.conf %{buildroot}%{_sysconfdir}/smartmet/plugins/
 install -d %{buildroot}%{_datadir}/q3plugin/fonts
 install -m 664 fonts/*.ttf %{buildroot}%{_datadir}/q3plugin/fonts/
 
@@ -70,7 +68,6 @@ rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root)
-%{_datadir}/q3plugin/testbed.html
 %{_datadir}/q3plugin/fonts/*.ttf
 %{_datadir}/smartmet/plugins/*.so
 %{_sysconfdir}/smartmet/plugins/*.conf
