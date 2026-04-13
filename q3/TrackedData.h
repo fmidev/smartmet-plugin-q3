@@ -77,8 +77,7 @@ private:
   //
   const std::string source; // source filename (.sqd, .sqd.bz2 or .mqd)
   mutable volatile const NA_Info
-      *info_;       // originally nullptr, loaded on demand by 'getInfo()'
-  bool relative_uv; // Set if U and V are relative to the grid
+      *info_;    // originally nullptr, loaded on demand by 'getInfo()'
 
   JDay ot_given; // origintime 'known' in the constructor (i.e. from cache)
                  // (if unknown, we must load 'info' to get the origintime)
@@ -99,6 +98,7 @@ private:
   const string_or_null
       tmp_pattern;            // if non-nullptr, try to extract BZ2 to disk
   const size_t tmp_threshold; // amount of free space to remain on 'tmp_pattern'
+  bool relative_uv; // Set if U and V are relative to the grid
 
   // Don't allow (would render refcount useless)
   //

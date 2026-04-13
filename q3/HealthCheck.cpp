@@ -81,6 +81,7 @@ address sizes	: 36 bits physical, 48 bits virtual
 power management:
 <<
 */
+__attribute__((unused))
 static string cpu_info() {
   unsigned cores = 0;
   string_or_null model;
@@ -131,6 +132,7 @@ $ more /proc/loadavg
 0.04 0.02 0.00 1/105 7584
 <<
 */
+__attribute__((unused))
 static string cpu_stat() {
   double avg[3];
 
@@ -189,6 +191,7 @@ workload" VmallocTotal: 34359738367 kB VmallocUsed:      1560 kB VmallocChunk:
 Hugepagesize:     2048 kB
 <<
 */
+__attribute__((unused))
 static string mem_stat(bool initial) {
 #ifdef __linux__
   long memtotal_kB = 0, memfree_kB = 0, buffers_kB = 0, cached_kB = 0,
@@ -373,6 +376,7 @@ meru:/smartmet/brainstorm 87G   60G   28G  69% /smartmet/brainstorm
 suuli:/arch/pal       1.5T  1.3T  229G  85% /smartmet/archive
 <<
 */
+__attribute__((unused))
 static string_or_null disk_usage(const char *path) {
   struct statvfs d;
   //
@@ -411,6 +415,7 @@ static string_or_null disk_usage(const char *path) {
 ...
 <<
 */
+__attribute__((unused))
 static string_or_null net_usage(const char *ethX) {
   return ""; // TBD - if needed
 }
@@ -485,12 +490,12 @@ void *HealthCheck::thread(void *me_v) {
     }
     for (vector<string>::const_iterator it = my.paths.begin();
          it != my.paths.end(); ++it) {
-      const char *path = it->c_str();
+      const char *path = it->c_str(); (void)path;
       LOG_STAT("DISK %s %s", path, disk_usage(path).c_str());
     }
     for (vector<string>::const_iterator it = my.net_interfaces.begin();
          it != my.net_interfaces.end(); ++it) {
-      const char *ethX = it->c_str();
+      const char *ethX = it->c_str(); (void)ethX;
       LOG_STAT("NET %s %s", ethX, net_usage(ethX).c_str());
     }
   }

@@ -106,6 +106,7 @@ public:
 #ifdef VECTORS_CACHE_NORM
   Vector() : dx(0.0), dy(0.0), norm_cached(0.0) {}
   Vector(const Vector &o) : dx(o.dx), dy(o.dy), norm_cached(o.norm_cached) {}
+  Vector &operator=(const Vector &) = default;
 
   Vector(double dx_, double dy_) : dx(dx_), dy(dy_), norm_cached(-1.0) {}
   Vector(const Point &p) : dx(p.x), dy(p.y), norm_cached(-1.0) {}
@@ -114,6 +115,7 @@ public:
 #else
   Vector() : dx(0.0), dy(0.0) {}
   Vector(const Vector &o) : dx(o.dx), dy(o.dy) {}
+  Vector &operator=(const Vector &) = default;
 
   Vector(double dx_, double dy_) : dx(dx_), dy(dy_) {}
   Vector(const Point &p) : dx(p.x), dy(p.y) {}
@@ -217,6 +219,7 @@ public:
   PointAndVector(const Point &p_, const Vector &v) : Vector(v), p(p_) {}
 
   PointAndVector(const PointAndVector &o) : Vector(o), p(o.p) {}
+  PointAndVector &operator=(const PointAndVector &) = default;
 
   // We don't really WANT this constructor to be there - we don't NEED
   // it but the COMPILER does. --AKa 19-Jan-2009
@@ -265,6 +268,7 @@ public:
   }
 
   BoundingBox(const BoundingBox &o) : lo(o.lo), hi(o.hi) {}
+  BoundingBox &operator=(const BoundingBox &) = default;
 
   // Default bounding box has no bounds; calling 'extend()' will make
   // them.

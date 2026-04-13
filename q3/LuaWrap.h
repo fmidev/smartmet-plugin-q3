@@ -13,7 +13,7 @@
 //
 struct LuaWrap {
 public:
-  LuaWrap(const luaL_Reg *libs, const char *chunk, size_t chunk_size);
+  LuaWrap(const luaL_Reg *libs, const unsigned char *chunk, size_t chunk_size);
   ~LuaWrap();
   operator lua_State *() { return L; }
 

@@ -38,22 +38,22 @@ public:
 
   /*virtual*/ ~MQD_Matrix() {}
 
-  /*virtual*/ float get_value_n(offset_t n) const throw();
+  /*virtual*/ float get_value_n(offset_t n) const;
 
 #ifdef METQU
-  /*virtual*/ void set_value_n(offset_t n, float v) throw();
+  /*virtual*/ void set_value_n(offset_t n, float v);
 #else
-  /*virtual*/ void set_value_n(offset_t n, float v) throw() {
+  /*virtual*/ void set_value_n(offset_t n, float v) {
     throw E_LOG_BUG0("Trying to write an MQD_Matrix");
   }
 #endif
 
-  /*virtual*/ const float *getData() const throw();
+  /*virtual*/ const float *getData() const;
 
 #ifdef METQU
-  /*virtual*/ float *getData() throw();
+  /*virtual*/ float *getData();
 #else
-  /*virtual*/ float *getData() throw() {
+  /*virtual*/ float *getData() {
     throw E_LOG_BUG0("Trying to write an MQD_Matrix");
   }
 #endif

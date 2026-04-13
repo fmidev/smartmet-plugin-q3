@@ -25,7 +25,7 @@ static const char CTRLD_CTRLZ[] = {0x04, 0x1a};
 
 using namespace std;
 
-static char mqd_reader_chunk[] =
+static unsigned char mqd_reader_chunk[] =
 #include "mqd_reader.lch"
 
     static const char SPACES[15] = {' '};

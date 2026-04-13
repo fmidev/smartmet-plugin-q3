@@ -18,7 +18,9 @@ LuaNew_ID FontFace_bind::ID;
 struct FontFaceMethodNames : public MethodNames {
   FontFaceMethodNames() {
     static volatile unsigned initialized; // = 0
-    if (initialized++)
+    unsigned was = initialized;
+    initialized = initialized + 1;
+    if (was)
       throw runtime_error("There should be only one FontFaceMethodNames");
 
     // map( "set_matrix",		        Glyph::set_matrix );
@@ -124,7 +126,7 @@ cairo_font_face_t *FontFace::load_ttf(const char *fn, unsigned face_index,
   cairo_font_face_t *ff =
       cairo_ft_font_face_create_for_ft_face(ft_face, 0 /*options*/);
   int st = cairo_font_face_set_user_data(ff, &key, ft_face,
-                                         (cairo_destroy_func_t)FT_Done_Face);
+                                         [](void *p) { FT_Done_Face(static_cast<FT_Face>(p)); });
   if (st) {
     cairo_font_face_destroy(ff);
     FT_Done_Face(ft_face);

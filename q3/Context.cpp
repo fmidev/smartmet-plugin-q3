@@ -194,7 +194,9 @@ static void parse_rgba(lua_State *L, int index, double &r, double &g, double &b,
 struct ContextMethodNames : public MethodNames {
   ContextMethodNames() {
     static volatile unsigned initialized; // = 0
-    if (initialized++)
+    unsigned was = initialized;
+    initialized = initialized + 1;
+    if (was)
       throw runtime_error("There should be only one ContextMethodNames");
 
     map("save", Context::save);

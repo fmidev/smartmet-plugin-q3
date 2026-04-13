@@ -105,7 +105,9 @@ FormatConverter conv_image_format;
 struct SurfaceMethodNames : public MethodNames {
   SurfaceMethodNames() {
     static volatile unsigned initialized; // = 0
-    if (initialized++)
+    unsigned was = initialized;
+    initialized = initialized + 1;
+    if (was)
       throw runtime_error("There should be only one SurfaceMethodNames");
 
     // Methods for all surfaces

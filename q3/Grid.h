@@ -28,9 +28,9 @@ public:
   typedef Grid CAST_T;
 
 private:
-  static int __index(lua_State *L) throw();
+  static int __index(lua_State *L);
 #ifdef METQU
-  static int __newindex(lua_State *L) throw();
+  static int __newindex(lua_State *L);
 #endif
 };
 

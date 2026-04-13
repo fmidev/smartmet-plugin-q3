@@ -76,7 +76,7 @@ Bz2_Cache::Bz2_Cache(const char *fn) : mapping_m(), mapping(), f(0) {
   }
 
   LOG_OK("Reading BZ2 cache... %s", fn);
-  uint64_t t0 = now_ms();
+  uint64_t t0 = now_ms(); (void)t0;
 
   // Read existing contents of the file in
   //
@@ -122,7 +122,7 @@ Bz2_Cache::Bz2_Cache(const char *fn) : mapping_m(), mapping(), f(0) {
   }
 
   if (changed) {
-    unsigned n = mapping.size();
+    unsigned n = mapping.size(); (void)n;
     LOG_DEBUG("Writing changes to BZ2 cache (%d -> %d lines)", n + changed, n);
 
     fclose(f);

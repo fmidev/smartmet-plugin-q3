@@ -18,7 +18,9 @@ LuaNew_ID Glyph_bind::ID;
 struct GlyphMethodNames : public MethodNames {
   GlyphMethodNames() {
     static volatile unsigned initialized; // = 0
-    if (initialized++)
+    unsigned was = initialized;
+    initialized = initialized + 1;
+    if (was)
       throw runtime_error("There should be only one GlyphMethodNames");
 
     // map( "set_matrix",		        Glyph::set_matrix );

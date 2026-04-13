@@ -76,7 +76,7 @@ void GridBind::setup(lua_State *L) {
  * be used to backtrace to projection and siblings. Note that THIS link
  * cannot be weak.
  */
-int GridBind::__index(lua_State *L) throw() {
+int GridBind::__index(lua_State *L) {
 
   const unsigned my_index = 1;
   Grid &my = *Grid::instance(L, my_index);
@@ -156,7 +156,7 @@ int GridBind::__index(lua_State *L) throw() {
  * and/or grid size are written on each other.
  */
 #ifdef METQU
-int GridBind::__newindex(lua_State *L) throw() {
+int GridBind::__newindex(lua_State *L) {
 
   Grid &my = *Grid::instance(L, 1);
 

@@ -311,19 +311,19 @@ public:
   /*virtual*/ ~Matrix() {}
 
 protected:
-  Matrix(const MatrixSize &size_, const NA_Param::Unit &unit_, bool ro) throw()
+  Matrix(const MatrixSize &size_, const NA_Param::Unit &unit_, bool ro)
       : ApiMatrix(), LuaNew<MatrixBind>(), size(size_), unit(unit_),
         is_readonly(ro) { /* our invariant called by derived classes */
   }
 
   Matrix(const MatrixPos &gridsize, const NA_Level &level_,
-         FmiParameterName param_, const NA_Param::Unit &unit_, bool ro) throw()
+         FmiParameterName param_, const NA_Param::Unit &unit_, bool ro)
       : ApiMatrix(), LuaNew<MatrixBind>(), size(gridsize), level(level_),
         param(param_), unit(unit_),
         is_readonly(ro) { /* our invariant called by derived classes */
   }
 
-  Matrix(const NA_Param::Unit &unit_, bool ro) throw()
+  Matrix(const NA_Param::Unit &unit_, bool ro)
       : ApiMatrix(), LuaNew<MatrixBind>(), size(MatrixPos::ZERO), unit(unit_),
         is_readonly(ro) { /* our invariant called by derived classes */
   }
@@ -348,9 +348,9 @@ public:
   // 'operator[](const Matrixpos&)' not (otherwise, if we are, it must, though
   // we don't wish it to be). Got it? :)
   //
-  virtual float get_value_n(offset_t n) const throw() = 0;
+  virtual float get_value_n(offset_t n) const = 0;
 
-  float operator[](offset_t n) const throw() {
+  float operator[](offset_t n) const {
     return get_value_n(n);
   } // forward to class specific function
 
@@ -371,7 +371,7 @@ public:
   void fit_from_same_projection(const Matrix &m);
   void fit_from_(const Matrix &m);
 
-  float at_(double dx, double dy) const throw();
+  float at_(double dx, double dy) const;
 
 #ifdef METQU
   void fill_with(float v);
@@ -389,7 +389,7 @@ public:
    * Note: Needs to be of different name than 'set_value()' because
    *       this is virtual and 'set_value()' is not.
    */
-  virtual void set_value_n(offset_t n, float v) throw() = 0;
+  virtual void set_value_n(offset_t n, float v) = 0;
 
   /*
    * Ease of use - function that leads to (virtual) 'set_value_n()'.
@@ -405,8 +405,8 @@ public:
   /*
    * Block access (for SSE enabled compilation must be 16-byte aligned)
    */
-  virtual const float *getData() const throw() = 0;
-  virtual float *getData() throw() = 0;
+  virtual const float *getData() const = 0;
+  virtual float *getData() = 0;
 
   FmiParameterName getParam() const { return param; }
   string_or_null getParamStr() const {

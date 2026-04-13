@@ -80,7 +80,9 @@ static PatternTypeConverter conv_pattern_type;
 struct PatternMethodNames : public MethodNames {
   PatternMethodNames() {
     static volatile unsigned initialized; // = 0
-    if (initialized++)
+    unsigned was = initialized;
+    initialized = initialized + 1;
+    if (was)
       throw runtime_error("There should be only one PatternMethodNames");
 
     // These functions only for LINEAR and RADIAL patterns:

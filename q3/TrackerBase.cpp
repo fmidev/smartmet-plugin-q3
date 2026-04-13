@@ -27,8 +27,8 @@ using namespace std;
 // 09-Mar-2012 PKi: Track name (used for logging only)
 TrackerBase::TrackerBase(unsigned refresh_secs_, unsigned wiping_[],
                          bool relative_uv_, const std::string &trackName_)
-    : thread_h(), data_m(), available_data(), refresh_secs(refresh_secs_),
-      relative_uv(relative_uv_), trackName(trackName_) {
+    : thread_h(), data_m(), available_data(),
+      relative_uv(relative_uv_), refresh_secs(refresh_secs_), trackName(trackName_) {
   // NOTE: Must not launch 'thread_h' here yet; derived constructor will
   //      do it via 'init()' (so it is ready for 'update()' callbacks)
 
@@ -92,7 +92,7 @@ void *TrackerBase::polling_thread(void *me_v) {
   unsigned refresh_secs = my->refresh_secs;
 
   uint64_t ms0 =
-      now_ms(); // Beginning of the update cycle
+      now_ms(); (void)ms0; // Beginning of the update cycle
                 // outside the loop to keep two cycles of .bz2 added up
   // Background loop
   //
@@ -118,12 +118,12 @@ void *TrackerBase::polling_thread(void *me_v) {
     if (!refresh_secs)
       break; // no updates, no wipe (exits the thread)
 
-    uint64_t ms1 = now_ms();
+    uint64_t ms1 = now_ms(); (void)ms1;
 
     LOG_OK("Going to sleep (%.3lf secs spent updating data)",
            (ms1 - ms0) / 1000.0);
     Sleep_ms(refresh_secs * 1000);
-    uint64_t ms2 = now_ms();
+    uint64_t ms2 = now_ms(); (void)ms2;
     LOG_OK("Waking up (slept %.3lf secs)", (ms2 - ms1) / 1000.0);
 
     /*

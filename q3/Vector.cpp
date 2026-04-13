@@ -247,9 +247,9 @@ int VectorBind::tostring(lua_State *L) {
   // parameters;
   //      make sure we don't crash.
   //
-  const Vector &me = *Vector::instance(L, 1);
+  const Vector *p = Vector::instance(L, 1);
 
-  if (!&me) {
+  if (!p) {
     throw E_LOG_USAGE("Bad parameter: %s",
                       L_typename(1)); // internal bug or deliberate hack attempt
   }
@@ -260,7 +260,7 @@ int VectorBind::tostring(lua_State *L) {
   // part NAN (but the other not).
   //       Outputting these in cartesian will make it all look like NAN.
   //
-  lua_pushfstring(L, "(%f %f)", me.getX(), me.getY());
+  lua_pushfstring(L, "(%f %f)", p->getX(), p->getY());
   return 1;
 }
 

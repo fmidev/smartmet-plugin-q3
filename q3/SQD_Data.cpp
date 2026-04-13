@@ -308,7 +308,7 @@ void SQD_Data::setIter(NFmiFastQueryInfo &fi, const JDay &vt,
  * Set an iterator to 'NFmiQueryData', knowing the time, level, param exist.
  */
 void SQD_Data::setIter_exact(NFmiFastQueryInfo &fi, const JDay &vt,
-                             const NA_Level &lev, const NA_Param &p) throw() {
+                             const NA_Level &lev, const NA_Param &p) {
   bool exact_time, exact_level;
 
   try {
@@ -1707,6 +1707,7 @@ SQD_Data::push_NativeMatrix_e(lua_State *L, const JDay &vt, const NA_Level &lev,
   catch (const std::exception &ex) {
     luaL_error(L, "Data retrieval error: %s", ex.what());
   }
+  return nullptr; // unreachable; luaL_error does not return
 }
 
 /*
@@ -1959,6 +1960,7 @@ SQD_Data::push_NativeCross(lua_State *L, const std::vector<JDay> &vtVec,
   } catch (const std::exception &ex) {
     luaL_error(L, "Data retrieval error: %s", ex.what());
   }
+  return nullptr; // unreachable; luaL_error does not return
 }
 
 /*

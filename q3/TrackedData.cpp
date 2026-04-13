@@ -286,7 +286,7 @@ NA_Data *TrackedData::Acquire(bool metaQuery) {
     }
 
 #ifndef METQU
-    ++refcount;
+    refcount += 1;
     if (!metaQuery) {
       // printf("*** %s set last_acquired=%ld
       // ***\n",source.c_str(),time(nullptr));
@@ -314,7 +314,7 @@ NA_Data *TrackedData::Acquire(bool metaQuery) {
 void TrackedData::Release() {
 
   ClaimMutex lock(qd_m);
-  --refcount;
+  refcount -= 1;
   // printf("*** Rel %s refcount %d\n",source.c_str(),refcount);
 }
 #endif

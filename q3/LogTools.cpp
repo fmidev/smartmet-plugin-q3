@@ -7,6 +7,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <vector>
 
 #include <pthread.h>
 
@@ -338,12 +339,12 @@ void StderrLogger::log(enum category cat, const char *file, unsigned line,
   string head = string_fmt("%s [%s %d] ", ansi, file, line);
   size_t head_len = head.length();
 
-  char buf[head_len + msg_len + 2]; // '\n' and terminating '\0'
+  std::vector<char> buf(head_len + msg_len + 2); // '\n' and terminating '\0'
   {
-    strcpy(buf, head.c_str());
-    strcpy(buf + head_len, msg); // potentially long (as said)
-    strcpy(buf + head_len + msg_len, "\n");
+    strcpy(buf.data(), head.c_str());
+    strcpy(buf.data() + head_len, msg); // potentially long (as said)
+    strcpy(buf.data() + head_len + msg_len, "\n");
 
-    cerr << buf; // atomic, instant flush
+    cerr << buf.data(); // atomic, instant flush
   }
 }

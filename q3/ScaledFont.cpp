@@ -19,7 +19,9 @@ LuaNew_ID ScaledFont_bind::ID;
 struct ScaledFontMethodNames : public MethodNames {
   ScaledFontMethodNames() {
     static volatile unsigned initialized; // = 0
-    if (initialized++)
+    unsigned was = initialized;
+    initialized = initialized + 1;
+    if (was)
       throw runtime_error("There should be only one ScaledFontMethodNames");
 
     // map( "set_matrix",		        Glyph::set_matrix );

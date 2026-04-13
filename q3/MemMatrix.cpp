@@ -15,7 +15,7 @@
  * array of floats).
  */
 MemMatrix::MemMatrix(const MatrixSize &size_, const NA_Param::Unit &unit_,
-                     const Projection &proj_) throw()
+                     const Projection &proj_)
     : Matrix(size_, unit_, false /*rw*/),
       data(sse_alloc(sizeof(float) * getN())), proj(proj_) { /*not initialized*/
   INVARIANT();
@@ -23,7 +23,7 @@ MemMatrix::MemMatrix(const MatrixSize &size_, const NA_Param::Unit &unit_,
 
 MemMatrix::MemMatrix(const MatrixPos &gridsize, const NA_Level &level_,
                      FmiParameterName param_, const NA_Param::Unit &unit_,
-                     const Projection &proj_) throw()
+                     const Projection &proj_)
     : Matrix(gridsize, level_, param_, unit_, false /*rw*/),
       data(sse_alloc(sizeof(float) * getN())), proj(proj_) { /*not initialized*/
   INVARIANT();
@@ -31,7 +31,7 @@ MemMatrix::MemMatrix(const MatrixPos &gridsize, const NA_Level &level_,
 
 MemMatrix::MemMatrix(const MatrixSize &size_, float v,
                      const NA_Param::Unit &unit_,
-                     const Projection &proj_) throw()
+                     const Projection &proj_)
     : Matrix(size_, unit_, false /*rw*/),
       data(sse_alloc(sizeof(float) * getN())), proj(proj_) {
   fill(v);
@@ -40,14 +40,14 @@ MemMatrix::MemMatrix(const MatrixSize &size_, float v,
 
 MemMatrix::MemMatrix(const MatrixPos &gridsize, float v, const NA_Level &level_,
                      FmiParameterName param_, const NA_Param::Unit &unit_,
-                     const Projection &proj_) throw()
+                     const Projection &proj_)
     : Matrix(gridsize, level_, param_, unit_, false /*rw*/),
       data(sse_alloc(sizeof(float) * getN())), proj(proj_) {
   fill(v);
   INVARIANT();
 }
 
-MemMatrix::MemMatrix(const Matrix &o) throw()
+MemMatrix::MemMatrix(const Matrix &o)
     : Matrix(o.getSize(), o.getUnit(), false /*rw*/),
       data(sse_alloc(sizeof(float) * getN())), proj(o.getProjection()) {
 

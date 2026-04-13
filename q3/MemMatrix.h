@@ -19,28 +19,28 @@
 class MemMatrix : public Matrix {
 public:
   MemMatrix(const MatrixSize &size_, const NA_Param::Unit &unit_,
-            const Projection &proj_) throw();
+            const Projection &proj_);
   MemMatrix(const MatrixPos &gridsize, const NA_Level &level_,
             FmiParameterName param_, const NA_Param::Unit &unit_,
-            const Projection &proj_) throw();
+            const Projection &proj_);
   MemMatrix(const MatrixSize &size_, float v, const NA_Param::Unit &unit_,
-            const Projection &proj_) throw();
+            const Projection &proj_);
   MemMatrix(const MatrixPos &gridsize, float v, const NA_Level &level_,
             FmiParameterName param_, const NA_Param::Unit &unit_,
-            const Projection &proj_) throw();
+            const Projection &proj_);
 
-  MemMatrix(const Matrix &o) throw(); // copy constructor from _any_ matrix
+  MemMatrix(const Matrix &o); // copy constructor from _any_ matrix
                                       // (also 'SQD_Matrix' and 'MQD_Matrix')
   /*virtual*/ ~MemMatrix();
 
-  /*virtual*/ float get_value_n(offset_t n) const throw() { return data[n]; }
+  /*virtual*/ float get_value_n(offset_t n) const { return data[n]; }
 
   // Non-virtual assignment operator: we use assignment to 'MemMatrix' rather
   // much and this makes the code look neater than extensive use of
   // 'set_value_n()'. We cannot use this for the base 'Matrix' type since
   // 'SQD_Matrix' cannot expose a memory location.
   //
-  float &operator[](offset_t n) throw() {
+  float &operator[](offset_t n) {
     assert(!is_readonly); // script level must have checked it
 
     return data[n]; // reference to the float
@@ -53,20 +53,20 @@ public:
   // Since non-const 'operator[]' are defined, seems we need to define the const
   // variants as well (otherwise gcc does not see through them to 'Matrix').
   //
-  float operator[](offset_t n) const throw() { return data[n]; }
+  float operator[](offset_t n) const { return data[n]; }
   float operator[](const MatrixPos &pos) const {
     return data[offset(pos)];
   }
 
-  /*virtual*/ void set_value_n(offset_t n, float v) throw() {
+  /*virtual*/ void set_value_n(offset_t n, float v) {
     assert(!is_readonly); // script level must have checked it
     data[n] = v;
   }
 
-  /*virtual*/ const float *getData() const throw() {
+  /*virtual*/ const float *getData() const {
     return data;
   } // SSE aligned
-  /*virtual*/ float *getData() throw() {
+  /*virtual*/ float *getData() {
     assert(!is_readonly); // script level must have checked it
     return data;
   }

@@ -104,9 +104,9 @@ JustOnce_SSE::JustOnce_SSE() {
   always_assert(v == X);
 
 #ifdef __SSE__
-  __m128 m_XnanXnan = (__m128)(__v4sf){X, nan, X, nan};
-  __m128 m_nanXnanX = (__m128)(__v4sf){nan, X, nan, X};
-  __m128 m_nannannannan = (__m128)(__v4sf){nan, nan, nan, nan};
+  __m128 m_XnanXnan = _mm_set_ps(nan, X, nan, X);
+  __m128 m_nanXnanX = _mm_set_ps(X, nan, X, nan);
+  __m128 m_nannannannan = _mm_set1_ps(nan);
   __m128 m_XXXX = _mm_set1_ps(X); // { X,X,X,X }
 
   __m128 m_ninf = _mm_set1_ps(-INF_F); // { -INF,-INF,-INF,-INF }
@@ -241,7 +241,7 @@ void SSE_reduce_sum(const Matrix &a, float &sum, unsigned &used,
   if (a_data) {
     __m128 *va = (__m128 *)a_data;
 
-    __m128 sum4 = (__m128)(__v4sf){0.0f, 0.0f, 0.0f, 0.0f};
+    __m128 sum4 = _mm_setzero_ps();
     while (i + (8 - 1) < n) { // bulk handled here
       if (NO_NANS_8(va)) {
         sum4 = __builtin_ia32_addps(sum4, *va++);
@@ -295,7 +295,7 @@ void SSE_fill(float *to, float v, MatrixPos::offset_t n) {
   assert(to && ((size_t)to) % 16 == 0);
 
   __m128 *vc = (__m128 *)to;
-  const __m128 vvvv = (__m128)(__v4sf){v, v, v, v};
+  const __m128 vvvv = _mm_set1_ps(v);
   MatrixPos::offset_t i = 0;
 
   while (i + (32 - 1) < n) { // bulk handled here

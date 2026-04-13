@@ -45,8 +45,8 @@ local function dump( f )
     OUT [[
 /* bin2c.lua generated code -- DO NOT EDIT
  *
- * To use from C source: 
- *    char my_chunk[]=
+ * To use from C source:
+ *    unsigned char my_chunk[]=
  *    #include "my.lch"
  */]]
 

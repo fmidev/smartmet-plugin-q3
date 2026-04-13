@@ -51,6 +51,7 @@ public:
         : label(label_), size(size_), lp(lp_) {}
     FontSpec(const FontSpec &other)
         : label(other.label), size(other.size), lp(other.lp) {}
+    FontSpec &operator=(const FontSpec &) = default;
   };
 
   class TiltedRect {
@@ -225,6 +226,7 @@ private:
         : center(center_), rad(rad_), fs(fs_) {}
     ChosenLabel(const ChosenLabel &o)
         : center(o.center), rad(o.rad), fs(o.fs) {}
+    ChosenLabel &operator=(const ChosenLabel &) = default;
   };
   std::vector<ChosenLabel> chosenlabels;
 

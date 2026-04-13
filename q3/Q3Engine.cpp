@@ -41,7 +41,7 @@ using namespace std;
 
 string read_config(const char *);
 
-static char config_chunk[] =
+static unsigned char config_chunk[] =
 #include "config.lch"
 
 std::map<std::string, std::string> Q3Engine::addonConfigSettings;

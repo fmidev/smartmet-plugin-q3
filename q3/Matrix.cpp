@@ -2014,7 +2014,7 @@ static double within_triangle( double a, double b, double dist_ab, double c, dou
 /*
 * Interpolation of values _anywhere_ within the matrix area (0..1, 0..1) coordinates.
 */
-float Matrix::at_( double fx, double fy ) const throw() {
+float Matrix::at_( double fx, double fy ) const {
 
     NA_Param::e_Interpolation method= unit.getMethod();
 

@@ -89,7 +89,7 @@ MatrixPos NA_Info::getExtra_pos(const char *key) const {
   string_or_null s = getExtra_str(key);
 
   unsigned x, y;
-  if (sscanf(s.c_str(), "%d,%d", &x, &y) != 2) {
+  if (sscanf(s.c_str(), "%u,%u", &x, &y) != 2) {
     return MatrixPos::ZERO; // no such entry
   }
   return MatrixPos(x, y);

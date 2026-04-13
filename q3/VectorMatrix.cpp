@@ -397,7 +397,7 @@ int VectorMatrixBind::newindex(lua_State *L) {
   try {
     (*m2.m1).set_value(*pos, polar ? v->getAbs() : v->getX());
     (*m2.m2).set_value(*pos, polar ? v->getDeg() : v->getY());
-  } catch (runtime_error e) {
+  } catch (const runtime_error &e) {
     luaL_error(L, e.what());
   }
 
@@ -796,8 +796,8 @@ int VectorMatrixBind::tostring(lua_State *L) {
   // parameters;
   //      make sure we don't crash.
   //
-  const VectorMatrix &me = *VectorMatrix::instance(L, 1);
-  if (!&me) {
+  const VectorMatrix *p = VectorMatrix::instance(L, 1);
+  if (!p) {
     throw E_LOG_USAGE("Bad parameter: %s",
                       L_typename(1)); // internal bug or deliberate hack attempt
   }
@@ -808,7 +808,7 @@ int VectorMatrixBind::tostring(lua_State *L) {
   // for doing it.
   //
   stringstream ss;
-  me.asString(ss, decs);
+  p->asString(ss, decs);
 
   lua_pushstring(L, ss.str().c_str());
   return 1;

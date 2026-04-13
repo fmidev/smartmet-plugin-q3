@@ -31,7 +31,7 @@ MQD_Matrix::MQD_Matrix(const MQD_Data *data_, const JDay &time,
 /*
  * Get a certain value from the matrix.
  */
-/*virtual*/ float MQD_Matrix::get_value_n(offset_t n) const throw() {
+/*virtual*/ float MQD_Matrix::get_value_n(offset_t n) const {
   return tile.getPtr()[n]; // straight through
 }
 
@@ -39,7 +39,7 @@ MQD_Matrix::MQD_Matrix(const MQD_Data *data_, const JDay &time,
  * Set a certain value
  */
 #ifdef METQU
-/*virtual*/ void MQD_Matrix::set_value_n(offset_t n, float v) throw() {
+/*virtual*/ void MQD_Matrix::set_value_n(offset_t n, float v) {
   assert(!isReadOnly()); // upper level should have checked
 
   tile.getPtr()[n] = v;
@@ -49,7 +49,7 @@ MQD_Matrix::MQD_Matrix(const MQD_Data *data_, const JDay &time,
 /*
  * Get an SSE aligned pointer for reading the matrix.
  */
-/*virtual*/ const float *MQD_Matrix::getData() const throw() {
+/*virtual*/ const float *MQD_Matrix::getData() const {
   return tile.getPtr(); // SSE aligned
 }
 
@@ -57,7 +57,7 @@ MQD_Matrix::MQD_Matrix(const MQD_Data *data_, const JDay &time,
  * Get an SSE aligned pointer for writing the matrix.
  */
 #ifdef METQU
-/*virtual*/ float *MQD_Matrix::getData() throw() {
+/*virtual*/ float *MQD_Matrix::getData() {
   assert(!isReadOnly()); // upper level should have checked
 
   return tile.getPtr(); // SSE aligned

@@ -28,6 +28,7 @@
 #include <cstring>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 using namespace std;
 
@@ -143,20 +144,20 @@ void SyslogLogger::log(enum category cat, const char *file, unsigned line,
   string tmp = string_fmt("[%lld]\n", (long long)id);
   size_t len = msg_len + 1 + tmp.length();
 
-  char buf[len + 1];
+  std::vector<char> buf(len + 1);
   {
-    memcpy(buf, msg, msg_len);
+    memcpy(buf.data(), msg, msg_len);
     buf[msg_len] = ' ';
-    strcpy(buf + msg_len + 1, tmp.c_str()); // adds the terminating '\0'
+    strcpy(buf.data() + msg_len + 1, tmp.c_str()); // adds the terminating '\0'
 
     // Formatter like text can cause crash (e.g. s="some string" return
     // string.gsub(s,"^%s*(.-)%s*$", "%1")). Just replace all '%' with '?'
     //
-    char *p = buf;
-    while (p = strchr(p, '%')) {
+    char *p = buf.data();
+    while ((p = strchr(p, '%'))) {
       *p++ = '?';
     }
 
-    syslog(prio, buf); // atomic
+    syslog(prio, buf.data()); // atomic
   }
 }

@@ -185,6 +185,10 @@ public:
    * This is used for making a roll-around iterator out of a linear one
    * (or vice versa).
    */
+  ChainIterator(const ChainIterator &o)
+      : chunks(o.chunks), chunk_n(o.chunk_n), inner_n(o.inner_n),
+        is_closed(o.is_closed) {}
+
   ChainIterator(const ChainIterator &o, bool is_closed_, int step = 0)
       : chunks(o.chunks), chunk_n(o.chunk_n), inner_n(o.inner_n),
         is_closed(is_closed_) {
@@ -198,8 +202,7 @@ public:
    * have. Compiler cannot know it is okay to share the reference with other
    * copies (because we use this in such way).
    */
-  ChainIterator &operator=(ChainIterator &o) {
-    chunks = o.chunks;
+  ChainIterator &operator=(const ChainIterator &o) {
     chunk_n = o.chunk_n;
     inner_n = o.inner_n;
     is_closed = o.is_closed;
@@ -1161,7 +1164,7 @@ bool Labelizer::ChainChunk::intersects(const TiltedRect &tr,
  * that is calling us.
  *
  * Note: Marking 'const' would require a separate 'const iterator' to be
- *       arranged. Mañana.. (TBD)
+ *       arranged. Maï¿½ana.. (TBD)
  */
 bool Labelizer::Chain::intersects(const PointAndVector &v) /*const*/ {
 

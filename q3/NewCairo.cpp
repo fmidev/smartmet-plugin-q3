@@ -126,6 +126,7 @@ static int image_surface(lua_State *L) {
     break;
   case CAIRO_STATUS_NO_MEMORY:
     luaL_error(L, "out of memory");
+    [[fallthrough]];
   case CAIRO_STATUS_INVALID_FORMAT:
   default:
     luaL_error(L, "internal error: %d", (int)st);
@@ -169,6 +170,7 @@ static int image_surface_from_png(lua_State *L) {
       throw out_of_memory();
     case CAIRO_STATUS_INVALID_FORMAT:
       luaL_error(L, "Unknown format for: %s", fn);
+      [[fallthrough]];
     default:
       luaL_error(L, "unexpected error: %d", (int)st);
     }

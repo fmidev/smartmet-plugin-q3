@@ -47,21 +47,21 @@ public:
 
   /*virtual*/ ~SQD_Matrix();
 
-  /*virtual*/ float get_value_n(offset_t n) const throw();
+  /*virtual*/ float get_value_n(offset_t n) const;
 
 #ifdef METQU
-  /*virtual*/ void set_value_n(offset_t n, float v) throw();
+  /*virtual*/ void set_value_n(offset_t n, float v);
 #else
-  /*virtual*/ void set_value_n(offset_t n, float v) throw() {
+  /*virtual*/ void set_value_n(offset_t n, float v) {
     throw E_LOG_BUG0("Trying to write an SQD_Matrix");
   }
 #endif
 
-  /*virtual*/ const float *getData() const throw() {
+  /*virtual*/ const float *getData() const {
     return 0; /* no SSE compatible block */
   }
 
-  /*virtual*/ float *getData() throw() {
+  /*virtual*/ float *getData() {
 #ifdef METQU
     assert(!isReadOnly()); // upper levels should have taken care
     return 0; // no SSE compatible block (always use 'get_value_n()')

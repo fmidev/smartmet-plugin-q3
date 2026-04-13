@@ -71,14 +71,14 @@ public:
   SubMatrix(Matrix &m_, const MatrixPos &window_size_);
   /*virtual*/ ~SubMatrix();
 
-  /*virtual*/ float get_value_n(offset_t n) const throw();
-  /*virtual*/ void set_value_n(offset_t n, float v) throw();
+  /*virtual*/ float get_value_n(offset_t n) const;
+  /*virtual*/ void set_value_n(offset_t n, float v);
 
   /*
    * Returning nullptr here means we won't be used by SSE. That is quite fine.
    */
-  /*virtual*/ const float *getData() const throw() { return 0; }
-  /*virtual*/ float *getData() throw() {
+  /*virtual*/ const float *getData() const { return 0; }
+  /*virtual*/ float *getData() {
     assert(false); // upper level should have checked
     return 0;
   }

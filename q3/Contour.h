@@ -46,6 +46,7 @@ struct Point {
   Point() : x(0.0), y(0.0) {}
   Point(double x_, double y_) : x(x_), y(y_) {}
   Point(const Point &o) : x(o.x), y(o.y) {}
+  Point &operator=(const Point &) = default;
 
   Point operator+(const Point &o) const { return Point(x + o.x, y + o.y); }
   Point operator-(const Point &o) const { return Point(x - o.x, y - o.y); }

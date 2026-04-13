@@ -29,7 +29,9 @@ LuaNew_ID Matrix_bind::ID;
 struct MatrixMethodNames : public MethodNames {
     MatrixMethodNames() {
         static volatile unsigned initialized;    // = 0
-        if (initialized++) throw runtime_error( "There should be only one MatrixMethodNames" );
+        unsigned was = initialized;
+        initialized = initialized + 1;
+        if (was) throw runtime_error( "There should be only one MatrixMethodNames" );
 
         map( "translate",			Matrix::translate );
         map( "scale",				Matrix::translate );

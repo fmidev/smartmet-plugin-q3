@@ -69,7 +69,7 @@ static bool file_mask_match(const char *mask, const char *fn) {
         r += 4; // skip "/**/"
         continue;
       }
-    // carry-through
+      [[fallthrough]];
     default:
       if ((*r == '?') || (*p == *r)) {
         r++;
@@ -167,7 +167,7 @@ bool Bz2_Tracker::update_from_cache(set<string> &seen_already) throw() {
   const char *id = id_s.c_str(); // <basepath>**/<filename>
 
   unsigned count = 0;
-  uint64_t t0 = now_ms();
+  uint64_t t0 = now_ms(); (void)t0;
 
   {
     ClaimMutex lock(cache->mapping_m);

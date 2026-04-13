@@ -76,7 +76,7 @@ private:
                bool &exact_level);
 
   void setIter_exact(NFmiFastQueryInfo &fi, const JDay &vt, const NA_Level &lev,
-                     const NA_Param &param) throw();
+                     const NA_Param &param);
 
 #ifdef METQU
   static NFmiQueryData *new_qd(const NA_Info &info,

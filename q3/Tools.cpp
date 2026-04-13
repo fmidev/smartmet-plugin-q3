@@ -9,6 +9,7 @@
 #include <cstring>
 #include <float.h>
 #include <math.h>
+#include <vector>
 
 #ifdef UNIX
 #include <errno.h>
@@ -401,8 +402,8 @@ string_or_null latin1_to_utf8(const char *latin1) {
 
   // At most, the lenght of 's' is triple as UTF-8 (and the terminating '\0')
   //
-  char buf[n * 3 + 1];
-  char *r = buf;
+  std::vector<char> buf(n * 3 + 1);
+  char *r = buf.data();
 
   for (const unsigned char *p = (const unsigned char *)latin1; *p; p++) {
     unsigned u = latin1_to_utf8(*p);
@@ -423,7 +424,7 @@ string_or_null latin1_to_utf8(const char *latin1) {
   }
   *r = '\0';
 
-  return buf; // makes a copy
+  return buf.data(); // makes a copy
 }
 
 /*

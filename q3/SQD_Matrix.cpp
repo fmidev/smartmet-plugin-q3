@@ -174,7 +174,7 @@ SQD_Matrix::~SQD_Matrix() {
 
 /*
  */
-float SQD_Matrix::get_value_n(offset_t n) const throw() {
+float SQD_Matrix::get_value_n(offset_t n) const {
   fi->LocationIndex(n);
   float v = fi->FloatValue();
 
@@ -252,7 +252,7 @@ float SQD_Matrix::get_value_n(offset_t n) const throw() {
 /*
  */
 #ifdef METQU
-void SQD_Matrix::set_value_n(offset_t n, float v) throw() {
+void SQD_Matrix::set_value_n(offset_t n, float v) {
   assert(!isReadOnly()); // upper levels should have checked
 
   fi->LocationIndex(n);

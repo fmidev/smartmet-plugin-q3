@@ -41,7 +41,9 @@ static ExtendConverter conv_extend;
 struct PathMethodNames : public MethodNames {
   PathMethodNames() {
     static volatile unsigned initialized; // = 0
-    if (initialized++)
+    unsigned was = initialized;
+    initialized = initialized + 1;
+    if (was)
       throw runtime_error("There should be only one PathMethodNames");
 
     // map( "set_matrix",		        Path::set_matrix );
