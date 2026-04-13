@@ -16,7 +16,7 @@
  */
 template <class T> class Array2D {
 public:
-  Array2D<T>(const MatrixSize &gs)
+  Array2D(const MatrixSize &gs)
       : arr(std::vector<T>(gs.getN())), top(gs.getTop()), width(gs.getXS()) {}
 
   // Note: 'std::vector' gives null references if we get out of range

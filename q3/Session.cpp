@@ -144,7 +144,7 @@ static unsigned char latlon_chunk[] =
  * NOTE: All matrices produced are getting 'UNIT_UNKNOWN' which makes them
  * unsuitable to be used in interpolations.
  */
-static int new_ApiMatrix(lua_State *L) throw() {
+static int new_ApiMatrix(lua_State *L) {
 
   proto(L, "MatrixPos, [number|Vector|true], [string], [string]");
 

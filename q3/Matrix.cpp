@@ -312,12 +312,12 @@ int MatrixPos::new_MatrixPos( lua_State *L ) {
 * Output the object, when returned from a script.
 */
 int MatrixPosBind::tostring( lua_State *L ) {
-    const MatrixPos &me= * MatrixPos::instance(L,1);
-    if (!&me) {
+    const MatrixPos *p= MatrixPos::instance(L,1);
+    if (!p) {
         throw E_LOG_USAGE( "Bad parameter: %s", L_typename(1) );    // internal bug or deliberate hack attempt
     }
 
-    lua_pushfstring( L, "%d,%d", (int) me.getX(), (int) me.getY() );
+    lua_pushfstring( L, "%d,%d", (int) p->getX(), (int) p->getY() );
     return 1;
 }
 
@@ -387,10 +387,11 @@ void MatrixSizeBind::setup( lua_State *L ) {
 * Output the object, when returned from a script.
 */
 int MatrixSizeBind::tostring( lua_State *L ) {
-    const MatrixSize &me= * MatrixSize::instance(L,1);
-    if (!&me) {
+    const MatrixSize *p= MatrixSize::instance(L,1);
+    if (!p) {
         throw E_LOG_USAGE( "Bad parameter: %s", L_typename(1) );    // internal bug or deliberate hack attempt
     }
+    const MatrixSize &me= *p;
 
     MatrixPos top= me.getTop();
     MatrixPos bottom= me.getBottom();
@@ -1801,12 +1802,12 @@ int MatrixBind::tostring( lua_State *L ) {
     // Note: Malign client scripts can call this function with surprising parameters;
     //      make sure we don't crash.
     //
-    const Matrix &me= *Matrix::instance(L,1);
-    if (!&me) {
+    const Matrix *p= Matrix::instance(L,1);
+    if (!p) {
         throw E_LOG_USAGE( "Bad parameter (expecting matrix): %s", L_typename(1) );    // internal bug or deliberate hack attempt
     }
 
-    me.push_tostring( L );
+    p->push_tostring( L );
     return 1;
 }
 

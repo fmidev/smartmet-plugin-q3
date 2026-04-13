@@ -43,9 +43,6 @@ INCLUDES := -I$(SUBNAME) $(INCLUDES)
 
 .PHONY: test rpm
 
-test:
-	cd test && $(MAKE) test
-
 # The rules
 
 all: objdir $(LIBFILE)
@@ -90,5 +87,8 @@ obj/%.o: %.cpp $(LCHS)
 
 q3/%.lch: lua/%.lua
 	luajit -b $< - | luajit bin2c.lua -o $@
+
+test:
+	cd test && $(MAKE) test
 
 -include $(wildcard obj/*.d)

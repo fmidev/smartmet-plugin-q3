@@ -200,6 +200,7 @@ public:
   string_or_null() : std::string(""), is_null(true) {}
   string_or_null(const char *s) : std::string(s ? s : ""), is_null(s == 0) {}
   string_or_null(const std::string &s) : std::string(s), is_null(false) {}
+  string_or_null(const string_or_null &o) : std::string(o), is_null(o.is_null) {}
 
   const char *c_str() const { return is_null ? 0 : std::string::c_str(); }
 
