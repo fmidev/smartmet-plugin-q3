@@ -1,0 +1,1 @@
+GET /q3?code=local%20m%3Dmatrix%28xy%283%2C3%29%29%20for%20p%2C_%20in%20points%28m%29%20do%20m%5Bp%5D%3D%28p.x%2B1%29%2A%28p.y%2B1%29%20end%20return%20sqrt%28m%29&decimals=4 HTTP/1.0

@@ -1,0 +1,1 @@
+GET /q3?code=return%20string.format%28%22%25.1f%22%2C%20distance_km%28latlon%2860%2C24%29%2C%20latlon%2861%2C25%29%29%29 HTTP/1.0

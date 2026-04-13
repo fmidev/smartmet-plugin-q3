@@ -1,0 +1,1 @@
+GET /q3?code=return%20HARM%7Bhybrid%3D65%7D.T&decimals=1&gridsize=3%2C3&projection=stereographic%2C20%2C90%2C60%3A24.9%2C60%2C25.1%2C61.1&validtime=201705120100 HTTP/1.0

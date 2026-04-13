@@ -1,0 +1,1 @@
+GET /q3?code=return%20EC.T&decimals=1&gridsize=5%2C6&projection=stereographic%2C20%2C90%2C60%3A6%2C51.3%2C49%2C70.2&validtime=200808051200 HTTP/1.0
