@@ -15,6 +15,7 @@
 #include "Tools.h"
 
 #include <cassert>
+#include <climits>
 
 using namespace std;
 
