@@ -102,7 +102,7 @@ public:
   /*virtual*/ const NA_Data *getData() const { return qd; }
 
   /*virtual*/ string_or_null getSource() const {
-    return td ? td->getSource() : 0;
+    return td ? td->getSource() : string_or_null();
   }
 
   /*virtual*/ const NA_Level &getDefaultLevel() const { return def_level; }
