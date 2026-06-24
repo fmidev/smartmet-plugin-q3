@@ -8,7 +8,7 @@ License: MIT
 Group: SmartMet/Plugins
 URL: https://github.com/fmidev/smartmet-plugin-q3
 Vendor: Finnish Meteorological Institute
-Source: %{name}.tgz
+Source0: %{name}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 # https://fedoraproject.org/wiki/Changes/Broken_RPATH_will_fail_rpmbuild
