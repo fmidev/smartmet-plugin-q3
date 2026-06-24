@@ -2,7 +2,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet q3 plugin
 Name: %{SPECNAME}
-Version: 25.9.30
+Version: 26.6.24
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -23,23 +23,23 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires: rpm-build
 BuildRequires: gcc-c++
 BuildRequires: make
-BuildRequires: proj95-devel >= 9.5.1
+BuildRequires: proj97-devel >= 9.5.1
 BuildRequires: luajit-devel >= 2.1.0
 BuildRequires: %{smartmet_boost}-devel
 BuildRequires: bzip2-devel >= 1.0.6
 BuildRequires: libpng-devel >= 1.5.13
 BuildRequires: libjpeg-turbo-devel >= 1.2.90
-BuildRequires: smartmet-library-tron-devel >= 25.2.18
-BuildRequires: smartmet-library-spine-devel >= 25.9.16
-Requires: proj95 >= 9.5.1
+BuildRequires: smartmet-library-tron-devel >= 26.2.4
+BuildRequires: smartmet-library-spine-devel >= 26.6.24
+Requires: proj97 >= 9.5.1
 Requires: luajit >= 2.1.0
 Requires: bzip2-libs >= 1.0.6
 Requires: libpng >= 1.5.13
 Requires: libjpeg-turbo >= 1.2.90
-Requires: smartmet-library-newbase >= 25.3.20
-Requires: smartmet-library-tron >= 25.2.18
-Requires: smartmet-library-spine >= 25.9.16
-Requires: smartmet-server >= 25.9.9
+Requires: smartmet-library-newbase >= 26.6.24
+Requires: smartmet-library-tron >= 26.2.4
+Requires: smartmet-library-spine >= 26.6.24
+Requires: smartmet-server >= 26.6.24
 Obsoletes: fmi-q3-lib
 Obsoletes: fmi-q3-config
 Obsoletes: fmi-q3-brainstorm
@@ -74,6 +74,9 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/smartmet/plugins/q3plugin.conf
 
 %changelog
+* Wed Jun 24 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.6.24-1.fmi
+- Mass rebuild
+- Use PROJ 9.7
 * Wed Apr  2 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 25.9.30-1.fmi
 - Refactored build to use Makefile instead of scons
 - Merged all source into single q3/ directory
