@@ -29,6 +29,7 @@ BuildRequires: %{smartmet_boost}-devel
 BuildRequires: bzip2-devel >= 1.0.6
 BuildRequires: libpng-devel >= 1.5.13
 BuildRequires: libjpeg-turbo-devel >= 1.2.90
+BuildRequires: smartmet-library-macgyver-devel >= 26.6.26
 BuildRequires: smartmet-library-tron-devel >= 26.2.4
 BuildRequires: smartmet-library-spine-devel >= 26.6.24
 Requires: proj97 >= 9.5.1
