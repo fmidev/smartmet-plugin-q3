@@ -9,6 +9,8 @@
 #include "HealthCheck.h"
 #include "Tools.h"
 
+#include <macgyver/ThreadName.h>
+
 #include <stdexcept>
 #include <string>
 
@@ -468,6 +470,7 @@ HealthCheck::HealthCheck(unsigned period_ms_, const char *conf)
 /*
  */
 void *HealthCheck::thread(void *me_v) {
+  Fmi::set_thread_name("q3-health");
   const HealthCheck &my = *((const HealthCheck *)me_v);
 
   // Log one-time values here (number of CPU cores, physical memory)

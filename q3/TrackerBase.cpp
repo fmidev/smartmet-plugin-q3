@@ -7,6 +7,8 @@
  */
 #include "TrackerBase.h"
 #include "NA_Data.h"
+
+#include <macgyver/ThreadName.h>
 #include "NA_Level.h"
 #include "Tools.h"
 
@@ -81,6 +83,7 @@ TrackerBase::~TrackerBase() {
  *   (http://www.zeromq.org).   -- AKa 24-Nov-2009
  */
 void *TrackerBase::polling_thread(void *me_v) {
+  Fmi::set_thread_name("q3-poll");
   TrackerBase *my = (TrackerBase *)me_v;
 
   // Simple map to avoid handling the same filename twice
