@@ -2,7 +2,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet q3 plugin
 Name: %{SPECNAME}
-Version: 26.6.26
+Version: 26.7.13
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -75,6 +75,13 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/smartmet/plugins/q3plugin.conf
 
 %changelog
+* Mon Jul 13 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.7.13-1.fmi
+- Register the newcairo module opener in package.preload so that require
+  resolves it in-process instead of via the dlsym-based C loader. This avoids
+  taking glibc's dynamic-loader lock (_dl_load_lock) on every request; a Lua
+  error unwinding out of that dlsym could abandon the recursive loader lock and
+  deadlock the whole server
+
 * Fri Jun 26 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> 26.6.26-1.fmi
 - Thread naming: Named the health-check and tracker polling threads
 

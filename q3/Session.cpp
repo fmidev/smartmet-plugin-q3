@@ -38,6 +38,12 @@
 
 #include "Q3Engine.h"
 
+// Entry point of the baked-in 'newcairo' C module (defined in NewCairo.cpp).
+// Registered into 'package.preload' so that a script's `require "newcairo"` is
+// resolved in-process instead of via the dlsym()-based C loader; see the
+// registration in Session::init() for the rationale.
+extern "C" int luaopen_newcairo(lua_State *L);
+
 #define UNIT_UNKNOWN NA_Param::UNIT_UNKNOWN
 
 #ifdef CONFIG_BINARY_OUTPUT_ENABLED
@@ -815,6 +821,36 @@ int Session::init(lua_State *L) {
   //
   lua_pushcfunction(L, Logger::LOG_);
   lua_setglobal(L, "LOG");
+
+  // Pre-register baked-in C module openers in 'package.preload'.
+  //
+  // Without this, a script's `require "newcairo"` finds nothing in
+  // 'package.loaded' (the state is rebuilt per request) and falls through to
+  // Lua's C loader, which resolves the module with dlsym(). dlsym() takes
+  // glibc's recursive dynamic-loader lock (_dl_load_lock) on every request. If
+  // a Lua error is thrown and unwinds out through that dlsym() frame (e.g. the
+  // kill-time hook, or any script/data error), glibc's unlock never runs and
+  // the recursive loader lock is abandoned owner-held-but-idle, deadlocking
+  // every other thread that touches the dynamic linker.
+  //
+  // Registering the opener in 'package.preload' makes `require` resolve it via
+  // the in-process preload loader (no dlsym, no loader lock), while staying
+  // lazy: the opener still runs only when the module is actually required.
+  //
+  // Done before prepare.lua replaces the global 'package' with a read-only
+  // proxy; 'require' uses the real package table regardless of that proxy.
+  {
+    lua_getglobal(L, "package"); // [package]
+    if (lua_istable(L, -1)) {
+      lua_getfield(L, -1, "preload"); // [package][preload]
+      if (lua_istable(L, -1)) {
+        lua_pushcfunction(L, luaopen_newcairo);
+        lua_setfield(L, -2, "newcairo"); // package.preload.newcairo = opener
+      }
+      lua_pop(L, 1); // preload
+    }
+    lua_pop(L, 1); // package
+  }
 
   // Must also stamp this state with a unique id (keeps the various log messages
   // together in distributed logs)
