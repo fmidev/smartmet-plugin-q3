@@ -3,7 +3,7 @@
 Summary: SmartMet q3 plugin
 Name: %{SPECNAME}
 Version: 26.7.13
-Release: 1%{?dist}.fmi
+Release: 2%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
 URL: https://github.com/fmidev/smartmet-plugin-q3
@@ -29,18 +29,18 @@ BuildRequires: %{smartmet_boost}-devel
 BuildRequires: bzip2-devel >= 1.0.6
 BuildRequires: libpng-devel >= 1.5.13
 BuildRequires: libjpeg-turbo-devel >= 1.2.90
-BuildRequires: smartmet-library-macgyver-devel >= 26.6.26
+BuildRequires: smartmet-library-macgyver-devel >= 26.7.9
 BuildRequires: smartmet-library-tron-devel >= 26.2.4
-BuildRequires: smartmet-library-spine-devel >= 26.6.24
+BuildRequires: smartmet-library-spine-devel >= 26.7.10
 Requires: proj97 >= 9.5.1
 Requires: luajit >= 2.1.0
 Requires: bzip2-libs >= 1.0.6
 Requires: libpng >= 1.5.13
 Requires: libjpeg-turbo >= 1.2.90
-Requires: smartmet-library-newbase >= 26.6.24
+Requires: smartmet-library-newbase >= 26.6.26
 Requires: smartmet-library-tron >= 26.2.4
-Requires: smartmet-library-spine >= 26.6.24
-Requires: smartmet-server >= 26.6.24
+Requires: smartmet-library-spine >= 26.7.10
+Requires: smartmet-server >= 26.7.9
 Obsoletes: fmi-q3-lib
 Obsoletes: fmi-q3-config
 Obsoletes: fmi-q3-brainstorm
@@ -75,7 +75,7 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/smartmet/plugins/q3plugin.conf
 
 %changelog
-* Mon Jul 13 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.7.13-1.fmi
+* Mon Jul 13 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.7.13-2.fmi
 - Register the newcairo module opener in package.preload so that require
   resolves it in-process instead of via the dlsym-based C loader. This avoids
   taking glibc's dynamic-loader lock (_dl_load_lock) on every request; a Lua
