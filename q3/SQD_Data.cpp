@@ -1176,7 +1176,7 @@ SQD_Data::push_NativeMatrix(lua_State *L, const JDay &vt, const NA_Level &lev,
                             const Projection *target_proj,
                             const MatrixPos *target_gs, bool *target_ready,
                             const DataIdList *dataIds) CONST_IF_SERVER
-    throw(/*E_BUG*/) {
+{
   CONST_IF_SERVER Matrix *m;
 
   //---
@@ -1355,7 +1355,7 @@ SQD_Data::push_NativeMatrix_e(lua_State *L, const JDay &vt, const NA_Level &lev,
                               const Projection *target_proj,
                               const MatrixPos *target_gs, bool *target_ready,
                               const DataIdList *dataIds_) CONST_IF_SERVER
-    throw(/*E_BUG*/) {
+{
   try {
 
     // 07-Apr-2015 PKi: Handling point data (e.g. observations) too
