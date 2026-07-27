@@ -29,6 +29,7 @@ BuildRequires: %{smartmet_boost}-devel
 BuildRequires: bzip2-devel >= 1.0.6
 BuildRequires: libpng-devel >= 1.5.13
 BuildRequires: libjpeg-turbo-devel >= 1.2.90
+BuildRequires: cairo-devel
 BuildRequires: smartmet-library-macgyver-devel >= 26.7.9
 BuildRequires: smartmet-library-tron-devel >= 26.2.4
 BuildRequires: smartmet-library-spine-devel >= 26.7.10
@@ -37,6 +38,7 @@ Requires: luajit >= 2.1.0
 Requires: bzip2-libs >= 1.0.6
 Requires: libpng >= 1.5.13
 Requires: libjpeg-turbo >= 1.2.90
+Requires: cairo
 Requires: smartmet-library-newbase >= 26.6.26
 Requires: smartmet-library-tron >= 26.2.4
 Requires: smartmet-library-spine >= 26.7.10
