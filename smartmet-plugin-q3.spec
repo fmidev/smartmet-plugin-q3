@@ -53,6 +53,7 @@ Obsoletes: fmi-q3-brainstorm
 #TestRequires: smartmet-library-tron >= 26.2.4
 #TestRequires: smartmet-library-macgyver >= 26.7.9
 #TestRequires: smartmet-library-newbase >= 26.6.26
+#TestRequires: smartmet-test-data
 #TestRequires: cairo
 #TestRequires: libjpeg-turbo >= 1.2.90
 #TestRequires: libpng >= 1.5.13
