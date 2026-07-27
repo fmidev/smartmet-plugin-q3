@@ -56,7 +56,7 @@ Obsoletes: fmi-q3-brainstorm
 #TestRequires: libjpeg-turbo >= 1.2.90
 #TestRequires: libpng >= 1.5.13
 #TestRequires: bzip2-libs >= 1.0.6
-#TestRequires: luajit >= 2.1.0
+#TestRequires: luajit-devel >= 2.1.0
 #TestRequires: proj97 >= 9.7.0
 
 %description
