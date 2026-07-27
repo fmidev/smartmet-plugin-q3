@@ -23,7 +23,7 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires: rpm-build
 BuildRequires: gcc-c++
 BuildRequires: make
-BuildRequires: proj97-devel >= 9.5.1
+BuildRequires: proj97-devel >= 9.7.0
 BuildRequires: luajit-devel >= 2.1.0
 BuildRequires: %{smartmet_boost}-devel
 BuildRequires: bzip2-devel >= 1.0.6
@@ -46,6 +46,18 @@ Requires: smartmet-server >= 26.7.9
 Obsoletes: fmi-q3-lib
 Obsoletes: fmi-q3-config
 Obsoletes: fmi-q3-brainstorm
+
+#TestRequires: smartmet-server >= 26.7.9
+#TestRequires: smartmet-library-spine >= 26.7.10
+#TestRequires: smartmet-library-tron >= 26.2.4
+#TestRequires: smartmet-library-macgyver >= 26.7.9
+#TestRequires: smartmet-library-newbase >= 26.6.26
+#TestRequires: cairo
+#TestRequires: libjpeg-turbo >= 1.2.90
+#TestRequires: libpng >= 1.5.13
+#TestRequires: bzip2-libs >= 1.0.6
+#TestRequires: luajit >= 2.1.0
+#TestRequires: proj97 >= 9.7.0
 
 %description
 SmartMet q3 plugin
