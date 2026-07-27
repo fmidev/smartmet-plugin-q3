@@ -57,7 +57,10 @@ public:
       ,
       const Projection *target_proj = nullptr,
       const MatrixPos *target_gs = nullptr, bool *target_ready = nullptr,
-      const DataIdList *dataIds = nullptr) CONST_IF_SERVER throw();
+      // NOTE: must NOT be noexcept: on this LuaJIT build luaL_error (called
+      // on data-retrieval errors) unwinds the C++ stack via C++ exceptions,
+      // and escaping a noexcept function would abort via std::terminate.
+      const DataIdList *dataIds = nullptr) CONST_IF_SERVER;
 
   static NA_Info read_info(const char *fn);
 
@@ -100,7 +103,10 @@ private:
       ,
       const Projection *target_proj = nullptr,
       const MatrixPos *target_gs = nullptr, bool *target_ready = nullptr,
-      const DataIdList *dataIds = nullptr) CONST_IF_SERVER throw();
+      // NOTE: must NOT be noexcept: on this LuaJIT build luaL_error (called
+      // on data-retrieval errors) unwinds the C++ stack via C++ exceptions,
+      // and escaping a noexcept function would abort via std::terminate.
+      const DataIdList *dataIds = nullptr) CONST_IF_SERVER;
 
   //
   // 22-Sep-2011 PKi: For fetching cross using newbase
