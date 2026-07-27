@@ -1209,6 +1209,11 @@ string_or_null Session::result_(lua_State *L, ostream &os, unsigned i) {
   size_t len;
   const char *s;
 
+  // Most return values are serialized as JSON (json.lua for tables/strings,
+  // native rendering for scalars), so report 'application/json'. The special
+  // cases below (Lua-mode 'nil', unsupported types) override this to text.
+  string_or_null result_mime = MIME_JSON;
+
   switch (lua_type(L, i)) {
   case LUA_TNUMBER:
     // Converts [i] into a string in-place (we're fine with that)
@@ -1219,6 +1224,9 @@ string_or_null Session::result_(lua_State *L, ostream &os, unsigned i) {
   case LUA_TNIL:
     s = jsonp_mode ? "null" /*JSON*/ : "nil" /*Lua*/;
     len = strlen(s);
+    if (!jsonp_mode) {
+      result_mime = nullptr; // 'nil' is not valid JSON; treat as plain text
+    }
     break;
 
   case LUA_TBOOLEAN:
@@ -1251,6 +1259,7 @@ string_or_null Session::result_(lua_State *L, ostream &os, unsigned i) {
   default:             // function etc.
     s = L_typename(i); // give something (calling 'tostring()' would give more)
     len = strlen(s);
+    result_mime = nullptr; // bare type name, not JSON
 
     if (jsonp_mode) {
       luaL_error(L, "Trying to output '%s' using JSONP. Cannot do that.", s);
@@ -1260,5 +1269,5 @@ string_or_null Session::result_(lua_State *L, ostream &os, unsigned i) {
 
   os.write(s, len);
 
-  return nullptr; // just text
+  return result_mime;
 }

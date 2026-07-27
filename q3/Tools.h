@@ -47,6 +47,7 @@
 const float INF_F = FLT_MAX; // = FLT_MAX (not quite infinity, but close by)
 
 const char *const MIME_TEXT_UTF8 = "text/html; charset=UTF-8";
+const char *const MIME_JSON = "application/json; charset=UTF-8";
 
 /*---=== 'find' to C++ vector iterators ===---*/
 

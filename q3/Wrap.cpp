@@ -265,7 +265,12 @@ int LuaWrapper::run2_(lua_State *L) {
   for (unsigned i = 1; i <= retvals; i++) {
     string_or_null mime2 = Q3Engine::result_(L, ss, i);
 
-    if ((retvals > 1) && mime2.c_str() && (mime2 != MIME_TEXT_UTF8)) {
+    // Text and JSON can be joined (by newline); binary (images, matrices)
+    // cannot be combined with anything else.
+    bool is_binary = mime2.c_str() && (mime2 != MIME_TEXT_UTF8) &&
+                     (mime2 != MIME_JSON);
+
+    if ((retvals > 1) && is_binary) {
       luaL_error(L, "Cannot return multiple values if one is non-text");
     }
 
@@ -273,7 +278,7 @@ int LuaWrapper::run2_(lua_State *L) {
       mime = mime2;
     }
 
-    if (mime == MIME_TEXT_UTF8) { // newline between multiple return values
+    if (!is_binary) { // newline between multiple return values
       ss << "\n";
     }
   }
