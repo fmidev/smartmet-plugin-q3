@@ -49,6 +49,7 @@ Obsoletes: fmi-q3-brainstorm
 
 #TestRequires: smartmet-server >= 26.7.9
 #TestRequires: smartmet-library-spine >= 26.7.10
+#TestRequires: smartmet-library-spine-plugin-test >= 26.7.10
 #TestRequires: smartmet-library-tron >= 26.2.4
 #TestRequires: smartmet-library-macgyver >= 26.7.9
 #TestRequires: smartmet-library-newbase >= 26.6.26
