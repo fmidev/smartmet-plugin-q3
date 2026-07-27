@@ -2,8 +2,8 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet q3 plugin
 Name: %{SPECNAME}
-Version: 26.7.13
-Release: 2%{?dist}.fmi
+Version: 26.7.27
+Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
 URL: https://github.com/fmidev/smartmet-plugin-q3
@@ -75,6 +75,9 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/smartmet/plugins/q3plugin.conf
 
 %changelog
+* Mon Jul 27 2026 Andris Pavēnis <andris.pavenis@fmi.fi> 26.7.27-1.fmi
+- Fix server crash on data-retrieval errors: drop noexcept from push_NativeMatrix[_e]
+
 * Mon Jul 13 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.7.13-2.fmi
 - Register the newcairo module opener in package.preload so that require
   resolves it in-process instead of via the dlsym-based C loader. This avoids
