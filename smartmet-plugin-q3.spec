@@ -2,7 +2,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet q3 plugin
 Name: %{SPECNAME}
-Version: 26.7.27
+Version: 26.8.30
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -92,6 +92,11 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/smartmet/plugins/q3plugin.conf
 
 %changelog
+* Sat Aug 30 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.8.30-1.fmi
+- Security: closed the Lua sandbox escape that allowed unauthenticated RCE.
+  The os/debug libraries are no longer registered in full (so require("os").execute
+  and require("debug").getregistry are gone); package.loaded is scrubbed, require is
+  restricted to an allowlist, and loadstring refuses precompiled bytecode.
 * Mon Jul 27 2026 Andris Pavēnis <andris.pavenis@fmi.fi> 26.7.27-1.fmi
 - Fix server crash on data-retrieval errors: drop noexcept from push_NativeMatrix[_e]
 

@@ -1,0 +1,1 @@
+GET /q3?code=local%20ok%20%3D%20pcall%28require%2C%20%22debug%22%29%20return%20%28not%20ok%20and%20debug.getregistry%3D%3Dnil%20and%20debug.getupvalue%3D%3Dnil%29%20and%20%22blocked%22%20or%20%22LEAK%22%20 HTTP/1.0

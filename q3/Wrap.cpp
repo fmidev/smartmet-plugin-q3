@@ -18,15 +18,69 @@
 
 using namespace std;
 
+// SECURITY: 'os' and 'debug' are deliberately NOT opened here in full.
+//
+// Opening them via 'luaopen_os'/'luaopen_debug' registers the complete tables
+// into both the global environment AND 'package.loaded'. Even though
+// 'prepare.lua' replaces the *global* 'os'/'debug' with restricted versions,
+// the full tables stayed reachable through 'require("os")' / 'require("debug")'
+// (which read from 'package.loaded'), giving an unauthenticated caller
+// 'os.execute', 'os.getenv', 'debug.getregistry', ... i.e. remote code
+// execution. They are now opened only long enough to harvest a handful of safe
+// functions, after which the full tables are dropped from every reachable
+// location (see restrict_dangerous_libs()).
+//
 static const luaL_Reg stdlibs[] = {
     {"", luaopen_base},                 // 'print' etc. and 'coroutine.*'
     {LUA_LOADLIBNAME, luaopen_package}, // 'require' and 'package.*'
     {LUA_TABLIBNAME, luaopen_table},    // 'table.*'
-    {LUA_OSLIBNAME, luaopen_os},        // 'os.*'
     {LUA_STRLIBNAME, luaopen_string},   // 'string.*'
     {LUA_MATHLIBNAME, luaopen_math},    // 'math.*'
-    {LUA_DBLIBNAME, luaopen_debug}, // 'debug' (only 'debug.getinfo' exposed)
     {nullptr, nullptr}};
+
+// Whitelisted members of the 'os' library. Everything else ('execute',
+// 'getenv', 'remove', 'rename', 'exit', 'tmpname', ...) is intentionally left
+// out.
+//
+static const char *const os_whitelist[] = {"clock", "date", "difftime", "time",
+                                           nullptr};
+
+// Whitelisted members of the 'debug' library. Only 'getinfo' is kept (some
+// extension modules use it and it is harmless). 'traceback' is captured
+// separately for internal error reporting but is NOT exposed to scripts.
+//
+static const char *const debug_whitelist[] = {"getinfo", nullptr};
+
+/*
+ * Build a new table on top of the stack containing only the whitelisted named
+ * fields copied from the table at 'src_index'. Missing fields are skipped.
+ */
+static void copy_whitelisted(lua_State *L, int src_index,
+                             const char *const names[]) {
+  src_index = (src_index < 0) ? lua_gettop(L) + 1 + src_index : src_index;
+  lua_newtable(L); // [.. new]
+  for (const char *const *n = names; *n; ++n) {
+    lua_getfield(L, src_index, *n); // [.. new field]
+    if (lua_isnil(L, -1))
+      lua_pop(L, 1); // field not present; skip
+    else
+      lua_setfield(L, -2, *n); // new[name] = field
+  }
+}
+
+/*
+ * package.loaded[name] = <value on top of stack>. Pops the value.
+ *
+ * Setting 'package.loaded' is what actually neutralizes 'require(name)', which
+ * resolves modules through that table (the Lua registry '_LOADED').
+ */
+static void set_package_loaded(lua_State *L, const char *name) {
+  lua_getglobal(L, "package");   // [val][package]
+  lua_getfield(L, -1, "loaded"); // [val][package][loaded]
+  lua_pushvalue(L, -3);          // [val][package][loaded][val]
+  lua_setfield(L, -2, name);     // loaded[name] = val
+  lua_pop(L, 3);                 // pop loaded, package, val
+}
 
 static /*const*/ void *REGISTRY_KEY_HOOK =
     (void *)LuaWrapper::my_hook; // unique key
@@ -38,7 +92,8 @@ LuaWrapper::LuaWrapper(bool ignore) : L(luaL_newstate()) {
   if (!L)
     throw runtime_error("out of memory");
 
-  // Open selected standard libraries
+  // Open the safe standard libraries in full ('os' and 'debug' are handled
+  // below).
   //
   for (const luaL_Reg *lib = stdlibs; lib->func; ++lib) {
     lua_pushcfunction(L, lib->func);
@@ -46,38 +101,46 @@ LuaWrapper::LuaWrapper(bool ignore) : L(luaL_newstate()) {
     lua_call(L, 1, 0);
   }
 
-  lua_getglobal(L, "debug");
-  lua_getfield(L, -1, "traceback");
-
-  lua_pushcclosure(L, my_traceback, 1 /*upvalues*/);
-  lua_insert(L, -2);
+  // --- 'os': expose only clock/date/difftime/time ---
   //
-  // [1]: 'my_traceback' function (REMAINS HERE THROUGHOUT LIFESPAN)
-  // [2]: 'debug' table
+  {
+    lua_pushcfunction(L, luaopen_os);
+    lua_pushstring(L, LUA_OSLIBNAME);
+    lua_call(L, 1, 1); // [os_full] (also set global 'os' + package.loaded.os)
 
-  L_ASSERT(lua_gettop(L) == 2);
+    copy_whitelisted(L, -1, os_whitelist); // [os_full][os_safe]
 
-// Hide rest of 'debug.*' except for 'debug.getinfo' (used by some extension
-// libraries and generally harmless)
-//
-#if 1
-  // Create a new 'debug' table with only one entry
+    lua_pushvalue(L, -1);
+    lua_setglobal(L, LUA_OSLIBNAME); // global os = os_safe ; [os_full][os_safe]
+
+    set_package_loaded(L, LUA_OSLIBNAME); // package.loaded.os = os_safe (pops)
+    lua_pop(L, 1);                         // drop os_full
+  }
+
+  // --- 'debug': expose only getinfo; capture traceback for internal use ---
   //
-  lua_newtable(L);
-  lua_getfield(L, -2, "getinfo");
-  //
-  // [-1]: 'debug.getinfo'
-  // [-2]: new empty table
-  // [-3]: 'debug' table
+  {
+    lua_pushcfunction(L, luaopen_debug);
+    lua_pushstring(L, LUA_DBLIBNAME);
+    lua_call(L, 1, 1); // [debug_full]
 
-  lua_setfield(L, -2, "getinfo");
-  //
-  // [-1]: { debug.getinfo }
-  // [-2]: 'debug' table (not needed any more)
+    // Capture the original 'debug.traceback' as an upvalue of 'my_traceback'.
+    // 'my_traceback' stays at stack slot [1] for the whole lifespan and is
+    // used as the error handler in 'run()'; it is never exposed to scripts.
+    //
+    lua_getfield(L, -1, "traceback");     // [debug_full][traceback]
+    lua_pushcclosure(L, my_traceback, 1); // [debug_full][my_traceback]
 
-  lua_setglobal(L, "debug");
-  lua_remove(L, -1);
-#endif
+    copy_whitelisted(L, -2,
+                     debug_whitelist); // [debug_full][my_traceback][debug_safe]
+
+    lua_pushvalue(L, -1);
+    lua_setglobal(L, LUA_DBLIBNAME); // global debug = debug_safe
+
+    set_package_loaded(L, LUA_DBLIBNAME); // package.loaded.debug = safe (pops)
+
+    lua_remove(L, -2); // drop debug_full ; [my_traceback]
+  }
 
   L_ASSERT(lua_gettop(L) == 1); // only 'my_traceback' is there
 

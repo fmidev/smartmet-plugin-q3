@@ -1,0 +1,1 @@
+GET /q3?code=return%20%28os.execute%3D%3Dnil%20and%20os.getenv%3D%3Dnil%20and%20os.remove%3D%3Dnil%20and%20os.exit%3D%3Dnil%29%20and%20%22blocked%22%20or%20%22LEAK%22%20 HTTP/1.0

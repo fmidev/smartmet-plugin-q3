@@ -61,6 +61,22 @@ if not METQU then
     dofile= nil
     load= nil
     loadfile= nil
+
+    -- 'loadstring' is still needed for the data-macro feature (see
+    -- 'getdatafromstring' in utilities.lua), but Lua 5.1 / LuaJIT 'loadstring'
+    -- also accepts *precompiled bytecode*, and malicious bytecode is a known
+    -- sandbox-escape / memory-corruption vector. Wrap it so that only textual
+    -- Lua source is accepted (a bytecode chunk starts with the ESC byte, 27).
+    --
+    local loadstring_orig= loadstring
+    if loadstring_orig then
+        loadstring= function( s, chunkname )
+            if type(s)=="string" and s:byte(1)==27 then
+                return nil, "loading precompiled bytecode is not allowed"
+            end
+            return loadstring_orig( s, chunkname )
+        end
+    end
 end
 
 --
@@ -339,6 +355,44 @@ package= setmetatable( {}, {
         error( "package table is read-only", 2 )    -- level that did the write
     end
 } )
+
+
+--
+-- SECURITY: sandbox 'require' and scrub 'package.loaded'
+--
+-- The C side (Wrap.cpp) already restricts the 'os' and 'debug' tables in
+-- 'package.loaded' to a few harmless functions and never opens 'io'. The
+-- following is defense-in-depth on the Lua side: it makes 'require' refuse any
+-- module that is not explicitly allowed, and clears the remaining dangerous
+-- entries from 'package.loaded' so they cannot be fetched even if a future
+-- change re-registers them.
+--
+-- Only 'newcairo' (baked-in C module, see Session.cpp package.preload) and
+-- 'proto' are legitimately required by the built-in scripts.
+--
+if not METQU then
+    local loaded= package_orig.loaded
+    if loaded then
+        loaded.io=          nil
+        loaded.coroutine=   nil
+        loaded.package=     nil
+        loaded.os=          os      -- restricted table (from above)
+        loaded.debug=       debug   -- restricted table (from above)
+    end
+
+    local require_orig= require
+    local allowed_modules= {
+        newcairo=   true,
+        proto=      true,
+    }
+
+    require= function( name, ... )
+        if not allowed_modules[name] then
+            error( "require is disabled for module: "..tostring(name), 2 )
+        end
+        return require_orig( name, ... )
+    end
+end
 
 
 --
