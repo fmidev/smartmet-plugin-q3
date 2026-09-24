@@ -1,0 +1,1 @@
+GET /q3?code=return%20%28not%20pcall%28require%2C%22io%22%29%20and%20not%20pcall%28function%28%29%20return%20io%20end%29%29%20and%20%22blocked%22%20or%20%22LEAK%22 HTTP/1.0
