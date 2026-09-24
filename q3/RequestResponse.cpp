@@ -9,6 +9,7 @@
  */
 #include "RequestResponse.hpp"
 
+#include <cctype>
 #include <string>
 
 using namespace std;
@@ -69,6 +70,29 @@ static const char *my_reader(lua_State *L, void *st_v, size_t *size) {
   return start;
 }
 
+/*
+ * A JSONP callback must be a JavaScript identifier path such as
+ * "cb" or "jQuery123.handler".
+ */
+static bool is_valid_jsonp_callback(const string &name) {
+  if (name.empty() || name.size() > 64)
+    return false;
+  bool start = true;
+  for (char c : name) {
+    const bool ident_start = isalpha((unsigned char)c) || c == '_' || c == '$';
+    if (start) {
+      if (!ident_start)
+        return false;
+      start = false;
+    } else if (c == '.') {
+      start = true;
+    } else if (!ident_start && !isdigit((unsigned char)c)) {
+      return false;
+    }
+  }
+  return !start;
+}
+
 /*---=== RequestResponse ===---*/
 
 /*
@@ -77,7 +101,11 @@ static const char *my_reader(lua_State *L, void *st_v, size_t *size) {
  */
 void RequestResponse::set_key_val(const string &key, const string &val) {
   if (key == "callback") {
-    jsonp_callback = val;
+    // SECURITY: the callback name is echoed verbatim in front of the response.
+    // Accept only a plain JavaScript identifier path; anything else disables
+    // the JSONP wrapping instead of reflecting attacker-chosen text.
+    if (is_valid_jsonp_callback(val))
+      jsonp_callback = val;
   } else if (key == "code") {
     code = val;
   } else {
@@ -129,7 +157,14 @@ void RequestResponse::set_output(unsigned resp_code, const char *mime,
 int RequestResponse::compile_code(lua_State *L, const char *block_name) {
   assert(code != nullptr);
 
+  // SECURITY: never accept precompiled bytecode from the client. LuaJIT does
+  // not verify bytecode, so a crafted chunk is a memory corruption primitive
+  // that bypasses the whole sandbox. 'lua_load()' accepts both text and binary
+  // chunks; 'lua_loadx()' with mode "t" accepts text only. The URL decoding
+  // done by 'my_reader' can produce any byte (including ESC), so the mode
+  // restriction must be applied here and not by inspecting 'code'.
+  //
   struct my_reader_st my_st(code.c_str());
 
-  return lua_load(L, my_reader, (void *)&my_st, "=code");
+  return lua_loadx(L, my_reader, (void *)&my_st, "=code", "t");
 }
