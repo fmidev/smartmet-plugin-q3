@@ -3,7 +3,7 @@
 Summary: SmartMet q3 plugin
 Name: %{SPECNAME}
 Version: 26.9.24
-Release: 1%{?dist}.fmi
+Release: 2%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
 URL: https://github.com/fmidev/smartmet-plugin-q3
@@ -92,6 +92,10 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/smartmet/plugins/q3plugin.conf
 
 %changelog
+* Thu Sep 24 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.9.24-2.fmi
+- Security: request code is loaded as text only (lua_loadx mode "t"); precompiled LuaJIT bytecode in code= bypassed the sandbox
+- Security: JSONP callback must be a JavaScript identifier path, otherwise JSONP wrapping is not applied
+
 * Thu Sep 24 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.9.24-1.fmi
 - Security: closed the Lua sandbox escape that allowed unauthenticated RCE.
   The os/debug libraries are no longer registered in full (so require("os").execute
