@@ -156,7 +156,7 @@ static int TestRising(NFmiFastQueryInfo &fi, FmiParameterName id,
         (void)n;
 #endif
         if (a != kFloatMissing) {
-          v[++found] = a;
+          v[found++] = a;
           if (found == 2) {
             if (v[1] == v[0]) { // heights should not be the same; if they are,
                                 // continue looking
