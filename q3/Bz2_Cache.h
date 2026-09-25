@@ -24,7 +24,7 @@ public:
 
   JDay get(const std::string
                &key); // no 'const' since can cause on-demand initialization
-  void set(const std::string &key, JDay ot);
+  void set(const std::string &key, const JDay& ot);
   void flush() const;
 
   bool hasCacheFile() const { return f != 0; }
@@ -33,7 +33,7 @@ private:
   friend class Bz2_Tracker;
 
   // functions
-  void write_LOCKED(const std::string &key, JDay ot);
+  void write_LOCKED(const std::string &key, const JDay& ot);
 
   // data
   Mutex mapping_m; // also protects writes to 'f'

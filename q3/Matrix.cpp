@@ -2169,7 +2169,7 @@ void Matrix::fit_from_( const Matrix &o ) {
     }
 
     Projection pr= getProjection();
-    Projection o_pr= o.getProjection();
+    const Projection& o_pr= o.getProjection();
 
     if (pr == o_pr) {
         fit_from_same_projection( o );

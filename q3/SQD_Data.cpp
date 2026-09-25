@@ -566,7 +566,7 @@ static vector<NA_Param> getParams(NFmiQueryInfo &info, bool &has_326,
   info.ResetParam();
 
   while (info.NextParam()) {
-    NFmiDataIdent id = info.Param();
+    const NFmiDataIdent& id = info.Param();
     enum FmiParameterName e = (FmiParameterName)id.GetParamIdent();
     const char *latin1_name = id.GetParamName().CharPtr();
 
@@ -1239,7 +1239,7 @@ SQD_Data::push_NativeMatrix(lua_State *L, const JDay &vt, const NA_Level &lev,
  * is returned as [nPoints,1] matrix
  */
 void pointValues(NFmiFastQueryInfo &info,
-                 const NFmiAreaFactory::return_type area,
+                 const NFmiAreaFactory::return_type& area,
                  const DataIdList *dataIds, bool retMissing, MemMatrix &m,
                  bool soundingData) {
   MatrixPos::offset_t n = 0;

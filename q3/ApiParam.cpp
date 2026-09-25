@@ -24,8 +24,8 @@ using namespace std;
 /*
  * Does 'vec' have parameters with standard names 's1' and 's2'?
  */
-static bool has_by_standard_name(const std::vector<NA_Param> vec, string s1,
-                                 string s2 = "") {
+static bool has_by_standard_name(const std::vector<NA_Param>& vec, const string& s1,
+                                 const string& s2 = "") {
   assert(s1 != "");
 
   bool s1_match = false;
