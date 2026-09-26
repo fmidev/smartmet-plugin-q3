@@ -109,10 +109,8 @@ static unsigned char type_chunk[] =
                         static unsigned char cross_chunk[] =
 #include "cross.lch"
 
-#ifdef USE_TRON
                             static unsigned char contour_chunk[] =
 #include "contour.lch"
-#endif
 
                                 static unsigned char json_chunk[] =
 #include "json.lch"
@@ -713,7 +711,6 @@ void q3_bind(lua_State *L) {
 
   // Contouring support:
   //
-#ifdef USE_TRON
   Contour::create_mt(L);
   EdgePoint::create_mt(L);
 
@@ -735,7 +732,6 @@ void q3_bind(lua_State *L) {
   lua_setglobal(L, "LabelizerConfig");
   lua_pushcfunction(L, Contour::drawcontours);
   lua_setglobal(L, "drawcontours");
-#endif
 
   // misc:
   //
@@ -1077,9 +1073,7 @@ int Session::init(lua_State *L) {
       {util_chunk, sizeof(util_chunk)},
       {gauss_chunk, sizeof(gauss_chunk)},
       {cross_chunk, sizeof(cross_chunk)},
-#ifdef USE_TRON
       {contour_chunk, sizeof(contour_chunk)},
-#endif
       // ... add more chunks here
 
       {nullptr, 0} // end mark

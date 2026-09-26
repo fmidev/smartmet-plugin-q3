@@ -2,7 +2,7 @@ SUBNAME = q3
 SPEC = smartmet-plugin-$(SUBNAME)
 INCDIR = smartmet/plugins/$(SUBNAME)
 
-REQUIRES = geos gdal cairo configpp
+REQUIRES = gdal cairo configpp
 
 include $(shell echo $${PREFIX-/usr})/share/smartmet/devel/makefile.inc
 
@@ -10,7 +10,7 @@ FLAGS += -Wno-variadic-macros -Wno-narrowing -mfpmath=sse -msse2
 
 # Compiler options
 
-DEFINES = -DUNIX -D_REENTRANT -DSMOOTH_AND_STRETCH -DUSE_NEWBASE -DUSE_TRON -DUSE_UNSTABLE_GEOS_CPP_API
+DEFINES = -DUNIX -D_REENTRANT -DSMOOTH_AND_STRETCH -DUSE_NEWBASE
 
 INCLUDES += $(shell pkg-config --cflags-only-I luajit)
 
@@ -18,7 +18,7 @@ LIBS += -L$(libdir) \
 	$(REQUIRED_LIBS) \
 	-lsmartmet-newbase \
 	-lsmartmet-spine \
-	-lsmartmet-tron \
+	-lsmartmet-trax \
 	$(shell pkg-config --libs luajit)
 
 # What to install

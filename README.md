@@ -358,7 +358,7 @@ make clean
 make rpm     # build RPM package
 ```
 
-Dependencies: `smartmet-library-spine`, `smartmet-library-newbase`, `smartmet-library-tron`, `luajit`, `geos`, `gdal`, `cairo`, `libconfig++`, `proj`.
+Dependencies: `smartmet-library-spine`, `smartmet-library-newbase`, `smartmet-library-trax`, `luajit`, `gdal`, `cairo`, `libconfig++`, `proj`.
 
 ## Installing
 

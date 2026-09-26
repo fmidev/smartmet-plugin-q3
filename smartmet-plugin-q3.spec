@@ -31,7 +31,7 @@ BuildRequires: libpng-devel >= 1.5.13
 BuildRequires: libjpeg-turbo-devel >= 1.2.90
 BuildRequires: cairo-devel
 BuildRequires: smartmet-library-macgyver-devel >= 26.9.23
-BuildRequires: smartmet-library-tron-devel >= 26.2.4
+BuildRequires: smartmet-library-trax-devel >= 26.6.26
 BuildRequires: smartmet-library-spine-devel >= 26.9.23
 Requires: proj97 >= 9.5.1
 Requires: luajit >= 2.1.0
@@ -40,7 +40,7 @@ Requires: libpng >= 1.5.13
 Requires: libjpeg-turbo >= 1.2.90
 Requires: cairo
 Requires: smartmet-library-newbase >= 26.9.23
-Requires: smartmet-library-tron >= 26.2.4
+Requires: smartmet-library-trax >= 26.6.26
 Requires: smartmet-library-spine >= 26.9.23
 Requires: smartmet-server >= 26.9.2
 Obsoletes: fmi-q3-lib
@@ -50,7 +50,7 @@ Obsoletes: fmi-q3-brainstorm
 #TestRequires: smartmet-server >= 26.9.2
 #TestRequires: smartmet-library-spine >= 26.9.23
 #TestRequires: smartmet-library-spine-plugin-test >= 26.9.23
-#TestRequires: smartmet-library-tron >= 26.2.4
+#TestRequires: smartmet-library-trax >= 26.6.26
 #TestRequires: smartmet-library-macgyver >= 26.9.23
 #TestRequires: smartmet-library-newbase >= 26.9.23
 #TestRequires: smartmet-test-data

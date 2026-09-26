@@ -122,10 +122,6 @@ public:
   bool range() { return brange; }
   void range(bool br) { brange = br; }
 
-#ifdef USE_TRON
-  bool at_edge(double x, double y) const; // TRON_MODE==2 needs this
-#endif
-
   void set_offset(); // to be called when all points are there, before pushing
                      // the contour to Lua
 
@@ -192,13 +188,14 @@ private:
 
 /*
  * This class functions as the tunnel between 'Contour.cpp' and any adapters
- * providing the actual contour calculation (s.a. FMI Tron).
+ * providing the actual contour calculation (s.a. FMI Trax).
  */
 class ContourCollector {
 public:
   ContourCollector(lua_State *L_) : L(L_) {}
 
   Contour *new_contour() { return new (L) Contour(); }
+  lua_State *state() const { return L; }
 
 private:
   lua_State *L; // copy of the Lua state pointer
@@ -234,13 +231,10 @@ private:
   MemMatrix &m;
 };
 
-#ifdef USE_TRON
-void tron_contour(ContourCollector &cc,
-                  /*const 08-Dec-2011 PKi*/ ContourMatrix &cm, float lo_val,
+void trax_contour(ContourCollector &cc, ContourMatrix &cm, float lo_val,
                   float hi_val, unsigned int smooth_length,
                   unsigned int smooth_degree, lua_State *L,
                   unsigned int thIndex, unsigned int &tos);
-#endif
 
 #endif
 // CONTOUR_H

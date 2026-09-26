@@ -170,50 +170,6 @@ void EdgePointBind::setup(lua_State *L) {
 /*---=== Contour ===---*/
 
 /*
- * Returns 'true' if the coordinates 'x,y' are on the curve.
- *
- * TBD: This function is only required for Tron contouring, because we don't get
- * 'edge' info directly from Tron. This approach is HIGHLY UNEFFICIENT.
- */
-#ifdef USE_TRON
-bool Contour::at_edge(double x, double y) const {
-  unsigned n = points.size();
-  for (unsigned i = 0; i < n; i++) {
-    const Point &p1 = points[i];
-    const Point &p2 = points[(i + 1) % n];
-
-    // Let's think of 'p[i]' as the origo, and check next point and (x,y)
-    // relative to it.
-    //
-    Point v = p2 - p1;           // the edge
-    Point v2 = Point(x, y) - p1; // along that edge?
-
-    // Beware of null vectors
-    //
-    if (p2 == p1) {
-      return Point(x, y) == p1; // at edge if exactly at that point
-    }
-
-    // Cross product tells whether (x,y) is left, right or (almost) on the line
-    //
-    double cp = v.cross_z(v2);
-    if (fabs(cp) < 1.0e-5) { // close enough
-      // Dot product tells if it's within our length (0.0 .. v.norm())
-      //
-      double d = v.dot(v2); // projection on the edge section
-
-      if ((d >= 0.0) &&
-          (d * d <= v.norm_pow2())) { // faster to multiply than to 'sqrt' (at
-                                      // least not slower)
-        return true;                  // at edge
-      }
-    }
-  }
-  return false;
-}
-#endif
-
-/*
  * { deg_num, ... }= bind.calc_slants( { p1_ud, ... } )
  *
  * Calculate the slants for labels if they are to be placed in each point.
@@ -368,10 +324,9 @@ int Contour::contour(lua_State *L) {
   int smooth_length = (mys ? 0 : ((argc >= 4) ? (int)lua_tonumber(L, 4) : 0));
   int smooth_degree = ((argc >= 5) ? (int)lua_tonumber(L, 5) : 2);
 
-#ifdef USE_TRON
   // 05-Jun-2012 PKi: To minimize the changes needed for using tron hints the
   // 'TronHints' c++ type is known by
-  //					Contour_Tron module only; pass forward the Lua stack
+  //					Contour_Trax module only; pass forward the Lua stack
   //and the index to take the object from the stack.
   //
   //					If tron hints are to be used - if 'TronHints' object
@@ -384,14 +339,10 @@ int Contour::contour(lua_State *L) {
   if ((argc > 3) && (argc < 7))
     lua_pushnil(L);
 
-  tron_contour(
+  trax_contour(
       cc, cm, lo_val, hi_val, smooth_length, smooth_degree,
       (argc == 7) ? L : nullptr, argc,
       tos); // calls back 'cc.push_contour' 0..N times (adds stuff to Lua stack)
-#else
-  luaL_error(L, "TRON contouring not compiled in - cannot calculate contours.");
-  (void)val;
-#endif
 
   // Prepare the pushed contours to be used from Lua, by setting their 'offset'
   // fields (provides some extra assurance which helps keep Lua side simple).
