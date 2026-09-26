@@ -80,7 +80,9 @@ All C++ objects depend on the `.lch` files, so Lua changes trigger a full C++ re
 
 ### Dependencies
 
-Linked libraries: `smartmet-newbase`, `smartmet-spine`, `smartmet-tron`, `luajit`. Pkg-config requires: `geos`, `gdal`, `cairo`, `configpp`.
+Linked libraries: `smartmet-newbase`, `smartmet-spine`, `smartmet-trax`, `luajit`. Pkg-config requires: `gdal`, `cairo`, `configpp`.
+
+Contouring (`contour()` in Lua) is implemented in `Contour_Trax.cpp` as an adapter on top of Trax isobands; it also marks points lying on the data edge (grid edge or missing values). The `TronHints` Lua type is a no-op kept for backward compatibility.
 
 ### Lua sandboxing
 
