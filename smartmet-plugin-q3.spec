@@ -2,7 +2,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet q3 plugin
 Name: %{SPECNAME}
-Version: 26.9.26
+Version: 26.9.28
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -92,6 +92,10 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/smartmet/plugins/q3plugin.conf
 
 %changelog
+* Mon Sep 28 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.9.28-1.fmi
+- Fixed require of server-installed addons (e.g. repo/aviationweather/...), broken by the
+  26.8.30 require allowlist; standard library names (io, os, debug, ffi, jit, ...) stay blocked
+
 * Sat Sep 26 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.9.26-1.fmi
 - Use Trax instead of Tron for contouring
 

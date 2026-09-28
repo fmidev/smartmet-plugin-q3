@@ -367,8 +367,14 @@ package= setmetatable( {}, {
 -- entries from 'package.loaded' so they cannot be fetched even if a future
 -- change re-registers them.
 --
--- Only 'newcairo' (baked-in C module, see Session.cpp package.preload) and
--- 'proto' are legitimately required by the built-in scripts.
+-- Server-installed addons (e.g. `require "repo/aviationweather/trunk/avi/aviation_data"`)
+-- must keep working. They are resolved only via 'package.preload' ('newcairo')
+-- and the admin-configured 'package_path'/'package_cpath', which the client
+-- cannot change ('package' is a read-only proxy, see above). Every '.' in a
+-- module name becomes a directory separator in the search, so '..' cannot
+-- climb out of the configured directories. What is refused are the standard
+-- library names, which would otherwise hand out library tables, and names
+-- with unexpected characters.
 --
 if not METQU then
     local loaded= package_orig.loaded
@@ -381,13 +387,29 @@ if not METQU then
     end
 
     local require_orig= require
-    local allowed_modules= {
-        newcairo=   true,
-        proto=      true,
+    local blocked_modules= {
+        io=             true,
+        os=             true,
+        debug=          true,
+        package=        true,
+        coroutine=      true,
+        ffi=            true,
+        jit=            true,
+        ["string.buffer"]= true,
     }
 
+    local function module_allowed( name )
+        if type(name)~="string" or blocked_modules[name] then
+            return false
+        end
+        if name:find("^jit%.") then
+            return false
+        end
+        return name:find("^[%w_][%w_%./%-]*$")~=nil and not name:find("%.%.")
+    end
+
     require= function( name, ... )
-        if not allowed_modules[name] then
+        if not module_allowed(name) then
             error( "require is disabled for module: "..tostring(name), 2 )
         end
         return require_orig( name, ... )

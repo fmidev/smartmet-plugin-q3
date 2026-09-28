@@ -1,0 +1,1 @@
+GET /q3?code=return%20%28not%20pcall%28require%2C%22ffi%22%29%20and%20not%20pcall%28require%2C%22jit%22%29%20and%20not%20pcall%28require%2C%22jit.util%22%29%20and%20not%20pcall%28require%2C%22string.buffer%22%29%29%20and%20%22blocked%22%20or%20%22LEAK%22 HTTP/1.0
