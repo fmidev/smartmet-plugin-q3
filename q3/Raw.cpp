@@ -245,7 +245,7 @@ int RawBind::__index(lua_State *L) {
   if (strcmp(s, "mt_leveltype") == 0) {
     string level = qd->getLevels().front().toString(true);
     lua_pushstring(
-        L, (level.substr(0, level.find(":")) + ":" + qd->getNativeLevelType())
+        L, (level.substr(0, level.find(':')) + ":" + qd->getNativeLevelType())
                .c_str());
     return 1;
   }

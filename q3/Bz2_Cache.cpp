@@ -171,7 +171,7 @@ JDay Bz2_Cache::get(const string &key) {
 /*
  * Write cache
  */
-void Bz2_Cache::set(const string &key, JDay ot) {
+void Bz2_Cache::set(const string &key, const JDay& ot) {
   {
     ClaimMutex lock(mapping_m);
     // init_LOCKED();
@@ -203,7 +203,7 @@ void Bz2_Cache::set(const string &key, JDay ot) {
   }
 }
 
-void Bz2_Cache::write_LOCKED(const string &key, JDay ot) {
+void Bz2_Cache::write_LOCKED(const string &key, const JDay& ot) {
   assert(f);
   string tmp = ot.toString();
   fprintf(f, "%s=%s\n", key.c_str(), tmp.c_str());

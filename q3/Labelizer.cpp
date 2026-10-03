@@ -521,7 +521,7 @@ void Labelizer::Chain::done(const Config &config) {
       double score = sin(x) + sin(y) - 2 * pow(sin(x) * sin(y), 2.0);
 
       Vector A = *it;      // N-1 to N
-      Vector B = *it_next; // N to N+1
+      const Vector& B = *it_next; // N to N+1
 
       // Dampen score if the position is a corner (not smooth line)
       //

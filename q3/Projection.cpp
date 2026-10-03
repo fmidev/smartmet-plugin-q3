@@ -79,8 +79,12 @@ Projection::~Projection() { delete proj; }
 /*
  */
 Projection &Projection::operator=(const Projection &o) {
+  if (this == &o)
+    return *this;
+
+  auto *tmp = o.proj ? o.proj->clone_() : nullptr;
   delete proj;
-  proj = o.proj ? o.proj->clone_() : nullptr;
+  proj = tmp;
   creation_str = o.creation_str;
 
   INVARIANT();
