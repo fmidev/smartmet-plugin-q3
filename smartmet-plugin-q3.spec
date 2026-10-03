@@ -2,7 +2,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet q3 plugin
 Name: %{SPECNAME}
-Version: 26.9.28
+Version: 26.10.3
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -30,29 +30,29 @@ BuildRequires: bzip2-devel >= 1.0.6
 BuildRequires: libpng-devel >= 1.5.13
 BuildRequires: libjpeg-turbo-devel >= 1.2.90
 BuildRequires: cairo-devel
-BuildRequires: smartmet-library-macgyver-devel >= 26.9.23
-BuildRequires: smartmet-library-trax-devel >= 26.6.26
-BuildRequires: smartmet-library-spine-devel >= 26.9.23
+BuildRequires: smartmet-library-macgyver-devel >= 26.10.3
+BuildRequires: smartmet-library-trax-devel >= 26.10.3
+BuildRequires: smartmet-library-spine-devel >= 26.10.3
 Requires: proj97 >= 9.5.1
 Requires: luajit >= 2.1.0
 Requires: bzip2-libs >= 1.0.6
 Requires: libpng >= 1.5.13
 Requires: libjpeg-turbo >= 1.2.90
 Requires: cairo
-Requires: smartmet-library-newbase >= 26.9.23
-Requires: smartmet-library-trax >= 26.6.26
-Requires: smartmet-library-spine >= 26.9.23
+Requires: smartmet-library-newbase >= 26.10.3
+Requires: smartmet-library-trax >= 26.10.3
+Requires: smartmet-library-spine >= 26.10.3
 Requires: smartmet-server >= 26.9.2
 Obsoletes: fmi-q3-lib
 Obsoletes: fmi-q3-config
 Obsoletes: fmi-q3-brainstorm
 
 #TestRequires: smartmet-server >= 26.9.2
-#TestRequires: smartmet-library-spine >= 26.9.23
+#TestRequires: smartmet-library-spine >= 26.10.3
 #TestRequires: smartmet-library-spine-plugin-test >= 26.9.23
-#TestRequires: smartmet-library-trax >= 26.6.26
-#TestRequires: smartmet-library-macgyver >= 26.9.23
-#TestRequires: smartmet-library-newbase >= 26.9.23
+#TestRequires: smartmet-library-trax >= 26.10.3
+#TestRequires: smartmet-library-macgyver >= 26.10.3
+#TestRequires: smartmet-library-newbase >= 26.10.3
 #TestRequires: smartmet-test-data
 #TestRequires: cairo
 #TestRequires: libjpeg-turbo >= 1.2.90
@@ -92,6 +92,11 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/smartmet/plugins/q3plugin.conf
 
 %changelog
+* Sat Oct 03 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.10.3-1.fmi
+- Remove unnecessary copies found by clang-tidy performance checks
+- Fix index in parameter orientation detection
+- Fix use after free on Projection self-assignment
+
 * Mon Sep 28 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.9.28-1.fmi
 - Fixed require of server-installed addons (e.g. repo/aviationweather/...), broken by the
   26.8.30 require allowlist; standard library names (io, os, debug, ffi, jit, ...) stay blocked
