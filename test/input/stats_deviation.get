@@ -1,0 +1,2 @@
+GET /q3?code=local%20m%3Dmatrix%28xy%283%2C3%29%29%20for%20p%2C_%20in%20points%28m%29%20do%20m%5Bp%5D%3Dp.x%2Bp.y%20end%20return%20string.format%28%22%25.4f%20%25.4f%20%25.4f%22%2C%20abs_deviation%28m%29%2C%20std_variance%28m%29%2C%20std_deviation%28m%29%29 HTTP/1.0
+

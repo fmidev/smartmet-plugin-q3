@@ -1,0 +1,2 @@
+GET /q3?code=local%20ok%2Cerr%3Dpcall%28function%28%29%20return%20gauss%280%2C1%29.limit%2850%29%20end%29%20return%20ok%2C%20string.find%28tostring%28err%29%2C%22out%20of%20range%22%29~%3Dnil HTTP/1.0
+

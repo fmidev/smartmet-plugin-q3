@@ -1,0 +1,2 @@
+GET /q3?code=local%20g%3Dgauss%280%2C1%29%20return%20string.format%28%22%25.2f%20%25.2f%22%2C%20g.limit%280.5%29%2C%20g.limit%280.975%29%29 HTTP/1.0
+
