@@ -297,7 +297,7 @@ do
             --
             limit= function(prob)
                     proto("number",prob)
-                    if prob<0 or prob>100 then
+                    if prob<0 or prob>1 then
                         error( "Probability out of range (0..1): "..prob, 2 )
                     end
                     return mean + normal_limit(prob)*s
