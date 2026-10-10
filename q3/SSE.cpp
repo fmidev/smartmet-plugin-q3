@@ -135,17 +135,17 @@ JustOnce_SSE::JustOnce_SSE() {
     __m128 v1, v2, v3, v4, v5;
 
     if (loop == 0) {
-      v1 = __builtin_ia32_maxps(m_XnanXnan, m_XnanXnan); // -> XnanXnan
-      v2 = __builtin_ia32_maxps(m_XnanXnan, m_nanXnanX); // -> nanXnanX
-      v3 = __builtin_ia32_maxps(m_nannannannan, m_XXXX); // -> XXXX
-      v4 = __builtin_ia32_maxps(m_XXXX, m_nannannannan); // -> nannannannan
-      v5 = __builtin_ia32_maxps(m_XnanXnan, m_ninf); // -> { X, -INF, X, -INF }
+      v1 = _mm_max_ps(m_XnanXnan, m_XnanXnan); // -> XnanXnan
+      v2 = _mm_max_ps(m_XnanXnan, m_nanXnanX); // -> nanXnanX
+      v3 = _mm_max_ps(m_nannannannan, m_XXXX); // -> XXXX
+      v4 = _mm_max_ps(m_XXXX, m_nannannannan); // -> nannannannan
+      v5 = _mm_max_ps(m_XnanXnan, m_ninf); // -> { X, -INF, X, -INF }
     } else {
-      v1 = __builtin_ia32_minps(m_XnanXnan, m_XnanXnan); // -> XnanXnan
-      v2 = __builtin_ia32_minps(m_XnanXnan, m_nanXnanX); // -> nanXnanX
-      v3 = __builtin_ia32_minps(m_nannannannan, m_XXXX); // -> XXXX
-      v4 = __builtin_ia32_minps(m_XXXX, m_nannannannan); // -> nannannannan
-      v5 = __builtin_ia32_minps(m_XnanXnan, m_pinf); // -> { X, INF, X, INF }
+      v1 = _mm_min_ps(m_XnanXnan, m_XnanXnan); // -> XnanXnan
+      v2 = _mm_min_ps(m_XnanXnan, m_nanXnanX); // -> nanXnanX
+      v3 = _mm_min_ps(m_nannannannan, m_XXXX); // -> XXXX
+      v4 = _mm_min_ps(m_XXXX, m_nannannannan); // -> nannannannan
+      v5 = _mm_min_ps(m_XnanXnan, m_pinf); // -> { X, INF, X, INF }
     }
     (void)v1;
     (void)v2;
@@ -170,14 +170,14 @@ JustOnce_SSE::JustOnce_SSE() {
 #endif
     const float *f5 = (const float *)&v5;
     always_assert(f5[0] == X);
-    always_assert(f5[1] == (loop == 0) ? -INF_F : INF_F);
+    always_assert(f5[1] == ((loop == 0) ? -INF_F : INF_F));
     always_assert(f5[2] == X);
-    always_assert(f5[3] == (loop == 0) ? -INF_F : INF_F);
+    always_assert(f5[3] == ((loop == 0) ? -INF_F : INF_F));
   }
 
   // Average & sum assumptions
   //
-  __m128 va = __builtin_ia32_addps(m_XnanXnan, m_nanXnanX);
+  __m128 va = _mm_add_ps(m_XnanXnan, m_nanXnanX);
   always_assert(mm_nan_comp(va, m_nannannannan));
 #endif
 
@@ -208,18 +208,18 @@ void SSE_abs(MemMatrix &c, const Matrix &a, MatrixPos::offset_t &i,
     const __m128 *va = (const __m128 *)a_data;
 
     while (i + (16 - 1) < n) { // bulk handled here
-      *(vc++) = __builtin_ia32_sqrtps(__builtin_ia32_mulps(*va, *va));
+      *(vc++) = _mm_sqrt_ps(_mm_mul_ps(*va, *va));
       ++va;
-      *(vc++) = __builtin_ia32_sqrtps(__builtin_ia32_mulps(*va, *va));
+      *(vc++) = _mm_sqrt_ps(_mm_mul_ps(*va, *va));
       ++va;
-      *(vc++) = __builtin_ia32_sqrtps(__builtin_ia32_mulps(*va, *va));
+      *(vc++) = _mm_sqrt_ps(_mm_mul_ps(*va, *va));
       ++va;
-      *(vc++) = __builtin_ia32_sqrtps(__builtin_ia32_mulps(*va, *va));
+      *(vc++) = _mm_sqrt_ps(_mm_mul_ps(*va, *va));
       ++va;
       i += 16;
     }
     while (i + (4 - 1) < n) { // last 4..15 values (just an optimization)
-      *(vc++) = __builtin_ia32_sqrtps(__builtin_ia32_mulps(*va, *va));
+      *(vc++) = _mm_sqrt_ps(_mm_mul_ps(*va, *va));
       ++va;
       i += 4;
     }
@@ -244,8 +244,8 @@ void SSE_reduce_sum(const Matrix &a, float &sum, unsigned &used,
     __m128 sum4 = _mm_setzero_ps();
     while (i + (8 - 1) < n) { // bulk handled here
       if (NO_NANS_8(va)) {
-        sum4 = __builtin_ia32_addps(sum4, *va++);
-        sum4 = __builtin_ia32_addps(sum4, *va++);
+        sum4 = _mm_add_ps(sum4, *va++);
+        sum4 = _mm_add_ps(sum4, *va++);
         used += 8;
       } else {
         for (unsigned j = i; j < i + 8; j++) {

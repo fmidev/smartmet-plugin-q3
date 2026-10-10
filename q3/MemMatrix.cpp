@@ -97,7 +97,7 @@ void MemMatrix::div_by_nonzero(const MemMatrix &a) {
   offset_t n = getN();
   offset_t i = 0;
 #ifdef __SSE__
-  SSE_OP_mm(__builtin_ia32_divps, *this, this, &a, i, n);
+  SSE_OP_mm(_mm_div_ps, *this, this, &a, i, n);
 #endif
   for (; i < n; i++) {
     (*this)[i] /= a[i];

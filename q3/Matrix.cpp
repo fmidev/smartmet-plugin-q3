@@ -511,7 +511,7 @@ int Matrix::add( lua_State *L ) {
 
         offset_t i=0;
 #ifdef __SSE__
-        SSE_OP_mm( __builtin_ia32_addps, c, a, b, i, n );
+        SSE_OP_mm( _mm_add_ps, c, a, b, i, n );
 #endif
         // Do the rest of it, or whole thing if SSE couldn't be used
         //
@@ -525,7 +525,7 @@ int Matrix::add( lua_State *L ) {
 
         offset_t i=0;
 #ifdef __SSE__
-        SSE_OP_mf( __builtin_ia32_addps, c, a_or_b, v, i, n );
+        SSE_OP_mf( _mm_add_ps, c, a_or_b, v, i, n );
 #endif
         // Do the rest of it, or whole thing if SSE couldn't be used
         //
@@ -552,7 +552,7 @@ int Matrix::sub( lua_State *L ) {
 
         offset_t i=0;
 #ifdef __SSE__
-        SSE_OP_mm( __builtin_ia32_subps, c, a, b, i, n );
+        SSE_OP_mm( _mm_sub_ps, c, a, b, i, n );
 #endif
         for( ; i<n; i++ ) { c[i]= (*a)[i]-(*b)[i]; }
     } else {
@@ -564,12 +564,12 @@ int Matrix::sub( lua_State *L ) {
         offset_t i=0;
         if (a) {
 #ifdef __SSE__
-            SSE_OP_mf( __builtin_ia32_subps, c, a, v, i, n );
+            SSE_OP_mf( _mm_sub_ps, c, a, v, i, n );
 #endif            
             for( ; i<n; i++ ) { c[i]= (*a)[i]-v; }
         } else {
 #ifdef __SSE__
-            SSE_OP_fm( __builtin_ia32_subps, c, v, b, i, n );
+            SSE_OP_fm( _mm_sub_ps, c, v, b, i, n );
 #endif            
             for( ; i<n; i++ ) { c[i]= v-(*b)[i]; }
         }
@@ -595,7 +595,7 @@ int Matrix::mul( lua_State *L ) {
 
         offset_t i=0;
 #ifdef __SSE__
-        SSE_OP_mm( __builtin_ia32_mulps, c, a, b, i, n );
+        SSE_OP_mm( _mm_mul_ps, c, a, b, i, n );
 #endif            
         for( ; i<n; i++ ) { c[i]= (*a)[i] * (*b)[i]; }
     } else {
@@ -606,7 +606,7 @@ int Matrix::mul( lua_State *L ) {
 
         offset_t i=0;
 #ifdef __SSE__
-        SSE_OP_mf( __builtin_ia32_mulps, c, a_or_b, v, i, n );
+        SSE_OP_mf( _mm_mul_ps, c, a_or_b, v, i, n );
 #endif            
         for( ; i<n; i++ ) { c[i]= (*a_or_b)[i] * v; }
     }
@@ -653,9 +653,9 @@ int Matrix::unm( lua_State *L ) {
 
     offset_t i=0;
 #ifdef __SSE__
-    // There is no unary minus in '__builtin_ia32_*', right?
+    // There is no unary minus in the SSE intrinsics, right?
     //
-    SSE_OP_mf( __builtin_ia32_mulps, c, &a, -1.0f, i, n );
+    SSE_OP_mf( _mm_mul_ps, c, &a, -1.0f, i, n );
 #endif            
     for( ; i<n; i++ ) { c[i]= -a[i]; }
 
@@ -740,7 +740,7 @@ int Matrix::pow( lua_State *L ) {
     if (b==0.5) {  /* square root can do SSE optimizations */
         offset_t i=0;
 #ifdef __SSE__
-        SSE_OP_m( __builtin_ia32_sqrtps, c, a, i, n );
+        SSE_OP_m( _mm_sqrt_ps, c, a, i, n );
 #endif            
         for( ; i<n; i++ ) { c[i]= sqrtf((*a)[i]); }
     } else {
@@ -836,7 +836,7 @@ int Matrix::q3_fmod( lua_State *L ) {
 
     offset_t i=0;
 #ifdef __SSE__
-    // '__builtin_ia32_rcpps' could be used to get recipropal of 'a' and 'b'
+    // '_mm_rcp_ps' could be used to get recipropal of 'a' and 'b'
 #endif
     for( ; i<n; i++ ) { c[i]= fmodf(a[i],b); }
 
@@ -884,7 +884,7 @@ float Matrix::reduce_max() const {
     offset_t i=0; 
     offset_t n= getN();
 #ifdef __SSE__
-    SSE_OP_minmax_1( __builtin_ia32_maxps, v, this, i, n, std::max<float> );
+    SSE_OP_minmax_1( _mm_max_ps, v, this, i, n, std::max<float> );
 #endif
     for( ; i<n; i++ ) {
         // Can use regular 'std::max<float>' since the FIRST param is non-NAN
@@ -907,7 +907,7 @@ float Matrix::reduce_min() const {
     offset_t i=0;
     offset_t n= getN();
 #ifdef __SSE__
-    SSE_OP_minmax_1( __builtin_ia32_minps, v, this, i, n, std::min<float> );
+    SSE_OP_minmax_1( _mm_min_ps, v, this, i, n, std::min<float> );
 #endif
     for( ; i<n; i++ ) {
         // Can use regular 'std::min<float>' since the FIRST param is non-NAN
@@ -1008,7 +1008,7 @@ int Matrix::q3_max( lua_State *L ) {
 
         offset_t i=0;
 #ifdef __SSE__
-        SSE_OP_minmax( __builtin_ia32_maxps, c, b, i, n, max_safe );
+        SSE_OP_minmax( _mm_max_ps, c, b, i, n, max_safe );
 #endif
         for( ; i<n; i++ ) { c[i]= max_safe(c[i],(*b)[i]); }
 
@@ -1026,7 +1026,7 @@ int Matrix::q3_max( lua_State *L ) {
             //
             offset_t i=0;
 #ifdef __SSE__
-            SSE_OP_minmax_scalar( __builtin_ia32_maxps, c, v, i, n, max_safe_keep_nans );
+            SSE_OP_minmax_scalar( _mm_max_ps, c, v, i, n, max_safe_keep_nans );
 #endif
             for( ; i<n; i++ ) { c[i]= max_safe_keep_nans(c[i],v); }
         }
@@ -1067,7 +1067,7 @@ int Matrix::q3_min( lua_State *L ) {
 
         offset_t i=0;
 #ifdef __SSE__
-        SSE_OP_minmax( __builtin_ia32_minps, c, b, i, n, min_safe );
+        SSE_OP_minmax( _mm_min_ps, c, b, i, n, min_safe );
 #endif
         for( ; i<n; i++ ) { c[i]= min_safe( c[i], (*b)[i] ); }
 
@@ -1080,7 +1080,7 @@ int Matrix::q3_min( lua_State *L ) {
             //
             offset_t i=0;
 #ifdef __SSE__
-            SSE_OP_minmax_scalar( __builtin_ia32_minps, c, v, i, n, min_safe_keep_nans );
+            SSE_OP_minmax_scalar( _mm_min_ps, c, v, i, n, min_safe_keep_nans );
 #endif
             // Can use regular 'std::min<float>' since the FIRST param is non-NAN
             //

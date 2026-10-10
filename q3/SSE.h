@@ -274,8 +274,8 @@ bool SSE_hasnan(const float *ptr, MatrixPos::offset_t n);
   (0x0f == /*0..0x0f*/ _mm_movemask_ps(_mm_cmpord_ps(*(vb), *((vb) + 1))))
 
 /*
- * c= c op b    'c' and 'b' both matrices, op is '__builtin_ia32_minps' or
- *              '__builtin_ia32_maxps'. 'c' may have NANs, 'b' must be checked.
+ * c= c op b    'c' and 'b' both matrices, op is '_mm_min_ps' or
+ *              '_mm_max_ps'. 'c' may have NANs, 'b' must be checked.
  *
  * NOTE: Order of assignment is NOT DEFINED in C++; we must not use a '++'
  *       on either side, if the same thing is also on the other (double role
