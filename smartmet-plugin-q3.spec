@@ -97,6 +97,8 @@ rm -rf %{buildroot}
 - Fixed operator precedence in the SSE min/max self-test assertions, which made them always pass
 - Pass syslog messages as an argument instead of as the format string, so '%' characters are logged as is
 - Declared the Lua error functions noreturn to silence false null pointer reports
+- Fixed a crash on a 'log' setting without a value
+- Skip a track that has disappeared instead of dereferencing it
 
 * Sun Oct  4 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.10.4-1.fmi
 - gauss().limit() accepted probabilities up to 100 although the valid range is 0..1

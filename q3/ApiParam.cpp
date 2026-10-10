@@ -246,7 +246,10 @@ vector<NA_Param> ApiParam::convert_to_native(const std::vector<ApiParam> &vec,
  */
 vector<NA_Param> ApiParam::realParams(const NA_Data *data) {
   vector<NA_Param> ret;
-  vector<NA_Param> vec = (data ? data->getParams() : std::vector<NA_Param>());
+  if (!data)
+    return ret;
+
+  vector<NA_Param> vec = data->getParams();
 
   for (vector<NA_Param>::const_iterator it = vec.begin(); it != vec.end();
        ++it) {

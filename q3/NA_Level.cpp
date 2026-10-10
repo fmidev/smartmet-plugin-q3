@@ -231,9 +231,8 @@ bool NA_Level::covered_by(const NA_Data &data, bool &exact) const {
         return true;
       } else {
         double lv_min, lv_max;
-        levels_range(PRESSURE_LEVEL, vec, lv_min, lv_max);
-
-        if ((lv_min <= lv) && (lv_max >= lv)) {
+        if (levels_range(PRESSURE_LEVEL, vec, lv_min, lv_max) &&
+            (lv_min <= lv) && (lv_max >= lv)) {
           exact = has_level(*this, vec);
           return true;
         }

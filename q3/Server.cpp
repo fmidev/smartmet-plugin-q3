@@ -97,6 +97,9 @@ static Logger *logger_parse(const char *conf)
 {
   const unsigned BUFSIZE = 999;
 
+  if (!conf)
+    throw runtime_error("Missing value for the 'log' setting");
+
   cerr << string_fmt("Logging to: %s\n", conf);
 
   if (strlen(conf) >= BUFSIZE)
@@ -422,6 +425,7 @@ int Q3Server::query(const map<string, string> &key_val,
       if (!track)
       {
         LOG_BUG("No track for %s", cstr);
+        continue;
       }
 
       lua_pushstring(L, cstr);
@@ -439,6 +443,7 @@ int Q3Server::query(const map<string, string> &key_val,
       if (!track)
       {
         LOG_BUG("No track for %s", cstr);
+        continue;
       }
 
       if (!(track->getAlias().empty()))
