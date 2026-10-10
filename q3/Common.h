@@ -7,7 +7,7 @@
 #define NEWCAIRO_COMMON_HPP
 
 #include <cairo.h>
-#include <lua.hpp>
+#include "Lua.h"
 #include <stdexcept>
 
 #ifndef NDEBUG

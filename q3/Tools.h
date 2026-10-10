@@ -31,7 +31,7 @@
 // keep this for Ubuntu (Centos seems to be giving 'string.h' from some system
 // headers)
 
-#include <lua.hpp>
+#include "Lua.h"
 
 #ifdef METQU
 #define CONST_IF_SERVER /*not const*/

@@ -6,7 +6,7 @@
 #ifndef PROTO_H
 #define PROTO_H
 
-#include <lua.hpp>
+#include "Lua.h"
 
 /*
  * ProtoProxy

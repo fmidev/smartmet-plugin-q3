@@ -19,7 +19,7 @@
 
 #include <cassert>
 
-#include <lua.hpp>
+#include "Lua.h"
 #include <set>
 #include <string>
 

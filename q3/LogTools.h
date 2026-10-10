@@ -22,7 +22,7 @@ class NA_Level;
 class NA_Param;
 class JDay;
 
-#include <lua.hpp>
+#include "Lua.h"
 
 #include <stdint.h>
 // 'uint64_t' (Ubuntu 9.10)

@@ -13,7 +13,7 @@
 
 #include "Tools.h" // string_or_null
 
-#include <lua.hpp>
+#include "Lua.h"
 
 class Session {
 public:
