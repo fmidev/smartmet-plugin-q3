@@ -92,12 +92,12 @@ bool SSE_hasnan(const float *ptr, MatrixPos::offset_t n);
         *(vc++) = OP(*va++, *vb++);                                            \
         *(vc++) = OP(*va++, *vb++);                                            \
         *(vc++) = OP(*va++, *vb++);                                            \
-        I += 32;                                                               \
+        (I) += 32;                                                             \
       }                                                                        \
       while ((I) + (4 - 1) <                                                   \
              (N)) { /* last 4..31 values (just an optimization) */             \
         *(vc++) = OP(*va++, *vb++);                                            \
-        I += 4;                                                                \
+        (I) += 4;                                                              \
       }                                                                        \
     } /* last 0..3 values left for regular loop */                             \
   }
@@ -134,12 +134,12 @@ bool SSE_hasnan(const float *ptr, MatrixPos::offset_t n);
         *(vc++) = OP(*va++, vv);                                               \
         *(vc++) = OP(*va++, vv);                                               \
         *(vc++) = OP(*va++, vv);                                               \
-        I += 32;                                                               \
+        (I) += 32;                                                             \
       }                                                                        \
       while ((I) + (4 - 1) <                                                   \
              (N)) { /* last 4..31 values (just an optimization) */             \
         *(vc++) = OP(*va++, vv);                                               \
-        I += 4;                                                                \
+        (I) += 4;                                                              \
       }                                                                        \
     } /* last 0..3 values left for regular loop */                             \
   }
@@ -172,12 +172,12 @@ bool SSE_hasnan(const float *ptr, MatrixPos::offset_t n);
         *(vc++) = OP(vv, *vb++);                                               \
         *(vc++) = OP(vv, *vb++);                                               \
         *(vc++) = OP(vv, *vb++);                                               \
-        I += 32;                                                               \
+        (I) += 32;                                                             \
       }                                                                        \
       while ((I) + (4 - 1) <                                                   \
              (N)) { /* last 4..31 values (just an optimization) */             \
         *(vc++) = OP(vv, *vb++);                                               \
-        I += 4;                                                                \
+        (I) += 4;                                                              \
       }                                                                        \
     } /* last 0..3 values left for regular loop */                             \
   }
@@ -208,12 +208,12 @@ bool SSE_hasnan(const float *ptr, MatrixPos::offset_t n);
         *(vc++) = OP(*va++);                                                   \
         *(vc++) = OP(*va++);                                                   \
         *(vc++) = OP(*va++);                                                   \
-        I += 32;                                                               \
+        (I) += 32;                                                             \
       }                                                                        \
       while ((I) + (4 - 1) <                                                   \
              (N)) { /* last 4..31 values (just an optimization) */             \
         *(vc++) = OP(*va++);                                                   \
-        I += 4;                                                                \
+        (I) += 4;                                                              \
       }                                                                        \
     } /* last 0..3 values left for regular loop */                             \
   }
@@ -240,15 +240,15 @@ bool SSE_hasnan(const float *ptr, MatrixPos::offset_t n);
         vv = OP(*va++, vv);                                                    \
         vv = OP(*va++, vv);                                                    \
         vv = OP(*va++, vv);                                                    \
-        I += 16;                                                               \
+        (I) += 16;                                                             \
       }                                                                        \
       while ((I) + (4 - 1) <                                                   \
              (N)) { /* last 4..15 values (just an optimization) */             \
         vv = OP(*va++, vv);                                                    \
-        I += 4;                                                                \
+        (I) += 4;                                                              \
       }                                                                        \
       const float *vf = (const float *)&vv;                                    \
-      V = std_maxmin(std_maxmin(vf[0], vf[1]), std_maxmin(vf[2], vf[3]));      \
+      (V) = std_maxmin(std_maxmin(vf[0], vf[1]), std_maxmin(vf[2], vf[3]));    \
     }                                                                          \
   } /* last 0..3 values left for regular loop */
 
@@ -300,7 +300,7 @@ bool SSE_hasnan(const float *ptr, MatrixPos::offset_t n);
       const __m128 *vb = (const __m128 *)b_data;                               \
       __m128 *vc = (__m128 *)c_data;                                           \
                                                                                \
-      for (; (I) + (8 - 1) < (N); I += 8) { /* bulk handled here */            \
+      for (; (I) + (8 - 1) < (N); (I) += 8) { /* bulk handled here */          \
         if (NO_NANS_8(vb)) {                                                   \
           *vc = OP(*vc, *vb++);                                                \
           ++vc;                                                                \
@@ -308,7 +308,7 @@ bool SSE_hasnan(const float *ptr, MatrixPos::offset_t n);
           ++vc;                                                                \
         } else {                                                               \
           for (unsigned j = (I); j < (I) + 8; j++) {                           \
-            C[j] = minmax_safe(C[j], (*B)[j]);                                 \
+            (C)[j] = minmax_safe((C)[j], (*(B))[j]);                           \
           }                                                                    \
           vb += 2;                                                             \
           vc += 2;                                                             \
@@ -336,7 +336,7 @@ bool SSE_hasnan(const float *ptr, MatrixPos::offset_t n);
         _mm_set1_ps(SCALAR); /* { SCALAR, SCALAR, SCALAR, SCALAR } */          \
     __m128 *vc = (__m128 *)c_data;                                             \
                                                                                \
-    for (; (I) + (8 - 1) < (N); I += 8) { /* bulk handled here */              \
+    for (; (I) + (8 - 1) < (N); (I) += 8) { /* bulk handled here */            \
       if (NO_NANS_8(vc)) {                                                     \
         *vc = OP(*vc, vv);                                                     \
         ++vc;                                                                  \
@@ -344,7 +344,7 @@ bool SSE_hasnan(const float *ptr, MatrixPos::offset_t n);
         ++vc;                                                                  \
       } else {                                                                 \
         for (unsigned j = (I); j < (I) + 8; j++) {                             \
-          C[j] = minmax_keep_nans(C[j], SCALAR);                               \
+          (C)[j] = minmax_keep_nans((C)[j], SCALAR);                           \
         }                                                                      \
         vc += 2;                                                               \
       }                                                                        \

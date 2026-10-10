@@ -216,11 +216,11 @@ public:
 #define L_MID(change)                                                          \
   {                                                                            \
     int __tos_now = lua_gettop(L);                                             \
-    if (__tos_now != __tos + change) {                                         \
+    if (__tos_now != __tos + (change)) {                                       \
       LuaNew_base::dump(L, __FILE__, __LINE__);                                \
       luaL_error(L,                                                            \
                  "Stack assert failed at %s:%d: has %d items instead of %d",   \
-                 __FILE__, __LINE__, __tos_now, __tos + change);               \
+                 __FILE__, __LINE__, __tos_now, __tos + (change));             \
     }                                                                          \
   }
 

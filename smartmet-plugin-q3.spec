@@ -104,6 +104,7 @@ rm -rf %{buildroot}
 - Use = default and using declarations where clang-tidy suggests it, no functional changes
 - Use emplace and C++ standard library headers where clang-tidy suggests it, no functional changes
 - Use range-based for loops where clang-tidy suggests it, no functional changes
+- Parenthesize macro arguments where clang-tidy suggests it
 
 * Sun Oct  4 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.10.4-1.fmi
 - gauss().limit() accepted probabilities up to 100 although the valid range is 0..1
