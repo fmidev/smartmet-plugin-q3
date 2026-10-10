@@ -28,7 +28,7 @@ public:
   static const char *name() { return "EdgePoint"; }
   static const char *env_mode() { return nullptr; }
   static const LuaNew_ID &id() { return ID; }
-  typedef EdgePoint CAST_T;
+  using CAST_T = EdgePoint;
 
 private:
   static int __index(lua_State *L);
@@ -97,7 +97,7 @@ public:
   static const char *name() { return "Contour"; }
   static const char *env_mode() { return nullptr; }
   static const LuaNew_ID &id() { return ID; }
-  typedef Contour CAST_T;
+  using CAST_T = Contour;
 
 private:
   static int __index(lua_State *L);

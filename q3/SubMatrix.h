@@ -60,7 +60,7 @@ public:
   static const char *name() { return "SubMatrix"; }
   static const char *env_mode() { return nullptr; }
   static const LuaNew_ID &id() { return ID; }
-  typedef SubMatrix CAST_T;
+  using CAST_T = SubMatrix;
 
 private:
   static int index(lua_State *L);

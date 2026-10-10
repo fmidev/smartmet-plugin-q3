@@ -754,7 +754,7 @@ private:
 public:
   MyDrawer(cairo_t *cr_, unsigned w_, unsigned h_)
       : Labelizer::Drawer(), cr(cr_), w(w_), h(h_) {}
-  ~MyDrawer() override {}
+  ~MyDrawer() override = default;
 
   void label(const Vectors::Point &p, const std::string &label_text,
              const ContourInfo_Line::LabelParams &label_specs,
@@ -1068,11 +1068,11 @@ int Contour::drawcontours(lua_State *L) {
 
     // Get contour descriptor strings
     //
-    typedef boost::shared_ptr<const ContourInfo_common> spcc;
+    using spcc = boost::shared_ptr<const ContourInfo_common>;
     vector<spcc> ccVec;
 
-    typedef map<unsigned int, string> cdefmap;
-    typedef pair<unsigned int, string> cdefpair;
+    using cdefmap = map<unsigned int, string>;
+    using cdefpair = pair<unsigned int, string>;
     cdefmap contourdefs;
 
     unsigned int idx;

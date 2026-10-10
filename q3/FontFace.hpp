@@ -26,7 +26,7 @@ struct FontFace_bind {
     static const char *name() { return "Cairo font face"; }
     static const char *env_mode() { return nullptr; }
     static const LuaNew_ID & id() { return ID; }
-    typedef FontFace CAST_T;
+    using CAST_T = FontFace;
 
   private:
     static int index( lua_State *L );

@@ -27,7 +27,7 @@ public:
   static const char *name() { return "VectorMatrix"; }
   static const char *env_mode() { return nullptr; }
   static const LuaNew_ID &id() { return ID; }
-  typedef VectorMatrix CAST_T;
+  using CAST_T = VectorMatrix;
 
 private:
   static int index(lua_State *L);
@@ -61,8 +61,8 @@ public: // for 'MatrixBind::setup()'
 class VectorMatrix : public ApiMatrix, public LuaNew<VectorMatrixBind> {
 
 public:
-  typedef MatrixPos::xy_t xy_t;
-  typedef MatrixPos::offset_t offset_t;
+  using xy_t = MatrixPos::xy_t;
+  using offset_t = MatrixPos::offset_t;
 
   VectorMatrix(lua_State *L, bool polar);
   VectorMatrix(lua_State *L, const Matrix &a, const Matrix &b, bool polar);

@@ -22,7 +22,7 @@ public:
   static const char *name() { return "MatrixPos"; }
   static const char *env_mode() { return nullptr; }
   static const LuaNew_ID &id() { return ID; }
-  typedef MatrixPos CAST_T;
+  using CAST_T = MatrixPos;
 
 private:
   static int index(lua_State *L);
@@ -40,13 +40,13 @@ private:
  */
 class MatrixPos : public LuaNew<MatrixPosBind> {
 public:
-  typedef int xy_t; // we need signed to allow offset calculations
+  using xy_t = int; // we need signed to allow offset calculations
 
   xy_t getX() const { return x; }
   xy_t getY() const { return y; }
 
-  typedef unsigned long
-      offset_t; // even 32-bit allows for 16GB data blocks (enough)
+  using offset_t =
+      unsigned long; // even 32-bit allows for 16GB data blocks (enough)
   offset_t getN() const { return ((offset_t)x) * y; }
 
   MatrixPos() : x(0), y(0) {}

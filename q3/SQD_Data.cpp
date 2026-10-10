@@ -228,7 +228,7 @@ bool derived_from(unsigned which, const NA_Param &p) {
  * Fill 'MemMatrix' from a Newbase 'NFmiDataMatrix<float>'
  */
 static void matrix_fill(MemMatrix &m, const NFmiDataMatrix<float> &from) {
-  typedef NFmiDataMatrix<float>::size_type sz_t;
+  using sz_t = NFmiDataMatrix<float>::size_type;
   const sz_t xs = from.NX();
   const sz_t ys = from.NY();
   MatrixPos::offset_t n = 0;

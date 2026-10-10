@@ -81,12 +81,12 @@ public:
  */
 class LuaNew_base {
 protected:
-  LuaNew_base() {}            // not for direct use, only deriving
+  LuaNew_base() = default;    // not for direct use, only deriving
   virtual ~LuaNew_base() = 0; // gateway from Lua GC -> C++ destructor of
                               // derived class
 
 protected:
-  typedef void (*f_setup)(lua_State *L);
+  using f_setup = void (*)(lua_State *L);
   static void create_mt(lua_State *L, f_setup, const LuaNew_ID &_id,
                         const char *name);
 
@@ -140,8 +140,8 @@ private:
  */
 template <class BIND_T> class LuaNew : public virtual LuaNew_base {
 private:
-  typedef typename BIND_T::CAST_T *CAST_PTR;
-  typedef typename BIND_T::CAST_T &CAST_REF;
+  using CAST_PTR = typename BIND_T::CAST_T *;
+  using CAST_REF = typename BIND_T::CAST_T &;
 
 public:
   /*

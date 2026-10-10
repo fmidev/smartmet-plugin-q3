@@ -29,7 +29,7 @@ public:
   static const char *name() { return "Vector"; }
   static const char *env_mode() { return nullptr; }
   static const LuaNew_ID &id() { return ID; }
-  typedef Vector CAST_T;
+  using CAST_T = Vector;
 
 public: // for 'VectorMatrixBind::sub'
   static int unm(lua_State *L);
@@ -59,8 +59,8 @@ class Vector : public LuaNew<VectorBind> {
 public:
   Vector(double x_or_abs, double y_or_deg, bool polar_) throw();
 
-  Vector() throw() {
-  } // leave uninitialized (called when 'VectorMatrix' constructor does 'new')
+  Vector() throw() = default; // leave uninitialized (called when 'VectorMatrix'
+                              // constructor does 'new')
   /*virtual*/ ~Vector() override {}
 
   // Do operators here, since we need to manage polar/cartesian in a unified

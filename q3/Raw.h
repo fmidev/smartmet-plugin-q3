@@ -32,7 +32,7 @@ public:
   static const char *name() { return "Raw"; }
   static const char *env_mode() { return nullptr; }
   static const LuaNew_ID &id() { return ID; }
-  typedef Raw_interface CAST_T;
+  using CAST_T = Raw_interface;
 
 #ifdef METQU
   static int new_Raw_ro(lua_State *L);

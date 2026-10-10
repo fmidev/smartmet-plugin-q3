@@ -103,7 +103,7 @@ typename std::vector<T>::const_iterator find_it(const std::vector<T> &vec,
   }
 #endif
 
-typedef unsigned int uint_t;
+using uint_t = unsigned int;
 
 const char *pthread_rc2str(int rc);
 
@@ -309,7 +309,7 @@ inline void sse_free(void *block) { free(block); }
  */
 class Profiler_ms {
 private:
-  typedef uint64_t ms_t;
+  using ms_t = uint64_t;
   ms_t cumulative; // sum of profiled sections
   ms_t last_start; // time when last section started (0 if not running)
 

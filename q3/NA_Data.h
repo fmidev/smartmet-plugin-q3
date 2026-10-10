@@ -23,7 +23,7 @@ class Matrix;
 class LatLonBlanket;
 class ApiParam;
 
-typedef std::list<unsigned long> DataIdList;
+using DataIdList = std::list<unsigned long>;
 
 //
 // 22-Aug-2011 PKi: If USE_NEWBASE_PROJ is defined, using newbase interpolation,

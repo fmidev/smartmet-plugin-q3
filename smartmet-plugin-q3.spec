@@ -101,6 +101,7 @@ rm -rf %{buildroot}
 - Skip a track that has disappeared instead of dereferencing it
 - Use auto and return {} where clang-tidy suggests it, no functional changes
 - Mark overriding methods override and use nullptr, no functional changes
+- Use = default and using declarations where clang-tidy suggests it, no functional changes
 
 * Sun Oct  4 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.10.4-1.fmi
 - gauss().limit() accepted probabilities up to 100 although the valid range is 0..1

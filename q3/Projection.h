@@ -20,7 +20,7 @@
  */
 class Projection_provider {
 public:
-  Projection_provider() {}
+  Projection_provider() = default;
   virtual ~Projection_provider() {}
 
   virtual bool at(const LatLon &ll, double &dx, double &dy) const = 0;

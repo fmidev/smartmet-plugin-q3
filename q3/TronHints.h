@@ -15,7 +15,7 @@ public:
   static const char *name() { return "TronHints"; }
   static const char *env_mode() { return nullptr; }
   static const LuaNew_ID &id() { return ID; }
-  typedef TronHints CAST_T;
+  using CAST_T = TronHints;
 
 private:
 };

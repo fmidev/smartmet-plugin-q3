@@ -25,8 +25,8 @@ class MemMatrix;
 void SSE_abs(MemMatrix &c, const Matrix &a, MatrixPos::offset_t &i,
              MatrixPos::offset_t n);
 
-typedef void (*reduce_sum_safe_f)(float v, float &sum, unsigned &used);
-typedef void (*reduce_count_safe_f)(float v, unsigned &used);
+using reduce_sum_safe_f = void (*)(float v, float &sum, unsigned &used);
+using reduce_count_safe_f = void (*)(float v, unsigned &used);
 
 void SSE_reduce_sum(const Matrix &a, float &sum, unsigned &used,
                     MatrixPos::offset_t &i, MatrixPos::offset_t n,

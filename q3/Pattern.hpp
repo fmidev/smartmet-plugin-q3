@@ -23,7 +23,7 @@ struct Pattern_bind {
     static const char *name() { return "Cairo pattern"; }
     static const char *env_mode() { return nullptr; }
     static const LuaNew_ID & id() { return ID; }
-    typedef Pattern CAST_T;
+    using CAST_T = Pattern;
 
   private:
     static int index( lua_State *L );

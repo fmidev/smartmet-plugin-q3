@@ -234,7 +234,7 @@ void VectorMatrixBind::setup(lua_State *L) {
 int VectorMatrixBind::index(lua_State *L) {
   const VectorMatrix &me = *VectorMatrix::instance(L, 1);
 
-  typedef VectorMatrix::offset_t offset_t;
+  using offset_t = VectorMatrix::offset_t;
 
   switch (lua_type(L, 2)) {
   case LUA_TSTRING: {

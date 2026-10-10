@@ -55,7 +55,7 @@ struct Surface_bind {
     static const char *name() { return "Cairo surface"; }
     static const char *env_mode() { return nullptr; }
     static const LuaNew_ID & id() { return ID; }
-    typedef Surface CAST_T;
+    using CAST_T = Surface;
 
   private:
     static int index( lua_State *L );

@@ -23,7 +23,7 @@ struct Matrix_bind {
     static const char *name() { return "Cairo matrix"; }
     static const char *env_mode() { return nullptr; }
     static const LuaNew_ID & id() { return ID; }
-    typedef Matrix CAST_T;
+    using CAST_T = Matrix;
 
   private:
     static int index( lua_State *L );

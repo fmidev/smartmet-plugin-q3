@@ -59,7 +59,7 @@ Test_Data::Test_Data()
   INVARIANT();
 }
 
-typedef bool (*t_param_func)(double, double);
+using t_param_func = bool (*)(double, double);
 
 /*
  */

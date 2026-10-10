@@ -40,8 +40,7 @@ LuaNew_ID MatrixBind::ID;
 
 #include <float.h>
 
-ApiMatrix::~ApiMatrix() {}      // needs to be somewhere
-
+ApiMatrix::~ApiMatrix() = default; // needs to be somewhere
 
 /*---=== Helpers ===---*/
 

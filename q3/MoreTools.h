@@ -33,7 +33,7 @@
  * Template specifier for 'std::string'
  */
 struct T_String {
-  typedef std::string ValueT;
+  using ValueT = std::string;
 
   static std::string create(lua_State *L, int idx) {
     const char *s = lua_tostring(L, idx);
@@ -50,7 +50,7 @@ struct T_String {
  * Template specifier for 'NA_Level'
  */
 struct T_Level {
-  typedef NA_Level ValueT;
+  using ValueT = NA_Level;
 
   // Note: conversion from string needed for MQD header handling.
   //
@@ -74,7 +74,7 @@ struct T_Level {
  * Template specifier for 'ApiParam' (used in the scripting API)
  */
 struct T_ApiParam {
-  typedef ApiParam ValueT;
+  using ValueT = ApiParam;
 
   static ApiParam create(lua_State *L, int idx) {
     const char *s = lua_tostring(L, idx);
@@ -90,7 +90,7 @@ struct T_ApiParam {
  * Template specifier for 'NA_Param'
  */
 struct T_NativeParam {
-  typedef NA_Param ValueT;
+  using ValueT = NA_Param;
 
 #ifdef METQU
   static NA_Param create(lua_State *L, int idx) {
@@ -117,7 +117,7 @@ struct T_NativeParam {
  * Template specifier for 'JDay'
  */
 struct T_JDay {
-  typedef JDay ValueT;
+  using ValueT = JDay;
 
   static JDay create(lua_State *L, int idx) {
     JDay jday(L, idx);

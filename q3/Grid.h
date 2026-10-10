@@ -25,7 +25,7 @@ public:
     return "v";
   } // instance environment table, weak values
   static const LuaNew_ID &id() { return ID; }
-  typedef Grid CAST_T;
+  using CAST_T = Grid;
 
 private:
   static int __index(lua_State *L);

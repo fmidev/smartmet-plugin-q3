@@ -27,8 +27,8 @@
  */
 class Labelizer {
 public:
-  typedef Vectors::Point Point;
-  typedef Vectors::BoundingBox BoundingBox;
+  using Point = Vectors::Point;
+  using BoundingBox = Vectors::BoundingBox;
 
   /*
    * Label name & size & drawing parameters
@@ -56,7 +56,7 @@ public:
 
   class TiltedRect {
   private:
-    typedef Vectors::PointAndVector PointAndVector;
+    using PointAndVector = Vectors::PointAndVector;
 
     /* 1---2
      *  | c |

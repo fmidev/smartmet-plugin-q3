@@ -23,7 +23,7 @@ struct ScaledFont_bind {
     static const char *name() { return "Cairo scaled font"; }
     static const char *env_mode() { return nullptr; }
     static const LuaNew_ID & id() { return ID; }
-    typedef ScaledFont CAST_T;
+    using CAST_T = ScaledFont;
 
   private:
     static int index( lua_State *L );

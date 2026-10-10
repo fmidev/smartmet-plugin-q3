@@ -73,8 +73,8 @@ public:
   /*virtual*/ const Projection &getProjection() const override { return proj; }
 
 private:
-  typedef float (*conv_f)(
-      float); // conversion function (for 'WD' range transforms)
+  using conv_f =
+      float (*)(float); // conversion function (for 'WD' range transforms)
 
   SQD_Matrix(const SQD_Matrix &);            // no copies
   SQD_Matrix &operator=(const SQD_Matrix &); // no assigning

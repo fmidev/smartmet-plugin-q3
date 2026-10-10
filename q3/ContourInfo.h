@@ -47,7 +47,7 @@ public:
   // alpha (like Cairo does); any combination of 32 bits can be used.
   // Alpha is transparency, not opaqueness (opaqueness is 255-alpha).
   //
-  typedef unsigned int uint_ARGB; // 0xaarrggbb
+  using uint_ARGB = unsigned int; // 0xaarrggbb
 
   static const uint_ARGB BLACK = 0x00000000;
   static const uint_ARGB RED = 0x00ff0000;

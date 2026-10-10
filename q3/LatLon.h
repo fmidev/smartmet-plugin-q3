@@ -27,7 +27,7 @@ public:
   static const char *name() { return "LatLon"; }
   static const char *env_mode() { return nullptr; }
   static const LuaNew_ID &id() { return ID; }
-  typedef LatLon CAST_T;
+  using CAST_T = LatLon;
 
 private:
   static int index(lua_State *L);

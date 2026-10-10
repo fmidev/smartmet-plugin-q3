@@ -73,7 +73,7 @@ public:
   // Current implementation simply gives the current time (in ms) and checks
   // that the same time is not given twice.
   //
-  typedef uint64_t unique_t; // defined but not used (always 0) on METQU
+  using unique_t = uint64_t; // defined but not used (always 0) on METQU
 #ifndef METQU
   static unique_t gen_unique();
 #endif

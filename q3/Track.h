@@ -87,9 +87,9 @@ struct TrackProxyBind
   static const char *name() { return "TrackProxy"; }
   static const char *env_mode() { return nullptr; }
   static const LuaNew_ID &id() { return ID; }
-  typedef TrackProxy CAST_T;
+  using CAST_T = TrackProxy;
 
- private:
+private:
   static int call(lua_State *L);
 };
 

@@ -27,7 +27,7 @@ public:
   static const char *name() { return "JDay"; }
   static const char *env_mode() { return nullptr; }
   static const LuaNew_ID &id() { return ID; }
-  typedef JDay CAST_T;
+  using CAST_T = JDay;
 
 private:
   static int index(lua_State *L);
@@ -124,7 +124,7 @@ public:
 private:
   friend class JDayBind;
 
-  typedef int64_t jd_T; // current (2010) values are around 212136537600 (>2^37)
+  using jd_T = int64_t; // current (2010) values are around 212136537600 (>2^37)
 
   static jd_T calc(unsigned yyyy, unsigned mm, unsigned dd) {
     //

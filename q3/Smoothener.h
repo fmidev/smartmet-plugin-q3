@@ -29,7 +29,7 @@
  */
 class PointAndEdge : public Vectors::Point {
 private:
-  typedef Vectors::Point Point;
+  using Point = Vectors::Point;
 
   bool edge; // 'true' if the point is at edge of a fill path (not to be
              // smoothened) 'false' for all points in a curve path (from
@@ -52,7 +52,7 @@ public:
  */
 class SmoothPath {
 private:
-  typedef Vectors::Point Point;
+  using Point = Vectors::Point;
 
   std::vector<PointAndEdge> rim;
 

@@ -18,7 +18,7 @@ using namespace std;
 
 // Needed by C++ for a pure virtual destructor
 //
-LuaNew_base::~LuaNew_base() {}
+LuaNew_base::~LuaNew_base() = default;
 
 /*
  * Takes in a certain type userdata from Lua parameters, including types that

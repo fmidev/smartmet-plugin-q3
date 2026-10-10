@@ -51,10 +51,10 @@ using namespace std;
 const unsigned MINIMUM_POINTS_IN_CHUNK =
     10; // 2..n (too small or too big is slow)
 
-typedef Vectors::Point Point;
-typedef Vectors::BoundingBox BoundingBox;
-typedef Vectors::Vector Vector;
-typedef Vectors::PointAndVector PointAndVector;
+using Point = Vectors::Point;
+using BoundingBox = Vectors::BoundingBox;
+using Vector = Vectors::Vector;
+using PointAndVector = Vectors::PointAndVector;
 
 /*
  * TUNING:
@@ -186,8 +186,8 @@ public:
    * (or vice versa).
    */
   ChainIterator(const ChainIterator &o)
-      : chunks(o.chunks), chunk_n(o.chunk_n), inner_n(o.inner_n),
-        is_closed(o.is_closed) {}
+
+      = default;
 
   ChainIterator(const ChainIterator &o, bool is_closed_, int step = 0)
       : chunks(o.chunks), chunk_n(o.chunk_n), inner_n(o.inner_n),
@@ -332,7 +332,7 @@ public:
       : fs(fs_), chunks(), bb(), st(ST_BUSY), total_points(0),
         chunk_area_limit(chunk_area_limit_), prev_p(),
         debug_drawer(debug_drawer_) {}
-  ~Chain() {}
+  ~Chain() = default;
 
   void add_point(const Point &p);
 
@@ -366,7 +366,7 @@ public:
 
   void draw_labels(Labelizer::Drawer &drawer);
 };
-typedef Labelizer::Chain Chain;
+using Chain = Labelizer::Chain;
 
 /*
  */

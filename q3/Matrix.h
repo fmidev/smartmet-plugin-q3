@@ -62,7 +62,7 @@ public:
   static const char *name() { return "MatrixSize"; }
   static const char *env_mode() { return nullptr; }
   static const LuaNew_ID &id() { return ID; }
-  typedef MatrixSize CAST_T;
+  using CAST_T = MatrixSize;
 
 private:
   static int index(lua_State *L);
@@ -152,7 +152,7 @@ public:
   static const char *name() { return "MatrixIter"; }
   static const char *env_mode() { return nullptr; }
   static const LuaNew_ID &id() { return ID; }
-  typedef MatrixIter CAST_T;
+  using CAST_T = MatrixIter;
 
 private:
   static int index(lua_State *L);
@@ -283,7 +283,7 @@ public:
   static const char *name() { return "Matrix"; }
   static const char *env_mode() { return nullptr; }
   static const LuaNew_ID &id() { return ID; }
-  typedef Matrix CAST_T;
+  using CAST_T = Matrix;
 
   // Keep public to allow 'SubMatrix::index()' to call it (we could also pick
   // the '__index' value in 'SubMatrix::setup()' and remember it, but that gets
@@ -328,8 +328,8 @@ protected:
         is_readonly(ro) { /* our invariant called by derived classes */
   }
 
-  typedef MatrixPos::xy_t xy_t;
-  typedef MatrixPos::offset_t offset_t;
+  using xy_t = MatrixPos::xy_t;
+  using offset_t = MatrixPos::offset_t;
 
   /*
    * Read operations
