@@ -779,13 +779,13 @@ int TrackProxyBind::call(lua_State *L)
     mode = BEST_VERTICAL;
 
 #ifdef HEIGHT_TRUE_PULLS_IN_Z
-    required_params.push_back(Z);
+    required_params.emplace_back(Z);
 #endif
   }
 
   if (demand_p_param)
   {
-    required_params.push_back("P");
+    required_params.emplace_back("P");
   }
 
   for (auto it = required_levels.begin(); it != required_levels.end(); ++it) {

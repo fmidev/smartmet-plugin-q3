@@ -17,7 +17,7 @@
 #include "Proto.h"
 
 #include <cairo.h>
-#include <string.h>
+#include <cstring>
 
 #include <unistd.h>
 // mkstemp()

@@ -13,7 +13,7 @@
 #include "Converter.hpp"
 
 #include <cairo.h>
-#include <string.h>
+#include <cstring>
 
 #include <fstream>
 #include <map>

@@ -24,9 +24,9 @@
 
 #include <sstream>
 
-#include <assert.h>
+#include <cassert>
+#include <cstring>
 #include <math.h>
-#include <string.h>
 
 using namespace std;
 
@@ -638,7 +638,7 @@ ContourInfo_Fill::create(const string &conf, const ContourMatrix<float> &data) {
     // Step is used only for finding the upper/lower limits (if lo/hi==32700).
     // Within the lo..hi range step makes no sense.
     //
-    ranges.push_back(pair<float, float>(lo, hi));
+    ranges.emplace_back(lo, hi);
 
     (void)zero_level; // not used
 
@@ -658,7 +658,7 @@ ContourInfo_Fill::create(const string &conf, const ContourMatrix<float> &data) {
         throw runtime_error("Bad contour spec (hi<lo): " + conf);
       }
 
-      ranges.push_back(pair<float, float>(a, b));
+      ranges.emplace_back(a, b);
     }
     if (ss.bad()) {
       LOG_USAGE("Bad contour spec: %s", conf.c_str());

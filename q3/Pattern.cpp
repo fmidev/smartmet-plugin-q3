@@ -14,7 +14,7 @@
 #include "Color.hpp"
 #include "Converter.hpp"
 
-#include <string.h>
+#include <cstring>
 
 using namespace std;
 

@@ -12,7 +12,7 @@
 #include "Converter.hpp"
 //#include "Color.hpp"
 
-#include <string.h>
+#include <cstring>
 
 using namespace std;
 

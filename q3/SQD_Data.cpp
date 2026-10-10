@@ -29,8 +29,8 @@
 
 #include <boost/lexical_cast.hpp>
 
+#include <ctime>
 #include <sys/stat.h>
-#include <time.h>
 
 #include "newbase/NFmiRotatedLatLonArea.h"
 
@@ -394,7 +394,7 @@ static vector<NA_Level> getLevels(const NFmiQueryInfo &info,
 
   if (vec.size() == 0) {
     if (any_level_found) {
-      vec.push_back(NA_Level(NA_Level::GROUND_LEVEL));
+      vec.emplace_back(NA_Level::GROUND_LEVEL);
       return vec;
     }
 
@@ -504,7 +504,7 @@ void addParam(vector<NA_Param> &vec, NFmiQueryInfo &info, FmiParameterName e) {
     precision = info.Param().GetParam()->Precision().CharPtr();
   }
 
-  vec.push_back(NA_Param(e, interpolation, precision));
+  vec.emplace_back(e, interpolation, precision);
 }
 
 uint getDataTimeStep(NFmiQueryInfo &info) {
@@ -702,8 +702,7 @@ static vector<NA_Param> getParams(NFmiQueryInfo &info, bool &has_326,
 #endif
 #endif
   for (auto it = virtualParams.begin(); (it != virtualParams.end()); it++)
-    vec.push_back(
-        NA_Param(it->first.c_str(), NA_Param::UNIT_UNKNOWN_INTERPOLATABLE));
+    vec.emplace_back(it->first.c_str(), NA_Param::UNIT_UNKNOWN_INTERPOLATABLE);
 
   if (has_19) {
     addParam(vec, info, kFmiWindDirection);     // WD
@@ -1896,8 +1895,7 @@ SQD_Data::push_NativeCross(lua_State *L, const std::vector<JDay> &vtVec,
         for (i = iLocs = 0; (i < nTimes); i++, iLocs += locIdxIncr) {
           if ((!i) || (!cross))
             validTimes.push_back(SQD_Tools::jd2mt(vtVec[i]));
-          locations.push_back(
-              NFmiPoint(locs[iLocs].getLon(), locs[iLocs].getLat()));
+          locations.emplace_back(locs[iLocs].getLon(), locs[iLocs].getLat());
         }
 
         if (cross)
@@ -1924,7 +1922,7 @@ SQD_Data::push_NativeCross(lua_State *L, const std::vector<JDay> &vtVec,
         for (i = 0; (i < nTimes); i++)
           validTimes.push_back(SQD_Tools::jd2mt(vtVec[i]));
         for (i = 0; (i < nLocs); i++)
-          locations.push_back(NFmiPoint(locs[i].getLon(), locs[i].getLat()));
+          locations.emplace_back(locs[i].getLon(), locs[i].getLat());
 
         if (hybrid)
           nm = fi.FlightRouteValuesHybrid(hLevels, locations, validTimes);
@@ -1980,7 +1978,7 @@ SQD_Data::push_NativeCross(lua_State *L, const std::vector<JDay> &vtVec,
     for (size_t y = 0; y < ys; y++)
       for (size_t x = 0; x < xs; x++) {
         const NFmiPoint &p = area->ToLatLon(cm(x, y));
-        locations.push_back(LatLon(p.Y(), p.X()));
+        locations.emplace_back(p.Y(), p.X());
       }
   } else {
     NFmiAreaFactory::return_type area =
@@ -1991,7 +1989,7 @@ SQD_Data::push_NativeCross(lua_State *L, const std::vector<JDay> &vtVec,
       NFmiPoint p(fi.LatLon());
 
       if ((!area) || (area->IsInside(p)))
-        locations.push_back(LatLon(p.Y(), p.X()));
+        locations.emplace_back(p.Y(), p.X());
     }
   }
 
@@ -2045,13 +2043,13 @@ SQD_Data::push_NativeCross(lua_State *L, const std::vector<JDay> &vtVec,
       NFmiPoint p(fi.LatLon());
 
       if (area->IsInside(p))
-        dataNames.push_back(string(reinterpret_cast<const char *>(
-            fi.Location()->GetName().GetCharPtr())));
+        dataNames.emplace_back(reinterpret_cast<const char *>(
+            fi.Location()->GetName().GetCharPtr()));
     }
   } else
     for (fi.ResetLocation(); fi.NextLocation();)
-      dataNames.push_back(string(reinterpret_cast<const char *>(
-          fi.Location()->GetName().GetCharPtr())));
+      dataNames.emplace_back(reinterpret_cast<const char *>(
+          fi.Location()->GetName().GetCharPtr()));
 
   return;
 }

@@ -27,7 +27,7 @@
 #include <cstring>
 
 #ifdef UNIX
-#include <errno.h>
+#include <cerrno>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>

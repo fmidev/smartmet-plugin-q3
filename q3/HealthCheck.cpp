@@ -21,7 +21,7 @@
 #include <sys/time.h>
 // getrusage()
 
-#include <errno.h>
+#include <cerrno>
 #include <sys/statvfs.h>
 
 using namespace std;

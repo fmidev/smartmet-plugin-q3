@@ -38,7 +38,7 @@ LuaNew_ID MatrixSizeBind::ID;
 //
 LuaNew_ID MatrixBind::ID;
 
-#include <float.h>
+#include <cfloat>
 
 ApiMatrix::~ApiMatrix() = default; // needs to be somewhere
 

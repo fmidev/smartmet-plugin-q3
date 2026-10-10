@@ -37,9 +37,9 @@
 #include <fstream>
 #endif
 
-#include <assert.h>
+#include <cassert>
+#include <cstdio>
 #include <math.h>
-#include <stdio.h>
 
 #include <pthread.h>
 

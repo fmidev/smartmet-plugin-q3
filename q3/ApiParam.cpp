@@ -175,10 +175,10 @@ vector<string> ApiParam::convert_to_api(const std::vector<NA_Param> &vec,
   }
 
   if (has_by_standard_name(vec, "U", "V")) {
-    ret.push_back("UV");
+    ret.emplace_back("UV");
   }
   if (has_by_standard_name(vec, "WS", "WD")) {
-    ret.push_back("WIND");
+    ret.emplace_back("WIND");
   }
 
   return ret;
@@ -225,10 +225,10 @@ vector<NA_Param> ApiParam::convert_to_native(const std::vector<ApiParam> &vec,
     }
 
     if (/* (! it->b) || */ (!has_by_standard_name(ret, (it->a).getName())))
-      ret.push_back(NA_Param((it->a).getName().c_str()));
+      ret.emplace_back((it->a).getName().c_str());
 
     if (it->b && (!has_by_standard_name(ret, (it->b).getName()))) {
-      ret.push_back(NA_Param((it->b).getName().c_str()));
+      ret.emplace_back((it->b).getName().c_str());
     }
   }
 

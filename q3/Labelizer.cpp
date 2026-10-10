@@ -31,9 +31,9 @@
 #include "LogTools.h"
 
 #include "LuaWrap.h" // 01-Feb-2012 PKi
-#include <assert.h>
+#include <cassert>
+#include <cstring>
 #include <math.h>
-#include <string.h>
 
 #include <stdexcept>
 
@@ -123,7 +123,7 @@ public:
 
       bb = bb2;
     }
-    curve.push_back(PointScore(p, prev_to_p, 0.0));
+    curve.emplace_back(p, prev_to_p, 0.0);
     return true;
   }
 
@@ -410,7 +410,7 @@ void Labelizer::Chain::add_point(const Point &xy) {
   if (empty) {
     // make the first chunk
     //
-    chunks.push_back(ChainChunk(chunk_area_limit));
+    chunks.emplace_back(chunk_area_limit);
     chunks.back().add_point(
         xy, Vector()); // null vector since we don't have a prior one
   } else {
@@ -420,7 +420,7 @@ void Labelizer::Chain::add_point(const Point &xy) {
     if (!chunks.back().add_point(xy, v)) {
       // make a new chunk (growing so big)
       //
-      chunks.push_back(ChainChunk(chunk_area_limit));
+      chunks.emplace_back(chunk_area_limit);
       bool _ = chunks.back().add_point(xy, v); // should always succeeed
       assert(_);
       (void)_;
@@ -683,8 +683,7 @@ vector<Labelizer::TiltedRect> Labelizer::done(double scale) {
 
           // This is for collecting the labels to clipping & drawing
           //
-          chosenlabels.push_back(
-              ChosenLabel(tr.get_center(), tilt_rad, (*it)->get_fs()));
+          chosenlabels.emplace_back(tr.get_center(), tilt_rad, (*it)->get_fs());
           used = true;
 
           // Mark points surrounding the chosen one (but too close)

@@ -14,9 +14,9 @@
 #include "Tools.h"
 
 #include <cassert>
+#include <cerrno>
+#include <climits>
 #include <cstring>
-#include <errno.h>
-#include <limits.h>
 
 #include <sstream>
 #include <stdexcept>

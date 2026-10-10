@@ -8,7 +8,7 @@ extern "C" {
 #include "lualib.h"
 }
 
-#include "assert.h"
+#include <cassert>
 
 static unsigned char proto_chunk[] =
 #include "proto.lch"

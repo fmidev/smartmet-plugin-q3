@@ -10,7 +10,7 @@
 #include "Tools.h"
 #include "Vector.h"
 
-#include <string.h>
+#include <cstring>
 
 // 21-Nov-2011 PKi: For drawing, filling and labeling contours
 //
@@ -1251,7 +1251,7 @@ int Contour::drawcontours(lua_State *L) {
         }
 
         cc = ContourInfo_common::create(cit->second);
-        ccVec.push_back(spcc(cc));
+        ccVec.emplace_back(cc);
 
         pit = cit;
 
@@ -1304,7 +1304,7 @@ int Contour::drawcontours(lua_State *L) {
             }
           }
 
-          line_store.push_back(LineStore(ci.stroke, c));
+          line_store.emplace_back(ci.stroke, c);
 
           lua_pop(L, 1); // remove value, keep key (for 'lua_next()')
         }

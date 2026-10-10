@@ -6,13 +6,13 @@
 #include "MatrixPos.h"
 #include "NA_Level.h"
 
+#include <cfloat>
 #include <cstring>
-#include <float.h>
 #include <math.h>
 #include <vector>
 
 #ifdef UNIX
-#include <errno.h>
+#include <cerrno>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>

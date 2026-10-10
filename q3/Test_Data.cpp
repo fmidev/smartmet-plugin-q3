@@ -34,11 +34,11 @@ static struct JustOnce_Test_Data { // note: must have unique name (otherwise
       times.push_back(jd.add_hours(i));
     }
 
-    levels.push_back(NA_Level(NA_Level::GROUND_LEVEL));
+    levels.emplace_back(NA_Level::GROUND_LEVEL);
 
-    params.push_back(NA_Param("SW", NA_Param::UNIT_UNKNOWN_INTERPOLATABLE));
-    params.push_back(NA_Param("SE", NA_Param::UNIT_UNKNOWN_INTERPOLATABLE));
-    params.push_back(NA_Param("S", NA_Param::UNIT_UNKNOWN_INTERPOLATABLE));
+    params.emplace_back("SW", NA_Param::UNIT_UNKNOWN_INTERPOLATABLE);
+    params.emplace_back("SE", NA_Param::UNIT_UNKNOWN_INTERPOLATABLE);
+    params.emplace_back("S", NA_Param::UNIT_UNKNOWN_INTERPOLATABLE);
 
     // Note: Cannot use 'Projection::NONE' here. Order of initialization of C++
     // globals is not defined; 'Projection::NONE'

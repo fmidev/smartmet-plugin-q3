@@ -71,7 +71,7 @@ public:
   ~SmoothPath() {}
 
   void add_point(const Point &p, bool at_edge = false) {
-    rim.push_back(PointAndEdge(p, at_edge));
+    rim.emplace_back(p, at_edge);
   }
 
   void done(float factor, bool closed_);
