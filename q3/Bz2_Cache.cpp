@@ -131,8 +131,8 @@ Bz2_Cache::Bz2_Cache(const char *fn) : mapping_m(), mapping(), f(nullptr) {
       throw E_LOG_FATAL("Unable to open %s for writing", fn);
     }
 
-    for (auto it = mapping.begin(); it != mapping.end(); ++it) {
-      write_LOCKED(it->first, it->second);
+    for (auto &it : mapping) {
+      write_LOCKED(it.first, it.second);
     }
     flush();
   }

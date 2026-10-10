@@ -197,8 +197,8 @@ static void q3_config(const char *conf,
         string aliases = lua_tostring(L, -1), tmp;
         boost::split(aliasvect, aliases, boost::is_any_of(","));
 
-        for (auto it = aliasvect.begin(); it != aliasvect.end(); it++) {
-          auto alias = boost::trim_copy(*it);
+        for (auto &it : aliasvect) {
+          auto alias = boost::trim_copy(it);
 
           if (alias.empty())
             LOG_WARNING("Warning: empty alias for track '%s'", key);
@@ -283,8 +283,8 @@ static void q3_config(const char *conf,
 
       if (!aliasvect.empty())
       {
-        for (auto it = aliasvect.begin(); it != aliasvect.end(); it++) {
-          auto alias = boost::trim_copy(*it);
+        for (auto &it : aliasvect) {
+          auto alias = boost::trim_copy(it);
 
           auto ta = new Q3Engine::Track(alias.c_str(), run_secs, tmp_pattern, tmp_threshold, key);
           trackers[alias.c_str()] = ta;
@@ -466,8 +466,8 @@ Q3Engine::~Q3Engine()
 {
   // Release all of the 'Track' objects (no sessions running any more)
   //
-  for (auto it = trackers.begin(); it != trackers.end(); ++it) {
-    delete it->second;
+  for (auto &tracker : trackers) {
+    delete tracker.second;
   }
 }
 
@@ -477,9 +477,9 @@ vector<string> Q3Engine::getNames(bool getAliases) const
 {
   vector<string> ret;
 
-  for (auto it = trackers.begin(); it != trackers.end(); ++it) {
-    if (getAliases || it->second->getAlias().empty())
-      ret.push_back(it->first);
+  for (const auto &tracker : trackers) {
+    if (getAliases || tracker.second->getAlias().empty())
+      ret.push_back(tracker.first);
   }
   return ret;
 }

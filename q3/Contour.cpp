@@ -490,8 +490,8 @@ int Contour::contour_smoothen_one(lua_State *L) {
   } else {
     SmoothPath sp;
 
-    for (auto it = c2.points.begin(); it != c2.points.end(); it++)
-      sp.add_point(Vectors::Point(it->x, it->y), it->edge);
+    for (auto &point : c2.points)
+      sp.add_point(Vectors::Point(point.x, point.y), point.edge);
 
     sp.done(factor, true);
 
@@ -518,8 +518,8 @@ void Contour::stretch_out(double factor) {
   // Get the center point
   //
   Point cp;
-  for (auto it = points.begin(); it != points.end(); ++it) {
-    cp += *it;
+  for (auto &point : points) {
+    cp += point;
   }
   cp /= n;
 
@@ -1373,8 +1373,8 @@ int Contour::drawcontours(lua_State *L) {
 
         // Clip label boxes (don't allow drawing curves on them)
         //
-        for (auto it = label_trs.begin(); it != label_trs.end(); ++it) {
-          label_clip(cr, *it);
+        for (auto &label_tr : label_trs) {
+          label_clip(cr, label_tr);
         }
 
         // Paths need to be inverted to clip out the label areas. Also filling
@@ -1390,9 +1390,9 @@ int Contour::drawcontours(lua_State *L) {
 
     const ContourInfo_common::StrokeParams *sp_last = nullptr;
 
-    for (auto it = line_store.begin(); it != line_store.end(); ++it) {
-      const ContourInfo_common::StrokeParams &sp = it->sp;
-      const Contour *curves = it->curves;
+    for (auto &it : line_store) {
+      const ContourInfo_common::StrokeParams &sp = it.sp;
+      const Contour *curves = it.curves;
 
       if ((!sp_last) || (*sp_last != sp)) {
         if (sp_last) {
@@ -1432,7 +1432,7 @@ int Contour::drawcontours(lua_State *L) {
           cairo_set_dash(cr, nullptr, 0, 0.0);
         }
 
-        sp_last = &it->sp;
+        sp_last = &it.sp;
       }
 
       // Add latest curve to Cairo path (not drawing, yet)

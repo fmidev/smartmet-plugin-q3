@@ -354,9 +354,9 @@ int Q3Server::query(const map<string, string> &key_val,
   //
   if (key_val_as_globals)
   {
-    for (auto it = key_val.begin(); it != key_val.end(); ++it) {
-      lua_pushstring(L, it->first.c_str());
-      lua_pushstring(L, it->second.c_str());
+    for (const auto &it : key_val) {
+      lua_pushstring(L, it.first.c_str());
+      lua_pushstring(L, it.second.c_str());
       lua_rawset(L, LUA_GLOBALSINDEX);
     }
   }
@@ -417,8 +417,8 @@ int Q3Server::query(const map<string, string> &key_val,
     //
     vector<string> names = itsEngine->getNames();
 
-    for (auto it = names.begin(); it != names.end(); ++it) {
-      const char *cstr = it->c_str();
+    for (auto &name : names) {
+      const char *cstr = name.c_str();
       const Q3Engine::Track *track = itsEngine->getTrack(cstr);
       if (!track)
       {
@@ -434,8 +434,8 @@ int Q3Server::query(const map<string, string> &key_val,
     lua_newtable(L);
     int i = 0;
 
-    for (auto it = names.begin(); it != names.end(); ++it) {
-      const char *cstr = it->c_str();
+    for (auto &name : names) {
+      const char *cstr = name.c_str();
       const Q3Engine::Track *track = itsEngine->getTrack(cstr, false);
       if (!track)
       {
@@ -447,7 +447,7 @@ int Q3Server::query(const map<string, string> &key_val,
         continue;
 
       lua_pushinteger(L, i + 1);
-      lua_pushstring(L, it->c_str());
+      lua_pushstring(L, name.c_str());
       lua_settable(L, -3);
 
       i++;
@@ -491,9 +491,9 @@ int Q3Server::query(const map<string, string> &key_val,
       {
         L_GROW(3);
         lua_newtable(L);
-        for (auto it = key_val.begin(); it != key_val.end(); ++it) {
-          lua_pushstring(L, it->first.c_str());
-          lua_pushstring(L, it->second.c_str());
+        for (const auto &it : key_val) {
+          lua_pushstring(L, it.first.c_str());
+          lua_pushstring(L, it.second.c_str());
           lua_rawset(L, -3);
         }
         args = 1;
@@ -602,9 +602,9 @@ void Q3Server::native_handler(RequestResponse &rr)
   string err;
   int err_code = -1;
 
-  for (auto it = rr.begin(); it != rr.end(); ++it) {
-    string key = it->first;
-    string val = it->second;
+  for (const auto &it : rr) {
+    string key = it.first;
+    string val = it.second;
     // const char *key_c= key.c_str();
     const char *val_c = val.c_str();
 
@@ -760,9 +760,9 @@ void Q3Server::wms_handler(RequestResponse &rr)
   */
   map<string, string> key_val;
 
-  for (auto it = rr.begin(); it != rr.end(); ++it) {
-    const char *key = it->first.c_str();
-    const char *val = it->second.c_str();
+  for (const auto &it : rr) {
+    const char *key = it.first.c_str();
+    const char *val = it.second.c_str();
 
     // Store the keys in lower case (WMS standard requires the keys to be case independent)
     //

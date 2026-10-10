@@ -31,8 +31,8 @@ static bool has_by_standard_name(const std::vector<NA_Param>& vec, const string&
   bool s1_match = false;
   bool s2_match = (s2 == ""); // match if not given
 
-  for (auto it = vec.begin(); it != vec.end(); ++it) {
-    string it_s = it->getStandardName();
+  for (const auto &it : vec) {
+    string it_s = it.getStandardName();
 
     if (it_s == s1) {
       s1_match = true;
@@ -119,16 +119,16 @@ NA_Param ApiScalarParam::covered_by(const vector<NA_Param> &vec) const {
   //  2. if native name and/or id matches (both must match if given) it's a
   //  match
   //
-  for (auto it = vec.begin(); it != vec.end(); ++it) {
-    string it_std_name = it->getStandardName();
-    string it_native_name = it->getNativeName_();
+  for (const auto &it : vec) {
+    string it_std_name = it.getStandardName();
+    string it_native_name = it.getNativeName_();
 
     if (it_std_name == name) {
-      return *it; // standard name match
+      return it; // standard name match
     }
 
     if (native_match(it_native_name, name)) {
-      return *it; // match by native name, native id (if SQD) or both
+      return it; // match by native name, native id (if SQD) or both
     }
   }
   return NONE;
@@ -170,8 +170,8 @@ vector<string> ApiParam::convert_to_api(const std::vector<NA_Param> &vec,
                                         bool prefer_standard_names) {
   vector<string> ret;
 
-  for (auto it = vec.begin(); it != vec.end(); ++it) {
-    ret.push_back(it->toString(prefer_standard_names));
+  for (const auto &it : vec) {
+    ret.push_back(it.toString(prefer_standard_names));
   }
 
   if (has_by_standard_name(vec, "U", "V")) {
@@ -200,7 +200,7 @@ vector<NA_Param> ApiParam::convert_to_native(const std::vector<ApiParam> &vec,
 
   vector<NA_Param> ret;
 
-  for (auto it = vec.begin(); it != vec.end(); ++it) {
+  for (const auto &it : vec) {
     assert(it->a);
 
     // 02-Sep-2011 PKi: Check for duplicate parameters. When creating a raw
@@ -216,7 +216,7 @@ vector<NA_Param> ApiParam::convert_to_native(const std::vector<ApiParam> &vec,
 
     if (data) {
       bool mapped;
-      data->mapParameter(NA_Param((it->a).getName().c_str(),
+      data->mapParameter(NA_Param((it.a).getName().c_str(),
                                   NA_Param::UNIT_UNKNOWN_INTERPOLATABLE),
                          true, &mapped);
 
@@ -224,11 +224,11 @@ vector<NA_Param> ApiParam::convert_to_native(const std::vector<ApiParam> &vec,
         continue;
     }
 
-    if (/* (! it->b) || */ (!has_by_standard_name(ret, (it->a).getName())))
-      ret.emplace_back((it->a).getName().c_str());
+    if (/* (! it->b) || */ (!has_by_standard_name(ret, (it.a).getName())))
+      ret.emplace_back((it.a).getName().c_str());
 
-    if (it->b && (!has_by_standard_name(ret, (it->b).getName()))) {
-      ret.emplace_back((it->b).getName().c_str());
+    if (it.b && (!has_by_standard_name(ret, (it.b).getName()))) {
+      ret.emplace_back((it.b).getName().c_str());
     }
   }
 
@@ -247,13 +247,13 @@ vector<NA_Param> ApiParam::realParams(const NA_Data *data) {
 
   vector<NA_Param> vec = data->getParams();
 
-  for (auto it = vec.begin(); it != vec.end(); ++it) {
+  for (auto &it : vec) {
 
     bool mapped;
-    data->mapParameter(*it, true, &mapped);
+    data->mapParameter(it, true, &mapped);
 
     if (!mapped)
-      ret.push_back(*it);
+      ret.push_back(it);
   }
 
   return ret;

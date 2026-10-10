@@ -48,10 +48,10 @@ public:
   bool just_try(lua_State *L, int index, T &to) const {
     const char *s = lua_tostring(L, index);
     if (s) {
-      for (auto it = m.begin(); it != m.end(); ++it) {
+      for (auto it : m) {
         // std::cerr << s << it->second << std::endl;
-        if (strcasecmp(s, it->second) == 0) {
-          to = (T)it->first;
+        if (strcasecmp(s, it.second) == 0) {
+          to = (T)it.first;
           return true;
         }
       }

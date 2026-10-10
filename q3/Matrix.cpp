@@ -1537,9 +1537,9 @@ int MatrixBind::index( lua_State *L ) {
     } else {
         lua_newtable(L);
         unsigned i=1;
-        for (auto it = locs.begin(); it != locs.end(); ++it) {
+        for (auto &loc : locs) {
           lua_pushinteger(L, i++);
-          lua_pushnumber(L, m.at(*it));
+          lua_pushnumber(L, m.at(loc));
           lua_settable(L, -3);
         }
     }

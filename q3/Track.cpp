@@ -70,8 +70,8 @@ Q3Engine::Track::Track(const string &name_,
 */
 Q3Engine::Track::~Track()
 {
-  for (auto it = watch.begin(); it != watch.end(); ++it) {
-    delete *it;
+  for (auto &it : watch) {
+    delete it;
   }
 }
 
@@ -134,12 +134,12 @@ TrackedData *Q3Engine::Track::getData_must_release_(const JDay &ot,
   TrackedData *d3 =
       nullptr; // 3rd choice for ONLY_PRESSURE: first pressure data match
 
-  for (auto it0 = watch.begin(); it0 != watch.end(); ++it0) {
+  for (auto it0 : watch) {
     // 08-Mar-2012 PKi: Release previous data (was acquired once more than released)
     if (d)
       d->Release();
 
-    d = (*it0)->getData_must_release(ot, archivedData, metaQuery);
+    d = it0->getData_must_release(ot, archivedData, metaQuery);
     if (!d)
       continue;  // go on to next config entry
 
@@ -155,10 +155,9 @@ TrackedData *Q3Engine::Track::getData_must_release_(const JDay &ot,
     const vector<JDay> &times = info.getTimes();
     bool match = true;
 
-    for (auto it = required_times.begin(); it != required_times.end(); ++it) {
-      if (!it->covered_by(times))
-      {
-        string tmp = it->toString();
+    for (const auto &required_time : required_times) {
+      if (!required_time.covered_by(times)) {
+        string tmp = required_time.toString();
         err += string_fmt("\t%s (no validtime %s)\n", info.getExtra_fn().c_str(), tmp.c_str());
         match = false;
         break;  // out of the iterator
@@ -178,12 +177,10 @@ TrackedData *Q3Engine::Track::getData_must_release_(const JDay &ot,
       {
         const std::vector<NA_Param> &qd_params = qd->getParams();
 
-        for (auto it = required_params.begin(); it != required_params.end();
-             ++it) {
-          if (!it->covered_by(qd_params))
-          {
-//          LOG_DEBUG("No param found: %s", it->toString().c_str());
-            missing_param = it->toString();
+        for (const auto &required_param : required_params) {
+          if (!required_param.covered_by(qd_params)) {
+            //          LOG_DEBUG("No param found: %s", it->toString().c_str());
+            missing_param = required_param.toString();
             break;
           }
         }
@@ -217,16 +214,12 @@ TrackedData *Q3Engine::Track::getData_must_release_(const JDay &ot,
 
       NA_Data *qd = d->Acquire(metaQuery);
       {
-        for (auto it = required_levels.begin(); it != required_levels.end();
-             ++it) {
+        for (auto required_level : required_levels) {
           bool exact;
-          if (!it->covered_by(*qd, exact))
-          {
-            missing_level = it->toString();
+          if (!required_level.covered_by(*qd, exact)) {
+            missing_level = required_level.toString();
             break;  // out of the iterator
-          }
-          else if (!exact)
-          {
+          } else if (!exact) {
             all_match_exactly = false;  // at least one level would need to be calculated
           }
         }
@@ -311,8 +304,8 @@ vector<JDay> Q3Engine::Track::getOriginTimes(
 {
   vector<JDay> vec;
 
-  for (auto it = watch.begin(); it != watch.end(); ++it) {
-    (*it)->addOriginTimes_unsorted(vec, originTimeQuery);
+  for (auto it : watch) {
+    it->addOriginTimes_unsorted(vec, originTimeQuery);
   }
   sort_descending(vec, true /*cut duplicates*/);
 
@@ -323,8 +316,8 @@ vector<TrackedData *> Q3Engine::Track::getOriginTimeDatas(const JDay &ot) const 
 {
   vector<TrackedData *> vec;
 
-  for (auto it = watch.begin(); it != watch.end(); ++it) {
-    (*it)->addDatas_must_release(ot, vec);
+  for (auto it : watch) {
+    it->addDatas_must_release(ot, vec);
   }
 
   return vec;
@@ -355,7 +348,7 @@ JDay Q3Engine::Track::getOriginTimeOfRun_(int x, NA_Level::Type &leveltype) cons
     JDay ot_first;  // earliest -''-
     NA_Level::Type lt_last = NA_Level::NO_LEVEL;
 
-    for (auto it = watch.begin(); it != watch.end(); ++it) {
+    for (auto it : watch) {
       // Note: Tracks may be empty, in which case the returned JDay object
       //       is 'empty' (test with boolean operator).
       //
@@ -364,7 +357,7 @@ JDay Q3Engine::Track::getOriginTimeOfRun_(int x, NA_Level::Type &leveltype) cons
       // (which is NO_LEVEL if leveltype does not matter) to getLastOriginTime_fast()
       //
       NA_Level::Type lt = leveltype;
-      JDay ot = (*it)->getLastOriginTime_fast(lt);
+      JDay ot = it->getLastOriginTime_fast(lt);
       if (ot &&
           (
            (!ot_last) || (ot > ot_last) ||
@@ -380,7 +373,7 @@ JDay Q3Engine::Track::getOriginTimeOfRun_(int x, NA_Level::Type &leveltype) cons
         lt_last = lt;
       }
 
-      JDay ot2 = (*it)->getFirstOriginTime_fast();
+      JDay ot2 = it->getFirstOriginTime_fast();
       if (ot2 && ((!ot_first) || (ot2 < ot_first)))
       {
         ot_first = ot2;
@@ -403,8 +396,8 @@ JDay Q3Engine::Track::getOriginTimeOfRun_(int x, NA_Level::Type &leveltype) cons
   {  // Unpredictable runs ('run_secs'==0), 'x'<0
     vector<JDay> vec;
 
-    for (auto it = watch.begin(); it != watch.end(); ++it) {
-      (*it)->addOriginTimes_unsorted(vec);
+    for (auto it : watch) {
+      it->addOriginTimes_unsorted(vec);
     }
     sort_descending(vec, true);  // remove duplicates
 
@@ -788,31 +781,27 @@ int TrackProxyBind::call(lua_State *L)
     required_params.emplace_back("P");
   }
 
-  for (auto it = required_levels.begin(); it != required_levels.end(); ++it) {
-    if ((it->isGroundLevel() && (mode != UNDEFINED)) || (mode == ONLY_GROUND))
-    {
+  for (auto &required_level : required_levels) {
+    if ((required_level.isGroundLevel() && (mode != UNDEFINED)) ||
+        (mode == ONLY_GROUND)) {
       err = "Cannot require ground level and some other level";
       goto ERROR;
-    }
-    else if ((it->isSoundingLevel() && (mode != UNDEFINED)) || (mode == ONLY_SOUNDING))
-    {
+    } else if ((required_level.isSoundingLevel() && (mode != UNDEFINED)) ||
+               (mode == ONLY_SOUNDING)) {
       err = "Cannot require sounding levels and some other level";
       goto ERROR;
     }
 
-    if (it->isGroundLevel())
-    {
+    if (required_level.isGroundLevel()) {
       mode = ONLY_GROUND;
-    }
-    else if (it->isHybridLevel())
-    {
+    } else if (required_level.isHybridLevel()) {
       // Having one requirement a hybrid level forces all other levels to be calculated
       // from it.
       //
       mode = HYBRID;
-    }
-    else if (it->isPressureLevel())
-    {  // (also flight levels get here; stored as pressure levels)
+    } else if (required_level
+                   .isPressureLevel()) { // (also flight levels get here; stored
+                                         // as pressure levels)
       // HYBRID and BEST_VERTICAL remain; we can calculate pressures from such
       //
       // NOTE: We can ONLY calculate pressure from hybrid level if ':1' parameter is present.
@@ -824,19 +813,13 @@ int TrackProxyBind::call(lua_State *L)
 
       // 23-Nov-2012 PKi: Height value query support
       //
-    }
-    else if (it->getType() == NA_Level::HEIGHT_LEVEL)
-    {
+    } else if (required_level.getType() == NA_Level::HEIGHT_LEVEL) {
       // HYBRID and BEST_VERTICAL remain
       //
       ;
-    }
-    else if (it->isSoundingLevel())
-    {
+    } else if (required_level.isSoundingLevel()) {
       mode = ONLY_SOUNDING;
-    }
-    else
-    {
+    } else {
       throw E_LOG_BUG0("Unexpected level type");  // shouldn't happen
     }
   }

@@ -98,17 +98,17 @@ static int wn_PnPoly(const LatLon &P, const vector<LatLon> &V) {
 
   // loop through all edges of the polygon
   //
-  for (auto it = V.begin(); it != V.end(); ++it) { // edge from 'prev' to '*it'
+  for (const auto &it : V) {           // edge from 'prev' to '*it'
     if (prev.getLat() <= P.getLat()) { // start lat <= P.lat
-      if (it->getLat() > P.getLat())   // an upward crossing
-        if (isLeft(prev, *it, P) > 0)  // P left of edge
+      if (it.getLat() > P.getLat())    // an upward crossing
+        if (isLeft(prev, it, P) > 0)   // P left of edge
           ++wn;                        // have a valid up intersect
     } else {                           // start lat > P.lat (no test needed)
-      if (it->getLat() <= P.getLat())  // a downward crossing
-        if (isLeft(prev, *it, P) < 0)  // P right of edge
+      if (it.getLat() <= P.getLat())   // a downward crossing
+        if (isLeft(prev, it, P) < 0)   // P right of edge
           --wn;                        // have a valid down intersect
     }
-    prev = *it;
+    prev = it;
   }
   return wn;
 }
@@ -319,12 +319,12 @@ enum LatLonList::e_state LatLonList::init_from_ud(lua_State *L, int index,
 
   // Update bounding box
   //
-  for (auto it = this->begin(); it != this->end(); ++it) {
-    bb_min.lat = min(bb_min.lat, it->lat);
-    bb_min.lon = min(bb_min.lon, it->lon);
+  for (auto &it : *this) {
+    bb_min.lat = min(bb_min.lat, it.lat);
+    bb_min.lon = min(bb_min.lon, it.lon);
 
-    bb_max.lat = max(bb_max.lat, it->lat);
-    bb_max.lon = max(bb_max.lon, it->lon);
+    bb_max.lat = max(bb_max.lat, it.lat);
+    bb_max.lon = max(bb_max.lon, it.lon);
   }
 
   // Remove explicit closing to start point (if such)

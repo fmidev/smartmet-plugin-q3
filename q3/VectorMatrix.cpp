@@ -361,11 +361,11 @@ int VectorMatrixBind::index(lua_State *L) {
   } else {
     lua_newtable(L);
     unsigned i = 1;
-    for (auto it = locs.begin(); it != locs.end(); ++it) {
+    for (auto &loc : locs) {
       lua_pushinteger(L, i++);
 
-      double a = me.m1->at(*it);
-      double b = me.m2->at(*it);
+      double a = me.m1->at(loc);
+      double b = me.m2->at(loc);
 
       new (L) Vector(a, b, me.isPolar());
 

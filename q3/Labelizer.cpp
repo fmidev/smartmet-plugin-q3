@@ -372,8 +372,8 @@ using Chain = Labelizer::Chain;
  */
 Labelizer::~Labelizer() {
 
-  for (auto it = chains.begin(); it != chains.end(); ++it) {
-    delete *it;
+  for (auto &chain : chains) {
+    delete chain;
   }
 
   /*
@@ -624,10 +624,10 @@ vector<Labelizer::TiltedRect> Labelizer::done(double scale) {
   //
   vector<TiltedRect> done;
 
-  for (auto it = chains.begin(); it != chains.end(); ++it) {
+  for (auto &chain : chains) {
     // '*it' is the chain to consider
 
-    bool is_closed = (*it)->is_closed();
+    bool is_closed = chain->is_closed();
 
     while (true) {
       double tilt_rad = 0.0;
@@ -639,7 +639,7 @@ vector<Labelizer::TiltedRect> Labelizer::done(double scale) {
       // (we'll need it soon to mark neighbouring points invalid, if this
       // becomes selected).
       //
-      ChainIterator chosen = (*it)->candidate(&tilt_rad, &goodness);
+      ChainIterator chosen = chain->candidate(&tilt_rad, &goodness);
       CANDIDATE_PROF.stop();
       if (!chosen.valid())
         break; // all points gone; did not find a good (or even bad) candidate
@@ -657,7 +657,7 @@ vector<Labelizer::TiltedRect> Labelizer::done(double scale) {
         // too close to some (any) other already passed label (BLUE)
         debug_drawer.mark_candidate(chosen_p, goodness, "blue");
       } else {
-        TiltedRect tr(chosen_p, (*it)->get_fs().size, tilt_rad);
+        TiltedRect tr(chosen_p, chain->get_fs().size, tilt_rad);
         debug_drawer.mark_tr(tr);
 
         // TiltedRect is within the target bounding box exactly when its
@@ -667,7 +667,7 @@ vector<Labelizer::TiltedRect> Labelizer::done(double scale) {
           // outside of the target area (reject)
           debug_drawer.mark_candidate(chosen_p, goodness, "green");
         } else if ((!config.allow_overlapping_lines) &&
-                   (!LimitCrossingLines(tr, chains, *it))) {
+                   (!LimitCrossingLines(tr, chains, chain))) {
           // some (other than chain) line passed through the label (YELLOW)
           debug_drawer.mark_candidate(chosen_p, goodness, "yellow");
         } else if ((!config.allow_overlapping_labels) &&
@@ -683,7 +683,7 @@ vector<Labelizer::TiltedRect> Labelizer::done(double scale) {
 
           // This is for collecting the labels to clipping & drawing
           //
-          chosenlabels.emplace_back(tr.get_center(), tilt_rad, (*it)->get_fs());
+          chosenlabels.emplace_back(tr.get_center(), tilt_rad, chain->get_fs());
           used = true;
 
           // Mark points surrounding the chosen one (but too close)
@@ -709,8 +709,9 @@ vector<Labelizer::TiltedRect> Labelizer::done(double scale) {
  */
 void Labelizer::draw_labels(Drawer &drawer) {
 
-  for (auto it = chosenlabels.begin(); it != chosenlabels.end(); ++it) {
-    drawer.label(it->center, it->fs.label, *(it->fs.lp), it->rad);
+  for (auto &chosenlabel : chosenlabels) {
+    drawer.label(chosenlabel.center, chosenlabel.fs.label, *(chosenlabel.fs.lp),
+                 chosenlabel.rad);
   }
 }
 
@@ -786,8 +787,8 @@ bool Labelizer::LimitDirect(const Point &xy, const vector<TiltedRect> &done,
 
   LIMIT_DIRECT_PROF.start();
   {
-    for (auto it = done.begin(); it != done.end(); ++it) {
-      double dist = Vector(xy, it->get_center()).norm();
+    for (const auto &it : done) {
+      double dist = Vector(xy, it.get_center()).norm();
       // LOG_DEBUG( "Dist %lf,%lf -> %lf %lf = %lf (limit %lf)", xy.x, xy.y,
       // it->get_center().x, it->get_center().y, dist, limit );
 
@@ -816,11 +817,11 @@ bool Labelizer::LimitCrossingLines(const TiltedRect &tr,
 
   LIMIT_CROSSING_LINES_PROF.start();
   {
-    for (auto it = chains.begin(); it != chains.end(); ++it) {
-      if (*it == our_chain)
+    for (auto chain : chains) {
+      if (chain == our_chain)
         continue;
 
-      if ((*it)->intersects(tr)) {
+      if (chain->intersects(tr)) {
         goto LIMIT_CROSSING_LINES_RET; // intersection (no label)
       }
     }
@@ -845,8 +846,8 @@ bool Labelizer::LimitOverlappingLabels(const TiltedRect &tr,
 
   LIMIT_OVERLAPPING_LABELS_PROF.start();
   {
-    for (auto it = done.begin(); it != done.end(); ++it) {
-      if (tr.intersects(*it))
+    for (const auto &it : done) {
+      if (tr.intersects(it))
         goto LIMIT_OVERLAPPING_LABELS_RET; // limitation
     }
     ret = true;
@@ -1112,9 +1113,9 @@ bool Labelizer::ChainChunk::intersects(const PointAndVector &v,
   if (bb.detached(v))
     return false;
 
-  for (auto it = curve.begin(); it != curve.end(); ++it) {
-    if (it->intersects(v)) {
-      debug_drawer.mark_vector(*it, "red");
+  for (const auto &it : curve) {
+    if (it.intersects(v)) {
+      debug_drawer.mark_vector(it, "red");
       return true;
     }
   }
@@ -1131,11 +1132,11 @@ bool Labelizer::ChainChunk::intersects(const TiltedRect &tr,
   if (bb.detached(tr.get_bounding_box()))
     return false;
 
-  for (auto it = curve.begin(); it != curve.end(); ++it) {
+  for (const auto &it : curve) {
     // cached vector is from the earlier point to us, so we cannot use it
     // directly
     //
-    PointAndVector pv(it->p - *it, *it);
+    PointAndVector pv(it.p - it, it);
 
     // debug_drawer.mark_vector( pv, "blue" );
     if (tr.intersects(pv)) {
@@ -1168,8 +1169,8 @@ bool Labelizer::Chain::intersects(const PointAndVector &v) /*const*/ {
   if (bb.detached(v))
     return false;
 
-  for (auto it = chunks.begin(); it != chunks.end(); ++it) {
-    if (it->intersects(v, debug_drawer))
+  for (auto &chunk : chunks) {
+    if (chunk.intersects(v, debug_drawer))
       return true; // We don't care where the intersection was
   }
   return false;
@@ -1191,9 +1192,9 @@ bool Labelizer::Chain::intersects(const TiltedRect &tr) /*const*/ {
   // Iterate by the chunks, since they each have a boundary box (optimizes,
   // compared to using 'ChainIterator')
   //
-  for (auto it = chunks.begin(); it != chunks.end(); ++it) {
+  for (auto &chunk : chunks) {
     debug_drawer.mark_tr(tr, "yellow");
-    if (it->intersects(tr, debug_drawer)) {
+    if (chunk.intersects(tr, debug_drawer)) {
       return true; // We don't care where the intersection was
     }
     debug_drawer.mark_tr(tr, "blue");

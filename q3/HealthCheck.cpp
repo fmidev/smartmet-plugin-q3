@@ -491,13 +491,14 @@ void *HealthCheck::thread(void *me_v) {
     if (my.swap) {
       // TBD - if needed
     }
-    for (auto it = my.paths.begin(); it != my.paths.end(); ++it) {
-      const char *path = it->c_str(); (void)path;
+    for (const auto &it : my.paths) {
+      const char *path = it.c_str();
+      (void)path;
       LOG_STAT("DISK %s %s", path, disk_usage(path).c_str());
     }
-    for (auto it = my.net_interfaces.begin(); it != my.net_interfaces.end();
-         ++it) {
-      const char *ethX = it->c_str(); (void)ethX;
+    for (const auto &net_interface : my.net_interfaces) {
+      const char *ethX = net_interface.c_str();
+      (void)ethX;
       LOG_STAT("NET %s %s", ethX, net_usage(ethX).c_str());
     }
   }

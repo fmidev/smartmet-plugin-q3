@@ -863,8 +863,8 @@ int Context::clip_extents(lua_State *L) {
   cairo_clip_extents(my, &v[0], &v[1], &v[2], &v[3]);
   status_check_ok(L, cairo_status(my));
 
-  for (unsigned i = 0; i < 4; i++) {
-    lua_pushnumber(L, v[i]);
+  for (double i : v) {
+    lua_pushnumber(L, i);
   }
   return 4;
 }
@@ -907,8 +907,8 @@ int Context::fill_extents(lua_State *L) {
   cairo_fill_extents(my, &v[0], &v[1], &v[2], &v[3]);
   status_check_ok(L, cairo_status(my));
 
-  for (unsigned i = 0; i < 4; i++) {
-    lua_pushnumber(L, v[i]);
+  for (double i : v) {
+    lua_pushnumber(L, i);
   }
   return 4;
 }
@@ -1024,8 +1024,8 @@ int Context::stroke_extents(lua_State *L) {
   cairo_stroke_extents(my, &v[0], &v[1], &v[2], &v[3]);
   status_check_ok(L, cairo_status(my));
 
-  for (unsigned i = 0; i < 4; i++) {
-    lua_pushnumber(L, v[i]);
+  for (double i : v) {
+    lua_pushnumber(L, i);
   }
   return 4;
 }
@@ -1616,8 +1616,8 @@ int Context::path_extents(lua_State *L) {
   cairo_path_extents(my, &v[0], &v[1], &v[2], &v[3]);
   status_check_ok(L, cairo_status(my));
 
-  for (unsigned i = 0; i < 4; i++) {
-    lua_pushnumber(L, v[i]);
+  for (double i : v) {
+    lua_pushnumber(L, i);
   }
   return 4;
 }

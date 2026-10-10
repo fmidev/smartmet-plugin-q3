@@ -172,10 +172,10 @@ bool Bz2_Tracker::update_from_cache(set<string> &seen_already) throw() {
   {
     ClaimMutex lock(cache->mapping_m);
 
-    for (auto it = cache->mapping.begin(); it != cache->mapping.end(); ++it) {
-      const string fn_s = it->first;
+    for (auto &it : cache->mapping) {
+      const string fn_s = it.first;
       const char *fn_abs = fn_s.c_str();
-      const JDay ot = it->second;
+      const JDay ot = it.second;
 
       if (!ot) {
         LOG_WARNING("Bad cache line ignored (OT 0 for %s)", fn_abs);

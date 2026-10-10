@@ -59,8 +59,8 @@ TrackerBase::~TrackerBase() {
    *
    * We're the only thread now, so can use the '_LOCKED' functions.
    */
-  for (auto it = available_data.begin(); it != available_data.end(); ++it) {
-    TrackedData *d = it->second;
+  for (auto &it : available_data) {
+    TrackedData *d = it.second;
     if (d) {
       d->Wipe_LOCKED();
       delete d;
@@ -259,8 +259,8 @@ void TrackerBase::addOriginTimes_unsorted(
 
   {
     ClaimMutex lock(data_m);
-    for (auto it = available_data.begin(); it != available_data.end(); ++it) {
-      vec.push_back(it->first); // JDay
+    for (const auto &it : available_data) {
+      vec.push_back(it.first); // JDay
     }
   }
 }
@@ -272,10 +272,10 @@ void TrackerBase::addDatas_must_release(const JDay &ot,
 
   {
     ClaimMutex lock(data_m);
-    for (auto it = available_data.begin(); it != available_data.end(); ++it) {
-      if (it->first == ot) {
-        it->second->Acquire();
-        vec.push_back(it->second);
+    for (const auto &it : available_data) {
+      if (it.first == ot) {
+        it.second->Acquire();
+        vec.push_back(it.second);
       }
     }
   }
@@ -312,21 +312,21 @@ JDay TrackerBase::getLastOriginTime_LOCKED(NA_Level::Type &leveltype) const
 
   // Exact origintime must be used to access archived data
   if (!archived())
-    for (auto it = available_data.begin(); it != available_data.end(); ++it) {
-      JDay ot = it->first;
+    for (const auto &it : available_data) {
+      JDay ot = it.first;
 
       // For PRESSUREORHYBRID_LEVEL use pressure (primary) or hybrid data
       // whichever is newer
 
       if (((leveltype == NA_Level::NO_LEVEL) ||
-           (leveltype1 == it->second->getLevelType()) ||
-           (leveltype2 == it->second->getLevelType())) &&
+           (leveltype1 == it.second->getLevelType()) ||
+           (leveltype2 == it.second->getLevelType())) &&
           ((!last_ot) || (ot > last_ot) ||
            ((ot == last_ot) &&
             (leveltype == NA_Level::PRESSUREORHYBRID_LEVEL) &&
             (lt == NA_Level::HYBRID_LEVEL)))) {
         last_ot = ot;
-        lt = it->second->getLevelType();
+        lt = it.second->getLevelType();
       }
     }
 
@@ -353,8 +353,8 @@ JDay TrackerBase::getFirstOriginTime_fast() const throw() {
     {
       ClaimMutex lock(data_m);
 
-      for (auto it = available_data.begin(); it != available_data.end(); ++it) {
-        JDay ot = it->first;
+      for (const auto &it : available_data) {
+        JDay ot = it.first;
         if ((!first_ot) || (ot < first_ot)) {
           first_ot = ot;
         }

@@ -131,8 +131,8 @@ BS_RequestResponse::BS_RequestResponse(
     : req(req_), resp(resp_) {
   SmartMet::Spine::HTTP::ParamMap pmap = req.getParameterMap();
 
-  for (auto it_p = pmap.begin(); it_p != pmap.end(); it_p++)
-    set_key_val(it_p->first, it_p->second);
+  for (auto &it_p : pmap)
+    set_key_val(it_p.first, it_p.second);
 }
 
 /*

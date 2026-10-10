@@ -42,8 +42,8 @@ LuaNew_base *LuaNew_base::instance(lua_State *L, int index,
     //
     // [-1]: metatable of given userdata
 
-    for (auto it = ID.ids.begin(); it != ID.ids.end(); ++it) {
-      lua_pushlightuserdata(L, (void *)*it);
+    for (auto id : ID.ids) {
+      lua_pushlightuserdata(L, (void *)id);
       lua_gettable(L, LUA_REGISTRYINDEX);
       //
       // [-1]: metatable of all userdata of 'it' kind
