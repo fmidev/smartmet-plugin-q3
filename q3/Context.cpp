@@ -643,7 +643,7 @@ int Context::set_dash(lua_State *L) {
 
   double offset = lua_tonumber(L, 2); // 0.0 by default
 
-  double *arr = new double[n];
+  auto *arr = new double[n];
   {
     for (unsigned i = 0; i < n; i++) {
       lua_pushinteger(L, i + 1);
@@ -679,7 +679,7 @@ int Context::get_dash(lua_State *L) {
   unsigned n = cairo_get_dash_count(my);
 
   double offset;
-  double *arr = new double[n];
+  auto *arr = new double[n];
   {
     cairo_get_dash(my, arr, &offset);
 

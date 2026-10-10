@@ -172,8 +172,7 @@ bool Bz2_Tracker::update_from_cache(set<string> &seen_already) throw() {
   {
     ClaimMutex lock(cache->mapping_m);
 
-    for (map<string, JDay>::const_iterator it = cache->mapping.begin();
-         it != cache->mapping.end(); ++it) {
+    for (auto it = cache->mapping.begin(); it != cache->mapping.end(); ++it) {
       const string fn_s = it->first;
       const char *fn_abs = fn_s.c_str();
       const JDay ot = it->second;
@@ -256,7 +255,7 @@ void Bz2_Tracker::update_subpath(const char *path_abs,
   tmp = string(path_abs) + "/" + mask;
 
   while ((fn_abs = glob_fn(tmp.c_str(), gbuf, gbuf_i)) != nullptr) {
-    set<string>::iterator it1 = seen_already.find(fn_abs);
+    auto it1 = seen_already.find(fn_abs);
     if (it1 != seen_already.end())
       continue; // old chap (also cached entries are detected here)
 
@@ -286,7 +285,7 @@ void Bz2_Tracker::update_subpath(const char *path_abs,
       ClaimMutex lock(data_m);
       bool skip = false;
 
-      map<JDay, TrackedData *>::iterator it = available_data.find(ot);
+      auto it = available_data.find(ot);
       if (it != available_data.end()) {
         /* Same origin time twice (the latest by filename is what's being used)
          */

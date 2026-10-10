@@ -108,7 +108,7 @@ bool Sqd_Tracker::update(set<string> &seen_already) throw() {
     {
       ClaimMutex lock(data_m);
 
-      map<JDay, TrackedData *>::iterator it = available_data.find(ot);
+      auto it = available_data.find(ot);
       if (it != available_data.end()) {
         /* Same origin time twice (the latest by filename is being used)
          */

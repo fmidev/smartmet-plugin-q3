@@ -31,7 +31,7 @@ static NFmiFastQueryInfo *new_iter(NFmiQueryData *qd, const JDay &vt,
                                    const NA_Level &lev, FmiParameterName e) {
   assert(qd);
 
-  NFmiFastQueryInfo *fi = new NFmiFastQueryInfo(qd);
+  auto *fi = new NFmiFastQueryInfo(qd);
   fi->Reset();
 
   bool ok = fi->Time(SQD_Tools::jd2mt(vt));

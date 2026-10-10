@@ -60,8 +60,7 @@ const char *const MIME_JSON = "application/json; charset=UTF-8";
 template <typename T>
 int find_index(const std::vector<T> &vec, const T &value) {
   int index = 0;
-  for (typename std::vector<T>::const_iterator it = vec.begin();
-       it != vec.end(); ++it) {
+  for (auto it = vec.begin(); it != vec.end(); ++it) {
     if (*it == value)
       return index;
     else

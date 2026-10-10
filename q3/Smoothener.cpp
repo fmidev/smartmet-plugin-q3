@@ -78,8 +78,7 @@ void SmoothPath::done(float factor, bool closed_) {
 #ifdef SMOOTH_AND_STRETCH
   Point center(0, 0);
 
-  for (vector<PointAndEdge>::const_iterator it = rim.begin(); it != rim.end();
-       ++it) {
+  for (auto it = rim.begin(); it != rim.end(); ++it) {
     center += *it; // we can bloat it to any amount (divide last)
   }
   center /= n;

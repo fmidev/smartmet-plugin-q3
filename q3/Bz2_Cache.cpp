@@ -131,8 +131,7 @@ Bz2_Cache::Bz2_Cache(const char *fn) : mapping_m(), mapping(), f(0) {
       throw E_LOG_FATAL("Unable to open %s for writing", fn);
     }
 
-    for (map<string, JDay>::const_iterator it = mapping.begin();
-         it != mapping.end(); ++it) {
+    for (auto it = mapping.begin(); it != mapping.end(); ++it) {
       write_LOCKED(it->first, it->second);
     }
     flush();
@@ -161,7 +160,7 @@ JDay Bz2_Cache::get(const string &key) {
     ClaimMutex lock(mapping_m);
     // init_LOCKED();   // load on demand
 
-    map<string, JDay>::const_iterator it = mapping.find(key);
+    auto it = mapping.find(key);
     ot = (it != mapping.end()) ? it->second : (JDay)0 /*no entry*/;
   } // release 'mapping_m'
 
@@ -178,7 +177,7 @@ void Bz2_Cache::set(const string &key, const JDay& ot) {
 
     // Beware of duplicate entries (they would grow the cache file)
     //
-    map<string, JDay>::const_iterator it = mapping.find(key);
+    auto it = mapping.find(key);
     if (it != mapping.end()) {
       JDay ot2 = it->second;
 

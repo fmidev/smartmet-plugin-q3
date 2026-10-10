@@ -42,8 +42,7 @@ LuaNew_base *LuaNew_base::instance(lua_State *L, int index,
     //
     // [-1]: metatable of given userdata
 
-    for (std::set<const LuaNew_ID *>::const_iterator it = ID.ids.begin();
-         it != ID.ids.end(); ++it) {
+    for (auto it = ID.ids.begin(); it != ID.ids.end(); ++it) {
       lua_pushlightuserdata(L, (void *)*it);
       lua_gettable(L, LUA_REGISTRYINDEX);
       //
@@ -238,7 +237,7 @@ bool LuaNew_base::push_alive(lua_State *L, int index_this, unsigned key) {
  * Upvalue: 1: name of the class (for debugging)
  */
 int LuaNew_base::__gc(lua_State *L) {
-  LuaNew_base *obj = (LuaNew_base *)lua_touserdata(L, 1);
+  auto *obj = (LuaNew_base *)lua_touserdata(L, 1);
   assert(obj);
 
   delete obj; // will call the destructor of the particular derived class

@@ -689,7 +689,7 @@ int Matrix::unm_deg( lua_State *L ) {
 */
 int Matrix::mod( lua_State *L ) {
     const Matrix *a= Matrix::instance(L,1);
-    float b= (float)lua_tonumber(L,2);
+    auto b = (float)lua_tonumber(L, 2);
 
     if (!a) {
         luaL_error( L, "Cannot mod %s by a matrix", L_typename(1) );
@@ -723,7 +723,7 @@ int Matrix::mod( lua_State *L ) {
 */
 int Matrix::pow( lua_State *L ) {
     const Matrix *a= Matrix::instance(L,1);
-    float b= (float)lua_tonumber(L,2);
+    auto b = (float)lua_tonumber(L, 2);
 
     if (!a) {
         // Since we came here, the 2nd param must be a matrix.
@@ -829,7 +829,7 @@ int Matrix::q3_floor( lua_State *L ) {
 */
 int Matrix::q3_fmod( lua_State *L ) {
     const Matrix &a= *Matrix::instance(L,1);
-    float b= (float)lua_tonumber(L,2);
+    auto b = (float)lua_tonumber(L, 2);
 
     MemMatrix &c= *new(L) MemMatrix( a.getSize(), a.getUnit(), a.getProjection() );    // retains the unit
     offset_t n= c.getN();
@@ -1537,12 +1537,10 @@ int MatrixBind::index( lua_State *L ) {
     } else {
         lua_newtable(L);
         unsigned i=1;
-        for( vector<LatLon>::const_iterator it= locs.begin();
-            it != locs.end();
-            ++it ) {
-            lua_pushinteger( L, i++ );
-            lua_pushnumber( L, m.at( *it ));
-            lua_settable( L, -3 );
+        for (auto it = locs.begin(); it != locs.end(); ++it) {
+          lua_pushinteger(L, i++);
+          lua_pushnumber(L, m.at(*it));
+          lua_settable(L, -3);
         }
     }
 
@@ -1560,7 +1558,7 @@ int MatrixBind::newindex( lua_State *L ) {
     if (!pos) {
         luaL_error( L, "Bad index for matrix: %s", L_typename(2) );
     }
-    float v= (float)lua_tonumber(L,3);
+    auto v = (float)lua_tonumber(L, 3);
     if ((v==0.0) && (!lua_isnumber(L,3))) {
         luaL_error( L, "Bad value (not a number): %s", L_typename(2) );
     }
@@ -1727,7 +1725,7 @@ static int32_t q2_float2int( float v, int32_t scale, int32_t scaled_offset ) {
     // v_float= (v_int+offset)/scale
     //
     bool data_as_short= true;
-    int32_t scale= (int32_t) powf(10.0f, decimals);   // 1,10,100, ..., 10^9
+    auto scale = (int32_t)powf(10.0f, decimals); // 1,10,100, ..., 10^9
     int32_t scaled_offset= 0;
     
     if (!isnanf(min_v)) {
@@ -1784,8 +1782,8 @@ static int32_t q2_float2int( float v, int32_t scale, int32_t scaled_offset ) {
         int32_t vi= isnanf(v) ? missing_value : q2_float2int(v, scale, scaled_offset);
     
         if (data_as_short) {
-            int16_t vs= (int16_t)vi;
-            out.write( (const char *) &vs, sizeof(vs) );
+          auto vs = (int16_t)vi;
+          out.write((const char *)&vs, sizeof(vs));
         } else {
             out.write( (const char *) &vi, sizeof(vi) );
         }

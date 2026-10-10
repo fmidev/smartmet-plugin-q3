@@ -491,13 +491,12 @@ void *HealthCheck::thread(void *me_v) {
     if (my.swap) {
       // TBD - if needed
     }
-    for (vector<string>::const_iterator it = my.paths.begin();
-         it != my.paths.end(); ++it) {
+    for (auto it = my.paths.begin(); it != my.paths.end(); ++it) {
       const char *path = it->c_str(); (void)path;
       LOG_STAT("DISK %s %s", path, disk_usage(path).c_str());
     }
-    for (vector<string>::const_iterator it = my.net_interfaces.begin();
-         it != my.net_interfaces.end(); ++it) {
+    for (auto it = my.net_interfaces.begin(); it != my.net_interfaces.end();
+         ++it) {
       const char *ethX = it->c_str(); (void)ethX;
       LOG_STAT("NET %s %s", ethX, net_usage(ethX).c_str());
     }

@@ -48,7 +48,7 @@ NA_Info::NA_Info(const time_t loadTime_, const time_t modificationTime_,
 /*
  */
 string_or_null NA_Info::getExtra_str(const char *key) const {
-  map<string, string>::const_iterator it = extra.find(key);
+  auto it = extra.find(key);
   if (it == extra.end()) {
     return nullptr;
   }
@@ -253,7 +253,7 @@ NA_Data::push_Matrix(lua_State *L, const JDay &vt, const NA_Level &lev,
     return m_native; // on top of Lua stack
 
   } else {
-    MemMatrix *m = new (L) MemMatrix(target_gs, p.getUnit(), target_proj);
+    auto *m = new (L) MemMatrix(target_gs, p.getUnit(), target_proj);
 
     m->fit_from_(*m_native);
 

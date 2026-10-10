@@ -95,7 +95,7 @@ JDay SQD_Tools::mt2jd(const NFmiMetTime &mt) {
   if (mt.IsMissing()) // this should work
 #endif
   {
-    return JDay(); // NAN (no date)
+    return {}; // NAN (no date)
   } else {
     return JDay(mt.GetYear(), mt.GetMonth(), mt.GetDay(), mt.GetHour(),
                 mt.GetMin(), mt.GetSec());
@@ -692,8 +692,7 @@ static struct JustOnce_SQD_Tools { // note: must have unique name (otherwise
  */
 NA_Param::Unit SQD_Tools::unit_by_id(FmiParameterName p) {
 
-  map<FmiParameterName, NA_Param::Unit>::const_iterator it =
-      unit_by_id_.find(p);
+  auto it = unit_by_id_.find(p);
   if (it != unit_by_id_.end()) {
 #if 0
         NA_Param::Unit unit= it->second;

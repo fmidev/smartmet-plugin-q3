@@ -218,7 +218,7 @@ FmiParameterName NA_Param::standard_param_native_id(const char *s) {
   if (!s)
     return (FmiParameterName)0;
 
-  map<string, FmiParameterName>::const_iterator it = id_by_name.find(s);
+  auto it = id_by_name.find(s);
   if (it != id_by_name.end()) {
     return it->second; // the enum
   } else {
@@ -234,7 +234,7 @@ FmiParameterName NA_Param::standard_param_native_id(const char *s) {
  */
 static string standard_param_name(FmiParameterName e) {
 
-  map<FmiParameterName, string>::const_iterator it = name_by_id.find(e);
+  auto it = name_by_id.find(e);
   if (it != name_by_id.end()) {
     return it->second; // the name
   } else {
@@ -249,8 +249,7 @@ static string standard_param_name(FmiParameterName e) {
 virtualParameterName NA_Param::virtual_param_native_id(const char *s) {
 
   if (s) {
-    map<string, virtualParameterName>::const_iterator it =
-        id_by_virtualname.find(s);
+    auto it = id_by_virtualname.find(s);
 
     if (it != id_by_virtualname.end())
       return it->second; // the id:s
@@ -269,7 +268,7 @@ virtualParameterName NA_Param::virtual_param_native_id(const char *s) {
  */
 string NA_Param::native_id_virtual_param(FmiParameterName e) {
 
-  map<FmiParameterName, string>::const_iterator it = virtualname_by_id.find(e);
+  auto it = virtualname_by_id.find(e);
   if (it != virtualname_by_id.end()) {
     return it->second; // the name
   } else {

@@ -59,8 +59,7 @@ TrackerBase::~TrackerBase() {
    *
    * We're the only thread now, so can use the '_LOCKED' functions.
    */
-  for (map<JDay, TrackedData *>::iterator it = available_data.begin();
-       it != available_data.end(); ++it) {
+  for (auto it = available_data.begin(); it != available_data.end(); ++it) {
     TrackedData *d = it->second;
     if (d) {
       d->Wipe_LOCKED();
@@ -84,7 +83,7 @@ TrackerBase::~TrackerBase() {
  */
 void *TrackerBase::polling_thread(void *me_v) {
   Fmi::set_thread_name("q3-poll");
-  TrackerBase *my = (TrackerBase *)me_v;
+  auto *my = (TrackerBase *)me_v;
 
   // Simple map to avoid handling the same filename twice
   //
@@ -139,8 +138,8 @@ void *TrackerBase::polling_thread(void *me_v) {
     {
       ClaimMutex lock(my->data_m);
 
-      for (map<JDay, TrackedData *>::iterator it = my->available_data.begin();
-           it != my->available_data.end(); ++it) {
+      for (auto it = my->available_data.begin(); it != my->available_data.end();
+           ++it) {
         TrackedData *d = it->second;
         if (!d)
           continue; // BZ2 entry based on cache information (skip)
@@ -202,7 +201,7 @@ TrackedData *TrackerBase::getData_must_release(const JDay &ot_orig,
     }
 
     if (ot) {
-      map<JDay, TrackedData *>::iterator it = available_data.find(ot);
+      auto it = available_data.find(ot);
       if (it != available_data.end()) {
         data = it->second;
       }
@@ -260,8 +259,7 @@ void TrackerBase::addOriginTimes_unsorted(
 
   {
     ClaimMutex lock(data_m);
-    for (map<JDay, TrackedData *>::const_iterator it = available_data.begin();
-         it != available_data.end(); ++it) {
+    for (auto it = available_data.begin(); it != available_data.end(); ++it) {
       vec.push_back(it->first); // JDay
     }
   }
@@ -274,8 +272,7 @@ void TrackerBase::addDatas_must_release(const JDay &ot,
 
   {
     ClaimMutex lock(data_m);
-    for (map<JDay, TrackedData *>::const_iterator it = available_data.begin();
-         it != available_data.end(); ++it) {
+    for (auto it = available_data.begin(); it != available_data.end(); ++it) {
       if (it->first == ot) {
         it->second->Acquire();
         vec.push_back(it->second);
@@ -315,8 +312,7 @@ JDay TrackerBase::getLastOriginTime_LOCKED(NA_Level::Type &leveltype) const
 
   // Exact origintime must be used to access archived data
   if (!archived())
-    for (map<JDay, TrackedData *>::const_iterator it = available_data.begin();
-         it != available_data.end(); ++it) {
+    for (auto it = available_data.begin(); it != available_data.end(); ++it) {
       JDay ot = it->first;
 
       // For PRESSUREORHYBRID_LEVEL use pressure (primary) or hybrid data
@@ -357,8 +353,7 @@ JDay TrackerBase::getFirstOriginTime_fast() const throw() {
     {
       ClaimMutex lock(data_m);
 
-      for (map<JDay, TrackedData *>::const_iterator it = available_data.begin();
-           it != available_data.end(); ++it) {
+      for (auto it = available_data.begin(); it != available_data.end(); ++it) {
         JDay ot = it->first;
         if ((!first_ot) || (ot < first_ot)) {
           first_ot = ot;

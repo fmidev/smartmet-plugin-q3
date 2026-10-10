@@ -128,7 +128,7 @@ int SubMatrix::set_radius(lua_State *L) {
     MatrixSize gs = my.m.getSize();
     L_ASSERT(gs == LONLAT->getSize());
 
-    Array2D<LatLon> *a = new Array2D<LatLon>(gs);
+    auto *a = new Array2D<LatLon>(gs);
 
     for (MatrixIter mi(gs); mi.within(); ++mi) {
       Vector v = (*LONLAT)[mi];

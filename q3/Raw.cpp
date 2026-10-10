@@ -54,7 +54,7 @@ static NA_Level process_def_level(const NA_Level &lev) {
   if (((lt != NA_Level::GROUND_LEVEL) && (lt != NA_Level::NO_LEVEL) &&
        (!lev.hasValue())) ||
       (lt == NA_Level::HEIGHT_LEVEL)) {
-    return NA_Level(); // NO_LEVEL (use the first level)
+    return {}; // NO_LEVEL (use the first level)
   } else {
     return lev;
   }
@@ -228,8 +228,7 @@ int RawBind::__index(lua_State *L) {
     const vector<NA_Level> &vec = qd->getLevels();
     unsigned i = 1;
 
-    for (vector<NA_Level>::const_iterator it = vec.begin(); it != vec.end();
-         ++it) {
+    for (auto it = vec.begin(); it != vec.end(); ++it) {
       lua_pushinteger(L, i++);
       lua_pushstring(L, it->toString().c_str());
       lua_settable(L, -3);
@@ -261,8 +260,7 @@ int RawBind::__index(lua_State *L) {
     vector<string> vec = ApiParam::convert_to_api(qd->getParams(), true);
     unsigned i = 1;
 
-    for (vector<string>::const_iterator it = vec.begin(); it != vec.end();
-         ++it) {
+    for (auto it = vec.begin(); it != vec.end(); ++it) {
       lua_pushinteger(L, i++);
       lua_pushstring(L, it->c_str());
       lua_settable(L, -3);
@@ -291,8 +289,7 @@ int RawBind::__index(lua_State *L) {
     const vector<NA_Param> vec = ApiParam::realParams(qd);
     unsigned i = 1;
 
-    for (vector<NA_Param>::const_iterator it = vec.begin(); it != vec.end();
-         ++it) {
+    for (auto it = vec.begin(); it != vec.end(); ++it) {
       lua_pushinteger(L, i++);
       lua_pushstring(L, it->toString(false /*native names*/).c_str());
       lua_settable(L, -3);
@@ -311,8 +308,7 @@ int RawBind::__index(lua_State *L) {
     const vector<NA_Param> vec = ApiParam::realParams(qd);
     unsigned i = 1;
 
-    for (vector<NA_Param>::const_iterator it = vec.begin(); it != vec.end();
-         ++it) {
+    for (auto it = vec.begin(); it != vec.end(); ++it) {
       lua_pushinteger(L, i++);
       const char *cp = strrchr(it->getNativeName_().c_str(), ':');
       int id = (cp ? atoi(cp + 1) : 0);
@@ -334,8 +330,7 @@ int RawBind::__index(lua_State *L) {
     const vector<NA_Param> vec = ApiParam::realParams(qd);
     unsigned i = 1;
 
-    for (vector<NA_Param>::const_iterator it = vec.begin(); it != vec.end();
-         ++it) {
+    for (auto it = vec.begin(); it != vec.end(); ++it) {
       lua_pushinteger(L, i++);
       lua_pushstring(L, it->getNativeName_().c_str());
       lua_settable(L, -3);
@@ -351,8 +346,7 @@ int RawBind::__index(lua_State *L) {
     const vector<NA_Param> vec = ApiParam::realParams(qd);
     unsigned i = 1;
 
-    for (vector<NA_Param>::const_iterator it = vec.begin(); it != vec.end();
-         ++it) {
+    for (auto it = vec.begin(); it != vec.end(); ++it) {
       lua_pushinteger(L, i++);
       lua_pushstring(L, it->getInterpolationName().c_str());
       lua_settable(L, -3);
@@ -368,8 +362,7 @@ int RawBind::__index(lua_State *L) {
     const vector<NA_Param> vec = ApiParam::realParams(qd);
     unsigned i = 1;
 
-    for (vector<NA_Param>::const_iterator it = vec.begin(); it != vec.end();
-         ++it) {
+    for (auto it = vec.begin(); it != vec.end(); ++it) {
       lua_pushinteger(L, i++);
       lua_pushstring(L, it->getPrecision().c_str());
       lua_settable(L, -3);
@@ -392,7 +385,7 @@ int RawBind::__index(lua_State *L) {
     const vector<JDay> &vec = qd->getTimes();
     unsigned i = 1;
 
-    for (vector<JDay>::const_iterator it = vec.begin(); it != vec.end(); ++it) {
+    for (auto it = vec.begin(); it != vec.end(); ++it) {
       lua_pushinteger(L, i++);
       new (L) JDay(*it);
       lua_settable(L, -3);
@@ -420,8 +413,7 @@ int RawBind::__index(lua_State *L) {
 
     unsigned i = 1;
 
-    for (vector<LatLon>::const_iterator it = vec.begin(); it != vec.end();
-         ++it) {
+    for (auto it = vec.begin(); it != vec.end(); ++it) {
       lua_pushinteger(L, i++);
       new (L) LatLon(*it);
       lua_settable(L, -3);
@@ -447,8 +439,7 @@ int RawBind::__index(lua_State *L) {
 
     unsigned i = 1;
 
-    for (vector<unsigned long>::const_iterator it = vec.begin();
-         it != vec.end(); ++it) {
+    for (auto it = vec.begin(); it != vec.end(); ++it) {
       lua_pushinteger(L, i++);
       lua_pushnumber(L, *it);
       lua_settable(L, -3);
@@ -473,8 +464,7 @@ int RawBind::__index(lua_State *L) {
 
     unsigned i = 1;
 
-    for (vector<string>::const_iterator it = vec.begin(); it != vec.end();
-         ++it) {
+    for (auto it = vec.begin(); it != vec.end(); ++it) {
       lua_pushinteger(L, i++);
       lua_pushstring(L, it->c_str());
       lua_settable(L, -3);

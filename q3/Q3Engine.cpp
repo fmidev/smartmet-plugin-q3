@@ -197,8 +197,7 @@ static void q3_config(const char *conf,
         string aliases = lua_tostring(L, -1), tmp;
         boost::split(aliasvect, aliases, boost::is_any_of(","));
 
-        for (vector<string>::const_iterator it = aliasvect.begin(); it != aliasvect.end(); it++)
-        {
+        for (auto it = aliasvect.begin(); it != aliasvect.end(); it++) {
           auto alias = boost::trim_copy(*it);
 
           if (alias.empty())
@@ -284,8 +283,7 @@ static void q3_config(const char *conf,
 
       if (!aliasvect.empty())
       {
-        for (vector<string>::const_iterator it = aliasvect.begin(); it != aliasvect.end(); it++)
-        {
+        for (auto it = aliasvect.begin(); it != aliasvect.end(); it++) {
           auto alias = boost::trim_copy(*it);
 
           auto ta = new Q3Engine::Track(alias.c_str(), run_secs, tmp_pattern, tmp_threshold, key);
@@ -468,8 +466,7 @@ Q3Engine::~Q3Engine()
 {
   // Release all of the 'Track' objects (no sessions running any more)
   //
-  for (map<string, Q3Engine::Track *>::iterator it = trackers.begin(); it != trackers.end(); ++it)
-  {
+  for (auto it = trackers.begin(); it != trackers.end(); ++it) {
     delete it->second;
   }
 }
@@ -480,8 +477,7 @@ vector<string> Q3Engine::getNames(bool getAliases) const
 {
   vector<string> ret;
 
-  for (map<string, Track *>::const_iterator it = trackers.begin(); it != trackers.end(); ++it)
-  {
+  for (auto it = trackers.begin(); it != trackers.end(); ++it) {
     if (getAliases || it->second->getAlias().empty())
       ret.push_back(it->first);
   }
@@ -494,7 +490,7 @@ const Q3Engine::Track *Q3Engine::getTrack(const char *name, bool getAlias) const
 {
   // Need to do it like this (and not straight indexing) because we're 'const'
   //
-  map<string, Track *>::const_iterator it = trackers.find(name);
+  auto it = trackers.find(name);
 
   if (getAlias && (it != trackers.end()))
   {

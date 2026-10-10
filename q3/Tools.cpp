@@ -405,7 +405,7 @@ string_or_null latin1_to_utf8(const char *latin1) {
   std::vector<char> buf(n * 3 + 1);
   char *r = buf.data();
 
-  for (const unsigned char *p = (const unsigned char *)latin1; *p; p++) {
+  for (const auto *p = (const unsigned char *)latin1; *p; p++) {
     unsigned u = latin1_to_utf8(*p);
 
     unsigned a = u & 0xff0000;

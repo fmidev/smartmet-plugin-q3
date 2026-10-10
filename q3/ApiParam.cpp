@@ -31,8 +31,7 @@ static bool has_by_standard_name(const std::vector<NA_Param>& vec, const string&
   bool s1_match = false;
   bool s2_match = (s2 == ""); // match if not given
 
-  for (vector<NA_Param>::const_iterator it = vec.begin(); it != vec.end();
-       ++it) {
+  for (auto it = vec.begin(); it != vec.end(); ++it) {
     string it_s = it->getStandardName();
 
     if (it_s == s1) {
@@ -120,8 +119,7 @@ NA_Param ApiScalarParam::covered_by(const vector<NA_Param> &vec) const {
   //  2. if native name and/or id matches (both must match if given) it's a
   //  match
   //
-  for (vector<NA_Param>::const_iterator it = vec.begin(); it != vec.end();
-       ++it) {
+  for (auto it = vec.begin(); it != vec.end(); ++it) {
     string it_std_name = it->getStandardName();
     string it_native_name = it->getNativeName_();
 
@@ -172,8 +170,7 @@ vector<string> ApiParam::convert_to_api(const std::vector<NA_Param> &vec,
                                         bool prefer_standard_names) {
   vector<string> ret;
 
-  for (vector<NA_Param>::const_iterator it = vec.begin(); it != vec.end();
-       ++it) {
+  for (auto it = vec.begin(); it != vec.end(); ++it) {
     ret.push_back(it->toString(prefer_standard_names));
   }
 
@@ -203,8 +200,7 @@ vector<NA_Param> ApiParam::convert_to_native(const std::vector<ApiParam> &vec,
 
   vector<NA_Param> ret;
 
-  for (vector<ApiParam>::const_iterator it = vec.begin(); it != vec.end();
-       ++it) {
+  for (auto it = vec.begin(); it != vec.end(); ++it) {
     assert(it->a);
 
     // 02-Sep-2011 PKi: Check for duplicate parameters. When creating a raw
@@ -251,8 +247,7 @@ vector<NA_Param> ApiParam::realParams(const NA_Data *data) {
 
   vector<NA_Param> vec = data->getParams();
 
-  for (vector<NA_Param>::const_iterator it = vec.begin(); it != vec.end();
-       ++it) {
+  for (auto it = vec.begin(); it != vec.end(); ++it) {
 
     bool mapped;
     data->mapParameter(*it, true, &mapped);

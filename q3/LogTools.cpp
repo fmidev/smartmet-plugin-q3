@@ -141,7 +141,7 @@ int Logger::LOG_(lua_State *L) {
   //
   lua_pushlightuserdata(L, (void *)gen_unique);
   lua_gettable(L, LUA_REGISTRYINDEX);
-  unique_t id = (unique_t)lua_tonumber(
+  auto id = (unique_t)lua_tonumber(
       L,
       -1); // double has 56-bit accuracy (Lua integers are normally 32-bit only)
 
@@ -197,7 +197,7 @@ int Logger::LOG_(lua_State *L) {
     lua_pushlightuserdata(L, const_cast<void *>(REG_LOG_timings));
     lua_gettable(L, LUA_REGISTRYINDEX);
 
-    uint64_t t0 = (uint64_t)lua_tonumber(L, -1); // 0 if nil
+    auto t0 = (uint64_t)lua_tonumber(L, -1); // 0 if nil
     lua_pop(L, 1);
 
     timing_ms = t0 ? (long int)(now_ms() - t0) : -1;

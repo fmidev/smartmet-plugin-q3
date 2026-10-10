@@ -432,8 +432,7 @@ int Contour::contour_smoothen_one(lua_State *L) {
     int half_window = (window_size - 1) / 2; // 1/2/3
     unsigned i = 0;
 
-    for (vector<EdgePoint>::iterator it = c2.points.begin();
-         it != c2.points.end(); ++it, ++i) {
+    for (auto it = c2.points.begin(); it != c2.points.end(); ++it, ++i) {
 
       // If 'half_window-1' points left and round of '*it' are not edge points,
       // smoothen. If there are edge points, try with a shortened range.
@@ -491,15 +490,14 @@ int Contour::contour_smoothen_one(lua_State *L) {
   } else {
     SmoothPath sp;
 
-    for (vector<EdgePoint>::iterator it = c2.points.begin();
-         it != c2.points.end(); it++)
+    for (auto it = c2.points.begin(); it != c2.points.end(); it++)
       sp.add_point(Vectors::Point(it->x, it->y), it->edge);
 
     sp.done(factor, true);
 
-    vector<PointAndEdge>::const_iterator spit = sp.begin();
+    auto spit = sp.begin();
 
-    for (vector<EdgePoint>::iterator it = c2.points.begin();
+    for (auto it = c2.points.begin();
          ((it != c2.points.end()) && (spit != sp.end())); it++, spit++)
       *it = EdgePoint(spit->x, spit->y, it->edge);
   }
@@ -520,8 +518,7 @@ void Contour::stretch_out(double factor) {
   // Get the center point
   //
   Point cp;
-  for (vector<EdgePoint>::const_iterator it = points.begin();
-       it != points.end(); ++it) {
+  for (auto it = points.begin(); it != points.end(); ++it) {
     cp += *it;
   }
   cp /= n;
@@ -977,9 +974,9 @@ void Contour::draw_path(cairo_t *cr, bool line) const {
   unsigned n = points.size();
   assert((offset != ((unsigned)-1)) &&
          (offset < n)); // 'set_offset()' must have been called
-  vector<EdgePoint>::const_iterator eit = points.begin();
+  auto eit = points.begin();
   advance(eit, offset);
-  vector<EdgePoint>::const_iterator last = eit;
+  auto last = eit;
 
   for (; (n > 0); eit++, n--) {
     if (eit == points.end()) // Wrap around to the first point (__index();
@@ -1152,7 +1149,7 @@ int Contour::drawcontours(lua_State *L) {
     Contour *c = nullptr, *pc = nullptr;
     vector<LineStore> line_store;
 
-    cdefmap::const_iterator pit = contourdefs.end();
+    auto pit = contourdefs.end();
     const ContourInfo_common *cc = nullptr;
     unsigned int nc, pnc = 0;
     bool first = true, fillOpen = false;
@@ -1216,7 +1213,7 @@ int Contour::drawcontours(lua_State *L) {
       // If contour index >= max. contour descriptor index, use the last
       // descriptor without searching
 
-      cdefmap::const_iterator cit = contourdefs.end();
+      auto cit = contourdefs.end();
       cit--;
 
       if (nc < cit->first) {
@@ -1225,8 +1222,7 @@ int Contour::drawcontours(lua_State *L) {
 
         pnc++;
 
-        for (cdefmap::const_iterator it =
-                 (cc && (nc >= pnc)) ? pit : contourdefs.begin();
+        for (auto it = (cc && (nc >= pnc)) ? pit : contourdefs.begin();
              it != contourdefs.end(); it++)
           if (it->first > nc)
             break;
@@ -1263,7 +1259,7 @@ int Contour::drawcontours(lua_State *L) {
       }
 
       if (cc->line_type()) {
-        const ContourInfo_Line &ci = static_cast<const ContourInfo_Line &>(*cc);
+        const auto &ci = static_cast<const ContourInfo_Line &>(*cc);
 
         // Default font size is height/30 for historical reasons
         //
@@ -1289,8 +1285,7 @@ int Contour::drawcontours(lua_State *L) {
           if (labelizethis) {
             bool fst = true;
 
-            for (vector<EdgePoint>::iterator it = c->points.begin();
-                 (it != c->points.end()); it++) {
+            for (auto it = c->points.begin(); (it != c->points.end()); it++) {
               Vectors::Point p(it->x, it->y);
 
               if (fst) {
@@ -1315,8 +1310,7 @@ int Contour::drawcontours(lua_State *L) {
         }
       } else {
         if (!pc) {
-          const ContourInfo_Fill &ci =
-              static_cast<const ContourInfo_Fill &>(*cc);
+          const auto &ci = static_cast<const ContourInfo_Fill &>(*cc);
 
           // 24-Jan-2014 PKi: Set pattern transformation matrix's scale
           //
@@ -1379,9 +1373,7 @@ int Contour::drawcontours(lua_State *L) {
 
         // Clip label boxes (don't allow drawing curves on them)
         //
-        for (vector<Labelizer::TiltedRect>::const_iterator it =
-                 label_trs.begin();
-             it != label_trs.end(); ++it) {
+        for (auto it = label_trs.begin(); it != label_trs.end(); ++it) {
           label_clip(cr, *it);
         }
 
@@ -1398,8 +1390,7 @@ int Contour::drawcontours(lua_State *L) {
 
     const ContourInfo_common::StrokeParams *sp_last = 0;
 
-    for (vector<LineStore>::const_iterator it = line_store.begin();
-         it != line_store.end(); ++it) {
+    for (auto it = line_store.begin(); it != line_store.end(); ++it) {
       const ContourInfo_common::StrokeParams &sp = it->sp;
       const Contour *curves = it->curves;
 
@@ -1421,7 +1412,7 @@ int Contour::drawcontours(lua_State *L) {
         unsigned dash_n = sp.dash.size();
 
         if (dash_n) {
-          double *arr = new double[dash_n];
+          auto *arr = new double[dash_n];
           {
             for (unsigned i = 0; i < dash_n; i++) {
               unsigned a = sp.dash[i];

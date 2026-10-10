@@ -372,8 +372,7 @@ typedef Labelizer::Chain Chain;
  */
 Labelizer::~Labelizer() {
 
-  for (vector<Chain *>::iterator it = chains.begin(); it != chains.end();
-       ++it) {
+  for (auto it = chains.begin(); it != chains.end(); ++it) {
     delete *it;
   }
 
@@ -625,8 +624,7 @@ vector<Labelizer::TiltedRect> Labelizer::done(double scale) {
   //
   vector<TiltedRect> done;
 
-  for (vector<Chain *>::iterator it = chains.begin(); it != chains.end();
-       ++it) {
+  for (auto it = chains.begin(); it != chains.end(); ++it) {
     // '*it' is the chain to consider
 
     bool is_closed = (*it)->is_closed();
@@ -712,8 +710,7 @@ vector<Labelizer::TiltedRect> Labelizer::done(double scale) {
  */
 void Labelizer::draw_labels(Drawer &drawer) {
 
-  for (vector<ChosenLabel>::const_iterator it = chosenlabels.begin();
-       it != chosenlabels.end(); ++it) {
+  for (auto it = chosenlabels.begin(); it != chosenlabels.end(); ++it) {
     drawer.label(it->center, it->fs.label, *(it->fs.lp), it->rad);
   }
 }
@@ -790,8 +787,7 @@ bool Labelizer::LimitDirect(const Point &xy, const vector<TiltedRect> &done,
 
   LIMIT_DIRECT_PROF.start();
   {
-    for (vector<TiltedRect>::const_iterator it = done.begin(); it != done.end();
-         ++it) {
+    for (auto it = done.begin(); it != done.end(); ++it) {
       double dist = Vector(xy, it->get_center()).norm();
       // LOG_DEBUG( "Dist %lf,%lf -> %lf %lf = %lf (limit %lf)", xy.x, xy.y,
       // it->get_center().x, it->get_center().y, dist, limit );
@@ -821,8 +817,7 @@ bool Labelizer::LimitCrossingLines(const TiltedRect &tr,
 
   LIMIT_CROSSING_LINES_PROF.start();
   {
-    for (vector<Chain *>::const_iterator it = chains.begin();
-         it != chains.end(); ++it) {
+    for (auto it = chains.begin(); it != chains.end(); ++it) {
       if (*it == our_chain)
         continue;
 
@@ -851,8 +846,7 @@ bool Labelizer::LimitOverlappingLabels(const TiltedRect &tr,
 
   LIMIT_OVERLAPPING_LABELS_PROF.start();
   {
-    for (vector<TiltedRect>::const_iterator it = done.begin(); it != done.end();
-         ++it) {
+    for (auto it = done.begin(); it != done.end(); ++it) {
       if (tr.intersects(*it))
         goto LIMIT_OVERLAPPING_LABELS_RET; // limitation
     }
@@ -1119,8 +1113,7 @@ bool Labelizer::ChainChunk::intersects(const PointAndVector &v,
   if (bb.detached(v))
     return false;
 
-  for (vector<PointScore>::const_iterator it = curve.begin(); it != curve.end();
-       ++it) {
+  for (auto it = curve.begin(); it != curve.end(); ++it) {
     if (it->intersects(v)) {
       debug_drawer.mark_vector(*it, "red");
       return true;
@@ -1139,8 +1132,7 @@ bool Labelizer::ChainChunk::intersects(const TiltedRect &tr,
   if (bb.detached(tr.get_bounding_box()))
     return false;
 
-  for (vector<PointScore>::const_iterator it = curve.begin(); it != curve.end();
-       ++it) {
+  for (auto it = curve.begin(); it != curve.end(); ++it) {
     // cached vector is from the earlier point to us, so we cannot use it
     // directly
     //
@@ -1177,8 +1169,7 @@ bool Labelizer::Chain::intersects(const PointAndVector &v) /*const*/ {
   if (bb.detached(v))
     return false;
 
-  for (vector<ChainChunk>::const_iterator it = chunks.begin();
-       it != chunks.end(); ++it) {
+  for (auto it = chunks.begin(); it != chunks.end(); ++it) {
     if (it->intersects(v, debug_drawer))
       return true; // We don't care where the intersection was
   }
@@ -1201,8 +1192,7 @@ bool Labelizer::Chain::intersects(const TiltedRect &tr) /*const*/ {
   // Iterate by the chunks, since they each have a boundary box (optimizes,
   // compared to using 'ChainIterator')
   //
-  for (vector<ChainChunk>::const_iterator it = chunks.begin();
-       it != chunks.end(); ++it) {
+  for (auto it = chunks.begin(); it != chunks.end(); ++it) {
     debug_drawer.mark_tr(tr, "yellow");
     if (it->intersects(tr, debug_drawer)) {
       return true; // We don't care where the intersection was

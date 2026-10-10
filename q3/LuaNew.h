@@ -162,8 +162,7 @@ public:
   }
 
   static CAST_REF instance_notnull(lua_State *L, int index) {
-    CAST_PTR p =
-        (CAST_PTR)(void *)LuaNew_base::instance(L, index, BIND_T::id());
+    auto p = (CAST_PTR)(void *)LuaNew_base::instance(L, index, BIND_T::id());
     if (!p) {
       luaL_error(L, "Expecting '%s', got %s", BIND_T::name(),
                  L_typename(index));

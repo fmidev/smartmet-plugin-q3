@@ -172,7 +172,7 @@ void LuaWrapper::my_hook(lua_State *L, lua_Debug *ar) {
   lua_pushlightuserdata(L, REGISTRY_KEY_HOOK);
   lua_gettable(L, LUA_REGISTRYINDEX);
 
-  uint64_t run_until = (uint64_t)lua_tonumber(L, -1);
+  auto run_until = (uint64_t)lua_tonumber(L, -1);
   assert(run_until > 0); // if no limit, the hook shouldn't be set up
 
   lua_pop(L, 1);

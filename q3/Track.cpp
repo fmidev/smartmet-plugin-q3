@@ -70,8 +70,7 @@ Q3Engine::Track::Track(const string &name_,
 */
 Q3Engine::Track::~Track()
 {
-  for (vector<TrackerBase *>::const_iterator it = watch.begin(); it != watch.end(); ++it)
-  {
+  for (auto it = watch.begin(); it != watch.end(); ++it) {
     delete *it;
   }
 }
@@ -90,7 +89,7 @@ void Q3Engine::Track::add(const char *mask_fn,
   {
     // Trackers for unarchived data first
     //
-    vector<TrackerBase *>::iterator it = watch.begin();
+    auto it = watch.begin();
     for (; ((it != watch.end()) && (!((*it)->archived()))); it++)
       ;
 
@@ -133,8 +132,7 @@ TrackedData *Q3Engine::Track::getData_must_release_(const JDay &ot,
   TrackedData *d2 = 0;  // 2nd choice for ONLY_PRESSURE: first hybrid data match
   TrackedData *d3 = 0;  // 3rd choice for ONLY_PRESSURE: first pressure data match
 
-  for (vector<TrackerBase *>::const_iterator it0 = watch.begin(); it0 != watch.end(); ++it0)
-  {
+  for (auto it0 = watch.begin(); it0 != watch.end(); ++it0) {
     // 08-Mar-2012 PKi: Release previous data (was acquired once more than released)
     if (d)
       d->Release();
@@ -155,8 +153,7 @@ TrackedData *Q3Engine::Track::getData_must_release_(const JDay &ot,
     const vector<JDay> &times = info.getTimes();
     bool match = true;
 
-    for (vector<JDay>::const_iterator it = required_times.begin(); it != required_times.end(); ++it)
-    {
+    for (auto it = required_times.begin(); it != required_times.end(); ++it) {
       if (!it->covered_by(times))
       {
         string tmp = it->toString();
@@ -179,10 +176,8 @@ TrackedData *Q3Engine::Track::getData_must_release_(const JDay &ot,
       {
         const std::vector<NA_Param> &qd_params = qd->getParams();
 
-        for (vector<ApiParam>::const_iterator it = required_params.begin();
-             it != required_params.end();
-             ++it)
-        {
+        for (auto it = required_params.begin(); it != required_params.end();
+             ++it) {
           if (!it->covered_by(qd_params))
           {
 //          LOG_DEBUG("No param found: %s", it->toString().c_str());
@@ -220,10 +215,8 @@ TrackedData *Q3Engine::Track::getData_must_release_(const JDay &ot,
 
       NA_Data *qd = d->Acquire(metaQuery);
       {
-        for (vector<NA_Level>::const_iterator it = required_levels.begin();
-             it != required_levels.end();
-             ++it)
-        {
+        for (auto it = required_levels.begin(); it != required_levels.end();
+             ++it) {
           bool exact;
           if (!it->covered_by(*qd, exact))
           {
@@ -279,7 +272,7 @@ TrackedData *Q3Engine::Track::getData_must_release_(const JDay &ot,
       return d;
     }
 
-  }  // for all entries
+  } // for all entries
 
   // 08-Mar-2012 PKi: Release last data (was acquired once more than released)
   if (d)
@@ -316,8 +309,7 @@ vector<JDay> Q3Engine::Track::getOriginTimes(
 {
   vector<JDay> vec;
 
-  for (vector<TrackerBase *>::const_iterator it = watch.begin(); it != watch.end(); ++it)
-  {
+  for (auto it = watch.begin(); it != watch.end(); ++it) {
     (*it)->addOriginTimes_unsorted(vec, originTimeQuery);
   }
   sort_descending(vec, true /*cut duplicates*/);
@@ -329,8 +321,7 @@ vector<TrackedData *> Q3Engine::Track::getOriginTimeDatas(const JDay &ot) const 
 {
   vector<TrackedData *> vec;
 
-  for (vector<TrackerBase *>::const_iterator it = watch.begin(); it != watch.end(); ++it)
-  {
+  for (auto it = watch.begin(); it != watch.end(); ++it) {
     (*it)->addDatas_must_release(ot, vec);
   }
 
@@ -352,7 +343,7 @@ vector<TrackedData *> Q3Engine::Track::getOriginTimeDatas(const JDay &ot) const 
 JDay Q3Engine::Track::getOriginTimeOfRun_(int x, NA_Level::Type &leveltype) const
 {
   assert(x <= 0);
-  const unsigned abs_x = (unsigned)(-x);
+  const auto abs_x = (unsigned)(-x);
 
   // 'x'==0 is always treated the same (fastest)
   //
@@ -362,8 +353,7 @@ JDay Q3Engine::Track::getOriginTimeOfRun_(int x, NA_Level::Type &leveltype) cons
     JDay ot_first;  // earliest -''-
     NA_Level::Type lt_last = NA_Level::NO_LEVEL;
 
-    for (vector<TrackerBase *>::const_iterator it = watch.begin(); it != watch.end(); ++it)
-    {
+    for (auto it = watch.begin(); it != watch.end(); ++it) {
       // Note: Tracks may be empty, in which case the returned JDay object
       //       is 'empty' (test with boolean operator).
       //
@@ -411,8 +401,7 @@ JDay Q3Engine::Track::getOriginTimeOfRun_(int x, NA_Level::Type &leveltype) cons
   {  // Unpredictable runs ('run_secs'==0), 'x'<0
     vector<JDay> vec;
 
-    for (vector<TrackerBase *>::const_iterator it = watch.begin(); it != watch.end(); ++it)
-    {
+    for (auto it = watch.begin(); it != watch.end(); ++it) {
       (*it)->addOriginTimes_unsorted(vec);
     }
     sort_descending(vec, true);  // remove duplicates
@@ -423,7 +412,7 @@ JDay Q3Engine::Track::getOriginTimeOfRun_(int x, NA_Level::Type &leveltype) cons
     }
   }
 
-  return JDay();  // no data that old
+  return {}; // no data that old
 }
 
 /*---=== TrackProxy ===---*/
@@ -796,9 +785,7 @@ int TrackProxyBind::call(lua_State *L)
     required_params.push_back("P");
   }
 
-  for (vector<NA_Level>::const_iterator it = required_levels.begin(); it != required_levels.end();
-       ++it)
-  {
+  for (auto it = required_levels.begin(); it != required_levels.end(); ++it) {
     if ((it->isGroundLevel() && (mode != UNDEFINED)) || (mode == ONLY_GROUND))
     {
       err = "Cannot require ground level and some other level";

@@ -29,8 +29,8 @@
 /*---=== Helpers ===---*/
 
 static bool mm_nan_comp(const __m128 &a, const __m128 &b) {
-  const float *pa = (const float *)&a;
-  const float *pb = (const float *)&b;
+  const auto *pa = (const float *)&a;
+  const auto *pb = (const float *)&b;
 
   for (unsigned i = 0; i < 4; i++) {
     // nan!=nan always; needs an explicit test
@@ -168,7 +168,7 @@ JustOnce_SSE::JustOnce_SSE() {
         always_assert( mm_nan_comp( v3, m_XXXX ) );
         (void)v2; (void)v4;
 #endif
-    const float *f5 = (const float *)&v5;
+    const auto *f5 = (const float *)&v5;
     always_assert(f5[0] == X);
     always_assert(f5[1] == ((loop == 0) ? -INF_F : INF_F));
     always_assert(f5[2] == X);
@@ -204,8 +204,8 @@ void SSE_abs(MemMatrix &c, const Matrix &a, MatrixPos::offset_t &i,
     float *c_data = c.getData();
     assert(c_data);
 
-    __m128 *vc = (__m128 *)c_data;
-    const __m128 *va = (const __m128 *)a_data;
+    auto *vc = (__m128 *)c_data;
+    const auto *va = (const __m128 *)a_data;
 
     while (i + (16 - 1) < n) { // bulk handled here
       *(vc++) = _mm_sqrt_ps(_mm_mul_ps(*va, *va));
@@ -239,7 +239,7 @@ void SSE_reduce_sum(const Matrix &a, float &sum, unsigned &used,
 
   const float *a_data = a.getData();
   if (a_data) {
-    __m128 *va = (__m128 *)a_data;
+    auto *va = (__m128 *)a_data;
 
     __m128 sum4 = _mm_setzero_ps();
     while (i + (8 - 1) < n) { // bulk handled here
@@ -255,7 +255,7 @@ void SSE_reduce_sum(const Matrix &a, float &sum, unsigned &used,
       }
       i += 8;
     }
-    const float *f4 = (const float *)&sum4;
+    const auto *f4 = (const float *)&sum4;
     sum += f4[0] + f4[1] + f4[2] + f4[3];
 
     // last 0..7 values left for regular loop
@@ -271,7 +271,7 @@ void SSE_reduce_count(const Matrix &a, unsigned &used, MatrixPos::offset_t &i,
 
   const float *a_data = a.getData();
   if (a_data) {
-    __m128 *va = (__m128 *)a_data;
+    auto *va = (__m128 *)a_data;
 
     while (i + (8 - 1) < n) { // bulk handled here
       if (NO_NANS_8(va)) {
@@ -294,7 +294,7 @@ void SSE_reduce_count(const Matrix &a, unsigned &used, MatrixPos::offset_t &i,
 void SSE_fill(float *to, float v, MatrixPos::offset_t n) {
   assert(to && ((size_t)to) % 16 == 0);
 
-  __m128 *vc = (__m128 *)to;
+  auto *vc = (__m128 *)to;
   const __m128 vvvv = _mm_set1_ps(v);
   MatrixPos::offset_t i = 0;
 
@@ -325,8 +325,8 @@ void SSE_copy(float *to, const float *from, MatrixPos::offset_t n) {
   assert(to && ((size_t)to) % 16 == 0);
   assert(from && ((size_t)from) % 16 == 0);
 
-  __m128 *vc = (__m128 *)to;
-  const __m128 *va = (const __m128 *)from;
+  auto *vc = (__m128 *)to;
+  const auto *va = (const __m128 *)from;
   MatrixPos::offset_t i = 0;
 
   while (i + (32 - 1) < n) { // bulk handled here
@@ -356,7 +356,7 @@ void SSE_copy(float *to, const float *from, MatrixPos::offset_t n) {
 bool SSE_hasnan(const float *p, MatrixPos::offset_t n) {
   assert(p && ((size_t)p) % 16 == 0);
 
-  const __m128 *va = (const __m128 *)p;
+  const auto *va = (const __m128 *)p;
   MatrixPos::offset_t i = 0;
 
   while (i + (16 - 1) < n) { // bulk handled here

@@ -27,8 +27,7 @@ bool NA_Level::has_at_least_n_of(enum Type lt_, const vector<NA_Level> &vec,
                                  unsigned n) {
   unsigned found = 0;
 
-  for (vector<NA_Level>::const_iterator it = vec.begin(); it != vec.end();
-       ++it) {
+  for (auto it = vec.begin(); it != vec.end(); ++it) {
     if (it->getType() == lt_) {
       if (++found >= n) {
         return true;
@@ -173,8 +172,7 @@ bool NA_Level::levels_range(enum Type lt_, const vector<NA_Level> &vec,
 
   bool found = false;
 
-  for (vector<NA_Level>::const_iterator it = vec.begin(); it != vec.end();
-       ++it) {
+  for (auto it = vec.begin(); it != vec.end(); ++it) {
     if (it->lt == lt_) {
       double lv = it->lv;
 

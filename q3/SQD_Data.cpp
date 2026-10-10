@@ -567,7 +567,7 @@ static vector<NA_Param> getParams(NFmiQueryInfo &info, bool &has_326,
 
   while (info.NextParam()) {
     const NFmiDataIdent& id = info.Param();
-    enum FmiParameterName e = (FmiParameterName)id.GetParamIdent();
+    auto e = (FmiParameterName)id.GetParamIdent();
     const char *latin1_name = id.GetParamName().CharPtr();
 
     bool show_id = true;
@@ -701,8 +701,7 @@ static vector<NA_Param> getParams(NFmiQueryInfo &info, bool &has_326,
     }
 #endif
 #endif
-  for (map<string, FmiParameterName>::const_iterator it = virtualParams.begin();
-       (it != virtualParams.end()); it++)
+  for (auto it = virtualParams.begin(); (it != virtualParams.end()); it++)
     vec.push_back(
         NA_Param(it->first.c_str(), NA_Param::UNIT_UNKNOWN_INTERPOLATABLE));
 
@@ -1259,8 +1258,7 @@ void pointValues(NFmiFastQueryInfo &info,
 
     if (dataIds) {
       for (info.ResetLevel(); info.NextLevel();) {
-        for (DataIdList::const_iterator it = dataIds->begin();
-             (it != dataIds->end()); it++) {
+        for (auto it = dataIds->begin(); (it != dataIds->end()); it++) {
           float v = kFloatMissing;
 
           if (info.Location(*it))
@@ -1297,8 +1295,7 @@ void pointValues(NFmiFastQueryInfo &info,
 
     if (dataIds) {
       for (info.ResetLevel(); info.NextLevel();) {
-        for (DataIdList::const_iterator it = dataIds->begin();
-             (it != dataIds->end()); it++) {
+        for (auto it = dataIds->begin(); (it != dataIds->end()); it++) {
           float v = kFloatMissing;
 
           if ((!retMissing) &&

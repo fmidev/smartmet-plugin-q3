@@ -262,7 +262,7 @@ static int pattern_rgb(lua_State *L) {
   // By pushing it to Lua already here, we guarantee getting automatic
   // '.destroy()' even if we were to abandon it.
   //
-  Pattern *pat = new (L) Pattern(cairo_pattern_create_rgb(col.r, col.g, col.b));
+  auto *pat = new (L) Pattern(cairo_pattern_create_rgb(col.r, col.g, col.b));
   status_check(L, cairo_pattern_status(*pat));
   return 1;
 }
@@ -276,7 +276,7 @@ static int pattern_rgba(lua_State *L) {
                                          : "string,number");
   Color col(L, 1, true);
 
-  Pattern *pat =
+  auto *pat =
       new (L) Pattern(cairo_pattern_create_rgba(col.r, col.g, col.b, col.a));
   status_check(L, cairo_pattern_status(*pat));
   return 1;
@@ -289,7 +289,7 @@ static int pattern_for_surface(lua_State *L) {
   proto(L, "CairoSurface");
   Surface &surf = Surface::instance_notnull(L, 1); // error if none
 
-  Pattern *pat = new (L) Pattern(cairo_pattern_create_for_surface(surf));
+  auto *pat = new (L) Pattern(cairo_pattern_create_for_surface(surf));
   status_check(L, cairo_pattern_status(*pat));
   return 1;
 }
@@ -304,7 +304,7 @@ static int pattern_linear(lua_State *L) {
   double x1 = lua_tonumber(L, 3);
   double y1 = lua_tonumber(L, 4);
 
-  Pattern *pat = new (L) Pattern(cairo_pattern_create_linear(x0, y0, x1, y1));
+  auto *pat = new (L) Pattern(cairo_pattern_create_linear(x0, y0, x1, y1));
   status_check(L, cairo_pattern_status(*pat));
   return 1;
 }
@@ -322,7 +322,7 @@ static int pattern_radial(lua_State *L) {
   double y1 = lua_tonumber(L, 5);
   double r1 = lua_tonumber(L, 6);
 
-  Pattern *pat =
+  auto *pat =
       new (L) Pattern(cairo_pattern_create_radial(x0, y0, r0, x1, y1, r1));
   status_check(L, cairo_pattern_status(*pat));
   return 1;

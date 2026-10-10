@@ -218,7 +218,7 @@ static ContourInfo_common::uint_ARGB SetColor(const string &s,
         LOG_WARNING("Bad rgb[a] value: %s (out of range)", v.c_str());
         d = d < 0 ? 0.0 : 1.0;
       }
-      unsigned vi = (unsigned)floor(d * 255.0 + 0.5);
+      auto vi = (unsigned)floor(d * 255.0 + 0.5);
 
       if (n < 3)
         color = (color << 8) | vi;

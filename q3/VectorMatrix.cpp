@@ -361,8 +361,7 @@ int VectorMatrixBind::index(lua_State *L) {
   } else {
     lua_newtable(L);
     unsigned i = 1;
-    for (vector<LatLon>::const_iterator it = locs.begin(); it != locs.end();
-         ++it) {
+    for (auto it = locs.begin(); it != locs.end(); ++it) {
       lua_pushinteger(L, i++);
 
       double a = me.m1->at(*it);
@@ -633,9 +632,8 @@ int VectorMatrixBind::mul(lua_State *L) {
 
     bool polar = a->isPolar();
 
-    MemMatrix *m_v1 =
-        new (L) MemMatrix(gs, a->m1->getUnit(), a->getProjection());
-    MemMatrix *m_v2 = new (L) MemMatrix(
+    auto *m_v1 = new (L) MemMatrix(gs, a->m1->getUnit(), a->getProjection());
+    auto *m_v2 = new (L) MemMatrix(
         gs, polar ? a->m1->getUnit() : a->m2->getUnit(), a->getProjection());
 
     MatrixPos::offset_t n = gs.getN();
@@ -829,7 +827,7 @@ void VectorMatrix::push_cartesian(lua_State *L, int b_index,
   } else {
     // Need to create whole new Matrix, and fill with X or Y
     //
-    MemMatrix *m = new (L)
+    auto *m = new (L)
         MemMatrix(getGridSize(), m1->getUnit() /*abs unit*/, getProjection());
 
     offset_t n = getGridSize().getN();

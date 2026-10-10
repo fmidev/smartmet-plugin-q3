@@ -472,7 +472,7 @@ static int latlon(lua_State *L) {
     return 1;
 
   } else {
-    LatLon *ll = new (L) LatLon();
+    auto *ll = new (L) LatLon();
     if (!ll->init_from_ud(L, 1)) {
       ll->parse(L, 1, true /*errors if bad string*/);
     }

@@ -139,7 +139,7 @@ const Matrix *Test_Data::push_TestMatrix(lua_State *L, const JDay &vt,
   // TBD: Käytä aikaa ('vt') testimatriisien kasvattamiseen reunoilta (TODAY+0)
   // toiseen reunaan (TODAY+24)
 
-  MemMatrix *m = new (L)
+  auto *m = new (L)
       MemMatrix(gs, NA_Param::UNIT_UNKNOWN_INTERPOLATABLE, "" /*projection*/);
 
   // How we fill the matrix depends on time, level and parameter.
