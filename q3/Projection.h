@@ -43,7 +43,7 @@ private:
  */
 class Projection {
 public:
-  Projection() : proj(0), creation_str("") {
+  Projection() : proj(nullptr), creation_str("") {
     INVARIANT();
   } // empty (no) projection
   Projection(const char *s);

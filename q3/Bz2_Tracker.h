@@ -24,20 +24,20 @@ public:
               unsigned wiping_[], bool relative_uv_,
               const string_or_null &tmp_pattern_,
               size_t tmp_threshold_);
-  ~Bz2_Tracker() {}
+  ~Bz2_Tracker() override {}
   TrackedData *getData_must_release(time_t ot) throw();
 
   static void cache_init(const char *fn);
 
-  bool archived() const { return true; }
+  bool archived() const override { return true; }
   // private funcs
 private:
-  /*virtual*/ bool update(std::set<std::string> &seen_already) throw();
+  /*virtual*/ bool update(std::set<std::string> &seen_already) throw() override;
   bool update_from_cache(std::set<std::string> &seen_already) throw();
   void update_subpath(const char *path_abs,
                       std::set<std::string> &seen_already) throw();
 
-  /*virtual*/ std::string id_str() const {
+  /*virtual*/ std::string id_str() const override {
     return base_path + "**/" + file_mask;
   }
   // data members

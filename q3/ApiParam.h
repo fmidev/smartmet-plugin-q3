@@ -17,7 +17,7 @@ class NA_Data;
  */
 class ApiScalarParam {
 public:
-  ApiScalarParam(const char *name_ = 0) : name(name_ ? name_ : "") {
+  ApiScalarParam(const char *name_ = nullptr) : name(name_ ? name_ : "") {
     INVARIANT();
   }
 
@@ -43,7 +43,7 @@ private:
  */
 class ApiParam {
 public:
-  ApiParam(const char *name_ = 0);
+  ApiParam(const char *name_ = nullptr);
 
   ApiParam(const ApiScalarParam &o)
       : name(o.getName()), a(o), b(), polar(false) {

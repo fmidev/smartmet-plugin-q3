@@ -22,20 +22,19 @@
 class Test_Data : public NA_Data {
 public:
   Test_Data();
-  /*virtual*/ ~Test_Data() {}
+  /*virtual*/ ~Test_Data() override {}
 
-  /*virtual*/ const Matrix *
-  push_NativeMatrix(lua_State *L, const JDay &vt, const NA_Level &lev,
-                    const NA_Param &p
-                    //
-                    // 22-Aug-2011 PKi: For fetching data using newbase
-                    // interpolation, projection and scaling
-                    //
-                    ,
-                    const Projection *target_proj_orig = nullptr,
-                    const MatrixPos *target_gs_orig = nullptr,
-                    bool *target_ready = nullptr,
-                    const DataIdList *dataIds = nullptr) const throw() {
+  /*virtual*/ const Matrix *push_NativeMatrix(
+      lua_State *L, const JDay &vt, const NA_Level &lev,
+      const NA_Param &p
+      //
+      // 22-Aug-2011 PKi: For fetching data using newbase
+      // interpolation, projection and scaling
+      //
+      ,
+      const Projection *target_proj_orig = nullptr,
+      const MatrixPos *target_gs_orig = nullptr, bool *target_ready = nullptr,
+      const DataIdList *dataIds = nullptr) const throw() override {
     return push_TestMatrix(L, vt, lev, p, MatrixPos(50, 50));
   }
 
@@ -43,12 +42,14 @@ public:
   push_Matrix(lua_State *L, const JDay &vt, const NA_Level &lev,
               const NA_Param &p, const Projection &proj_,
               const MatrixPos &target_gs,
-              const DataIdList *dataIds = nullptr) const throw() {
+              const DataIdList *dataIds = nullptr) const throw() override {
     (void)proj_; // not used
     return push_TestMatrix(L, vt, lev, p, target_gs);
   }
 
-  /*virtual*/ bool providesPressureLevelsFromHybrid() const { return false; }
+  /*virtual*/ bool providesPressureLevelsFromHybrid() const override {
+    return false;
+  }
 
 private:
   const Matrix *push_TestMatrix(lua_State *L, const JDay &vt,

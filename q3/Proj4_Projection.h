@@ -25,13 +25,13 @@ class Proj4_Projection : public Projection_provider {
 public:
   Proj4_Projection(const char *proj_);
 
-  ~Proj4_Projection();
+  ~Proj4_Projection() override;
 
-  /*virtual*/ bool at(const LatLon &ll, double &dx, double &dy) const;
+  /*virtual*/ bool at(const LatLon &ll, double &dx, double &dy) const override;
 
-  /*virtual*/ LatLon latlon(double dx, double dy) const;
+  /*virtual*/ LatLon latlon(double dx, double dy) const override;
 
-  /*virtual*/ Projection_provider *clone_() const {
+  /*virtual*/ Projection_provider *clone_() const override {
     return new Proj4_Projection(*this);
   }
 

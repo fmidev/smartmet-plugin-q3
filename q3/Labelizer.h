@@ -108,11 +108,11 @@ public:
     //       are defined in a deriving class (some C++ feeeeeeature)
     //
     virtual void mark_candidate(const Vectors::Point &p, double goodness,
-                                const char *str = 0) {}
-    virtual void mark_tr(const TiltedRect &tr, const char *str = 0) {}
-    virtual void mark_bb(const BoundingBox &bb, const char *str = 0) {}
+                                const char *str = nullptr) {}
+    virtual void mark_tr(const TiltedRect &tr, const char *str = nullptr) {}
+    virtual void mark_bb(const BoundingBox &bb, const char *str = nullptr) {}
     virtual void mark_vector(const Vectors::PointAndVector &v,
-                             const char *str = 0) {}
+                             const char *str = nullptr) {}
   };
 
   struct Config {
@@ -151,7 +151,7 @@ public:
 
   Labelizer(const Config &config_, Drawer &debug_drawer_, unsigned data_w,
             unsigned data_h)
-      : config(config_), current_chain(0), chains(), last_point(),
+      : config(config_), current_chain(nullptr), chains(), last_point(),
         debug_drawer(debug_drawer_),
         bb(Point(0, 0), Point(data_w - 1, data_h - 1)) {}
 

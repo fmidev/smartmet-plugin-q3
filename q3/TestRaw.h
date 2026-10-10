@@ -15,16 +15,20 @@
 class TestRaw : public Raw_interface {
 public:
   TestRaw() {}
-  /*virtual*/ ~TestRaw() {}
+  /*virtual*/ ~TestRaw() override {}
 
   // Get data pointer; valid as long as this object is.
   //
-  /*virtual*/ const NA_Data *getData() const { return &test; }
+  /*virtual*/ const NA_Data *getData() const override { return &test; }
 
-  /*virtual*/ string_or_null getSource() const { return 0; }
+  /*virtual*/ string_or_null getSource() const override { return nullptr; }
 
-  /*virtual*/ const NA_Level &getDefaultLevel() const { return def_lev; }
-  /*virtual*/ const MatrixPos &getDefaultGridsize() const { return def_gs; }
+  /*virtual*/ const NA_Level &getDefaultLevel() const override {
+    return def_lev;
+  }
+  /*virtual*/ const MatrixPos &getDefaultGridsize() const override {
+    return def_gs;
+  }
 
   // data members
 private:

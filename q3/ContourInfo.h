@@ -133,7 +133,7 @@ public:
                    const StrokeParams &stroke_, const LabelParams &label_)
       : ContourInfo_common(stroke_), levels(levels_), label(label_) {}
 
-  virtual bool line_type() const { return true; }
+  bool line_type() const override { return true; }
 
 private:
   friend class ContourInfo_common;
@@ -186,7 +186,7 @@ public:
     pattern = fill.cairo_pattern_create(pSize);
   }
 
-  ~ContourInfo_Fill() {
+  ~ContourInfo_Fill() override {
     if (pattern) {
       // Note: 'cairo_pattern_destroy()' should take in a const, right?
       //
@@ -194,7 +194,7 @@ public:
     }
   }
 
-  virtual bool line_type() const { return false; }
+  bool line_type() const override { return false; }
 
 private:
   friend class ContourInfo_common;

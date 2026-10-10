@@ -45,23 +45,23 @@ public:
   SQD_Matrix(const SQD_Data *data, const JDay &vt, const NA_Level &lev,
              FmiParameterName e);
 
-  /*virtual*/ ~SQD_Matrix();
+  /*virtual*/ ~SQD_Matrix() override;
 
-  /*virtual*/ float get_value_n(offset_t n) const;
+  /*virtual*/ float get_value_n(offset_t n) const override;
 
 #ifdef METQU
   /*virtual*/ void set_value_n(offset_t n, float v);
 #else
-  /*virtual*/ void set_value_n(offset_t n, float v) {
+  /*virtual*/ void set_value_n(offset_t n, float v) override {
     throw E_LOG_BUG0("Trying to write an SQD_Matrix");
   }
 #endif
 
-  /*virtual*/ const float *getData() const {
-    return 0; /* no SSE compatible block */
+  /*virtual*/ const float *getData() const override {
+    return nullptr; /* no SSE compatible block */
   }
 
-  /*virtual*/ float *getData() {
+  /*virtual*/ float *getData() override {
 #ifdef METQU
     assert(!isReadOnly()); // upper levels should have taken care
     return 0; // no SSE compatible block (always use 'get_value_n()')
@@ -70,7 +70,7 @@ public:
 #endif
   }
 
-  /*virtual*/ const Projection &getProjection() const { return proj; }
+  /*virtual*/ const Projection &getProjection() const override { return proj; }
 
 private:
   typedef float (*conv_f)(

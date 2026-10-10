@@ -120,8 +120,7 @@ SQD_Matrix::SQD_Matrix(SQD_Data *data, const JDay &vt, const NA_Level &lev,
 #endif
 
 SQD_Matrix::SQD_Matrix(const SQD_Data *data, const JDay &vt,
-                       const NA_Level &lev,
-                       FmiParameterName e)
+                       const NA_Level &lev, FmiParameterName e)
     : Matrix(data->getGridSize(), SQD_Tools::unit_by_id(e), true /*read-only*/)
 #ifdef METQU
       ,
@@ -131,10 +130,10 @@ SQD_Matrix::SQD_Matrix(const SQD_Data *data, const JDay &vt,
       fi(new_iter(data->getQD(), vt, lev, e))
 #endif
       ,
-      proj(data->getProjection()), get_f(0), set_f(0)
+      proj(data->getProjection()), get_f(nullptr), set_f(nullptr)
 #ifdef SQD_WD_WS_TRACKING
       ,
-      my_e(e), fi_WD(0), fi_WS(0)
+      my_e(e), fi_WD(nullptr), fi_WS(nullptr)
 #endif
 {
   if (!fi)

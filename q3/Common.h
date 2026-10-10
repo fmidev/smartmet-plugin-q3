@@ -15,7 +15,9 @@
 #endif
 
 class out_of_memory : public std::exception {
-  /*virtual*/ const char *what() const throw() { return "out of memory"; }
+  /*virtual*/ const char *what() const throw() override {
+    return "out of memory";
+  }
 };
 
 inline void status_check(lua_State *L, cairo_status_t st) {

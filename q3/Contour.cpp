@@ -754,11 +754,11 @@ private:
 public:
   MyDrawer(cairo_t *cr_, unsigned w_, unsigned h_)
       : Labelizer::Drawer(), cr(cr_), w(w_), h(h_) {}
-  ~MyDrawer() {}
+  ~MyDrawer() override {}
 
   void label(const Vectors::Point &p, const std::string &label_text,
              const ContourInfo_Line::LabelParams &label_specs,
-             double tilt_rad) {
+             double tilt_rad) override {
 
 // DEBUG: show exactly where the label is meant to be
 #if 0
@@ -1388,7 +1388,7 @@ int Contour::drawcontours(lua_State *L) {
 
     // Draw lines
 
-    const ContourInfo_common::StrokeParams *sp_last = 0;
+    const ContourInfo_common::StrokeParams *sp_last = nullptr;
 
     for (auto it = line_store.begin(); it != line_store.end(); ++it) {
       const ContourInfo_common::StrokeParams &sp = it->sp;

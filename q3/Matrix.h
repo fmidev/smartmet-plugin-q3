@@ -94,7 +94,7 @@ public:
     return *this;
   }
 
-  ~MatrixSize() {}
+  ~MatrixSize() override {}
 
   const MatrixPos &getTop() const { return top; }
   const MatrixPos &getBottom() const { return bottom; }
@@ -178,7 +178,7 @@ public:
   MatrixIter(const MatrixSize &size_);
   MatrixIter(const MatrixIter &o)
       : LuaNew_base(), MatrixPos(o), LuaNew<MatrixIterBind>(), size(o.size) {}
-  ~MatrixIter() {}
+  ~MatrixIter() override {}
 
   static int q3_points_iterator(lua_State *L);
 
@@ -308,7 +308,7 @@ private:
 class NFmiGrid;
 class Matrix : public ApiMatrix, public LuaNew<MatrixBind> {
 public:
-  /*virtual*/ ~Matrix() {}
+  /*virtual*/ ~Matrix() override {}
 
 protected:
   Matrix(const MatrixSize &size_, const NA_Param::Unit &unit_, bool ro)
@@ -434,7 +434,7 @@ public:
   const NA_Param::Unit &getUnit() const { return unit; }
   string_or_null getUnitName() const { return unit.getUnitName(); }
 
-  virtual bool is_2d() const { return false; }
+  bool is_2d() const override { return false; }
 
   // open for 'VectorMatrix'
 public:
@@ -471,9 +471,9 @@ public:
   static int has_missing(lua_State *L);
   static int size_f(lua_State *L);
 
-  /*virtual*/ void asString(std::ostream &out, int decimals) const;
+  /*virtual*/ void asString(std::ostream &out, int decimals) const override;
 #ifdef CONFIG_BINARY_OUTPUT_ENABLED
-  /*virtual*/ void asBinary_q2_(std::ostream &out, int decimals) const;
+  /*virtual*/ void asBinary_q2_(std::ostream &out, int decimals) const override;
 #endif
 
   float at(const LatLon &latlon) const;

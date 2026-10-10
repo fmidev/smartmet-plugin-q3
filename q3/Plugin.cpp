@@ -72,22 +72,22 @@ using namespace std;
 class Plugin : public Q3Server, public SmartMetPlugin {
 public:
   Plugin(SmartMet::Spine::Reactor *, const char *);
-  void init();
-  void shutdown();
-  ~Plugin();
+  void init() override;
+  void shutdown() override;
+  ~Plugin() override;
 
-  const string &getPluginName() const {
+  const string &getPluginName() const override {
     static const string name("Q3");
     return name;
   }
-  int getRequiredAPIVersion() const { return SMARTMET_API_VERSION; }
+  int getRequiredAPIVersion() const override { return SMARTMET_API_VERSION; }
   void runScheduledTasks() { LOG_DEBUG0("runScheduledTasks() ignored"); }
   void runDataUpdateTasks() { LOG_DEBUG0("runDataUpdateTasks() ignored"); }
   // 21-Dec-2012 PKi: Dummy request handler (using the old one)
   //
   void requestHandler(SmartMet::Spine::Reactor &theReactor,
                       const SmartMet::Spine::HTTP::Request &theRequest,
-                      SmartMet::Spine::HTTP::Response &theResponse) {
+                      SmartMet::Spine::HTTP::Response &theResponse) override {
     LOG_DEBUG0("requestHandler() ignored");
   }
 
@@ -102,19 +102,23 @@ public:
   BS_RequestResponse(const SmartMet::Spine::HTTP::Request &req_,
                      SmartMet::Spine::HTTP::Response &resp_);
 
-  /*virtual*/ void set_mime(const char *mime) {
+  /*virtual*/ void set_mime(const char *mime) override {
     resp.setHeader("Content-type", mime);
   }
-  /*virtual*/ void set_header(const char *header, const char *value) {
+  /*virtual*/ void set_header(const char *header, const char *value) override {
     resp.setHeader(header, value);
   }
 
-  /*virtual*/ void set_code(unsigned rc) { resp.setStatus(rc); }
-  /*virtual*/ void append(const char *s, int bytes) {
+  /*virtual*/ void set_code(unsigned rc) override { resp.setStatus(rc); }
+  /*virtual*/ void append(const char *s, int bytes) override {
     resp.appendContent(string(s, bytes));
   }
-  /*virtual*/ string get_client_ip() const { return req.getClientIP(); }
-  /*virtual*/ string get_query_string() const { return req.getQueryString(); }
+  /*virtual*/ string get_client_ip() const override {
+    return req.getClientIP();
+  }
+  /*virtual*/ string get_query_string() const override {
+    return req.getQueryString();
+  }
 
 private:
   const SmartMet::Spine::HTTP::Request &req; // valid throughout the lifespan
@@ -234,5 +238,5 @@ extern "C" void destroy(SmartMetPlugin *us) {
 
   // This will call '~Plugin()' since the destructor is virtual
   delete us;
-  me = 0;
+  me = nullptr;
 }

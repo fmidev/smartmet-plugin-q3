@@ -153,7 +153,7 @@ string read_config(const char *fn)
     throw runtime_error(string_fmt("Cannot read: %s", fn));
   }
 
-  char *line = 0;  // allocated and released by 'getline()'
+  char *line = nullptr; // allocated and released by 'getline()'
   size_t len = 0;
 
   while (getline(&line, &len, f) != -1)
@@ -176,8 +176,8 @@ string read_config(const char *fn)
     strncpy(buf, line, sizeof(buf));  // truncates if 'line' is longer
     buf[sizeof(buf) - 1] = '\0';      // just in case (some implementations may not do it?)
 
-    const char *key = 0;
-    const char *val = 0;
+    const char *key = nullptr;
+    const char *val = nullptr;
 
     for (char *pp = buf; *pp; pp++)
     {

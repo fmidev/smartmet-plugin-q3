@@ -41,7 +41,7 @@ JDay str2JDay(const char *fn, const char *ot) {
  * Once dealt with, the file is rewritten (if needed) and kept open with
  * append access.
  */
-Bz2_Cache::Bz2_Cache(const char *fn) : mapping_m(), mapping(), f(0) {
+Bz2_Cache::Bz2_Cache(const char *fn) : mapping_m(), mapping(), f(nullptr) {
   if (!fn)
     return; // no persistence requested (fast to start up but slower to use)
 

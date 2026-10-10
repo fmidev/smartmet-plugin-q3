@@ -31,9 +31,9 @@ public:
 
   MemMatrix(const Matrix &o); // copy constructor from _any_ matrix
                                       // (also 'SQD_Matrix' and 'MQD_Matrix')
-  /*virtual*/ ~MemMatrix();
+  /*virtual*/ ~MemMatrix() override;
 
-  /*virtual*/ float get_value_n(offset_t n) const { return data[n]; }
+  /*virtual*/ float get_value_n(offset_t n) const override { return data[n]; }
 
   // Non-virtual assignment operator: we use assignment to 'MemMatrix' rather
   // much and this makes the code look neater than extensive use of
@@ -58,20 +58,20 @@ public:
     return data[offset(pos)];
   }
 
-  /*virtual*/ void set_value_n(offset_t n, float v) {
+  /*virtual*/ void set_value_n(offset_t n, float v) override {
     assert(!is_readonly); // script level must have checked it
     data[n] = v;
   }
 
-  /*virtual*/ const float *getData() const {
+  /*virtual*/ const float *getData() const override {
     return data;
   } // SSE aligned
-  /*virtual*/ float *getData() {
+  /*virtual*/ float *getData() override {
     assert(!is_readonly); // script level must have checked it
     return data;
   }
 
-  /*virtual*/ const Projection &getProjection() const { return proj; }
+  /*virtual*/ const Projection &getProjection() const override { return proj; }
 
   void fill(float v);
 

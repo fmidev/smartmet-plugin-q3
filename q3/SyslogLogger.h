@@ -14,7 +14,8 @@ class SyslogLogger : public Logger {
 public:
   SyslogLogger(const char *facility);
   /*virtual*/ void log(category cat, const char *file, unsigned line,
-                       const Logger::unique_t, const char *msg, size_t msg_len);
+                       const Logger::unique_t, const char *msg,
+                       size_t msg_len) override;
 
 private:
 };

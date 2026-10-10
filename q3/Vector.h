@@ -61,7 +61,7 @@ public:
 
   Vector() throw() {
   } // leave uninitialized (called when 'VectorMatrix' constructor does 'new')
-  /*virtual*/ ~Vector() {}
+  /*virtual*/ ~Vector() override {}
 
   // Do operators here, since we need to manage polar/cartesian in a unified
   // manner.

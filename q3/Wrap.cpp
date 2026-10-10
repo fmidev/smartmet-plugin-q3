@@ -152,7 +152,7 @@ LuaWrapper::LuaWrapper(bool ignore) : L(luaL_newstate()) {
 void LuaWrapper::destroy() {
   if (L) {
     lua_close(L);
-    L = 0;
+    L = nullptr;
   }
 }
 

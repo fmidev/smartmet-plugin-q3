@@ -459,7 +459,7 @@ int MatrixIter::q3_points_iterator( lua_State *L ) {
     //      with some non-Matrix userdata.
     //
     const Matrix *m= Matrix::instance(L,1);
-    const VectorMatrix *m2= 0;
+    const VectorMatrix *m2 = nullptr;
 
     if (!m) {
         m2= VectorMatrix::instance(L,1);
@@ -1181,8 +1181,9 @@ int Matrix::q3_sum_or_avg( lua_State *L ) {
     * is intentional. Above all this frees us from having to worry who releases the
     * array if a Lua error happens.
     */
-    MemMatrix *c= 0;           // need size of matrix before creating this
-    MemMatrix *avg_count= 0;   // count of values used for summing 'c' (for 'avg_mode' only)
+    MemMatrix *c = nullptr; // need size of matrix before creating this
+    MemMatrix *avg_count =
+        nullptr; // count of values used for summing 'c' (for 'avg_mode' only)
 
     for( unsigned i=1; i<=args; i++ ) {
         const Matrix *a= Matrix::instance(L,i);
@@ -1341,7 +1342,7 @@ int Matrix::q3_set( lua_State *L ) {
 
     unsigned args= lua_gettop(L);
 
-    MemMatrix *c= 0;           // need size of matrix before creating this
+    MemMatrix *c = nullptr; // need size of matrix before creating this
 
     for( unsigned i=1; i<=args; i++ ) {
         const Matrix *a= Matrix::instance(L,i);

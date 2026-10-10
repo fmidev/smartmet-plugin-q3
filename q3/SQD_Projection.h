@@ -29,15 +29,15 @@ public:
   SQD_Projection(const char *proj_);
   SQD_Projection(const NFmiArea *area_);
 
-  /*virtual*/ bool at(const LatLon &ll, double &dx, double &dy) const;
+  /*virtual*/ bool at(const LatLon &ll, double &dx, double &dy) const override;
 
-  /*virtual*/ LatLon latlon(double dx, double dy) const;
+  /*virtual*/ LatLon latlon(double dx, double dy) const override;
 
-  /*virtual*/ Projection_provider *clone_() const {
+  /*virtual*/ Projection_provider *clone_() const override {
     return new SQD_Projection(*this);
   }
 
-  std::string creationPrefix() const {
+  std::string creationPrefix() const override {
     return (strcmp(ap->ClassName(), "kNFmiGdalArea") ? "" : "FMI|");
   }
 

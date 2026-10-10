@@ -62,8 +62,8 @@ static bool push_cartesian(lua_State *L, int b_index) {
  * This constructor MUST be called with 'new(L)' operator.
  */
 VectorMatrix::VectorMatrix(lua_State *L, bool polar_) /*throw(E_BUG)*/
-    : ApiMatrix(), LuaNew<VectorMatrixBind>(), m1(0), m2(0), m1_key(0),
-      m2_key(0), polar(polar_) {
+    : ApiMatrix(), LuaNew<VectorMatrixBind>(), m1(nullptr), m2(nullptr),
+      m1_key(0), m2_key(0), polar(polar_) {
 
   if (this != VectorMatrix::instance(L, -1)) {
     throw E_LOG_BUG0("Caller must use 'new(L)'");
@@ -83,8 +83,8 @@ VectorMatrix::VectorMatrix(lua_State *L, bool polar_) /*throw(E_BUG)*/
  */
 VectorMatrix::VectorMatrix(lua_State *L, const Matrix &a, const Matrix &b,
                            bool polar_) /*throw(E_BUG)*/
-    : ApiMatrix(), LuaNew<VectorMatrixBind>(), m1(0), m2(0), m1_key(0),
-      m2_key(0), polar(polar_) {
+    : ApiMatrix(), LuaNew<VectorMatrixBind>(), m1(nullptr), m2(nullptr),
+      m1_key(0), m2_key(0), polar(polar_) {
 
   const MatrixSize &size = a.getSize();
   if (size != b.getSize()) {
@@ -458,7 +458,7 @@ int VectorMatrixBind::add(lua_State *L) {
     L_ASSERT(lua_gettop(L) == 2); // 'add' cannot have more params
     lua_insert(L, 1);             // swaps [1] and [2]
     a = b;
-    b = 0;
+    b = nullptr;
   }
   L_ASSERT(a);
 
@@ -570,7 +570,7 @@ int VectorMatrixBind::mul(lua_State *L) {
     L_ASSERT(lua_gettop(L) == 2); // 'mul' cannot have more params
     lua_insert(L, 1);             // swaps [1] and [2]
     a = b;
-    b = 0;
+    b = nullptr;
   }
   L_ASSERT(a);
 

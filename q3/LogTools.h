@@ -196,7 +196,8 @@ class StderrLogger : public Logger {
 public:
   StderrLogger() : Logger() {}
   /*virtual*/ void log(category cat, const char *file, unsigned line,
-                       const unique_t id, const char *msg, size_t msg_len);
+                       const unique_t id, const char *msg,
+                       size_t msg_len) override;
 
 private:
 };
@@ -226,19 +227,19 @@ public:
       : std::exception(), file(f), line(l), msg(m), buf() {}
 
   E_ANY(const std::string &m)
-      : std::exception(), file(0), line(0), msg(m), buf() {}
+      : std::exception(), file(nullptr), line(0), msg(m), buf() {}
 
   // general copy constructor is fine
 
   // Needed for 'std::exception' derivation (otherwise "looser throw specifier")
   //
-  /*virtual*/ ~E_ANY() throw() {}
+  /*virtual*/ ~E_ANY() throw() override {}
 
   // Create the 'what()' message only if needed (= if the catcher asks for it)
   //
   // Note: We must keep it in a member, to provide lifespan.
   //
-  /*virtual*/ const char *what() const throw() {
+  /*virtual*/ const char *what() const throw() override {
     // Note: Using 'ostringstream' makes no limits to the length of the message.
     //       'string_fmt()' would have an internal limit (and truncate longer
     //       stuff).
@@ -362,7 +363,8 @@ __FILE__, __LINE__, s )
 //
 class E_BAD_SIZE : public E_ANY {
 public:
-  E_BAD_SIZE(const MatrixPos &a, const MatrixPos &b, const char *describe = 0)
+  E_BAD_SIZE(const MatrixPos &a, const MatrixPos &b,
+             const char *describe = nullptr)
       : E_ANY(string_fmt("Differing grid sizes %s: %s != %s",
                          describe ? describe : "", to_str(a).c_str(),
                          to_str(b).c_str())) {}

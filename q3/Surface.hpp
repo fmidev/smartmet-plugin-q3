@@ -81,7 +81,7 @@ class Surface : public LuaNew<Surface_bind> {
 #else
     Surface( cairo_surface_t *surf_ );
 #endif
-	~Surface();
+    ~Surface() override;
 
   protected:
 
@@ -123,17 +123,20 @@ class Surface : public LuaNew<Surface_bind> {
 class ImageSurface : public Surface {
   public:
 # ifndef SANDBOX
-    ImageSurface( cairo_surface_t *surf_, const char *fn_=0 ) : Surface(surf_,fn_) { INVARIANT(); }
+    ImageSurface(cairo_surface_t *surf_, const char *fn_ = nullptr)
+        : Surface(surf_, fn_) {
+      INVARIANT();
+    }
 # else
     ImageSurface( cairo_surface_t *surf_ ) : Surface(surf_) { INVARIANT(); }
 # endif
-    ~ImageSurface();
+    ~ImageSurface() override;
 
 #ifndef SANDBOX
     static int write_to_png( lua_State *L );
 #endif
 
-    /*virtual*/ void image_to_out() /*const*/;
+    /*virtual*/ void image_to_out() override /*const*/;
 
   private:
 # ifndef NDEBUG
@@ -155,8 +158,8 @@ class PdfSurface : public Surface {
 # else
     PdfSurface( double w_points, double h_points );
 # endif
-    ~PdfSurface() {}
-    
+    ~PdfSurface() override {}
+
   private:
 # ifndef NDEBUG
     void _INVARIANT( const char *, unsigned ) {
@@ -177,7 +180,7 @@ class SvgSurface : public Surface {
 # else
     SvgSurface( double w_points, double h_points, cairo_svg_version_t ver_ );
 # endif
-    ~SvgSurface() {}
+    ~SvgSurface() override {}
 
   private:
 # ifndef NDEBUG

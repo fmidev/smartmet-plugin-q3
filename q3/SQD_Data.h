@@ -40,7 +40,7 @@ public:
   SQD_Data(const NA_Info &info) throw(); // create new, values not initialized
 #endif
 
-  ~SQD_Data();
+  ~SQD_Data() override;
 
 #ifdef METQU
   /*virtual*/ bool isReadOnly() const { return is_readonly; }
@@ -60,11 +60,11 @@ public:
       // NOTE: must NOT be noexcept: on this LuaJIT build luaL_error (called
       // on data-retrieval errors) unwinds the C++ stack via C++ exceptions,
       // and escaping a noexcept function would abort via std::terminate.
-      const DataIdList *dataIds = nullptr) CONST_IF_SERVER;
+      const DataIdList *dataIds = nullptr) CONST_IF_SERVER override;
 
   static NA_Info read_info(const char *fn);
 
-  /*virtual*/ bool providesPressureLevelsFromHybrid() const;
+  /*virtual*/ bool providesPressureLevelsFromHybrid() const override;
 
   /*
     31-Oct-2011 PKi: Virtual parameter mapping for native parameters
@@ -115,30 +115,33 @@ private:
   push_NativeCross(lua_State *L, const std::vector<JDay> &vtVec,
                    const std::vector<NA_Level> &levelVec,
                    const LatLonList &locs, const NA_Param &p,
-                   bool flightRoute) const;
+                   bool flightRoute) const override;
 
   //
   // 29-Sep-2011 PKi: For fetching grid locations and data point (e.g.
   // observation station) metadata
   //
-  /*virtual*/ void getLocations(std::vector<LatLon> &locations,
-                                const Projection *target_proj = nullptr) const;
-  /*virtual*/ void getDataIds(std::vector<unsigned long> &dataIds,
-                              const Projection *target_proj = nullptr) const;
-  /*virtual*/ void getDataNames(std::vector<std::string> &dataNames,
-                                const Projection *target_proj = nullptr) const;
+  /*virtual*/ void
+  getLocations(std::vector<LatLon> &locations,
+               const Projection *target_proj = nullptr) const override;
+  /*virtual*/ void
+  getDataIds(std::vector<unsigned long> &dataIds,
+             const Projection *target_proj = nullptr) const override;
+  /*virtual*/ void
+  getDataNames(std::vector<std::string> &dataNames,
+               const Projection *target_proj = nullptr) const override;
 
   /*
    * 13-Oct-2011 PKi: For checking the availability of height levels in data
    */
-  /*virtual*/ bool providesHeightLevelsFromHybrid() const;
+  /*virtual*/ bool providesHeightLevelsFromHybrid() const override;
 
   /*
     18-Oct-2011 PKi: Primary/secondary parameter mapping for virtual parameters
   */
-  /*virtual*/ FmiParameterName mapParameter(const NA_Param &p,
-                                            bool primary = true,
-                                            bool *mapped = nullptr) const;
+  /*virtual*/ FmiParameterName
+  mapParameter(const NA_Param &p, bool primary = true,
+               bool *mapped = nullptr) const override;
 
   // For 'SQD_Matrix'
   //

@@ -37,7 +37,7 @@ class Context : public LuaNew<Context_bind> {
     operator cairo_t *() { return cr; }
 
     Context( cairo_surface_t *cs );
-	~Context();
+    ~Context() override;
 
     static int save( lua_State *L );
     static int restore( lua_State *L );

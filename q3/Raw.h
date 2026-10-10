@@ -61,7 +61,7 @@ private:
  */
 class Raw_interface : public LuaNew<RawBind> {
 public:
-  virtual ~Raw_interface(){};
+  ~Raw_interface() override {};
 
 #ifdef METQU
   virtual NA_Data *getData_rw() = 0;
@@ -92,21 +92,23 @@ public:
                                    NA_Data::ProgressCallback *cb);
 #endif
 
-  /*virtual*/ ~Raw();
+  /*virtual*/ ~Raw() override;
 
   // Get data pointer; valid as long as this object is.
   //
 #ifdef METQU
   /*virtual*/ NA_Data *getData_rw() { return qd; }
 #endif
-  /*virtual*/ const NA_Data *getData() const { return qd; }
+  /*virtual*/ const NA_Data *getData() const override { return qd; }
 
-  /*virtual*/ string_or_null getSource() const {
+  /*virtual*/ string_or_null getSource() const override {
     return td ? td->getSource() : string_or_null();
   }
 
-  /*virtual*/ const NA_Level &getDefaultLevel() const { return def_level; }
-  /*virtual*/ const MatrixPos &getDefaultGridsize() const {
+  /*virtual*/ const NA_Level &getDefaultLevel() const override {
+    return def_level;
+  }
+  /*virtual*/ const MatrixPos &getDefaultGridsize() const override {
     return def_gridsize;
   }
 

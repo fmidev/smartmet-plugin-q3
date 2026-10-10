@@ -39,7 +39,7 @@ class FontFace : public LuaNew<FontFace_bind> {
     operator cairo_font_face_t *() { return ff; }
 
     FontFace( cairo_font_face_t *ff_ );
-	~FontFace();
+    ~FontFace() override;
 
     //static int save( lua_State *L );
 

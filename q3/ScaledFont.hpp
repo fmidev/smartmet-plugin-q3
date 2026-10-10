@@ -36,7 +36,7 @@ class ScaledFont : public LuaNew<ScaledFont_bind> {
     operator cairo_scaled_font_t *() { return sf; }
 
     ScaledFont( cairo_scaled_font_t *sf_ );
-	~ScaledFont();
+    ~ScaledFont() override;
 
     static int text_extents( lua_State *L );
 

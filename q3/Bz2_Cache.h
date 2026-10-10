@@ -27,7 +27,7 @@ public:
   void set(const std::string &key, const JDay& ot);
   void flush() const;
 
-  bool hasCacheFile() const { return f != 0; }
+  bool hasCacheFile() const { return f != nullptr; }
 
 private:
   friend class Bz2_Tracker;

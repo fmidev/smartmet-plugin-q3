@@ -69,23 +69,23 @@ private:
 class SubMatrix : protected Matrix, public LuaNew<SubMatrixBind> {
 public:
   SubMatrix(Matrix &m_, const MatrixPos &window_size_);
-  /*virtual*/ ~SubMatrix();
+  /*virtual*/ ~SubMatrix() override;
 
-  /*virtual*/ float get_value_n(offset_t n) const;
-  /*virtual*/ void set_value_n(offset_t n, float v);
+  /*virtual*/ float get_value_n(offset_t n) const override;
+  /*virtual*/ void set_value_n(offset_t n, float v) override;
 
   /*
    * Returning nullptr here means we won't be used by SSE. That is quite fine.
    */
-  /*virtual*/ const float *getData() const { return 0; }
-  /*virtual*/ float *getData() {
+  /*virtual*/ const float *getData() const override { return nullptr; }
+  /*virtual*/ float *getData() override {
     assert(false); // upper level should have checked
-    return 0;
+    return nullptr;
   }
 
   // Projection changes at every step - we just don't give any projection.
   //
-  /*virtual*/ const Projection &getProjection() const {
+  /*virtual*/ const Projection &getProjection() const override {
     return Projection::NONE;
   }
 

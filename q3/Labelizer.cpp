@@ -597,7 +597,7 @@ vector<Labelizer::TiltedRect> Labelizer::done(double scale) {
   if (current_chain) {
     current_chain->done(config);
     chains.push_back(current_chain);
-    current_chain = 0;
+    current_chain = nullptr;
   }
 
   struct local { // this tricks C++ to give us local functions :)

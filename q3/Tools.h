@@ -129,7 +129,7 @@ public:
     if (mm) {
       PTHREAD_CALL(pthread_mutex_destroy, mm);
       delete mm;
-      mm = 0;
+      mm = nullptr;
     }
   }
 
@@ -198,11 +198,12 @@ void remove_file(const char *fn);
 class string_or_null : public std::string {
 public:
   string_or_null() : std::string(""), is_null(true) {}
-  string_or_null(const char *s) : std::string(s ? s : ""), is_null(s == 0) {}
+  string_or_null(const char *s)
+      : std::string(s ? s : ""), is_null(s == nullptr) {}
   string_or_null(const std::string &s) : std::string(s), is_null(false) {}
   string_or_null(const string_or_null &o) : std::string(o), is_null(o.is_null) {}
 
-  const char *c_str() const { return is_null ? 0 : std::string::c_str(); }
+  const char *c_str() const { return is_null ? nullptr : std::string::c_str(); }
 
   string_or_null &operator=(const string_or_null &o) {
     if (this != &o) {
@@ -218,7 +219,7 @@ public:
   }
   string_or_null &operator=(const char *s) {
     std::string::operator=(s ? s : "");
-    is_null = (s == 0);
+    is_null = (s == nullptr);
     return *this;
   }
 
@@ -317,7 +318,7 @@ private:
 public:
   const std::string name; // for debugging
 
-  Profiler_ms(const char *name_ = 0)
+  Profiler_ms(const char *name_ = nullptr)
       : cumulative(0), last_start(0), name(name_ ? name_ : "") {}
 
   void start();

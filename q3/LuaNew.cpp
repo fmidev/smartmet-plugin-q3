@@ -34,7 +34,7 @@ LuaNew_base *LuaNew_base::instance(lua_State *L, int index,
                                    const LuaNew_ID &ID) {
   void *ud = lua_touserdata(L, index);
   if (!ud)
-    return 0; // was not a userdata
+    return nullptr; // was not a userdata
 
   L_GROW(2);
 
@@ -58,7 +58,7 @@ LuaNew_base *LuaNew_base::instance(lua_State *L, int index,
     lua_pop(L, 1);
   }
 
-  return 0; // userdata of another kind
+  return nullptr; // userdata of another kind
 }
 
 /*

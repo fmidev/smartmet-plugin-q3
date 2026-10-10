@@ -66,7 +66,7 @@ public:
 
   VectorMatrix(lua_State *L, bool polar);
   VectorMatrix(lua_State *L, const Matrix &a, const Matrix &b, bool polar);
-  ~VectorMatrix() {}
+  ~VectorMatrix() override {}
 
   Vector operator[](offset_t n) const;
 
@@ -84,7 +84,7 @@ public:
     return (*this)[((offset_t)y) * xs + x];
   }
 
-  /*virtual*/ void asString(std::ostream &out, int decimals) const;
+  /*virtual*/ void asString(std::ostream &out, int decimals) const override;
 
   const MatrixSize &getSize() const {
     assert(
@@ -118,11 +118,11 @@ public:
     push_cartesian(L, b_index, false /*y*/);
   }
 
-  /*virtual*/ const Projection &getProjection() const {
+  /*virtual*/ const Projection &getProjection() const override {
     return m1->getProjection(); // same as m2's
   }
 
-  /*virtual*/ bool is_2d() const { return true; }
+  /*virtual*/ bool is_2d() const override { return true; }
 
 #ifdef METQU
   void operator=(const VectorMatrix &o);

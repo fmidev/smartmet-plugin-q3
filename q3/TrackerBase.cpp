@@ -187,7 +187,7 @@ TrackedData *TrackerBase::getData_must_release(const JDay &ot_orig,
   if (!archivedData && archived())
     return nullptr;
 
-  TrackedData *data = 0;
+  TrackedData *data = nullptr;
   JDay ot(ot_orig);
   NA_Level::Type leveltype = NA_Level::NO_LEVEL;
 

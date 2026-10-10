@@ -14,7 +14,8 @@ class ZmqLogger : public Logger {
 public:
   ZmqLogger(const char *addr);
   /*virtual*/ void log(category cat, const char *file, unsigned line,
-                       const Logger::unique_t, const char *msg, size_t msg_len);
+                       const Logger::unique_t, const char *msg,
+                       size_t msg_len) override;
 
 private:
   // Implementation hidden to allow plugins to include us, and to find in

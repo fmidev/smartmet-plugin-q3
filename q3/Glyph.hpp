@@ -36,7 +36,7 @@ class Glyph : public LuaNew<Glyph_bind> {
     operator cairo_glyph_t *() { return glyph; }
 
     Glyph( cairo_glyph_t *glyph_ );
-	~Glyph();
+    ~Glyph() override;
 
     //static int save( lua_State *L );
 

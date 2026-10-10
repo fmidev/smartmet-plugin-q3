@@ -35,7 +35,7 @@ class Pattern : public LuaNew<Pattern_bind> {
     operator const cairo_pattern_t *() const { return cp; }
 
     Pattern( cairo_pattern_t *cp_ );
-	~Pattern();
+    ~Pattern() override;
 
     static int add_color_stop_rgb( lua_State *L );
     static int add_color_stop_rgba( lua_State *L );

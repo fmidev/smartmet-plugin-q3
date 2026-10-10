@@ -33,9 +33,9 @@ const char *TrackedData::four_Xs = "XXXX";
  */
 TrackedData::TrackedData(const char *fn, const JDay &ot_given_,
                          const string_or_null &tmp_pattern_,
-                         size_t tmp_threshold_,
-                         bool relative_uv_)
-    : source(fn), info_(0), ot_given(ot_given_), qd(0), tmp_fn(0)
+                         size_t tmp_threshold_, bool relative_uv_)
+    : source(fn), info_(nullptr), ot_given(ot_given_), qd(nullptr),
+      tmp_fn(nullptr)
 #ifndef METQU
       ,
       qd_m(), refcount(0), last_acquired(0), meta_acquired(0)
@@ -56,7 +56,8 @@ TrackedData::TrackedData(const char *fn, const JDay &ot_given_,
 TrackedData::TrackedData(const char *fn, const NA_Info &info_given,
                          bool relative_uv_, const string_or_null &tmp_pattern_,
                          size_t tmp_threshold_)
-    : source(fn), info_(new NA_Info(info_given)), ot_given(), qd(0), tmp_fn(0)
+    : source(fn), info_(new NA_Info(info_given)), ot_given(), qd(nullptr),
+      tmp_fn(nullptr)
 #ifndef METQU
       ,
       qd_m(), refcount(0), last_acquired(0), meta_acquired(0)
@@ -164,7 +165,7 @@ void TrackedData::Wipe_LOCKED() /*throw(E_FATAL)*/ {
   LOG_OK("Wipe_LOCKED(%d: %s)", (int)pthread_self(), fn_f);
   if (qd) {
     delete qd;
-    qd = 0;
+    qd = nullptr;
   }
 
   // If we have extracted the .BZ2 contents to a temporary file, now is the time
@@ -173,7 +174,7 @@ void TrackedData::Wipe_LOCKED() /*throw(E_FATAL)*/ {
   const char *fn = tmp_fn.c_str();
   if (fn) {
     remove_file(fn);
-    tmp_fn = 0;
+    tmp_fn = nullptr;
   }
 }
 
@@ -198,7 +199,7 @@ NA_Data *TrackedData::Acquire(bool metaQuery) {
 
     if (!qd) {
       // printf("*** %s loading ***\n",source.c_str());
-      const char *fn = 0;
+      const char *fn = nullptr;
 
       // Check if we're wished to extract a .BZ2 file on disk, instead of the
       // default (opening it in memory via Newbase).
@@ -261,7 +262,7 @@ NA_Data *TrackedData::Acquire(bool metaQuery) {
       if (!fn)
         fn = source.c_str();
 
-      qd = 0;
+      qd = nullptr;
       try {
 #ifdef MQD_ENABLED
         if (MQD_Data::is_mqd_file(fn)) {

@@ -30,7 +30,7 @@ public:
               const string_or_null &tmp_pattern_, size_t tmp_threshold,
               bool relative_uv);
   TrackedData(const char *fn, const NA_Info &info_given, bool relative_uv_,
-              const string_or_null &tmp_pattern_ = 0,
+              const string_or_null &tmp_pattern_ = nullptr,
               size_t tmp_threshold_ = 0);
   ~TrackedData();
 

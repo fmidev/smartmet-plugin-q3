@@ -35,7 +35,7 @@ class Path : public LuaNew<Path_bind> {
     cairo_status_t status() const { return cp->status; }
 
     Path( cairo_path_t *cp_ );
-	~Path();
+    ~Path() override;
 
     //static int set_matrix( lua_State *L );
 

@@ -525,7 +525,7 @@ int ImageSurface::write_to_png(lua_State *L) {
  */
 #ifndef SANDBOX
 PdfSurface::PdfSurface(double w_points, double h_points, const char *fn)
-    : Surface(0 /*coming soon*/, fn)
+    : Surface(nullptr /*coming soon*/, fn)
 #else
 PdfSurface::PdfSurface(double w_points, double h_points)
     : Surface(0 /*coming soon*/)
@@ -561,7 +561,7 @@ PdfSurface::PdfSurface(double w_points, double h_points)
 #ifndef SANDBOX
 SvgSurface::SvgSurface(double w_points, double h_points,
                        cairo_svg_version_t ver_required, const char *fn)
-    : Surface(0 /*coming soon*/, fn)
+    : Surface(nullptr /*coming soon*/, fn)
 #else
 SvgSurface::SvgSurface(double w_points, double h_points,
                        cairo_svg_version_t ver_required)

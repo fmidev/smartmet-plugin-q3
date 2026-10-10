@@ -128,9 +128,11 @@ TrackedData *Q3Engine::Track::getData_must_release_(const JDay &ot,
                                                     bool metaQuery,
                                                     std::string &err) const throw()
 {
-  TrackedData *d = 0;
-  TrackedData *d2 = 0;  // 2nd choice for ONLY_PRESSURE: first hybrid data match
-  TrackedData *d3 = 0;  // 3rd choice for ONLY_PRESSURE: first pressure data match
+  TrackedData *d = nullptr;
+  TrackedData *d2 =
+      nullptr; // 2nd choice for ONLY_PRESSURE: first hybrid data match
+  TrackedData *d3 =
+      nullptr; // 3rd choice for ONLY_PRESSURE: first pressure data match
 
   for (auto it0 = watch.begin(); it0 != watch.end(); ++it0) {
     // 08-Mar-2012 PKi: Release previous data (was acquired once more than released)
@@ -257,7 +259,7 @@ TrackedData *Q3Engine::Track::getData_must_release_(const JDay &ot,
 
         // 08-Mar-2012 PKi: Keep the data when needed to release it
         if ((d == d2) || (d == d3))
-          d = 0;
+          d = nullptr;
 
         continue;
       }
@@ -573,7 +575,8 @@ int TrackProxyBind::call(lua_State *L)
   vector<ApiParam> required_params;
   vector<NA_Level> required_levels;
   string err;
-  TrackedData *d = 0;  // (must be here to avoid goto's past a variable declaration)
+  TrackedData *d =
+      nullptr; // (must be here to avoid goto's past a variable declaration)
 
   bool demand_z_param = false, demand_p_param = false, metaQuery = false;
 

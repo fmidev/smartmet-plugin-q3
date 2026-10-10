@@ -176,7 +176,7 @@ public:
   // Used by the 'proto' system to check if 'any' is of this kind.
   //
   static int is(lua_State *L) {
-    lua_pushboolean(L, instance(L, 1) != 0);
+    lua_pushboolean(L, instance(L, 1) != nullptr);
     return 1;
   }
 
