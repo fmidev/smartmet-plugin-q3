@@ -4,6 +4,7 @@
  * Revised:  15-Oct-10
  */
 #include "Raw.h"
+#include <macgyver/StringConversion.h>
 #include "Tools.h"
 
 #include "Proto.h"
@@ -311,7 +312,7 @@ int RawBind::__index(lua_State *L) {
     for (const auto &it : vec) {
       lua_pushinteger(L, i++);
       const char *cp = strrchr(it.getNativeName_().c_str(), ':');
-      int id = (cp ? atoi(cp + 1) : 0);
+      int id = (cp ? Fmi::stoi_opt(cp + 1).value_or(0) : 0);
       string name = converter.ToString(id);
       if (name.empty())
         name = it.getNativeName_();

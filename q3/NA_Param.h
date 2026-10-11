@@ -14,6 +14,7 @@
 
 #include <string>
 #include <vector>
+#include <macgyver/StringConversion.h>
 
 // 31-Oct-2011 PKi: Parameter mapping for virtual parameters
 //
@@ -243,8 +244,8 @@ private:
     }
     if (native_name != "") {
       const char *colon = strchr(native_name.c_str(), ':');
-      assert_invariant(colon && (atoi(colon + 1) >
-                                 0)); // always has an id part with integer tail
+      // always has an id part with integer tail
+      assert_invariant(colon && Fmi::stoi_opt(colon + 1).value_or(0) > 0);
     }
 #else
     (void)file;

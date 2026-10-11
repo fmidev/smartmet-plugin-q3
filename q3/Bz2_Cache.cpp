@@ -8,7 +8,7 @@
  */
 #include "Bz2_Cache.h"
 #include "SQD_Tools.h"
-
+#include <macgyver/StringConversion.h>
 using namespace std;
 
 #include <newbase/NFmiMetTime.h>
@@ -19,15 +19,14 @@ JDay str2JDay(const char *fn, const char *ot) {
     return 0;
   }
 
-  char yyyy[5], MM[3], dd[3], hh[3], mm[3], ss[3];
-  strncpy(yyyy, ot, 4);
-  strncpy(MM, ot + 4, 2);
-  strncpy(dd, ot + 6, 2);
-  strncpy(hh, ot + 8, 2);
-  strncpy(mm, ot + 10, 2);
-  strncpy(ss, ot + 12, 2);
-
-  NFmiMetTime mt(atoi(yyyy), atoi(MM), atoi(dd), atoi(hh), atoi(mm), atoi(ss));
+  // The 14 digits were checked above. (The old strncpy copies were not null
+  // terminated, so atoi read past them.)
+  const std::string stamp(ot, 14);
+  auto field = [&stamp](size_t pos, size_t n) {
+    return static_cast<short>(Fmi::stoi(stamp.substr(pos, n)));
+  };
+  NFmiMetTime mt(field(0, 4), field(4, 2), field(6, 2), field(8, 2), field(10, 2),
+                 field(12, 2));
 
   return SQD_Tools::mt2jd(mt);
 }

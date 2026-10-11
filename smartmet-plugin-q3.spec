@@ -2,7 +2,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet q3 plugin
 Name: %{SPECNAME}
-Version: 26.10.10
+Version: 26.10.11
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -92,6 +92,9 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/smartmet/plugins/q3plugin.conf
 
 %changelog
+* Sun Oct 11 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.10.11-1.fmi
+- Invalid numbers are now detected instead of silently becoming 0 or a numeric prefix
+
 * Sat Oct 10 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.10.10-1.fmi
 - Use the portable SSE intrinsics instead of GCC-only builtins so the plugin also compiles with clang
 - Fixed operator precedence in the SSE min/max self-test assertions, which made them always pass

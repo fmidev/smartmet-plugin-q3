@@ -14,6 +14,9 @@
 #include <string>
 // auto_ptr
 #include <fstream>
+#include <macgyver/StringConversion.h>
+#include <cstring>
+#include <optional>
 
 using namespace std;
 
@@ -108,22 +111,25 @@ NA_Level::NA_Level(const char *sc) : lt(), lv() {
     lt = GROUND_LEVEL;
     lv = NAN;
   } else {
-    int d_tmp;
+    const std::optional<int> hybrid =
+        (strncmp(sc, "hybrid:", 7) == 0 ? Fmi::stoi_opt(sc + 7) : std::nullopt);
 
-    if (sscanf(sc, "hybrid:%d", &d_tmp) == 1) {
+    if (hybrid) {
       lt = HYBRID_LEVEL;
-      lv = d_tmp;
+      lv = *hybrid;
 
     } else {
-      double tmp;
+      const std::optional<double> pressure =
+          ((strncmp(sc, "hPa:", 4) == 0 || strncmp(sc, "hpa:", 4) == 0)
+               ? Fmi::stod_opt(sc + 4)
+               : std::nullopt);
 
-      if ((sscanf(sc, "hPa:%lf", &tmp) == 1) ||
-          (sscanf(sc, "hpa:%lf", &tmp) == 1)) {
+      if (pressure) {
         lt = PRESSURE_LEVEL;
       } else {
         throw E_LOG_USAGE("Bad level name: %s", sc);
       }
-      lv = tmp;
+      lv = *pressure;
     }
   }
 

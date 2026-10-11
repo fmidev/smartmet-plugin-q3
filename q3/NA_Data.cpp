@@ -6,8 +6,9 @@
 #include "NA_Data.h"
 
 #include "MemMatrix.h"
-
+#include <macgyver/StringConversion.h>
 #include <vector>
+#include <limits>
 
 using namespace std;
 
@@ -88,11 +89,20 @@ NA_Info &NA_Info::setExtra(const char *key, unsigned v) {
 MatrixPos NA_Info::getExtra_pos(const char *key) const {
   string_or_null s = getExtra_str(key);
 
-  unsigned x, y;
-  if (sscanf(s.c_str(), "%u,%u", &x, &y) != 2) {
+  // "x,y" with non-negative integers
+  const std::string str(s.c_str());
+  const auto comma = str.find(',');
+  if (comma == std::string::npos) {
     return MatrixPos::ZERO; // no such entry
   }
-  return MatrixPos(x, y);
+  const auto x = Fmi::stoul_opt(str.substr(0, comma));
+  const auto y = Fmi::stoul_opt(str.substr(comma + 1));
+  if (!x || !y || str[0] == '-' || str[comma + 1] == '-' ||
+      *x > std::numeric_limits<unsigned>::max() ||
+      *y > std::numeric_limits<unsigned>::max()) {
+    return MatrixPos::ZERO; // no such entry
+  }
+  return MatrixPos(static_cast<unsigned>(*x), static_cast<unsigned>(*y));
 }
 
 NA_Info &NA_Info::setExtra(const char *key, const MatrixPos &pos) {

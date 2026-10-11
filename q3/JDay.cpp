@@ -13,6 +13,7 @@
 #include "Proto.h"
 
 #include "Tools.h"
+#include <cstring>
 
 #include <cassert>
 #include <climits>
@@ -314,23 +315,24 @@ JDay::jd_T JDay::calc(time_t ticks) {
 JDay::jd_T JDay::fromstring(const char *s) {
   assert(s);
 
-  int yyyy, mm, dd, hh = 0, min = 0, sec = 0, dummy;
-
-  // One extra field catches numeric strings that are too long
-  //
-  int rc = sscanf(s, "%4d%2d%2d%2d%2d%2d%d", &yyyy, &mm, &dd, &hh, &min, &sec,
-                  &dummy);
-  //
-  // ...
-  // 5: YYYYMMDDHHMM
-  // 6: YYYYMMDDHHMMSS
-  // 7: extra characters
-
-  if ((rc < 3) || (rc > 6)) {
+  // The whole string must be 8, 10, 12 or 14 digits
+  const size_t len = strlen(s);
+  if (strspn(s, "0123456789") != len ||
+      (len != 8 && len != 10 && len != 12 && len != 14)) {
     return INVALID_VALUE; // bad syntax
   }
 
-  return calc(yyyy, mm, dd, hh, min, sec);
+  auto field = [s, len](size_t pos, size_t n) {
+    if (pos >= len)
+      return 0;
+    int value = 0;
+    for (size_t i = pos; i < pos + n; i++)
+      value = 10 * value + (s[i] - '0');
+    return value;
+  };
+
+  return calc(field(0, 4), field(4, 2), field(6, 2), field(8, 2), field(10, 2),
+              field(12, 2));
 }
 
 /*

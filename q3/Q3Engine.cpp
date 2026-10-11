@@ -5,6 +5,7 @@
  *      AKa (asko.kauppi@fmi.fi)
  */
 #include "Q3Engine.h"
+#include <macgyver/StringConversion.h>
 #include "Session.h"
 #include "RegTools.h"
 
@@ -239,14 +240,17 @@ static void q3_config(const char *conf,
 
       if (s)
       {
-        double d;
-        if (sscanf(s, "%lfMB", &d) == 1)
+        const std::string str(s);
+        const std::string number = str.size() > 2 ? str.substr(0, str.size() - 2) : "";
+        const std::string unit = str.size() > 2 ? str.substr(str.size() - 2) : "";
+        const auto d = Fmi::stod_opt(number);
+        if (d && *d >= 0 && unit == "MB")
         {
-          tmp_threshold = (size_t)((1024 * 1024) * d);
+          tmp_threshold = (size_t)((1024 * 1024) * *d);
         }
-        else if (sscanf(s, "%lfGB", &d) == 1)
+        else if (d && *d >= 0 && unit == "GB")
         {
-          tmp_threshold = (size_t)((1024 * 1024 * 1024) * d);
+          tmp_threshold = (size_t)((1024 * 1024 * 1024) * *d);
         }
         else
         {

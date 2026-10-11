@@ -4,6 +4,7 @@
 * General server interface to Q3 (abstract base for certain implementations)
 */
 #include "Server.hpp"
+#include <macgyver/StringConversion.h>
 #include "Q3Engine.h"
 
 #include "Track.h"
@@ -631,7 +632,7 @@ void Q3Server::native_handler(RequestResponse &rr)
 #endif
         )
     {
-      decimals = atoi(val_c);  // 0..n
+      decimals = Fmi::stoi(val_c);  // 0..n
     }
     else if (key == "output")
     {
