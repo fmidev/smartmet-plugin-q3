@@ -94,6 +94,7 @@ rm -rf %{buildroot}
 %changelog
 * Sun Oct 11 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.10.11-1.fmi
 - Invalid numbers are now detected instead of silently becoming 0 or a numeric prefix
+- Failed file writes, closes and seeks are now reported instead of being ignored
 
 * Sat Oct 10 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.10.10-1.fmi
 - Use the portable SSE intrinsics instead of GCC-only builtins so the plugin also compiles with clang

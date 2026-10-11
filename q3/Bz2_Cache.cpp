@@ -12,6 +12,8 @@
 using namespace std;
 
 #include <newbase/NFmiMetTime.h>
+#include <cerrno>
+#include <cstring>
 
 JDay str2JDay(const char *fn, const char *ot) {
   if (strspn(ot, "1234567890") != 14) {
@@ -124,7 +126,7 @@ Bz2_Cache::Bz2_Cache(const char *fn) : mapping_m(), mapping(), f(nullptr) {
     unsigned n = mapping.size(); (void)n;
     LOG_DEBUG("Writing changes to BZ2 cache (%d -> %d lines)", n + changed, n);
 
-    fclose(f);
+    (void)fclose(f);  // was opened for reading
     f = fopen(fn, "w");
     if (!f) {
       throw E_LOG_FATAL("Unable to open %s for writing", fn);
@@ -146,7 +148,7 @@ Bz2_Cache::~Bz2_Cache() {
   mapping_m.Destroy();
 
   if (f)
-    fclose(f);
+    (void)fclose(f);
 }
 
 /*
@@ -211,6 +213,6 @@ void Bz2_Cache::write_LOCKED(const string &key, const JDay& ot) {
  * Flush changes to the disk.
  */
 void Bz2_Cache::flush() const {
-  if (f)
-    fflush(f); // can be done without locking
+  if (f && fflush(f) != 0) // can be done without locking
+    LOG_WARNING("Failed to flush the BZ2 cache file: %s", strerror(errno));
 }
