@@ -39,7 +39,7 @@
 
 #include <cassert>
 #include <cstdio>
-#include <math.h>
+#include <cmath>
 
 #include <pthread.h>
 

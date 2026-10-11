@@ -7,7 +7,7 @@
 
 #include "Color.hpp"
 
-#include <stdlib.h>
+#include <cstdlib>
 // strtol (on Ubuntu 9.10)
 
 /*

@@ -27,7 +27,7 @@
 #include <cassert>
 #include <stdexcept>
 
-#include <math.h>
+#include <cmath>
 
 #include <boost/algorithm/string.hpp>
 

@@ -14,7 +14,7 @@
 #include "SQD_Tools.h"
 #endif
 
-#include <math.h>
+#include <cmath>
 
 using namespace std;
 

@@ -4,7 +4,7 @@
 #include "Vector.h"
 
 #include <cstring>
-#include <math.h>
+#include <cmath>
 
 #include <iostream>
 // debug

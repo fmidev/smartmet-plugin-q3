@@ -8,7 +8,7 @@
 
 #include <cfloat>
 #include <cstring>
-#include <math.h>
+#include <cmath>
 #include <vector>
 
 #ifdef UNIX

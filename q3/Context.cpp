@@ -18,9 +18,9 @@
 #include "Converter.hpp"
 
 #include <cstring>
-#include <stdlib.h>
+#include <cstdlib>
 // strtol (on Ubuntu 9.10)
-#include <math.h>
+#include <cmath>
 
 using namespace std;
 

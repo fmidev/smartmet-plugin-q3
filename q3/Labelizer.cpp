@@ -33,7 +33,7 @@
 #include "LuaWrap.h" // 01-Feb-2012 PKi
 #include <cassert>
 #include <cstring>
-#include <math.h>
+#include <cmath>
 
 #include <stdexcept>
 

@@ -26,7 +26,7 @@
 
 #include <cassert>
 #include <cstring>
-#include <math.h>
+#include <cmath>
 
 using namespace std;
 

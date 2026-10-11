@@ -8,7 +8,7 @@
 #include "VectorMatrix.h"
 
 #include <cstring>
-#include <math.h>
+#include <cmath>
 
 using namespace std;
 
