@@ -181,14 +181,14 @@ public:
   //
   //			   TODO: Union for field pointers
   //
-  typedef enum { T_NONE = 0, T_DOUBLE, T_BOOL, T_INT } _configFldType;
-  typedef struct {
+  enum _configFldType { T_NONE = 0, T_DOUBLE, T_BOOL, T_INT };
+  struct _configFlds {
     const char *fld;   // "limitalongline", ...
     _configFldType vt; // T_DOUBLE, T_BOOL, T_INT
     double *dp;        // nullptr or &Labelizer::lblCfg.limit_along_line, ...
     bool *bp; // nullptr or &Labelizer::lblCfg.allow_overlapping_lines, ...
     int *ip;  // nullptr or &Labelizer::lblCfg.decimals
-  } _configFlds;
+  };
 
 private:
   struct PointScore;

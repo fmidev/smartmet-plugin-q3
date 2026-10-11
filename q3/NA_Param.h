@@ -17,7 +17,7 @@
 
 // 31-Oct-2011 PKi: Parameter mapping for virtual parameters
 //
-typedef struct virtualParameterName {
+struct virtualParameterName {
   virtualParameterName(FmiParameterName p, FmiParameterName s) {
     primaryId = p;
     secondaryId = s;
@@ -25,7 +25,7 @@ typedef struct virtualParameterName {
 
   FmiParameterName primaryId;   // primary parameter's native id in SQD file
   FmiParameterName secondaryId; // secondary parameter's native id in SQD file
-} virtualParameterName;
+};
 
 /*
  * Differentiates parameter name and id, plus handles parameter unit (and
