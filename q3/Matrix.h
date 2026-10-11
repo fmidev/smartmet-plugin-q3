@@ -89,6 +89,8 @@ public:
       : LuaNew_base(), LuaNew<MatrixSizeBind>(), top(o.top), bottom(o.bottom) {}
 
   MatrixSize &operator=(const MatrixSize &o) {
+    if (&o == this)
+      return *this;
     top = o.top;
     bottom = o.bottom;
     return *this;

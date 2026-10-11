@@ -453,7 +453,9 @@ ContourInfo_Line::create(const string &conf, const ContourMatrix<float> &data) {
       throw runtime_error("Bad contour spec (hi<lo): " + conf);
     }
 
-    for (float v = lo; v <= hi; v += step) {
+    for (int nv = 0; lo + nv * step <= hi; nv++)
+    {
+      const float v = lo + nv * step;
       levels.push_back(v);
     }
     (void)zero_level; // not used

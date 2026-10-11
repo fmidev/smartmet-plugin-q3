@@ -203,6 +203,8 @@ public:
    * copies (because we use this in such way).
    */
   ChainIterator &operator=(const ChainIterator &o) {
+    if (&o == this)
+      return *this;
     chunk_n = o.chunk_n;
     inner_n = o.inner_n;
     is_closed = o.is_closed;

@@ -37,6 +37,7 @@ using namespace std;
 
 /*
  */
+// NOLINTNEXTLINE(cert-dcl50-cpp): printf style formatting helper
 string string_fmt(const char *fmt, ...) {
   char buf[4000];
 

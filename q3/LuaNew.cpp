@@ -391,6 +391,7 @@ void _L_nilerr(lua_State *L, const char *s) {
   lua_pushstring(L, s);
 }
 
+// NOLINTNEXTLINE(cert-dcl50-cpp): printf style error helper
 void _L_nilerr_fmt(lua_State *L, const char *fmt, ...) {
   L_ASSERT(fmt);
 
