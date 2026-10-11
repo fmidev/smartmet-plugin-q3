@@ -15,7 +15,7 @@
 class TestRaw : public Raw_interface {
 public:
   TestRaw() = default;
-  /*virtual*/ ~TestRaw() override {}
+  /*virtual*/ ~TestRaw() override = default;
 
   // Get data pointer; valid as long as this object is.
   //

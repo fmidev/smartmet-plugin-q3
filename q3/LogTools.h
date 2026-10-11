@@ -61,7 +61,7 @@ class Logger {
   //
 public:
   static void init(Logger *logger_);
-  virtual ~Logger() {}
+  virtual ~Logger() = default;
 
   // A unique id for groupping separate log messages (i.e. all that have to do
   // with particular script) together.
@@ -233,7 +233,7 @@ public:
 
   // Needed for 'std::exception' derivation (otherwise "looser throw specifier")
   //
-  /*virtual*/ ~E_ANY() throw() override {}
+  /*virtual*/ ~E_ANY() throw() override = default;
 
   // Create the 'what()' message only if needed (= if the catcher asks for it)
   //

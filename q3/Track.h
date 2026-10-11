@@ -97,7 +97,7 @@ class TrackProxy : public LuaNew<TrackProxyBind>
 {
  public:
   TrackProxy(const Q3Engine::Track *t_, const std::string &a_ = "") : t(t_), a(a_) { INVARIANT(); }
-  ~TrackProxy() override {}
+  ~TrackProxy() override = default;
   const Q3Engine::Track *getTrack() const { return t; }
   const std::string &getAlias() const { return a; }
  private:

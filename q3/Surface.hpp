@@ -158,7 +158,7 @@ class PdfSurface : public Surface {
 # else
     PdfSurface( double w_points, double h_points );
 # endif
-    ~PdfSurface() override {}
+    ~PdfSurface() override = default;
 
   private:
 # ifndef NDEBUG
@@ -180,7 +180,7 @@ class SvgSurface : public Surface {
 # else
     SvgSurface( double w_points, double h_points, cairo_svg_version_t ver_ );
 # endif
-    ~SvgSurface() override {}
+    ~SvgSurface() override = default;
 
   private:
 # ifndef NDEBUG

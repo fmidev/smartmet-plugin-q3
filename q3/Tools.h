@@ -201,7 +201,7 @@ public:
   string_or_null(const char *s)
       : std::string(s ? s : ""), is_null(s == nullptr) {}
   string_or_null(const std::string &s) : std::string(s), is_null(false) {}
-  string_or_null(const string_or_null &o) : std::string(o), is_null(o.is_null) {}
+  string_or_null(const string_or_null &o)  = default;
 
   const char *c_str() const { return is_null ? nullptr : std::string::c_str(); }
 

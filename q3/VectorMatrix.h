@@ -66,7 +66,7 @@ public:
 
   VectorMatrix(lua_State *L, bool polar);
   VectorMatrix(lua_State *L, const Matrix &a, const Matrix &b, bool polar);
-  ~VectorMatrix() override {}
+  ~VectorMatrix() override = default;
 
   Vector operator[](offset_t n) const;
 

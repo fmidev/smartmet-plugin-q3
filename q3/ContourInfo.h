@@ -94,7 +94,7 @@ public:
 
   // Needed by C++ (though we do none)
   //
-  virtual ~ContourInfo_common(){};
+  virtual ~ContourInfo_common()= default;
 
 protected:
   ContourInfo_common(const StrokeParams &stroke_) : stroke(stroke_) {}

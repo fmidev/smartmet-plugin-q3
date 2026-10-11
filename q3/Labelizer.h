@@ -50,7 +50,7 @@ public:
              const ContourInfo_Line::LabelParams *lp_)
         : label(label_), size(size_), lp(lp_) {}
     FontSpec(const FontSpec &other)
-        : label(other.label), size(other.size), lp(other.lp) {}
+         = default;
     FontSpec &operator=(const FontSpec &) = default;
   };
 
@@ -96,7 +96,7 @@ public:
    */
   class Drawer {
   public:
-    virtual ~Drawer() {}
+    virtual ~Drawer() = default;
 
     virtual void label(const Point &p, const std::string &label,
                        const ContourInfo_Line::LabelParams &label_specs,

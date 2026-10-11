@@ -260,7 +260,7 @@ public:
 #endif
 
   NA_Data(const NA_Info &info) : NA_Info(info) {}
-  virtual ~NA_Data(){};
+  virtual ~NA_Data()= default;
 
 #ifdef METQU
   virtual bool isReadOnly() const = 0;

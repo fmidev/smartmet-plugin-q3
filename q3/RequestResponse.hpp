@@ -51,7 +51,7 @@ class RequestResponse {
     bool has_code() const { return code != nullptr; }
     int compile_code( lua_State *L, const char *block_name );
 
-    virtual ~RequestResponse() {};
+    virtual ~RequestResponse() = default;
 };
 
 #endif

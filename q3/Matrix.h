@@ -94,7 +94,7 @@ public:
     return *this;
   }
 
-  ~MatrixSize() override {}
+  ~MatrixSize() override = default;
 
   const MatrixPos &getTop() const { return top; }
   const MatrixPos &getBottom() const { return bottom; }
@@ -178,7 +178,7 @@ public:
   MatrixIter(const MatrixSize &size_);
   MatrixIter(const MatrixIter &o)
       : LuaNew_base(), MatrixPos(o), LuaNew<MatrixIterBind>(), size(o.size) {}
-  ~MatrixIter() override {}
+  ~MatrixIter() override = default;
 
   static int q3_points_iterator(lua_State *L);
 
@@ -308,7 +308,7 @@ private:
 class NFmiGrid;
 class Matrix : public ApiMatrix, public LuaNew<MatrixBind> {
 public:
-  /*virtual*/ ~Matrix() override {}
+  /*virtual*/ ~Matrix() override = default;
 
 protected:
   Matrix(const MatrixSize &size_, const NA_Param::Unit &unit_, bool ro)

@@ -32,7 +32,7 @@ public:
     init();
   }
 
-  ~Sqd_Tracker() override {}
+  ~Sqd_Tracker() override = default;
   /*virtual*/ std::string id_str() const override { return fn_abs_mask; }
 
 private:

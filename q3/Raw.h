@@ -61,7 +61,7 @@ private:
  */
 class Raw_interface : public LuaNew<RawBind> {
 public:
-  ~Raw_interface() override {};
+  ~Raw_interface() override = default;
 
 #ifdef METQU
   virtual NA_Data *getData_rw() = 0;

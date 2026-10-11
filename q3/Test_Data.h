@@ -22,7 +22,7 @@
 class Test_Data : public NA_Data {
 public:
   Test_Data();
-  /*virtual*/ ~Test_Data() override {}
+  /*virtual*/ ~Test_Data() override = default;
 
   /*virtual*/ const Matrix *push_NativeMatrix(
       lua_State *L, const JDay &vt, const NA_Level &lev,

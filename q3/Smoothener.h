@@ -68,7 +68,7 @@ public:
         WINDOW(SMOOTHENING_WINDOW_SIZE),
         SKIP((SMOOTHENING_WINDOW_SIZE - 1) / 2) {}
 
-  ~SmoothPath() {}
+  ~SmoothPath() = default;
 
   void add_point(const Point &p, bool at_edge = false) {
     rim.emplace_back(p, at_edge);

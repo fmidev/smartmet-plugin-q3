@@ -24,7 +24,7 @@ public:
               unsigned wiping_[], bool relative_uv_,
               const string_or_null &tmp_pattern_,
               size_t tmp_threshold_);
-  ~Bz2_Tracker() override {}
+  ~Bz2_Tracker() override = default;
   TrackedData *getData_must_release(time_t ot) throw();
 
   static void cache_init(const char *fn);
