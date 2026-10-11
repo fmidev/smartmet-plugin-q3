@@ -78,7 +78,6 @@ int ContourBind::__index(lua_State *L) {
   }
 
   luaL_error(L, "Bad index (for contour): %s", L_string_or_typename(2));
-  return 0; // never
 }
 
 /*
@@ -133,7 +132,6 @@ int EdgePointBind::__index(lua_State *L) {
     }
   }
   luaL_error(L, "Bad index (for EdgePoint): %s", L_string_or_typename(2));
-  return 0; // never
 }
 
 /*

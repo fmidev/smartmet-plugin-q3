@@ -42,7 +42,7 @@ LuaNew_base *LuaNew_base::instance(lua_State *L, int index,
     //
     // [-1]: metatable of given userdata
 
-    for (auto id : ID.ids) {
+    for (const auto *id : ID.ids) {
       lua_pushlightuserdata(L, (void *)id);
       lua_gettable(L, LUA_REGISTRYINDEX);
       //
@@ -327,7 +327,6 @@ const char *LuaNew_base::typename_(lua_State *L, int index) {
 
     default:
       luaL_error(L, "__type metaentry not a string");
-      break; // never
     }
   }
 

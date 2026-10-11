@@ -185,9 +185,7 @@ public:
    * This is used for making a roll-around iterator out of a linear one
    * (or vice versa).
    */
-  ChainIterator(const ChainIterator &o)
-
-      = default;
+  ChainIterator(const ChainIterator &o) = default;
 
   ChainIterator(const ChainIterator &o, bool is_closed_, int step = 0)
       : chunks(o.chunks), chunk_n(o.chunk_n), inner_n(o.inner_n),
@@ -819,7 +817,7 @@ bool Labelizer::LimitCrossingLines(const TiltedRect &tr,
 
   LIMIT_CROSSING_LINES_PROF.start();
   {
-    for (auto chain : chains) {
+    for (auto *chain : chains) {
       if (chain == our_chain)
         continue;
 

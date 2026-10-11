@@ -158,7 +158,6 @@ int MatrixPosBind::index( lua_State *L ) {
             break;
     }
     luaL_error( L, "Bad index (for matrixpos): %s", s ? s : L_typename(2) );
-    return 0;   // never
 }
 
 /*
@@ -348,7 +347,6 @@ int MatrixSizeBind::index( lua_State *L ) {
 **/
     }
     luaL_error( L, "Bad index (for matrixsize): %s", s ? s : L_typename(2) );
-    return 0;   // never
 }
 
 /*
@@ -1632,7 +1630,7 @@ void MatrixBind::setup( lua_State *L ) {
 float Matrix::at( const LatLon &latlon ) const {
 
 	bool useGrid;
-    double dx,dy;
+    double dx = 0, dy = 0;
 
 	if ((useGrid = (wantedGrid && (size.getXS() > 1) && (size.getYS() > 1)))) {
 	    NFmiPoint p = wantedGrid->LatLonToGrid( latlon.getLon(), latlon.getLat() );

@@ -32,7 +32,7 @@ static bool has_by_standard_name(const std::vector<NA_Param>& vec, const string&
   bool s2_match = (s2 == ""); // match if not given
 
   for (const auto &it : vec) {
-    string it_s = it.getStandardName();
+    const string &it_s = it.getStandardName();
 
     if (it_s == s1) {
       s1_match = true;
@@ -120,8 +120,8 @@ NA_Param ApiScalarParam::covered_by(const vector<NA_Param> &vec) const {
   //  match
   //
   for (const auto &it : vec) {
-    string it_std_name = it.getStandardName();
-    string it_native_name = it.getNativeName_();
+    const string &it_std_name = it.getStandardName();
+    const string &it_native_name = it.getNativeName_();
 
     if (it_std_name == name) {
       return it; // standard name match

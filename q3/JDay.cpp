@@ -118,7 +118,6 @@ int JDayBind::index(lua_State *L) {
   }
 
   luaL_error(L, "Bad index (for JDay): %s", L_string_or_typename(2));
-  return 0; // never
 }
 
 /*
@@ -186,7 +185,6 @@ int JDayBind::add(lua_State *L) {
   }
 
   luaL_error(L, "Cannot add %s and %s", L_typename(1), L_typename(2));
-  return 0; // never
 }
 
 /*
@@ -214,7 +212,6 @@ int JDayBind::sub(lua_State *L) {
   }
 
   luaL_error(L, "Cannot subtract %s and %s", L_typename(1), L_typename(2));
-  return 0; // never
 }
 
 /*

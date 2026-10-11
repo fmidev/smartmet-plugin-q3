@@ -49,8 +49,7 @@ public:
     FontSpec(const std::string &label_, const Vectors::Vector &size_,
              const ContourInfo_Line::LabelParams *lp_)
         : label(label_), size(size_), lp(lp_) {}
-    FontSpec(const FontSpec &other)
-         = default;
+    FontSpec(const FontSpec &other) = default;
     FontSpec &operator=(const FontSpec &) = default;
   };
 

@@ -134,7 +134,7 @@ TrackedData *Q3Engine::Track::getData_must_release_(const JDay &ot,
   TrackedData *d3 =
       nullptr; // 3rd choice for ONLY_PRESSURE: first pressure data match
 
-  for (auto it0 : watch) {
+  for (auto *it0 : watch) {
     // 08-Mar-2012 PKi: Release previous data (was acquired once more than released)
     if (d)
       d->Release();
@@ -304,7 +304,7 @@ vector<JDay> Q3Engine::Track::getOriginTimes(
 {
   vector<JDay> vec;
 
-  for (auto it : watch) {
+  for (auto *it : watch) {
     it->addOriginTimes_unsorted(vec, originTimeQuery);
   }
   sort_descending(vec, true /*cut duplicates*/);
@@ -316,7 +316,7 @@ vector<TrackedData *> Q3Engine::Track::getOriginTimeDatas(const JDay &ot) const 
 {
   vector<TrackedData *> vec;
 
-  for (auto it : watch) {
+  for (auto *it : watch) {
     it->addDatas_must_release(ot, vec);
   }
 
@@ -348,7 +348,7 @@ JDay Q3Engine::Track::getOriginTimeOfRun_(int x, NA_Level::Type &leveltype) cons
     JDay ot_first;  // earliest -''-
     NA_Level::Type lt_last = NA_Level::NO_LEVEL;
 
-    for (auto it : watch) {
+    for (auto *it : watch) {
       // Note: Tracks may be empty, in which case the returned JDay object
       //       is 'empty' (test with boolean operator).
       //
@@ -396,7 +396,7 @@ JDay Q3Engine::Track::getOriginTimeOfRun_(int x, NA_Level::Type &leveltype) cons
   {  // Unpredictable runs ('run_secs'==0), 'x'<0
     vector<JDay> vec;
 
-    for (auto it : watch) {
+    for (auto *it : watch) {
       it->addOriginTimes_unsorted(vec);
     }
     sort_descending(vec, true);  // remove duplicates
@@ -1077,7 +1077,6 @@ int TrackProxyBind::call(lua_State *L)
 ERROR:
 #ifdef CONFIG_TRACK_ERRORS_ENABLED
   luaL_error(L, err.c_str());
-  return 0;  // never
 #else
   return L_nilerr(err.c_str());
 #endif

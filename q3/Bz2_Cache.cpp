@@ -14,6 +14,7 @@ using namespace std;
 #include <newbase/NFmiMetTime.h>
 #include <cerrno>
 #include <cstring>
+#include <system_error>
 
 JDay str2JDay(const char *fn, const char *ot) {
   if (strspn(ot, "1234567890") != 14) {
@@ -214,5 +215,6 @@ void Bz2_Cache::write_LOCKED(const string &key, const JDay& ot) {
  */
 void Bz2_Cache::flush() const {
   if (f && fflush(f) != 0) // can be done without locking
-    LOG_WARNING("Failed to flush the BZ2 cache file: %s", strerror(errno));
+    LOG_WARNING("Failed to flush the BZ2 cache file: %s",
+                std::generic_category().message(errno).c_str());
 }

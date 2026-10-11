@@ -138,7 +138,6 @@ int LatLonBind::index(lua_State *L) {
   }
 
   luaL_error(L, "Bad index (for LatLon): %s", L_string_or_typename(2));
-  return 0; // never
 }
 
 /*

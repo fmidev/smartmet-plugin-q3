@@ -780,7 +780,7 @@ void q3_bind(lua_State *L) {
  * Help debug initialization errors when running on Panik. These SHOULD be
  * out of memory issues only (which should not really happen).
  */
-static void INIT_ERROR(lua_State *L, int st, const char *file, unsigned line) {
+[[noreturn]] static void INIT_ERROR(lua_State *L, int st, const char *file, unsigned line) {
 
   LOG_FATAL("Lua error %d in %s:%d: %s", st, file, line, lua_tostring(L, -1));
   //

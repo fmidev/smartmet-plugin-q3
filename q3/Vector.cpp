@@ -113,7 +113,6 @@ int VectorBind::lt(lua_State *L) {
     ret = a->getAbs() < b->getAbs();
   } else {
     luaL_error(L, "Cannot compare %s and %s", L_typename(1), L_typename(2));
-    ret = false; // never (pleases the compiler)
   }
   lua_pushboolean(L, ret);
   return 1;
@@ -148,7 +147,6 @@ int VectorBind::index(lua_State *L) {
     return 1;
   } else {
     luaL_error(L, "Bad index (for vector): %s", s);
-    v = 0.0; // never
   }
 
   lua_pushnumber(L, v);

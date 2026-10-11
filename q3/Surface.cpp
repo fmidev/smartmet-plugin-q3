@@ -216,7 +216,6 @@ int Surface_bind::index(lua_State *L) {
   }
 
   luaL_error(L, "No such property: %s", s);
-  return 0; // never
 }
 
 /*
@@ -320,7 +319,6 @@ int Surface::get_font_options(lua_State *L) {
   (void)my;
 
   luaL_error(L, "TBD: Providing font options out"); // use a table, or userdata?
-  return 0;
 }
 
 /*

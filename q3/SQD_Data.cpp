@@ -1703,7 +1703,6 @@ SQD_Data::push_NativeMatrix_e(lua_State *L, const JDay &vt, const NA_Level &lev,
   catch (const std::exception &ex) {
     luaL_error(L, "Data retrieval error: %s", ex.what());
   }
-  return nullptr; // unreachable; luaL_error does not return
 }
 
 /*
@@ -1955,7 +1954,6 @@ SQD_Data::push_NativeCross(lua_State *L, const std::vector<JDay> &vtVec,
   } catch (const std::exception &ex) {
     luaL_error(L, "Data retrieval error: %s", ex.what());
   }
-  return nullptr; // unreachable; luaL_error does not return
 }
 
 /*
