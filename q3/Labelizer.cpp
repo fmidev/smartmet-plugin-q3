@@ -925,7 +925,7 @@ Labelizer::TiltedRect::TiltedRect(const Point &p, const Vector &size,
   Point corner[4];
 
   for (unsigned i = 0; i < 4; i++) {
-    double rad;
+    double rad = 0;
     switch (i) {
     case 0:
       rad = -M_PI + alpha;

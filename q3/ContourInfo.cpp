@@ -518,7 +518,7 @@ ContourInfo_Fill::FillParams::cairo_pattern_create(size_t size) const {
   //
   if ((hatch_type == HATCH_DOWN) || (hatch_type == HATCH_UP) ||
       (hatch_type == HATCH_DOWN_UP)) {
-    size = (unsigned)(size * 1.4 + 0.5);
+    size = static_cast<unsigned>(std::lround(size * 1.4));
   }
 
   double mid_x = size / 2.0;
