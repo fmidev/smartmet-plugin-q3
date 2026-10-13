@@ -89,6 +89,8 @@ public:
   const MatrixSize &getSize() const {
     assert(
         m1); // detect if 'getSize()' is being used in constructor (not allowed)
+    // codechecker_false_positive [core.CallAndMessage] m1 and m2 are set once the matrix has been
+    // constructed, a null getMX_() only means it is polar
     return m1->getSize();
   }
 

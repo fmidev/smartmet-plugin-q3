@@ -170,6 +170,8 @@ Vector VectorMatrix::operator[](offset_t n) const {
   // LOG_DEBUG( "%d: %s %f %f", (int)n, polar?"polar":"xy", (*m1)[n], (*m2)[n]
   // );
 
+  // codechecker_false_positive [core.CallAndMessage] m1 and m2 are set once the matrix has been
+  // constructed, a null getMX_() only means it is polar
   return Vector((*m1)[n], (*m2)[n], polar);
 }
 

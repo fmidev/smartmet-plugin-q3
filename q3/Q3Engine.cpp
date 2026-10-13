@@ -150,6 +150,8 @@ static void q3_config(const char *conf,
       //
       new HealthCheck((unsigned)(secs * 1000), s);
 
+      // codechecker_intentional [cplusplus.NewDeleteLeaks] the health check thread lives as long
+      // as the process
       lua_pop(L, 1);  // remove value, keep key for next iteration
     }
   }

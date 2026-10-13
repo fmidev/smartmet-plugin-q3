@@ -1250,11 +1250,15 @@ const Labelizer::Config &Labelizer::loadCfg(lua_State *L, int idx,
       luaL_error(L, "Labelizer config: unknown key %s", key);
     else if (lua_isnumber(L, -1) && (cf->vt == Labelizer::T_DOUBLE))
       if (uConfig)
+        // codechecker_false_positive [security.PointerSub] both pointers point into the same
+        // Labelizer::lblCfg object
         *(double *)(cpu + ((char *)cf->dp - cpf)) = lua_tonumber(L, -1);
       else
         *(cf->dp) = lua_tonumber(L, -1);
     else if (lua_isboolean(L, -1) && (cf->vt == Labelizer::T_BOOL))
       if (uConfig)
+        // codechecker_false_positive [security.PointerSub] both pointers point into the same
+        // Labelizer::lblCfg object
         *(bool *)(cpu + ((char *)cf->bp - cpf)) =
             (lua_toboolean(L, -1) ? true : false);
       else
