@@ -185,11 +185,9 @@ float SQD_Matrix::get_value_n(offset_t n) const {
     fi_WS->LocationIndex(n);
   }
 
-  // Check validity of WVEC values
+  // Check validity of WVEC values, if the data has the WD and WS parameters
   //
-  if (my_e == kFmiWindVectorMS) {
-    assert(fi_WD && fi_WS);
-
+  if (my_e == kFmiWindVectorMS && fi_WD && fi_WS) {
     float v_WD = fi_WD->FloatValue();
     float v_WS = fi_WS->FloatValue();
 
