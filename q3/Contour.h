@@ -119,7 +119,7 @@ public:
   // 21-Nov-2011 PKi: Draw, fill and labelize contours
   void draw_path(cairo_t *cr, bool line = true) const;
   static int drawcontours(lua_State *L);
-  bool range() { return brange; }
+  bool range() const { return brange; }
   void range(bool br) { brange = br; }
 
   void set_offset(); // to be called when all points are there, before pushing

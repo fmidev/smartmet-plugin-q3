@@ -18,7 +18,7 @@ struct Color {
     Color( double r_, double g_, double b_, double a_=0.0 )
         : r(r_), g(g_), b(b_), a(a_) {}
 
-    int /*1*/ push( lua_State *L );
+    int /*1*/ push( lua_State *L ) const;
 
     double r,g,b,a;
 };

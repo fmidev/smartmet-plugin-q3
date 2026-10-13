@@ -138,7 +138,7 @@ void add_ring(ContourCollector &cc, const Trax::Polyline &ring,
   }
 }
 
-void build_contours(ContourCollector &cc, MyGrid &grid, float lo, float hi,
+void build_contours(ContourCollector &cc, const MyGrid &grid, float lo, float hi,
                     const EdgeDetector *edges, Contour *&current_contour) {
   Trax::IsobandLimits limits;
   limits.add(lo, hi);

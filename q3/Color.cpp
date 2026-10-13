@@ -58,7 +58,7 @@ Color::Color(lua_State *L, int index, bool alpha) : r(), g(), b(), a(0.0) {
 
 /*
  */
-int /*1*/ Color::push(lua_State *L) {
+int /*1*/ Color::push(lua_State *L) const {
   lua_newtable(L);
 
   lua_pushliteral(L, "r");

@@ -296,12 +296,12 @@ public:
    *
    * Note: Iterators must be accessing the same underlying chain.
    */
-  bool operator==(const ChainIterator &o) {
+  bool operator==(const ChainIterator &o) const {
     return valid() && o.valid() && (chunk_n == o.chunk_n) &&
            (inner_n == o.inner_n);
   }
 
-  bool operator!=(const ChainIterator &o) { return !(*this == o); }
+  bool operator!=(const ChainIterator &o) const { return !(*this == o); }
 };
 
 class Labelizer::Chain {

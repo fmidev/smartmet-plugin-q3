@@ -70,7 +70,7 @@ public:
     assert(rk != 0);
     rkey = rk;
   }
-  unsigned get_rkey() { return rkey; }
+  unsigned get_rkey() const { return rkey; }
 
   CONST_IF_SERVER ApiMatrix *push_Matrix(lua_State *L,
                                          const ApiParam &p) CONST_IF_SERVER;

@@ -141,7 +141,7 @@ BS_RequestResponse::BS_RequestResponse(
  */
 static Plugin *me; // = 0;
 
-static void native_handler(SmartMet::Spine::Reactor &theReactor,
+static void native_handler(const SmartMet::Spine::Reactor &theReactor,
                            const SmartMet::Spine::HTTP::Request &req,
                            SmartMet::Spine::HTTP::Response &resp) {
   BS_RequestResponse proxy(req, resp);
@@ -149,7 +149,7 @@ static void native_handler(SmartMet::Spine::Reactor &theReactor,
 }
 
 #ifdef ENABLE_OGC_WMS
-static void wms_handler(SmartMet::Spine::Reactor &theReactor,
+static void wms_handler(const SmartMet::Spine::Reactor &theReactor,
                         const SmartMet::Spine::HTTP::Request &req,
                         SmartMet::Spine::HTTP::Response &resp) {
   BS_RequestResponse proxy(req, resp);
