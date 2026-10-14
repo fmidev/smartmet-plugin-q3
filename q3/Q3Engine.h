@@ -47,5 +47,8 @@ private:
   Q3Engine &operator=(const Q3Engine &other);
 };
 
+// Reads the configuration file (Server.cpp)
+std::string read_config(const char *fn);
+
 #endif
 // Q3ENGINE_H

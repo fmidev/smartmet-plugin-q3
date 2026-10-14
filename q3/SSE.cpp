@@ -13,6 +13,7 @@
  */
 #include "SSE.h"
 
+
 #ifndef __SSE__
 #error "Only for SSE enabled compilations."
 #endif
@@ -28,7 +29,9 @@
 
 /*---=== Helpers ===---*/
 
-static bool mm_nan_comp(const __m128 &a, const __m128 &b) {
+namespace
+{
+bool mm_nan_comp(const __m128 &a, const __m128 &b) {
   const auto *pa = (const float *)&a;
   const auto *pb = (const float *)&b;
 
@@ -43,6 +46,7 @@ static bool mm_nan_comp(const __m128 &a, const __m128 &b) {
   }
   return true;
 }
+}  // namespace
 
 #if 0
 static void mm_print( const __m128 &a ) {
@@ -65,17 +69,20 @@ static void mm_print_uint128( const __m128 &a ) {
     abort();                                                                   \
   }
 
+namespace
+{
 /*
  * Assumptions we've done on 'min<float>()' and 'max<float>()' and 'sum'.
  *
  * To be run once.
  */
-static struct JustOnce_SSE { JustOnce_SSE(); } just_once;
+struct JustOnce_SSE { JustOnce_SSE(); } just_once;
+}  // namespace
 
 JustOnce_SSE::JustOnce_SSE() {
   float nan = NAN;
   float X = 10.0F; // anything
-  float v;
+  float v = NAN;
 
   always_assert(nan != nan); // property of NAN
   always_assert(isnanf(nan));

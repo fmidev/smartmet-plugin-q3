@@ -45,7 +45,7 @@ using namespace std;
  */
 bool Sqd_Tracker::update(set<string> &seen_already) throw() {
   set<string> current_files;
-  const char *fn_abs;
+  const char *fn_abs = nullptr;
 
 #ifdef UNIX
   glob_t gbuf;
@@ -87,7 +87,7 @@ bool Sqd_Tracker::update(set<string> &seen_already) throw() {
     // We need to read the SQD file's info to get its origin time.
     // Keep the whole info around, so 'TrackedData' does not need to re-read it.
     //
-    const NA_Info *info;
+    const NA_Info *info = nullptr;
     try {
       info = new NA_Info(SQD_Data::read_info(fn_abs));
     } catch (const E_BAD_FILE &) {

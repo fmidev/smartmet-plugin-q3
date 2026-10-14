@@ -62,23 +62,31 @@ enum
   CODE_ERROR = 500
 };
 
-static unsigned killtime_secs = 10;
+namespace
+{
+unsigned killtime_secs = 10;
 
-static string_or_null package_path;
-static string_or_null package_cpath;
+string_or_null package_path;
+string_or_null package_cpath;
+}  // namespace
 
 #ifdef ONLINE_TESTBED
-static string_or_null testbed;  // at "/q3"
+namespace
+{
+string_or_null testbed;  // at "/q3"
+}  // namespace
 #endif
 
 /*---=== Helper routines ===---
 */
 
+namespace
+{
 /*
 * Seems C++ strings don't have tolower/toupper methods (even for ASCII).
 * Solution from: <http://stackoverflow.com/questions/11491/string-to-lower-upper-in-c>
 */
-static string string_tolower(const string &s)
+string string_tolower(const string &s)
 {
   string ret = s;
   std::transform(ret.begin(), ret.end(), ret.begin(), ::tolower);
@@ -94,7 +102,7 @@ static string string_tolower(const string &s)
 * ZeroMQ:   "zmq x.x.x.x:port"
 * ...
 */
-static Logger *logger_parse(const char *conf)
+Logger *logger_parse(const char *conf)
 {
   const unsigned BUFSIZE = 999;
 
@@ -134,6 +142,7 @@ static Logger *logger_parse(const char *conf)
 
   return nullptr;  // unknown log string
 }
+}  // namespace
 
 /*---=== Configuration file ===---
 */
@@ -202,7 +211,7 @@ string read_config(const char *fn)
       {
         // Cut white space trail off 'val' (there's at least a newline)
         //
-        int i;
+        int i = 0;
         for (i = strlen(pp) - 1; i >= 0; i--)
         {
           if (!isspace(pp[i]))
@@ -249,7 +258,7 @@ string read_config(const char *fn)
           const char *pp = val;
           while (p)
           {
-            char *end;
+            char *end = nullptr;
             int v = strtol(pp, &end, 10);
 
             if (begins_with(end, "h"))
@@ -297,7 +306,9 @@ string read_config(const char *fn)
 * Move a whole file to 'resp'
 */
 #ifdef ONLINE_TESTBED
-static bool file_to(RequestResponse &rr, const char *fn)
+namespace
+{
+bool file_to(RequestResponse &rr, const char *fn)
 {
   ifstream fs(fn, ios::in | ios::binary | ios::ate);  // 'ate' positions at end of file
 
@@ -316,6 +327,7 @@ static bool file_to(RequestResponse &rr, const char *fn)
   LOG_WARNING("Providing %s FAILED", fn);
   return false;
 }
+}  // namespace
 #endif
 
 /*---=== Server object ===---
@@ -367,7 +379,7 @@ int Q3Server::query(const map<string, string> &key_val,
   lua_pushstring(L, package_path.c_str());
   lua_pushstring(L, package_cpath.c_str());
 
-  int st;
+  int st = 0;
   try
   {
     st = lua_pcall(L, 2 /*args*/, 0 /*retvals*/, 0 /*no errfunc*/);
@@ -528,7 +540,7 @@ int Q3Server::query(const map<string, string> &key_val,
     string_or_null fstot = lua_tostring(L, -1);
     lua_pop(L, 1);
 
-    if (fstot.c_str() && (fstot != ""))
+    if (fstot.c_str() && (!fstot.empty()))
       rr.set_first_origintime(fstot.c_str());
   }
 
@@ -551,12 +563,15 @@ int Q3Server::query(const map<string, string> &key_val,
   return st;
 }
 
+namespace
+{
 /*
 */
-static void content_error(RequestResponse &rr, const string &s)
+void content_error(RequestResponse &rr, const string &s)
 {
   rr.set_output(CODE_ERROR, "text/html", s.c_str());
 }
+}  // namespace
 
 /*
 */
@@ -654,7 +669,7 @@ void Q3Server::native_handler(RequestResponse &rr)
       goto ERROR;
 #endif
     }
-    else if (val == "")
+    else if (val.empty())
     {
 // "..&key=&.."; no value for the key is skipped. We don't set the value to an empty
 //      string. This is mostly for making life easy for test suite Makefile.
@@ -691,7 +706,7 @@ void Q3Server::native_handler(RequestResponse &rr)
 ERROR:
   if (err_code)
   {
-    const char *title;
+    const char *title = nullptr;
     switch (err_code)
     {
       case LUA_ERRSYNTAX:
@@ -786,7 +801,7 @@ void Q3Server::wms_handler(RequestResponse &rr)
 
   if (err_code)
   {
-    const char *title;
+    const char *title = nullptr;
     switch (err_code)
     {
       case LUA_ERRSYNTAX:

@@ -28,7 +28,10 @@ struct FontFaceMethodNames : public MethodNames {
     // ...
   }
 };
-static struct FontFaceMethodNames font_face_method_names;
+namespace
+{
+struct FontFaceMethodNames font_face_method_names;
+}  // namespace
 
 /*
  * ...= __index( FontFace_ud, key_any )
@@ -110,7 +113,7 @@ cairo_font_face_t *FontFace::load_ttf(const char *fn, unsigned face_index,
 
   // Get us the FreeType font
   //
-  FT_Face ft_face;
+  FT_Face ft_face = nullptr;
   FT_Error ft_err = FT_New_Face(ft_lib, fn, face_index, &ft_face);
   if (ft_err) {
     return nullptr; // no such file (or something else)

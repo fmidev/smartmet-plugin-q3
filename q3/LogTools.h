@@ -218,16 +218,16 @@ class E_ANY : public std::exception {
 public:
   E_ANY(Logger::category cat, const char *f, unsigned l, const std::string &m,
         const Logger::unique_t id = 0)
-      : std::exception(), file(f), line(l), msg(m), buf() {
+      :  file(f), line(l), msg(m) {
     if (cat)
       Logger::LOG(cat, f, l, id, m);
   }
 
   E_ANY(const char *f, unsigned l, const std::string &m)
-      : std::exception(), file(f), line(l), msg(m), buf() {}
+      :  file(f), line(l), msg(m) {}
 
   E_ANY(const std::string &m)
-      : std::exception(), file(nullptr), line(0), msg(m), buf() {}
+      :  file(nullptr), line(0), msg(m) {}
 
   // general copy constructor is fine
 
@@ -248,7 +248,7 @@ public:
       return what_nosource();
     } else {
       // Prepare for multiple calls along the cascade (craft 'buf' only once)
-      if (buf == "") {
+      if (buf.empty()) {
         std::ostringstream o;
         o << file << ":" << line << ": " << msg;
         buf = o.str();

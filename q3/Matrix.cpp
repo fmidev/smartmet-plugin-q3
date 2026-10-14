@@ -18,6 +18,7 @@
 # include "SSE.h"
 #endif
 
+
 #include <cmath>
 
 #include <sstream>
@@ -44,11 +45,13 @@ ApiMatrix::~ApiMatrix() = default; // needs to be somewhere
 
 /*---=== Helpers ===---*/
 
+namespace
+{
 /*
 * Checks that matrices 'a' and 'b' are of same size. If not, gives a Lua error
 * (does not return).
 */
-static void CHECK_SAME_SIZE( lua_State *L, const Matrix &a, const Matrix &b ) {
+void CHECK_SAME_SIZE( lua_State *L, const Matrix &a, const Matrix &b ) {
 
     if (a.getSize() != b.getSize()) {
         luaL_error( L, "Matrices are of different size: %s != %s", 
@@ -69,10 +72,10 @@ static void CHECK_SAME_SIZE( lua_State *L, const Matrix &a, const Matrix &b ) {
 *       (there's a check for this in 'SSE.cpp'). 'max(10,nan)' does give 10.
 *       The 'isnanf()' below takes care of this.
 */
-static inline float max_safe( float a, float b ) {
+inline float max_safe( float a, float b ) {
     return isnanf(a) ? b /*value or NAN*/ : std::max<float>( a,b );
 }
-static inline float min_safe( float a, float b ) {
+inline float min_safe( float a, float b ) {
     return isnanf(a) ? b /*value or NAN*/ : std::min<float>( a,b );
 }
 
@@ -88,10 +91,10 @@ static inline float min_safe( float a, float b ) {
 * This logic combines the two and NANS OVERRIDING SCALARS is vital to use this
 * effectively with areamasks (i.e. keep NANs as they are if i.e. doing 'min(m,0.0)'). 
 */
-static inline float max_safe_keep_nans( float a, float b ) {
+inline float max_safe_keep_nans( float a, float b ) {
     return isnanf(a) ? a /*NAN*/ : std::max<float>( a,b );
 }
-static inline float min_safe_keep_nans( float a, float b ) {
+inline float min_safe_keep_nans( float a, float b ) {
     LOG_DEBUG("%f %f", a, b );
 
     return isnanf(a) ? a /*NAN*/ : std::min<float>( a,b );
@@ -105,7 +108,7 @@ static inline float min_safe_keep_nans( float a, float b ) {
 * If both are given, their projection must be the same to be carried
 * further.
 */
-static const Projection &common_proj( const Matrix *a, const Matrix *b ) {
+const Projection &common_proj( const Matrix *a, const Matrix *b ) {
     assert( a || b );
 
     if (a) {
@@ -120,6 +123,7 @@ static const Projection &common_proj( const Matrix *a, const Matrix *b ) {
         return b->getProjection();
     }
 }
+}  // namespace
 
 
 /*---=== MatrixPos ===---*/
@@ -214,7 +218,7 @@ int MatrixPosBind::sub( lua_State *L ) {
 * Called for i.e. '2*step(1,0)'
 */
 int MatrixPosBind::mul( lua_State *L ) {
-    int ud_index;
+    int ud_index = 0;
     MatrixPos* a= MatrixPos::instance( L, ud_index=1 );
 
     if (!a) {
@@ -915,15 +919,18 @@ float Matrix::reduce_min() const {
 }
 
 
+namespace
+{
 /*
 * Helper function for 'reduce_sum'
 */
-static void reduce_sum_safe( float v, float &sum, unsigned &used ) {
+void reduce_sum_safe( float v, float &sum, unsigned &used ) {
     if (!isnanf(v)) {
         sum += v;
         used++;
     }
 }
+}  // namespace
 
 /*
 * Returns the sum (or average if 'avg_mode' is true) of all non-NAN values of 
@@ -944,14 +951,17 @@ float Matrix::reduce_sum( bool avg_mode ) const {
     return used ? (avg_mode ? (sum/used) : sum) : NAN;
 }
 
+namespace
+{
 /*
 * Helper function for 'reduce_count'
 */
-static void reduce_count_safe( float v, unsigned &used ) {
+void reduce_count_safe( float v, unsigned &used ) {
     if (!isnanf(v)) {
         used++;
     }
 }
+}  // namespace
 
 /*
 * Returns the count of all non-NAN values of a matrix.
@@ -1388,7 +1398,7 @@ int Matrix::q3_set( lua_State *L ) {
 int Matrix::has_missing( lua_State *L ) {
     const Matrix &a= *Matrix::instance(L,1);
     MatrixPos::offset_t n= a.getN();
-    bool found;
+    bool found = false;
     
 #ifdef __SSE__
     const float *a_data= a.getData();      // 0 if not SSE capable
@@ -1502,7 +1512,7 @@ int MatrixBind::index( lua_State *L ) {
             */
             MatrixPos *mp= MatrixPos::instance(L,2);
             if (mp) {
-                float v;
+                float v = NAN;
                 try {
                     v= m[*mp];
                 } 
@@ -1629,7 +1639,7 @@ void MatrixBind::setup( lua_State *L ) {
 */
 float Matrix::at( const LatLon &latlon ) const {
 
-	bool useGrid;
+	bool useGrid = false;
     double dx = 0, dy = 0;
 
 	if ((useGrid = (wantedGrid && (size.getXS() > 1) && (size.getYS() > 1)))) {
@@ -1679,9 +1689,12 @@ float Matrix::at( const LatLon &latlon ) const {
 * Convert a float value to q2 binary format integer.
 */
 #ifdef CONFIG_BINARY_OUTPUT_ENABLED
-static int32_t q2_float2int( float v, int32_t scale, int32_t scaled_offset ) {
+namespace
+{
+int32_t q2_float2int( float v, int32_t scale, int32_t scaled_offset ) {
     return lround( ((double)v)*scale-scaled_offset );
 }
+}  // namespace
 #endif
 
 
@@ -1868,6 +1881,8 @@ void Matrix::fill_with( float v ) {
 
 /*--- Matrix interpolation ---*/
 
+namespace
+{
 /*
 * Interpolate degrees.
 *
@@ -1876,7 +1891,7 @@ void Matrix::fill_with( float v ) {
 *
 * Returns: 0..360-ε
 */
-static double interpolate_deg( double A, double prob_A, double B, double prob_B, double C, double prob_C, double D, double prob_D ) {
+double interpolate_deg( double A, double prob_A, double B, double prob_B, double C, double prob_C, double D, double prob_D ) {
 
     /* We do this by adding the values together as vectors. Result is the angle of the average 
     * of the four vectors (we don't care of the length; it only tells how unidirectional the values were).
@@ -1898,10 +1913,10 @@ static double interpolate_deg( double A, double prob_A, double B, double prob_B,
     }
 }
 
-static inline double interpolate_deg( double A, double prob_A, double B, double prob_B, double C, double prob_C ) {
+inline double interpolate_deg( double A, double prob_A, double B, double prob_B, double C, double prob_C ) {
     return interpolate_deg( A, prob_A, B, prob_B, C, prob_C, 0.0, 0.0 );    // zero probability leaves the fourth entry out
 }
-static inline double interpolate_deg( double A, double prob_A, double B, double prob_B ) {
+inline double interpolate_deg( double A, double prob_A, double B, double prob_B ) {
     return interpolate_deg( A, prob_A, B, prob_B, 0.0, 0.0, 0.0, 0.0 );    // zero probability leaves the fourth entry out
 }
 
@@ -1909,7 +1924,7 @@ static inline double interpolate_deg( double A, double prob_A, double B, double 
 * Scale a 0..359.99 return from 'interpolate_deg' (on longitude values) back to longitude -179.99 .. 180.0 scale 
 * (just twist the upper part down by one round; no offset was applied so 0 deg means 0 lon).
 */
-static inline double deg_to_lon( double deg ) {
+inline double deg_to_lon( double deg ) {
     return (deg > 180.0) ? deg-360.0 : deg;
 }
 
@@ -1918,7 +1933,7 @@ static inline double deg_to_lon( double deg ) {
 *
 *  a--b
 */
-static double within_line( double a, double b, double dist_ab, NA_Param::e_Interpolation method ) {
+double within_line( double a, double b, double dist_ab, NA_Param::e_Interpolation method ) {
 
     if (std::isnan(a)) {
         return dist_ab==1.0 ? b : NAN;
@@ -1959,7 +1974,7 @@ static double within_line( double a, double b, double dist_ab, NA_Param::e_Inter
 *
 * 'dist_ab' and 'dist_ac' are distances to travel in that direction (0..1).
 */
-static double within_triangle( double a, double b, double dist_ab, double c, double dist_ac, NA_Param::e_Interpolation method ) {
+double within_triangle( double a, double b, double dist_ab, double c, double dist_ac, NA_Param::e_Interpolation method ) {
     if (std::isnan(a)) {
         // TBD: Calculate 'dist_bc' properly (using trigonometry)
         //
@@ -2005,6 +2020,7 @@ static double within_triangle( double a, double b, double dist_ab, double c, dou
             }
     }
 }
+}  // namespace
 
 
 /*
@@ -2032,7 +2048,7 @@ float Matrix::at_( double fx, double fy ) const {
     // Note: 'modf()' is the fastest way to get both integer part and fraction, 
     // at once (it can use FPU instructions to actually do this simultaneously).
     //
-    double tmp;
+    double tmp = NAN;
     double dx= modf( fx*(xs-1), &tmp );     // 1.0 becomes 'xs-1' (= last column)
     xy_t x= (xy_t) tmp;
 

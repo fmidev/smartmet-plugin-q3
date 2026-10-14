@@ -82,7 +82,7 @@ struct EdgePoint : public Point, LuaNew<EdgePointBind> {
   //
   bool edge; // at material edge (or hole edge); do not stroke two such points
 
-  EdgePoint() : Point(), edge(false) {}
+  EdgePoint() :  edge(false) {}
   EdgePoint(double x_, double y_, bool edge_ = false)
       : Point(x_, y_), edge(edge_) {}
   EdgePoint(const Point &p, bool edge_) : Point(p), edge(edge_) {}
@@ -106,7 +106,7 @@ private:
 
 class Contour : public LuaNew<ContourBind> {
 public:
-  Contour() : points(), offset((unsigned)-1), brange(false) { INVARIANT(); }
+  Contour() :  offset((unsigned)-1) { INVARIANT(); }
 
   void add_point(const EdgePoint &p) { points.push_back(p); }
 
@@ -135,7 +135,7 @@ private:
   std::vector<EdgePoint> points;
   unsigned offset; // offset of the first point ([1]) as seen [1] in Lua (after
                    // 'set_offset()' call).
-  bool brange;     // set if contour was fetched using lo/hi range
+  bool brange = false;     // set if contour was fetched using lo/hi range
 
 #ifndef NDEBUG
   void _INVARIANT(const char *file, unsigned line) const {

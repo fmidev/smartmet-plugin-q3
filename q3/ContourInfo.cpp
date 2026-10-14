@@ -13,6 +13,7 @@
 
 #include "ContourInfo.h"
 
+
 #include "newbase/NFmiStringTools.h"
 
 // 29-Dec-2011 PKi: LogTools.h instead of QDLog.h
@@ -20,6 +21,7 @@
 //#include "QDLog.h"
 #include "LogTools.h"
 
+#include <algorithm>
 #include <boost/lexical_cast.hpp>
 
 #include <sstream>
@@ -58,9 +60,11 @@ const ContourInfo_common *ContourInfo_common::create(const std::string &conf) {
   return create(conf, data);
 }
 
+namespace
+{
 /*
  */
-static int /*-1/0/+1*/ my_strincmp(const char *a, const char *b, size_t n) {
+int /*-1/0/+1*/ my_strincmp(const char *a, const char *b, size_t n) {
   assert(a && b);
   for (size_t i = 0; i < n; i++) {
     char la = tolower(a[i]);
@@ -85,7 +89,7 @@ static int /*-1/0/+1*/ my_strincmp(const char *a, const char *b, size_t n) {
  *
  * NAG: this kind of things are for regexps (oh, C++ did not have any...!)
  */
-static string StripDash(const string &s, vector<unsigned> &dash) {
+string StripDash(const string &s, vector<unsigned> &dash) {
   string::size_type i = s.find('[');
   string::size_type j = s.rfind(']');
 
@@ -97,7 +101,7 @@ static string StripDash(const string &s, vector<unsigned> &dash) {
     const char *p = dash_s.c_str();
 
     while (true) {
-      char *endptr;
+      char *endptr = nullptr;
       unsigned int v = strtol(p, &endptr, 10);
       dash.push_back(v);
 
@@ -130,7 +134,7 @@ static string StripDash(const string &s, vector<unsigned> &dash) {
  *       At least opaqueness can also be decimal (s.a. "0.5").
  *       No spaces allowed within the input string.
  */
-static ContourInfo_common::uint_ARGB SetColor(const string &s,
+ContourInfo_common::uint_ARGB SetColor(const string &s,
                                               vector<unsigned> &dash) {
   string s_no_dash = StripDash(s, dash);
 
@@ -202,7 +206,7 @@ static ContourInfo_common::uint_ARGB SetColor(const string &s,
     } else {
       string v = s2.substr(k_was, k - k_was - 1); // "0".."255" or "0%".."100%"
 
-      char *endptr;
+      char *endptr = nullptr;
       double d = strtod(v.c_str(), &endptr);
 
       if (*endptr == '%') {
@@ -229,7 +233,7 @@ static ContourInfo_common::uint_ARGB SetColor(const string &s,
   return color;
 }
 
-static ContourInfo_common::uint_ARGB SetColor(const string &s) {
+ContourInfo_common::uint_ARGB SetColor(const string &s) {
   vector<unsigned> dash_dummy;
   return SetColor(s, dash_dummy);
 }
@@ -241,7 +245,7 @@ static ContourInfo_common::uint_ARGB SetColor(const string &s) {
  * Based on Vili's request, one can give also alpha as part of 'rgbh()'.
  * Traditionally it was not there.   --AKa 3-Feb-2009
  */
-static ContourInfo_common::uint_ARGB SetColorAndHatch(const string &s_,
+ContourInfo_common::uint_ARGB SetColorAndHatch(const string &s_,
                                                       int &hatch_index) {
   string s_rgb;
 
@@ -262,7 +266,7 @@ static ContourInfo_common::uint_ARGB SetColorAndHatch(const string &s_,
     }
 
     string hatch = s_.substr(i + 1, j - i - 1);
-    char *endptr;
+    char *endptr = nullptr;
     hatch_index = strtol(hatch.c_str(), &endptr, 10);
 
     if (*endptr) {
@@ -274,6 +278,7 @@ static ContourInfo_common::uint_ARGB SetColorAndHatch(const string &s_,
   }
   return SetColor(s_rgb);
 }
+}  // namespace
 
 /*
  * Common stroke params
@@ -282,15 +287,14 @@ ContourInfo_common::StrokeParams::StrokeParams(const string &color_s,
                                                const string &width_s,
                                                const string &smooth_s) {
 
-  color = (color_s == "def" || color_s == "") ? BLACK : SetColor(color_s, dash);
-  width = (width_s == "def" || width_s == "")
+  color = (color_s == "def" || color_s.empty()) ? BLACK : SetColor(color_s, dash);
+  width = (width_s == "def" || width_s.empty())
               ? 1
               : NFmiStringTools::Convert<float>(width_s.c_str());
-  smooth = (smooth_s == "def" || smooth_s == "")
+  smooth = (smooth_s == "def" || smooth_s.empty())
                ? 0.0F
                : NFmiStringTools::Convert<float>(smooth_s.c_str());
-  if (smooth < 0.0F)
-    smooth = 0.0F;
+  smooth = std::max(smooth, 0.0F);
 }
 
 /*
@@ -321,26 +325,26 @@ ContourInfo_Line::LabelParams::LabelParams(const string &strategy_s,
                                            const string &box_stroke_color_s,
                                            const string &box_stroke_width_s) {
 
-  strategy = ((strategy_s == "def" || strategy_s == "")
+  strategy = ((strategy_s == "def" || strategy_s.empty())
                   ? 0
                   : NFmiStringTools::Convert<unsigned>(strategy_s.c_str()));
-  font_size_ = (font_size_s == "def" || font_size_s == "" || strategy_s == "")
+  font_size_ = (font_size_s == "def" || font_size_s.empty() || strategy_s.empty())
                    ? 0
                    : NFmiStringTools::Convert<float>(font_size_s.c_str());
-  font_color = (font_color_s == "def" || font_color_s == "" || strategy_s == "")
+  font_color = (font_color_s == "def" || font_color_s.empty() || strategy_s.empty())
                    ? BLACK
                    : SetColor(font_color_s);
   box_fill_color =
-      (box_fill_color_s == "def" || box_fill_color_s == "" || strategy_s == "")
+      (box_fill_color_s == "def" || box_fill_color_s.empty() || strategy_s.empty())
           ? YELLOW
           : SetColor(box_fill_color_s);
-  box_stroke_color = (box_stroke_color_s == "def" || box_stroke_color_s == "" ||
-                      strategy_s == "")
+  box_stroke_color = (box_stroke_color_s == "def" || box_stroke_color_s.empty() ||
+                      strategy_s.empty())
                          ? BLUE
                          : SetColor(box_stroke_color_s);
   box_stroke_width =
-      (box_stroke_width_s == "def" || box_stroke_width_s == "" ||
-       strategy_s == "")
+      (box_stroke_width_s == "def" || box_stroke_width_s.empty() ||
+       strategy_s.empty())
           ? 1
           : NFmiStringTools::Convert<float>(box_stroke_width_s.c_str());
 }
@@ -349,11 +353,9 @@ ContourInfo_Line::LabelParams::LabelParams(const string &strategy_s,
  * Fill/hatch params
  */
 ContourInfo_Fill::FillParams::FillParams(const string &fill_color_s)
-    : color(WHITE), hatch_width(0) // no hatch pattern
-      ,
-      hatch_offset(false), hatch_type((enum e_hatch_type)0) {
+    :  hatch_type((enum e_hatch_type)0) {
   if (fill_color_s != "def") {
-    int hatch_index;
+    int hatch_index = 0;
 
     color = SetColorAndHatch(fill_color_s, hatch_index);
     if (hatch_index >= 0) {
@@ -364,23 +366,23 @@ ContourInfo_Fill::FillParams::FillParams(const string &fill_color_s)
   }
 }
 
+namespace
+{
 /*
  * Find min/max levels based on 'data', aligned at 'step'
  */
-static void find_limits(const ContourMatrix<float> &data, float step,
+void find_limits(const ContourMatrix<float> &data, float step,
                         float *lo_ref, float *hi_ref) {
 
-  float min, max;
+  float min = NAN, max = NAN;
 
 #ifdef USE_NFMIDATAMATRIX_FOR_CONTOURS
   min = max = data[0][0];
   for (unsigned int x = 0; x < data.NX(); x++)
     for (unsigned int y = 0; y < data.NY(); y++) {
       float v = data[x][y];
-      if (v < min)
-        min = v;
-      if (v > max)
-        max = v;
+      min = std::min(v, min);
+      max = std::max(v, max);
     }
 #else
   data.minmax(&min, &max);
@@ -399,6 +401,7 @@ static void find_limits(const ContourMatrix<float> &data, float step,
     *hi_ref = (mod == 0.0) ? max : (max > 0.0) ? max - mod : max - (step - mod);
   }
 }
+}  // namespace
 
 /*
  * Create an isoline Contour Info (types 1 & 2), from a descriptor string.
@@ -423,13 +426,13 @@ ContourInfo_Line::create(const string &conf, const ContourMatrix<float> &data) {
   vector<float> levels;
   stringstream ss(conf);
 
-  int type;
+  int type = 0;
   ss >> type;
 
   if (type == 1) {
     // "1 step zero-level min max ..."
     //
-    float step, zero_level, lo, hi;
+    float step = NAN, zero_level = NAN, lo = NAN, hi = NAN;
     ss >> step >> zero_level >> lo >> hi;
     if (ss.bad()) {
       LOG_USAGE("Bad contour spec: %s", conf.c_str());
@@ -606,17 +609,17 @@ ContourInfo_Fill::FillParams::cairo_pattern_create(size_t size) const {
  * Create a section Contour Info (types 3 & 4), from a descriptor string.
  */
 const ContourInfo_Fill *
-ContourInfo_Fill::create(const string &conf, const ContourMatrix<float> &data) {
+ContourInfo_Fill::create(const string &conf, const ContourMatrix<float> & /*data*/) {
   vector<pair<float, float>> ranges;
   stringstream ss(conf);
 
-  int type;
+  int type = 0;
   ss >> type;
 
   if (type == 3) {
     // "3 step zero-level min max ..."
     //
-    float step, zero_level, lo, hi;
+    float step = NAN, zero_level = NAN, lo = NAN, hi = NAN;
     ss >> step >> zero_level >> lo >> hi;
     if (ss.bad()) {
       LOG_USAGE("Bad contour spec: %s", conf.c_str());
@@ -650,7 +653,7 @@ ContourInfo_Fill::create(const string &conf, const ContourMatrix<float> &data) {
     int count = 0;
     ss >> count;
     for (int i = 0; i < count; i++) {
-      float a, b;
+      float a = NAN, b = NAN;
       ss >> a >> b;
       if (ss.bad())
         break;

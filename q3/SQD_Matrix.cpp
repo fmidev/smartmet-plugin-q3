@@ -18,6 +18,8 @@ using namespace std;
 
 /*---=== Helpers ===---*/
 
+namespace
+{
 /*
  * Initialise an iterator.
  *
@@ -27,7 +29,7 @@ using namespace std;
  * Returns: non-nullptr pointer allocated by 'new' (if parameter existed)
  *       nullptr if parameter did not exist
  */
-static NFmiFastQueryInfo *new_iter(NFmiQueryData *qd, const JDay &vt,
+NFmiFastQueryInfo *new_iter(NFmiQueryData *qd, const JDay &vt,
                                    const NA_Level &lev, FmiParameterName e) {
   assert(qd);
 
@@ -77,13 +79,14 @@ static NFmiFastQueryInfo *new_iter(NFmiQueryData *qd, const JDay &vt,
  * REALLY NOT WORTH THE BOTHER.
  *       --AKa 15-Dec-10
  */
-static float get_WD(float v) { // SQD file -> script (360 -> 0)
+float get_WD(float v) { // SQD file -> script (360 -> 0)
   return fmodf(v, 360.0f);
 }
 
-static float set_WD(float v) { // script -> SQD file (0 -> 360)
+float set_WD(float v) { // script -> SQD file (0 -> 360)
   return (v == 0.0) ? 360.0f : v;
 }
+}  // namespace
 
 /*---=== SQD_Matrix ===---*/
 

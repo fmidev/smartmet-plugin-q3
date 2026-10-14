@@ -24,6 +24,7 @@
 #include <values.h>
 // MAXFLOAT
 
+#include <algorithm>
 #include <stdexcept>
 
 namespace Vectors {
@@ -224,7 +225,7 @@ public:
   // We don't really WANT this constructor to be there - we don't NEED
   // it but the COMPILER does. --AKa 19-Jan-2009
   //
-  PointAndVector() : Vector(), p() {}
+  PointAndVector()  {}
 
   Point end() const { return Point(p.x + get_dx(), p.y + get_dy()); }
 
@@ -246,7 +247,7 @@ public:
   Point lo, hi;
 
   BoundingBox(const Point &lo_, const Point &hi_) : lo(lo_), hi(hi_) {}
-  BoundingBox(const PointAndVector &pv) : lo(), hi() {
+  BoundingBox(const PointAndVector &pv)  {
 
     // Make a bounding box for the PointAndVector.
     //
@@ -279,14 +280,10 @@ public:
     // Note: need to check against both min&max; first point resets them
     //       both.
     //
-    if (p.x < lo.x)
-      lo.x = p.x;
-    if (p.x > hi.x)
-      hi.x = p.x;
-    if (p.y < lo.y)
-      lo.y = p.y;
-    if (p.y > hi.y)
-      hi.y = p.y;
+    lo.x = std::min(p.x, lo.x);
+    hi.x = std::max(p.x, hi.x);
+    lo.y = std::min(p.y, lo.y);
+    hi.y = std::max(p.y, hi.y);
   }
 
   // TBD: These should probably be done using 'Point::epsilon' margins

@@ -97,6 +97,7 @@ rm -rf %{buildroot}
 - Requires 26.10.13 versions of newbase, spine due to their ABI changes
 - Unknown level types are printed as 'unknown' instead of dereferencing a null string, round with std::lround and initialize the label rotation
 - Do not dereference missing wind direction or speed data when checking wind vector values
+- Fixed mechanical clang-tidy findings (internal linkage, unused parameters, initialization, redundant code), no functional changes
 
 * Sun Oct 11 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.10.11-1.fmi
 - Invalid numbers are now detected instead of silently becoming 0 or a numeric prefix

@@ -25,7 +25,9 @@
 
 using namespace std;
 
-static Bz2_Cache *cache; // shared by all threads (one per process)
+namespace
+{
+Bz2_Cache *cache; // shared by all threads (one per process)
 
 /* ======= Helpers ======== */
 
@@ -33,7 +35,7 @@ static Bz2_Cache *cache; // shared by all threads (one per process)
  * Tell whether 'fn' matches a filename 'mask' (which can contain '*' or '?' and
  * '/ ** /' for skipping 1..N directory levels).
  */
-static bool file_mask_match(const char *mask, const char *fn) {
+bool file_mask_match(const char *mask, const char *fn) {
   assert(mask && fn);
 
   // 'p' traverses 'fn'
@@ -82,6 +84,7 @@ static bool file_mask_match(const char *mask, const char *fn) {
   }
   return (!*p) && (!*r); // Both must have ended at same time
 }
+}  // namespace
 
 /* ======================== Bz2_Tracker ======================== */
 
@@ -103,9 +106,8 @@ Bz2_Tracker::Bz2_Tracker(const string &fn_abs_mask, uint_t refresh_ms_,
                          unsigned wiping_[], bool relative_uv_,
                          const string_or_null &tmp_pattern_,
                          size_t tmp_threshold_)
-    : TrackerBase(refresh_ms_, wiping_, relative_uv_, "TRACK"), base_path(),
-      file_mask(), tmp_pattern(tmp_pattern_), tmp_threshold(tmp_threshold_),
-      first_round(true), last_ot(0) {
+    : TrackerBase(refresh_ms_, wiping_, relative_uv_, "TRACK"),  tmp_pattern(tmp_pattern_), tmp_threshold(tmp_threshold_),
+       last_ot(0) {
   assert(cache);
 
   // 'fn_abs_mask' should be "<path>/**/<filemask>", where "/**/" is any
@@ -234,7 +236,7 @@ void Bz2_Tracker::update_subpath(const char *path_abs,
   /* Depth first (does not really matter)
    */
   int gbuf_i = -1; // first round
-  const char *subdir_abs;
+  const char *subdir_abs = nullptr;
 
   string tmp = string(path_abs) + "/*";
 
@@ -250,7 +252,7 @@ void Bz2_Tracker::update_subpath(const char *path_abs,
   /* Our level of files
    */
   gbuf_i = -1; // first round
-  const char *fn_abs;
+  const char *fn_abs = nullptr;
 
   tmp = string(path_abs) + "/" + mask;
 
@@ -266,7 +268,7 @@ void Bz2_Tracker::update_subpath(const char *path_abs,
     //
     // Keep 'NA_Info' around so 'TrackedData' can use it from us.
     //
-    const NA_Info *info;
+    const NA_Info *info = nullptr;
     try {
       info = new NA_Info(SQD_Data::read_info(fn_abs));
     } catch (const E_BAD_FILE &) {

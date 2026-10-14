@@ -15,6 +15,8 @@
  */
 
 #include "Smoothener.h"
+
+#include <algorithm>
 #include "Vectors.h"
 
 using namespace std;
@@ -65,8 +67,7 @@ void SmoothPath::done(float factor, bool closed_) {
 
   // Factors over 1.0 create bobwire-like graphics (not wanted)
   //
-  if (factor > 1.0)
-    factor = 1.0;
+  factor = std::min<double>(factor, 1.0);
 
   unsigned n = rim.size();
   if (n == 0)

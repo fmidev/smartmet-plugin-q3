@@ -56,16 +56,15 @@ private:
 
   std::vector<PointAndEdge> rim;
 
-  bool closed; // Is the path to be closed back to first point?
+  bool closed = false; // Is the path to be closed back to first point?
                // (always is, with fills)
 
-  const unsigned WINDOW; // 3/5/7 = points to use in the smoothening averaging
+  const unsigned WINDOW = SMOOTHENING_WINDOW_SIZE; // 3/5/7 = points to use in the smoothening averaging
   const unsigned SKIP;   // (WINDOW-1)/2
 
 public:
   SmoothPath()
-      : rim(), closed(false), // only known at 'done()'
-        WINDOW(SMOOTHENING_WINDOW_SIZE),
+      :  
         SKIP((SMOOTHENING_WINDOW_SIZE - 1) / 2) {}
 
   ~SmoothPath() = default;

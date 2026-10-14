@@ -52,7 +52,7 @@ public:
 #ifdef METQU
   /*virtual*/ void set_value_n(offset_t n, float v);
 #else
-  /*virtual*/ void set_value_n(offset_t n, float v) override {
+  /*virtual*/ void set_value_n(offset_t  /*n*/, float  /*v*/) override {
     throw E_LOG_BUG0("Trying to write an SQD_Matrix");
   }
 #endif
@@ -85,8 +85,8 @@ private:
 
   const Projection proj;
 
-  conv_f get_f;
-  conv_f set_f;
+  conv_f get_f = nullptr;
+  conv_f set_f = nullptr;
 
   /* Extra fields that are non-nullptr only for 'WVEC' and 'WD' params (which
    * need to know about others.
@@ -94,8 +94,8 @@ private:
 #ifdef SQD_WD_WS_TRACKING
   FmiParameterName my_e; // kind of parameter we're carrying
 
-  NFmiFastQueryInfo *fi_WD; // non-nullptr only if 'fi' points to WVEC
-  NFmiFastQueryInfo *fi_WS; // non-nullptr only if 'fi' points to WD or WVEC
+  NFmiFastQueryInfo *fi_WD = nullptr; // non-nullptr only if 'fi' points to WVEC
+  NFmiFastQueryInfo *fi_WS = nullptr; // non-nullptr only if 'fi' points to WD or WVEC
 #endif
 
 #ifndef NDEBUG

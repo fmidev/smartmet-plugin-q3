@@ -285,7 +285,7 @@ Grid::Grid(const Raw_interface &r, const JDay &vt_, const NA_Level &lev_,
       data(r.getData())
 #endif
       ,
-      vt(vt_), level(lev_), proj(proj_), gridsize(gs_), rkey(0),
+      vt(vt_), level(lev_), proj(proj_), gridsize(gs_), 
       vtVec(vtVec_ ? *vtVec_ : std::vector<JDay>()),
       levelVec(levelVec_ ? *levelVec_ : std::vector<NA_Level>()),
       locs(locs_ ? *locs_ : LatLonList()), flightRoute(flightRoute_),
@@ -297,7 +297,7 @@ Grid::Grid(const Raw_interface &r, const JDay &vt_, const NA_Level &lev_,
   assert(data->isReadOnly());
 #endif
 
-  unsigned int i, n;
+  unsigned int i = 0, n = 0;
 
   if ((n = vtVec.size()) < 1) {
     if (!vt.covered_by(data->getTimes())) {
@@ -373,7 +373,7 @@ Grid::push_Matrix(lua_State *L, const ApiParam &p) CONST_IF_SERVER {
   const vector<NA_Param> &params = data->getParams();
 
   NA_Param na, nb;
-  bool polar;
+  bool polar = false;
 
   if (!p.covered_by(params, na, nb, polar)) {
     return nullptr; // no match for 'p' in 'params'
@@ -405,7 +405,7 @@ Grid::push_ScalarMatrix(lua_State *L, const NA_Param &p) CONST_IF_SERVER {
 
   // 22-Sep-2011: Called for cross ? Using native projection and gridsize
 
-  if ((vtVec.size() > 0) && (levelVec.size() > 0) && (locs.size() > 0)) {
+  if ((!vtVec.empty()) && (!levelVec.empty()) && (!locs.empty())) {
     return data->push_NativeCross(L, vtVec, levelVec, locs, p, flightRoute);
     // 09-Apr-2015 PKi: Do not call push_NativeMatrix to take projection into
     // account

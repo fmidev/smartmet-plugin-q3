@@ -16,6 +16,8 @@ using namespace std;
 #include <cstring>
 #include <system_error>
 
+namespace
+{
 JDay str2JDay(const char *fn, const char *ot) {
   if (strspn(ot, "1234567890") != 14) {
     LOG_WARNING("Bad cache line (ignored): %s=%s", fn, ot);
@@ -33,6 +35,7 @@ JDay str2JDay(const char *fn, const char *ot) {
 
   return SQD_Tools::mt2jd(mt);
 }
+}  // namespace
 
 /* ======= Bz2_Cache ======= */
 
@@ -43,7 +46,7 @@ JDay str2JDay(const char *fn, const char *ot) {
  * Once dealt with, the file is rewritten (if needed) and kept open with
  * append access.
  */
-Bz2_Cache::Bz2_Cache(const char *fn) : mapping_m(), mapping(), f(nullptr) {
+Bz2_Cache::Bz2_Cache(const char *fn)   {
   if (!fn)
     return; // no persistence requested (fast to start up but slower to use)
 

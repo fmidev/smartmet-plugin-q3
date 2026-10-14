@@ -73,7 +73,7 @@ NA_Level SQD_Tools::q3_level(FmiLevelType lt, double lv) /*throw(E_BUG)*/ {
 /*
  */
 NFmiMetTime SQD_Tools::jd2mt(const JDay &a) {
-  unsigned yyyy, mm, dd;
+  unsigned yyyy = 0, mm = 0, dd = 0;
   a.gregorian(&yyyy, &mm, &dd); // faster to convert them all at once
 
   // NOTE: Seconds are lost in conversion to 'NFmiMetTime()'
@@ -193,7 +193,9 @@ static const NA_Param::Unit UNIT_DAY(NA_Param::DATATYPE_FLOAT,
 #define PARAM(id, unit)                                                        \
   { id, unit }
 
-static struct {
+namespace
+{
+struct {
   const FmiParameterName id; // id for the param in Newbase
   const NA_Param::Unit unit;
 } known_params[] = {
@@ -657,7 +659,7 @@ static struct {
     PARAM((FmiParameterName)0, UNIT_UNKNOWN) // end marker
 };
 
-static map<FmiParameterName, NA_Param::Unit> unit_by_id_;
+map<FmiParameterName, NA_Param::Unit> unit_by_id_;
 
 /*
  * Init the maps
@@ -665,7 +667,7 @@ static map<FmiParameterName, NA_Param::Unit> unit_by_id_;
  * Note: We *must* do this as a function since there is no guarantee we'd be
  * initialized before 'UNIT_DEG' and others referred to here.
  */
-static struct JustOnce_SQD_Tools { // note: must have unique name (otherwise
+struct JustOnce_SQD_Tools { // note: must have unique name (otherwise
                                    // runtime problems, linker mixes the two
                                    // structs)
   JustOnce_SQD_Tools() {
@@ -686,6 +688,7 @@ static struct JustOnce_SQD_Tools { // note: must have unique name (otherwise
     }
   }
 } just_for_init;
+}  // namespace
 
 /*
  * Provides a unit for the given Newbase parameter id.
@@ -765,7 +768,7 @@ bool SQD_Tools::cut_at_colon(const char *s, string &name_part,
 
   if (colon) {
     name_part = string(s, 0, colon - s);
-    char *endp;
+    char *endp = nullptr;
     id = (FmiParameterName)strtol(colon + 1, &endp, 10);
     if (*endp || endp == colon + 1) {
       return false; // bad name

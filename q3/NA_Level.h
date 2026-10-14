@@ -65,7 +65,7 @@ public:
   bool covered_by(const NA_Data &data, bool &exact) const;
 
   bool covered_by(const NA_Data &data) const {
-    bool dummy;
+    bool dummy = false;
     return covered_by(data, dummy);
   }
 

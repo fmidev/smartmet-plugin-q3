@@ -50,7 +50,7 @@ public:
   NA_Level::Type getLevelType() const {
     auto levels = getInfo().getLevels();
 
-    if (levels.size() > 0)
+    if (!levels.empty())
       return levels.front().getType();
 
     return NA_Level::NO_LEVEL;

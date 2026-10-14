@@ -191,7 +191,7 @@ int Logger::LOG_(lua_State *L) {
 
   // Read timing since 'LOG{ timing=true }' if that has been enabled.
   //
-  long int timing_ms; // -1 if timings not enabled
+  long int timing_ms = 0; // -1 if timings not enabled
   {
     L_GROW(1);
 

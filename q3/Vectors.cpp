@@ -9,6 +9,8 @@
 
 #include "Vectors.h"
 
+#include <math.h>
+
 // 29-Dec-2011 PKi: LogTools.h instead of QDLog.h
 //
 //#include "QDLog.h"
@@ -49,12 +51,14 @@ Point Point::operator-(const Vector &v) const {
   return Point(x - v.get_dx(), y - v.get_dy());
 }
 
+namespace
+{
 /*
  * Return 'true' if the ranges [a..a+da] and [b..b+db] do not touch.
  */
-static inline bool detached(double a, double da, double b, double db) {
+inline bool detached(double a, double da, double b, double db) {
 
-  double a_min, a_max;
+  double a_min = NAN, a_max = NAN;
 
   if (da >= 0.0) {
     a_min = a;
@@ -67,6 +71,7 @@ static inline bool detached(double a, double da, double b, double db) {
   return (((b < a_min) && (b + db < a_min)) ||
           ((b > a_max) && (b + db > a_max)));
 }
+}  // namespace
 
 /*
  * Check if a point is within a line.
@@ -85,16 +90,19 @@ bool PointAndVector::intersects(const Point &p2) const {
   return false;
 }
 
+namespace
+{
 /*
  * Is 'v' within the range (ends inclusive) a..a+da?  'da' may be negative
  */
-static inline bool within(double v, double a, double da) {
+inline bool within(double v, double a, double da) {
   if (da >= 0.0) {
     return (v >= a) && (v <= a + da);
   } else {
     return (v >= a + da) && (v <= a);
   }
 }
+}  // namespace
 
 /*
  * Judge whether 'other' is overlapping our line, by looking at the projection

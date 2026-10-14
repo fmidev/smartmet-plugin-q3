@@ -29,7 +29,10 @@ struct ScaledFontMethodNames : public MethodNames {
     // ...
   }
 };
-static struct ScaledFontMethodNames scaled_font_method_names;
+namespace
+{
+struct ScaledFontMethodNames scaled_font_method_names;
+}  // namespace
 
 /*
  * ...= __index( ScaledFont_ud, key_any )

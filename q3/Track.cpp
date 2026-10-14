@@ -56,7 +56,7 @@ Q3Engine::Track::Track(const string &name_,
                        const char *tmp_pattern_,
                        size_t tmp_threshold_,
                        const string &alias_)
-    : watch(),
+    : 
       name(name_),
       alias(alias_),
       run_secs(run_secs_),
@@ -169,7 +169,7 @@ TrackedData *Q3Engine::Track::getData_must_release_(const JDay &ot,
     //---
     // Does it have the required params?
     //
-    if (required_params.size() > 0)
+    if (!required_params.empty())
     {
       string missing_param;
 
@@ -187,7 +187,7 @@ TrackedData *Q3Engine::Track::getData_must_release_(const JDay &ot,
       }
       d->Release();
 
-      if (missing_param != "")
+      if (!missing_param.empty())
       {
         err +=
             string_fmt("\t%s (no param '%s')\n", info.getExtra_fn().c_str(), missing_param.c_str());
@@ -206,7 +206,7 @@ TrackedData *Q3Engine::Track::getData_must_release_(const JDay &ot,
       continue;
     }
 
-    if (required_levels.size() > 0)
+    if (!required_levels.empty())
     {
       const bool is_hybrid_data = levels.front().isHybridLevel();
       bool all_match_exactly = true;
@@ -215,7 +215,7 @@ TrackedData *Q3Engine::Track::getData_must_release_(const JDay &ot,
       NA_Data *qd = d->Acquire(metaQuery);
       {
         for (auto required_level : required_levels) {
-          bool exact;
+          bool exact = false;
           if (!required_level.covered_by(*qd, exact)) {
             missing_level = required_level.toString();
             break;  // out of the iterator
@@ -225,7 +225,7 @@ TrackedData *Q3Engine::Track::getData_must_release_(const JDay &ot,
         }
       }
       d->Release();
-      if (missing_level != "")
+      if (!missing_level.empty())
       {
         err +=
             string_fmt("\t%s (no level '%s')\n", info.getExtra_fn().c_str(), missing_level.c_str());
@@ -1050,7 +1050,7 @@ int TrackProxyBind::call(lua_State *L)
         Raw(d, default_level, MatrixPos::ZERO, metaQuery);  // use it - GC will call 'd->Acquire()'
     return 1;
   }
-  else if (err == "")
+  else if (err.empty())
   {
     // no data found, at all
     //

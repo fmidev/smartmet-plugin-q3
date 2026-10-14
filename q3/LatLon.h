@@ -100,7 +100,7 @@ private:
 class LatLonList : public std::vector<LatLon> {
 public:
   LatLonList()
-      : std::vector<LatLon>(), bb_min(LatLon::MAX), bb_max(LatLon::MIN) {
+      :  bb_min(LatLon::MAX), bb_max(LatLon::MIN) {
     INVARIANT();
   }
 

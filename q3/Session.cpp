@@ -52,9 +52,12 @@ static const char *const MIME_BINARY_MATRIX = "binary/octet-stream";
 
 using namespace std;
 
+namespace
+{
 // Name of the object's metatable field, used for output formatting.
 //
-static const char *METAFIELD_TYPE = "__type";
+const char *METAFIELD_TYPE = "__type";
+}  // namespace
 
 // Use a special value to help debug; this should NOT be NAN.
 //
@@ -67,12 +70,14 @@ static const char *METAFIELD_TYPE = "__type";
 
 /*---=== Helpers ===---*/
 
+namespace
+{
 /*
  * [jday_ud]= parse_jday( jday_ud|time_str|time_num|any )
  *
  * Returns the time as JDay, or nothing for bad string syntax (or bad types).
  */
-static int q3_parse_jday(lua_State *L) {
+int q3_parse_jday(lua_State *L) {
   // Don't use 'proto()'; assume any input
 
   JDay t(L, 1);
@@ -82,6 +87,7 @@ static int q3_parse_jday(lua_State *L) {
   new (L) JDay(t);
   return 1;
 }
+}  // namespace
 
 /*---=== ... ===---*/
 
@@ -115,11 +121,14 @@ static unsigned char type_chunk[] =
                                 static unsigned char json_chunk[] =
 #include "json.lch"
 
+namespace
+{
                                     // Registry keys to fetch prepared Lua side
                                     // functions
                                     //
-    static /*const*/ void *REG_JSON_FUNC =
+    /*const*/ void *REG_JSON_FUNC =
         (void *)&REG_JSON_FUNC; // address of itself (unique)
+}  // namespace
 
 static unsigned char latlon_chunk[] =
 #include "latlon.lch"
@@ -131,6 +140,8 @@ static unsigned char latlon_chunk[] =
 
 /*---=== ... ===---*/
 
+namespace
+{
 /*
  * matrix_ud | vectormatrix_ud = new_ApiMatrix( size_matrixpos_ud, [num|vector],
  * [param_name_str], [projection_str] )
@@ -148,7 +159,7 @@ static unsigned char latlon_chunk[] =
  * NOTE: All matrices produced are getting 'UNIT_UNKNOWN' which makes them
  * unsuitable to be used in interpolations.
  */
-static int new_ApiMatrix(lua_State *L) {
+int new_ApiMatrix(lua_State *L) {
 
   proto(L, "MatrixPos, [number|Vector|true], [string], [string]");
 
@@ -227,7 +238,7 @@ static int new_ApiMatrix(lua_State *L) {
  *       The script (not the application script) will fill in so initializing to
  * NAN would be a waste.
  */
-static int new_ScalarMatrix(lua_State *L) {
+int new_ScalarMatrix(lua_State *L) {
   Matrix *m = Matrix::instance(L, 1);
   if (m) {
     proto(L, "Matrix"); // make sure no other params
@@ -290,7 +301,7 @@ static int new_ScalarMatrix(lua_State *L) {
  * If submatrices are provided, their values are copied, so the returned matrix
  * will be independent of the params given.
  */
-static int new_VectorMatrix(lua_State *L) {
+int new_VectorMatrix(lua_State *L) {
   bool polar = lua_toboolean(L, lua_upvalueindex(1));
 
   Matrix *mx = Matrix::instance(L, 1);
@@ -332,7 +343,7 @@ static int new_VectorMatrix(lua_State *L) {
  * define, whether the returned matrix is storing scalars, cartesian (xy)
  * vectors or polar vectors.
  */
-static int nan_matrix(lua_State *L) {
+int nan_matrix(lua_State *L) {
   proto(L, "MatrixPos,[number|Vector]");
 
   const MatrixPos &size = *MatrixPos::instance(L, 1);
@@ -356,7 +367,7 @@ static int nan_matrix(lua_State *L) {
  *
  * Creates a "peekhole" matrix to see part of 'm'.
  */
-static int new_SubMatrix(lua_State *L) {
+int new_SubMatrix(lua_State *L) {
   proto(L, "Matrix,MatrixPos");
 
   Matrix &m = *Matrix::instance(L, 1);
@@ -373,7 +384,7 @@ static int new_SubMatrix(lua_State *L) {
  *
  * Creates a new two-value vector (for placing in a matrix).
  */
-static int new_Vector_xy(lua_State *L) {
+int new_Vector_xy(lua_State *L) {
 
   double x = lua_tonumber(L, 1);
   double y = lua_tonumber(L, 2);
@@ -390,7 +401,7 @@ static int new_Vector_xy(lua_State *L) {
  * Note: Values are adjusted to [0,inf) and [0,360) range, by 'Vector'
  * constructor.
  */
-static int new_Vector_polar(lua_State *L) {
+int new_Vector_polar(lua_State *L) {
 
   double abs = lua_tonumber(L, 1);
   double deg = lua_tonumber(L, 2);
@@ -402,7 +413,7 @@ static int new_Vector_polar(lua_State *L) {
 /*
  * m2= LONLAT( projection_str, gridsize_pos )
  */
-static int LONLAT(lua_State *L) {
+int LONLAT(lua_State *L) {
   proto(L, "string,MatrixPos");
 
   const char *proj = lua_tostring(L, 1);
@@ -439,7 +450,7 @@ static int LONLAT(lua_State *L) {
  * Note: 'require "fminames"' extends 'latlon' to take in city and geographic
  * names (i.e. 'latlon("Helsinki")').
  */
-static int latlon(lua_State *L) {
+int latlon(lua_State *L) {
 
   unsigned n = lua_gettop(L);
   if (n == 3) {
@@ -485,7 +496,7 @@ static int latlon(lua_State *L) {
  *
  * Return the shortest distance over the Earth geoid between two locations.
  */
-static int distance_km(lua_State *L) {
+int distance_km(lua_State *L) {
   proto(L, "latlon,latlon");
 
   // Note: Use 'init_from' instead of 'LatLon::instance()' to allow conversion
@@ -510,7 +521,7 @@ static int distance_km(lua_State *L) {
  *
  * Return parameter id
  */
-static int getparamid(lua_State *L) {
+int getparamid(lua_State *L) {
   proto(L, "string");
 
   NFmiEnumConverter converter;
@@ -530,7 +541,7 @@ static int getparamid(lua_State *L) {
  *
  * Set data output precision
  */
-static int setdecimals(lua_State *L) {
+int setdecimals(lua_State *L) {
   proto(L, "number");
   int decimals = lua_tonumber(L, 1);
   RegTools::set_Decimals(L, decimals);
@@ -548,7 +559,7 @@ static int setdecimals(lua_State *L) {
  * Offset given as number of matrix/grid points or as distance in km
  * along latitude/longitude lines is applied to m (finer/native matrix/grid)
  */
-static int peekxy(lua_State *L) {
+int peekxy(lua_State *L) {
   unsigned n = lua_gettop(L);
   if (n == 4)
     proto(L, "Matrix,Matrix,MatrixPos,MatrixPos");
@@ -772,6 +783,7 @@ void q3_bind(lua_State *L) {
   lua_pushcclosure(L, Logger::LOG_, 1 /*upvalues*/);
   lua_setfield(L, -2, "LOG_ONE_UP");
 }
+}  // namespace
 
 /*---=== Session ===---
  */
@@ -803,7 +815,7 @@ void q3_bind(lua_State *L) {
  */
 int Session::init(lua_State *L) {
   // Note: 'proto' not initialized, yet. Don't use.
-  int st;
+  int st = 0;
   assert(L);
 
 #ifndef METQU
@@ -939,7 +951,7 @@ int Session::init(lua_State *L) {
     lua_settable(L, LUA_GLOBALSINDEX);
 #endif
 
-    lua_pushlightuserdata(L, (void *)REG_JSON_FUNC);
+    lua_pushlightuserdata(L, REG_JSON_FUNC);
     lua_insert(L, -2);
     lua_settable(L, LUA_REGISTRYINDEX);
   }
@@ -962,7 +974,7 @@ int Session::init(lua_State *L) {
     //
     L_ASSERT(lua_isfunction(L, -1));
 
-    lua_pushlightuserdata(L, (void *)REG_LATLON_FUNC);
+    lua_pushlightuserdata(L, REG_LATLON_FUNC);
     lua_insert(L, -2);
     lua_settable(L, LUA_REGISTRYINDEX);
   }
@@ -1146,7 +1158,7 @@ string_or_null Session::result_(lua_State *L, ostream &os, unsigned i) {
 
       string_or_null mime = lua_tostring(L, -1);
 
-      size_t len;
+      size_t len = 0;
       const char *data = lua_tolstring(L, -2, &len);
       os.write(data, len);
 
@@ -1200,8 +1212,8 @@ string_or_null Session::result_(lua_State *L, ostream &os, unsigned i) {
     lua_pop(L, 2); // remove nil and metatable
   }
 
-  size_t len;
-  const char *s;
+  size_t len = 0;
+  const char *s = nullptr;
 
   // Most return values are serialized as JSON (json.lua for tables/strings,
   // native rendering for scalars), so report 'application/json'. The special

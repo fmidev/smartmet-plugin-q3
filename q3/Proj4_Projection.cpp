@@ -10,6 +10,8 @@
 
 using namespace std;
 
+namespace
+{
 /*
     Matti.Horttanainen@fmi.fi 4-Nov-2010 on which LatLon projection to use (in
 FMI):
@@ -31,6 +33,7 @@ FMI):
 <<
 */
 const char *LATLON_DECL = "+proj=longlat +ellps=sphere +a=6371220 +b=6371220";
+}  // namespace
 
 /*---=== Proj4_Projection ===---*/
 
@@ -49,7 +52,7 @@ const char *LATLON_DECL = "+proj=longlat +ellps=sphere +a=6371220 +b=6371220";
 /*
  */
 Proj4_Projection::Proj4_Projection(const char *proj_)
-    : Projection_provider(), pj(Fmi::CoordinateTransformation("WGS84", proj_)) {
+    :  pj(Fmi::CoordinateTransformation("WGS84", proj_)) {
   assert(proj_);
 
   INVARIANT();
@@ -58,7 +61,7 @@ Proj4_Projection::Proj4_Projection(const char *proj_)
 /*
  */
 /*virtual*/ Proj4_Projection::Proj4_Projection(const Proj4_Projection &o)
-    : Projection_provider(), pj(o.pj) {
+    :  pj(o.pj) {
 
   INVARIANT();
 }

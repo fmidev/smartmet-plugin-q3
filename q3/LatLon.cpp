@@ -40,6 +40,8 @@ liable for any real or imagined damage resulting from its use.
 Users of this code must verify correctness for their application.
 */
 
+namespace
+{
 // isLeft(): tests if a point is Left|On|Right of an infinite line.
 //    Input:  three points P0, P1, and P2
 //    Return: >0 for P2 left of the line through P0 and P1
@@ -47,7 +49,7 @@ Users of this code must verify correctness for their application.
 //            <0 for P2 right of the line
 //    See: the January 2001 Algorithm "Area of 2D and 3D Triangles and Polygons"
 //
-static inline double isLeft(const LatLon &P0, const LatLon &P1,
+inline double isLeft(const LatLon &P0, const LatLon &P1,
                             const LatLon &P2) {
   return (P1.getLon() - P0.getLon()) * (P2.getLat() - P0.getLat()) -
          (P2.getLon() - P0.getLon()) * (P1.getLat() - P0.getLat());
@@ -91,7 +93,7 @@ intersect
 //               V[] = vertex points of a polygon
 //      Return:  wn = the winding number (=0 only if P is outside V[])
 //
-static int wn_PnPoly(const LatLon &P, const vector<LatLon> &V) {
+int wn_PnPoly(const LatLon &P, const vector<LatLon> &V) {
   int wn = 0; // the winding number counter
 
   LatLon prev = V.back();
@@ -112,6 +114,7 @@ static int wn_PnPoly(const LatLon &P, const vector<LatLon> &V) {
   }
   return wn;
 }
+}  // namespace
 
 // end of SoftSurfer code
 //===================================================================

@@ -25,13 +25,15 @@ struct my_reader_st {
   my_reader_st(const char *code) : p(code) {}
 };
 
-static int HEX_TO_INT(char c) {
+namespace
+{
+int HEX_TO_INT(char c) {
   // Trusting ASCII order (digits before letters)
   //
   return (c <= '9') ? (c - '0') : (toupper(c) - 'A' + 10);
 }
 
-static const char *my_reader(lua_State *L, void *st_v, size_t *size) {
+const char *my_reader(lua_State * /*L*/, void *st_v, size_t *size) {
   struct my_reader_st &st = *(struct my_reader_st *)st_v;
 
   const char *start = st.p;
@@ -74,7 +76,7 @@ static const char *my_reader(lua_State *L, void *st_v, size_t *size) {
  * A JSONP callback must be a JavaScript identifier path such as
  * "cb" or "jQuery123.handler".
  */
-static bool is_valid_jsonp_callback(const string &name) {
+bool is_valid_jsonp_callback(const string &name) {
   if (name.empty() || name.size() > 64)
     return false;
   bool start = true;
@@ -92,6 +94,7 @@ static bool is_valid_jsonp_callback(const string &name) {
   }
   return !start;
 }
+}  // namespace
 
 /*---=== RequestResponse ===---*/
 
@@ -154,7 +157,7 @@ void RequestResponse::set_output(unsigned resp_code, const char *mime,
 /*
  * Compile the Lua source code
  */
-int RequestResponse::compile_code(lua_State *L, const char *block_name) {
+int RequestResponse::compile_code(lua_State *L, const char * /*block_name*/) {
   assert(code != nullptr);
 
   // SECURITY: never accept precompiled bytecode from the client. LuaJIT does

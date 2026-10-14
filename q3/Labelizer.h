@@ -115,42 +115,38 @@ public:
   };
 
   struct Config {
-    double limit_along_line; // min. distance between labels on the same curve
+    double limit_along_line = 0.0; // min. distance between labels on the same curve
                              // (center to center)
-    double limit_direct; // min. distance to any other label (center to center)
+    double limit_direct = 0.0; // min. distance to any other label (center to center)
 
-    bool allow_overlapping_labels; // can labels overlap each other (faster)
-    bool allow_overlapping_lines; // can labels overlap other iso lines (faster)
+    bool allow_overlapping_labels = false; // can labels overlap each other (faster)
+    bool allow_overlapping_lines = false; // can labels overlap other iso lines (faster)
 
     double
-        dampen_corners_limit_deg; // corners bigger than this will get dampened
-    double dampen_corners;        // damping factor (<1.0) for such corners
+        dampen_corners_limit_deg = 8.0; // corners bigger than this will get dampened
+    double dampen_corners = 0.8;        // damping factor (<1.0) for such corners
 
-    double boost_horizontal_limit_deg; // lines less than this are taken as
+    double boost_horizontal_limit_deg = 3.0; // lines less than this are taken as
                                        // horizontal
-    double boost_horizontal; // boost factor (>1.0) for such (horizontal) points
+    double boost_horizontal = 1.5; // boost factor (>1.0) for such (horizontal) points
 
-    double curve_optimization; // Optimization fine tuning; affects processing
+    double curve_optimization = 0.0; // Optimization fine tuning; affects processing
                                // speed How big areas of curves are stored as
                                // subcurves (chunks); in pixels
 
-    int decimals; // Number of label decimals
+    int decimals = 1; // Number of label decimals
 
     // Struct has default values; the rest can be set explicitly by the
     // application using it.
     //
     Config()
-        : limit_along_line(0.0), limit_direct(0.0),
-          allow_overlapping_labels(false), allow_overlapping_lines(false),
-          dampen_corners_limit_deg(8.0), dampen_corners(0.8),
-          boost_horizontal_limit_deg(3.0), boost_horizontal(1.5),
-          curve_optimization(0.0), // 0 = not used (all one chunk; slooooow)
-          decimals(1) {}
+        
+          {}
   };
 
   Labelizer(const Config &config_, Drawer &debug_drawer_, unsigned data_w,
             unsigned data_h)
-      : config(config_), current_chain(nullptr), chains(), last_point(),
+      : config(config_),  
         debug_drawer(debug_drawer_),
         bb(Point(0, 0), Point(data_w - 1, data_h - 1)) {}
 
@@ -195,7 +191,7 @@ private:
   class ChainIterator;
 
   const Config config;
-  Chain *current_chain;        // what we're currently gathering
+  Chain *current_chain = nullptr;        // what we're currently gathering
   std::vector<Chain *> chains; // all gathered chains so far
 
   Point last_point;

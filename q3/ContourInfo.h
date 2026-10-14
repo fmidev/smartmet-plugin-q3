@@ -161,10 +161,10 @@ public:
    * internally we keep them as a ready-made Cairo pattern.
    */
   struct FillParams {
-    uint_ARGB color;
+    uint_ARGB color = WHITE;
 
-    float hatch_width; // 0: use solid 'fill_color'; 1..4
-    bool hatch_offset;
+    float hatch_width = 0; // 0: use solid 'fill_color'; 1..4
+    bool hatch_offset = false;
     enum e_hatch_type {
       HATCH_HORIZONTAL = 0,
       HATCH_VERTICAL = 1,
@@ -182,7 +182,7 @@ public:
 
   ContourInfo_Fill(const std::vector<std::pair<float, float>> &ranges_,
                    const StrokeParams &stroke_, const FillParams &fill)
-      : ContourInfo_common(stroke_), ranges(ranges_), pSize(10) {
+      : ContourInfo_common(stroke_), ranges(ranges_) {
     pattern = fill.cairo_pattern_create(pSize);
   }
 
@@ -190,7 +190,7 @@ public:
     if (pattern) {
       // Note: 'cairo_pattern_destroy()' should take in a const, right?
       //
-      cairo_pattern_destroy((cairo_pattern_t *)pattern);
+      cairo_pattern_destroy(pattern);
     }
   }
 
@@ -201,7 +201,7 @@ private:
   static const ContourInfo_Fill *create(const std::string &conf,
                                         const ContourMatrix<float> &);
 
-  size_t pSize;
+  size_t pSize = 10;
 };
 
 /*
@@ -210,12 +210,12 @@ private:
  */
 class s_projection {
 private:
-  unsigned points; // 0..2
+  unsigned points = 0; // 0..2
 
 public:
   long x[2], y[2], xx[2], yy[2]; // x,y in pixel coords is xx,yy data coords
 
-  s_projection() : points(0) {}
+  s_projection()  {}
 
   void set_point(long x_, long y_, long xx_, long yy_) {
     if (points < 2) {

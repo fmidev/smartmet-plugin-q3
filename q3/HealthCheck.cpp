@@ -38,6 +38,8 @@ shared between multiple instances of the program.
 <<
 */
 
+namespace
+{
 /*
 * CPU info
 *
@@ -84,7 +86,7 @@ power management:
 <<
 */
 __attribute__((unused))
-static string cpu_info() {
+string cpu_info() {
   unsigned cores = 0;
   string_or_null model;
 
@@ -135,7 +137,7 @@ $ more /proc/loadavg
 <<
 */
 __attribute__((unused))
-static string cpu_stat() {
+string cpu_stat() {
   double avg[3];
 
 #ifdef __linux__
@@ -194,7 +196,7 @@ Hugepagesize:     2048 kB
 <<
 */
 __attribute__((unused))
-static string mem_stat(bool initial) {
+string mem_stat(bool initial) {
 #ifdef __linux__
   long memtotal_kB = 0, memfree_kB = 0, buffers_kB = 0, cached_kB = 0,
        swapcached_kB = 0, swaptotal_kB = 0, swapfree_kB = 0, mapped_kB = 0,
@@ -294,6 +296,7 @@ static string mem_stat(bool initial) {
 #error "Not implemented for this OS."
 #endif
 }
+}  // namespace
 
 /*
 * Possibly nothing here for us?
@@ -363,6 +366,8 @@ static string rusage() {
 }
 #endif
 
+namespace
+{
 /*
 * Disk usage
 *
@@ -379,7 +384,7 @@ suuli:/arch/pal       1.5T  1.3T  229G  85% /smartmet/archive
 <<
 */
 __attribute__((unused))
-static string_or_null disk_usage(const char *path) {
+string_or_null disk_usage(const char *path) {
   struct statvfs d;
   //
   // unsigned long  f_bsize;    // file system block size         <<<
@@ -418,9 +423,10 @@ static string_or_null disk_usage(const char *path) {
 <<
 */
 __attribute__((unused))
-static string_or_null net_usage(const char *ethX) {
+string_or_null net_usage() {
   return ""; // TBD - if needed
 }
+}  // namespace
 
 /*---=== HealthCheck ===---
  */
@@ -428,8 +434,8 @@ static string_or_null net_usage(const char *ethX) {
 /*
  */
 HealthCheck::HealthCheck(unsigned period_ms_, const char *conf)
-    : thread_h(), period_ms(period_ms_), cpu(false), mem(false), swap(false),
-      paths() {
+    :  period_ms(period_ms_) 
+      {
   assert(period_ms > 0);
   assert(conf);
 
@@ -480,7 +486,7 @@ void *HealthCheck::thread(void *me_v) {
   while (true) {
     Sleep_ms(my.period_ms);
 
-    string s = "";
+    string s;
 
     if (my.cpu) {
       LOG_STAT("CPU %s", cpu_stat().c_str());

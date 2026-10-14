@@ -40,8 +40,8 @@ class MyGrid : public Trax::Grid {
 public:
   explicit MyGrid(ContourMatrix &cm_) : cm(cm_) {}
 
-  double x(long i, long j) const override { return i; }
-  double y(long i, long j) const override { return j; }
+  double x(long i, long  /*j*/) const override { return i; }
+  double y(long  /*i*/, long j) const override { return j; }
 
   float operator()(long i, long j) const override {
     return cm.getValue(MatrixPos(i, j));
@@ -51,7 +51,7 @@ public:
     cm.getValue(MatrixPos(i, j)) = z;
   }
 
-  bool valid(long i, long j) const override { return true; }
+  bool valid(long  /*i*/, long  /*j*/) const override { return true; }
   std::size_t width() const override { return cm.getXS(); }
   std::size_t height() const override { return cm.getYS(); }
 
@@ -193,7 +193,7 @@ void smooth(MyGrid &grid, unsigned int smooth_length,
 
 LuaNew_ID TronHintsBind::ID;
 
-void TronHintsBind::setup(lua_State *L) { assert(lua_istable(L, -1)); }
+void TronHintsBind::setup([[maybe_unused]] lua_State *L) { assert(lua_istable(L, -1)); }
 
 class TronHints : public LuaNew<TronHintsBind> {
 public:

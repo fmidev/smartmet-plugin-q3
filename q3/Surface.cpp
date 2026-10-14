@@ -36,7 +36,9 @@ static const unsigned GRANT_IMAGE = 0x01;
 static const unsigned GRANT_PDF = 0x02;
 static const unsigned GRANT_SVG = 0x04;
 
-static unsigned get_grant(/*const*/ cairo_surface_t *surf) {
+namespace
+{
+unsigned get_grant(/*const*/ cairo_surface_t *surf) {
   cairo_surface_type_t st = cairo_surface_get_type(surf);
   switch (st) {
   case CAIRO_SURFACE_TYPE_IMAGE:
@@ -52,6 +54,7 @@ static unsigned get_grant(/*const*/ cairo_surface_t *surf) {
   os << "Internal error: unexpected surface type " << (int)st;
   throw runtime_error(os.str().c_str());
 }
+}  // namespace
 
 struct SurfaceTypeConverter : public Converter<cairo_surface_type_t> {
   SurfaceTypeConverter() : Converter<cairo_surface_type_t>("surface_type") {
@@ -77,7 +80,10 @@ struct SurfaceTypeConverter : public Converter<cairo_surface_type_t> {
     // map(CAIRO_SURFACE_TYPE_QUARTZ_IMAGE, "quartz image" );
   }
 };
-static SurfaceTypeConverter conv_surface_type;
+namespace
+{
+SurfaceTypeConverter conv_surface_type;
+}  // namespace
 
 //---
 FormatConverter::FormatConverter() : Converter<cairo_format_t>("format") {
@@ -132,7 +138,10 @@ struct SurfaceMethodNames : public MethodNames {
     map("set_size", PdfSurface::set_size, GRANT_PDF);
   }
 };
-static struct SurfaceMethodNames surface_method_names;
+namespace
+{
+struct SurfaceMethodNames surface_method_names;
+}  // namespace
 
 /*
  * any|nil= __index( surf_ud, key )
@@ -241,7 +250,7 @@ void Surface_bind::setup(lua_State *L) {
  */
 #ifndef SANDBOX
 Surface::Surface(cairo_surface_t *surf_, const char *fn)
-    : surf(surf_), finished(false), io()
+    : surf(surf_) 
 #else
 Surface::Surface(cairo_surface_t *surf_)
     : surf(surf_), finished(false), io(new stringstream())

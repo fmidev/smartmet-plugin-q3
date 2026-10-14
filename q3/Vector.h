@@ -31,7 +31,7 @@ public:
   static const LuaNew_ID &id() { return ID; }
   using CAST_T = Vector;
 
-public: // for 'VectorMatrixBind::sub'
+// for 'VectorMatrixBind::sub'
   static int unm(lua_State *L);
 
 private:
@@ -108,7 +108,7 @@ private:
   double v1, v2; // x,y or abs,rad (we store angles internally as radians)
   bool polar;
 
-private:
+
   friend class VectorBind;
 
 #ifndef NDEBUG

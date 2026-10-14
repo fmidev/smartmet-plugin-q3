@@ -110,7 +110,7 @@ public:
   bool covered_by(const std::vector<JDay> &vec, bool &exact) const;
 
   bool covered_by(const std::vector<JDay> &vec) const {
-    bool ignore;
+    bool ignore = false;
     return covered_by(vec, ignore);
   }
 

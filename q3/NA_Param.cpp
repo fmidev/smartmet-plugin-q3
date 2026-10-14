@@ -76,7 +76,9 @@ const NA_Param::Unit NA_Param::UNIT_UNKNOWN_INTERPOLATABLE(
  */
 #ifdef USE_NEWBASE
 
-static struct {
+namespace
+{
+struct {
   const char *const name;    // standard name (i.e. 'T')
   const FmiParameterName id; // native id in SQD file
 } standard_params[] = {
@@ -153,18 +155,21 @@ static struct {
     {nullptr, (FmiParameterName)0} // end marker
 };
 
-static map<string, FmiParameterName> id_by_name;
-static map<FmiParameterName, string> name_by_id;
+map<string, FmiParameterName> id_by_name;
+map<FmiParameterName, string> name_by_id;
 
 // 31-Oct-2011 PKi: Parameter mapping for virtual parameters
 //
-static map<string, virtualParameterName> id_by_virtualname;
-static map<FmiParameterName, string> virtualname_by_id;
+map<string, virtualParameterName> id_by_virtualname;
+map<FmiParameterName, string> virtualname_by_id;
+}  // namespace
 
 static const NA_Param virtual_Z("Z", NA_Param::UNIT_UNKNOWN_INTERPOLATABLE);
 static const NA_Param virtual_W("W", NA_Param::UNIT_UNKNOWN_INTERPOLATABLE);
 
-static struct {
+namespace
+{
+struct {
   const string standardName; // standard name (i.e. 'Z')
   const string nativeName;   // native name (i.e. 'Z:xxx')
   virtualParameterName v;    // primary/secondary parameter id:s
@@ -181,7 +186,7 @@ static struct {
 #endif
     {"", "", virtualParameterName((FmiParameterName)0, (FmiParameterName)0)}};
 
-static struct JustOnce_NA_Param { // note: must have unique name (otherwise
+struct JustOnce_NA_Param { // note: must have unique name (otherwise
                                   // runtime problems, linker mixes the two
                                   // structs)
   JustOnce_NA_Param() {
@@ -211,6 +216,7 @@ static struct JustOnce_NA_Param { // note: must have unique name (otherwise
     }
   }
 } just_for_init;
+}  // namespace
 
 /*
  */
@@ -226,13 +232,15 @@ FmiParameterName NA_Param::standard_param_native_id(const char *s) {
   }
 }
 
+namespace
+{
 /*
  * Standard param name (s.a. "T" for id 4).
  *
  * Returns "" (empty string) if 'id' is not known, or does not have a standard
  * name.
  */
-static string standard_param_name(FmiParameterName e) {
+string standard_param_name(FmiParameterName e) {
 
   auto it = name_by_id.find(e);
   if (it != name_by_id.end()) {
@@ -241,6 +249,7 @@ static string standard_param_name(FmiParameterName e) {
     return ""; // no standard name
   }
 }
+}  // namespace
 
 /*
  * 31-Oct-2011 PKi: Parameter mapping for virtual parameters; returns
@@ -290,7 +299,7 @@ string NA_Param::native_id_virtual_param(FmiParameterName e) {
  */
 //#ifdef USE_TESTRAW
 NA_Param::NA_Param(const char *s, const Unit &unit_, bool nonStd)
-    : std_name(), native_name(), unit(unit_) {
+    :  unit(unit_) {
 #ifdef USE_NEWBASE
   if (strchr(s, ':')) {
     native_name = s;
@@ -337,7 +346,7 @@ NA_Param::NA_Param(const char *s, const Unit &unit_, bool nonStd)
 // 25-Oct-2011 PKi: Now needed by server too
 //#ifdef METQU
 NA_Param::NA_Param(const char *s)
-    : std_name(), native_name(), unit(UNIT_UNKNOWN_) {
+    :  unit(UNIT_UNKNOWN_) {
   assert(s);
 
 #ifdef USE_NEWBASE
@@ -440,10 +449,10 @@ NA_Param::NA_Param(FmiParameterName e, const std::string &interpolation_name_,
  */
 string NA_Param::toString(bool prefer_standard_names) const {
 
-  if (prefer_standard_names && (std_name != "")) {
+  if (prefer_standard_names && (!std_name.empty())) {
     return std_name;
 
-  } else if (native_name != "") {
+  } else if (!native_name.empty()) {
     return native_name;
 
   } else {

@@ -24,7 +24,7 @@ Color::Color(lua_State *L, int index, bool alpha) : r(), g(), b(), a(0.0) {
   switch (lua_type(L, index)) {
   case LUA_TSTRING: {
     const char *s = lua_tostring(L, index++);
-    char *endp;
+    char *endp = nullptr;
     unsigned v = strtol(s, &endp, 16);
     if (*endp != '\0') {
       luaL_error(L, "Bad RGB string: %s", s);

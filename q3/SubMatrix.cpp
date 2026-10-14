@@ -4,6 +4,7 @@
  * "Peekhole" object used by 'foreach' to iterate a parent matrix.
  */
 #include "SubMatrix.h"
+
 #include "Vector.h"
 #include "VectorMatrix.h"
 
@@ -27,9 +28,9 @@ SubMatrix::SubMatrix(Matrix &m_, const MatrixPos &ws)
 SubMatrix::~SubMatrix() {
   INVARIANT();
 
-  if (latlon) {
+  
     delete latlon;
-  }
+  
 }
 
 /*
@@ -45,7 +46,7 @@ SubMatrix::~SubMatrix() {
 
   // Try reading first so we find out if 'pos' lead outside of the parent matrix
   //
-  float v;
+  float v = NAN;
   try {
     v = m[pos];
   } catch (const E_OUTSIDE &) {
@@ -115,7 +116,7 @@ int SubMatrix::set_radius(lua_State *L) {
   // non-invariant states)
   //
   if (isnanf(my.r_km)) {
-    if (my.latlon)
+    
       delete my.latlon;
     my.latlon = nullptr;
   } else {

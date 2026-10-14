@@ -25,7 +25,7 @@
  */
 template <typename T> class Converter {
 protected:
-  Converter(const char *name_) : m(), name(name_) {}
+  Converter(const char *name_) :  name(name_) {}
 
   void map(T e, const char *s) {
     m[(int)e] = s; // Note: original string must be a literal (not copied)
@@ -94,7 +94,7 @@ private:
  */
 class MethodNames {
 protected:
-  MethodNames() : m() {}
+  MethodNames()  {}
 
   /*
    * 'grant' has bits set for subtypes _allowed_ to use the function

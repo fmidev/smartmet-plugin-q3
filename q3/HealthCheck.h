@@ -19,12 +19,12 @@ public:
 private:
   // private data:
   //
-  pthread_t thread_h; // (not used; could be used to terminate the thread)
+  pthread_t thread_h = 0; // (not used; could be used to terminate the thread)
   unsigned period_ms;
 
-  bool cpu;  // report CPU load
-  bool mem;  // report memory usage
-  bool swap; // (maybe we don't need this)
+  bool cpu = false;  // report CPU load
+  bool mem = false;  // report memory usage
+  bool swap = false; // (maybe we don't need this)
              // ...
 
   std::vector<std::string> paths; // report disk usage on these

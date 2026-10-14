@@ -44,7 +44,10 @@ struct MatrixMethodNames : public MethodNames {
         // ...
     }
 };
-static struct MatrixMethodNames matrix_method_names;
+namespace
+{
+struct MatrixMethodNames matrix_method_names;
+}  // namespace
 
 /*
 * ...= __index( pattern_ud, key_any )

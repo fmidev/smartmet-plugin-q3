@@ -120,7 +120,7 @@ private:
   const MatrixPos gridsize; // 'MatrixPos::ZERO' for native grid size, otherwise
                             // non-native (do scaling)
 
-  unsigned rkey; // magic number used by 'push_alive()' to get a Lua instance of
+  unsigned rkey = 0; // magic number used by 'push_alive()' to get a Lua instance of
                  // 'r' needed for connecting also '[SQD|MQD]_Matrix' objects to
                  // the same instance's lifecycle. (0 immediately after
                  // construction, but soon set thereafter)

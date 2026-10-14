@@ -21,22 +21,24 @@ using namespace std;
 /*---=== Helpers ===---
  */
 
+namespace
+{
 /*
  * Does 'vec' have parameters with standard names 's1' and 's2'?
  */
-static bool has_by_standard_name(const std::vector<NA_Param>& vec, const string& s1,
+bool has_by_standard_name(const std::vector<NA_Param>& vec, const string& s1,
                                  const string& s2 = "") {
   assert(s1 != "");
 
   bool s1_match = false;
-  bool s2_match = (s2 == ""); // match if not given
+  bool s2_match = (s2.empty()); // match if not given
 
   for (const auto &it : vec) {
     const string &it_s = it.getStandardName();
 
     if (it_s == s1) {
       s1_match = true;
-    } else if ((s2 != "") && (it_s == s2)) {
+    } else if ((!s2.empty()) && (it_s == s2)) {
       s2_match = true;
     }
 
@@ -54,7 +56,7 @@ static bool has_by_standard_name(const std::vector<NA_Param>& vec, const string&
  * '[xxx][:nnn]' with optional name part and optional numeric trailer. Either
  * name, id or both can cause a match.
  */
-static bool native_match(const string &name_in_data,
+bool native_match(const string &name_in_data,
                          const string &name_to_match) {
 
 #ifndef USE_NEWBASE
@@ -85,7 +87,7 @@ static bool native_match(const string &name_in_data,
     return false; // Invalid name
   }
 
-  if ((b_name_part != "") && (a_name_part != b_name_part)) {
+  if ((!b_name_part.empty()) && (a_name_part != b_name_part)) {
     return false; // name part not as required
   }
 
@@ -97,6 +99,7 @@ static bool native_match(const string &name_in_data,
 #endif
   // USE_NEWBASE
 }
+}  // namespace
 
 /*---=== ApiScalarParam ===---
  */
@@ -111,7 +114,7 @@ static bool native_match(const string &name_in_data,
 NA_Param ApiScalarParam::covered_by(const vector<NA_Param> &vec) const {
   const static NA_Param NONE; // no param ('operator bool' gives 'false')
 
-  if (name == "")
+  if (name.empty())
     return NONE; // empty param not covered - ever
 
   // Matching logic goes:
@@ -143,7 +146,7 @@ static const ApiScalarParam WS("WS");
 static const ApiScalarParam WD("WD");
 
 ApiParam::ApiParam(const char *name_)
-    : name(name_ ? name_ : ""), a(), b(), polar(false) {
+    : name(name_ ? name_ : ""),  polar(false) {
 
   if (name == "WIND") {
     a = WS;
@@ -195,7 +198,7 @@ vector<NA_Param> ApiParam::convert_to_native(const std::vector<ApiParam> &vec,
 
   // 25-Oct-2011 PKi: Take the params from data if not excplicitly given
 
-  if (vec.size() < 1)
+  if (vec.empty())
     return realParams(data);
 
   vector<NA_Param> ret;
@@ -215,7 +218,7 @@ vector<NA_Param> ApiParam::convert_to_native(const std::vector<ApiParam> &vec,
     // 25-Oct-2011 PKi: Ignore virtual parameters
 
     if (data) {
-      bool mapped;
+      bool mapped = false;
       data->mapParameter(NA_Param((it.a).getName().c_str(),
                                   NA_Param::UNIT_UNKNOWN_INTERPOLATABLE),
                          true, &mapped);
@@ -249,7 +252,7 @@ vector<NA_Param> ApiParam::realParams(const NA_Data *data) {
 
   for (auto &it : vec) {
 
-    bool mapped;
+    bool mapped = false;
     data->mapParameter(it, true, &mapped);
 
     if (!mapped)

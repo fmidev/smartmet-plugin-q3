@@ -30,6 +30,7 @@
 #include <boost/lexical_cast.hpp>
 
 #include <ctime>
+#include <cmath>
 #include <sys/stat.h>
 
 #include "newbase/NFmiRotatedLatLonArea.h"
@@ -78,6 +79,8 @@ static vector<NA_Level> reverse_vector( const vector<NA_Level> &vec ) {
 }
 */
 
+namespace
+{
 /*
  * Returns:
  *   -1 if 'param' exists and its values are descending
@@ -90,7 +93,7 @@ static vector<NA_Level> reverse_vector( const vector<NA_Level> &vec ) {
  *       (tried earlier but never got them working fine - maybe another try
  * together with Marko?) 26-Oct-10 AKa
  */
-static int TestRising(NFmiFastQueryInfo &fi, FmiParameterName id,
+int TestRising(NFmiFastQueryInfo &fi, FmiParameterName id,
                       const char *fn_debug) {
   (void)fn_debug;
 
@@ -176,6 +179,7 @@ static int TestRising(NFmiFastQueryInfo &fi, FmiParameterName id,
   return 0; // There were no two values in same time,location *anywhere* in the
             // data - orientation does not matter
 }
+}  // namespace
 
 /*
  * Is a parameter part of the 326 (WeatherAndCloudiness) or 19 (TotalWindMS)
@@ -224,15 +228,17 @@ bool derived_from(unsigned which, const NA_Param &p) {
 }
 #endif
 
+namespace
+{
 /*
  * Fill 'MemMatrix' from a Newbase 'NFmiDataMatrix<float>'
  */
-static void matrix_fill(MemMatrix &m, const NFmiDataMatrix<float> &from) {
+void matrix_fill(MemMatrix &m, const NFmiDataMatrix<float> &from) {
   using sz_t = NFmiDataMatrix<float>::size_type;
   const sz_t xs = from.NX();
   const sz_t ys = from.NY();
   MatrixPos::offset_t n = 0;
-  float v;
+  float v = NAN;
 
   for (sz_t y = 0; y < ys; y++) {
     for (sz_t x = 0; x < xs; x++) {
@@ -244,6 +250,7 @@ static void matrix_fill(MemMatrix &m, const NFmiDataMatrix<float> &from) {
   }
   assert(n == m.getN());
 }
+}  // namespace
 
 /*
  * Sets an iterator to 'NFmiQueryData'.
@@ -279,7 +286,7 @@ void SQD_Data::setIter(NFmiFastQueryInfo &fi, const JDay &vt,
   // data only has one; that if interpolation is required the data actually can
   // provide such a level).
   //
-  bool exact;
+  bool exact = false;
   if (!lev.covered_by(*this, exact)) {
     throw E_NO_MATCH(lev); // outside
   } else if (exact) {
@@ -309,7 +316,7 @@ void SQD_Data::setIter(NFmiFastQueryInfo &fi, const JDay &vt,
  */
 void SQD_Data::setIter_exact(NFmiFastQueryInfo &fi, const JDay &vt,
                              const NA_Level &lev, const NA_Param &p) {
-  bool exact_time, exact_level;
+  bool exact_time = false, exact_level = false;
 
   try {
     setIter(fi, vt, lev, p, exact_time, exact_level);
@@ -321,10 +328,12 @@ void SQD_Data::setIter_exact(NFmiFastQueryInfo &fi, const JDay &vt,
   }
 }
 
+namespace
+{
 /*
  * Return the times available, in ascending order.
  */
-static vector<JDay> getTimes(NFmiQueryInfo &info) /*throw(E_BUG)*/
+vector<JDay> getTimes(NFmiQueryInfo &info) /*throw(E_BUG)*/
 {
   vector<JDay> vec;
 
@@ -351,7 +360,7 @@ static vector<JDay> getTimes(NFmiQueryInfo &info) /*throw(E_BUG)*/
  *
  * Throws E_BAD_FILE on file conformance issues.
  */
-static vector<NA_Level> getLevels(const NFmiQueryInfo &info,
+vector<NA_Level> getLevels(const NFmiQueryInfo &info,
                                   const char *fn_debug, bool &revorder,
                                   string &nativeLevelType) {
   vector<NA_Level> vec;
@@ -392,7 +401,7 @@ static vector<NA_Level> getLevels(const NFmiQueryInfo &info,
     vec.push_back(tmp);
   }
 
-  if (vec.size() == 0) {
+  if (vec.empty()) {
     if (any_level_found) {
       vec.emplace_back(NA_Level::GROUND_LEVEL);
       return vec;
@@ -476,7 +485,7 @@ static vector<NA_Level> getLevels(const NFmiQueryInfo &info,
   return vec;
 }
 
-static std::string interpolation_name(FmiInterpolationMethod method) {
+std::string interpolation_name(FmiInterpolationMethod method) {
   switch (method) {
   case kNoneInterpolation:
     return "None";
@@ -533,7 +542,7 @@ uint getDataTimeStep(NFmiQueryInfo &info) {
  * "Lämpötila:4"). For derived params, only the param names are returned (i.e.
  * "WD","WS,...).
  */
-static vector<NA_Param> getParams(NFmiQueryInfo &info, bool &has_326,
+vector<NA_Param> getParams(NFmiQueryInfo &info, bool &has_326,
                                   bool &has_19) {
   vector<NA_Param> vec;
 
@@ -730,6 +739,7 @@ static vector<NA_Param> getParams(NFmiQueryInfo &info, bool &has_326,
 
   return vec;
 }
+}  // namespace
 
 /*---=== SQD_Data ===---*/
 
@@ -1008,13 +1018,13 @@ NA_Info SQD_Data::read_info(const char *fn) {
     throw E_LOG_BAD_FILE(fn, e.what());
   }
 
-  bool has_326, has_19;
+  bool has_326 = false, has_19 = false;
   vector<NA_Param> params = ::getParams(info, has_326, has_19);
 
-  if (times.size() == 0) {
+  if (times.empty()) {
     throw E_LOG_BAD_FILE(fn, "no times");
   }
-  if (params.size() == 0) {
+  if (params.empty()) {
     throw E_LOG_BAD_FILE(fn, "no params");
   }
   assert(levels.size() > 0); // '::getLevels()' threw the exceptions
@@ -1051,7 +1061,7 @@ NA_Info SQD_Data::read_info(const char *fn) {
       getDataTimeStep(info),
       area ? area->WorldXYWidth() / (grid->XNumber() - 1) / 1000.0 : 0,
       area ? area->WorldXYHeight() / (grid->YNumber() - 1) / 1000.0 : 0,
-      grid ? true : false);
+      grid != nullptr);
 
   unsigned prod = info.Producer()->GetIdent();
   MatrixPos gs(grid ? grid->XNumber() : 0, grid ? grid->YNumber() : 0);
@@ -1175,7 +1185,7 @@ SQD_Data::push_NativeMatrix(lua_State *L, const JDay &vt, const NA_Level &lev,
                             const MatrixPos *target_gs, bool *target_ready,
                             const DataIdList *dataIds) CONST_IF_SERVER
 {
-  CONST_IF_SERVER Matrix *m;
+  CONST_IF_SERVER Matrix *m = nullptr;
 
   //---
   // Special case: if looking for parameter 'Z' (with no id) look first at ':2'
@@ -1232,6 +1242,8 @@ SQD_Data::push_NativeMatrix(lua_State *L, const JDay &vt, const NA_Level &lev,
   return m;
 }
 
+namespace
+{
 /*
  * Get data for given data point id's or data points within given area. The data
  * is returned as [nPoints,1] matrix
@@ -1333,6 +1345,7 @@ void pointValues(NFmiFastQueryInfo &info,
 
   m.set_size(MatrixPos(n, 1));
 }
+}  // namespace
 
 /*
  * TBD:  Current handling is inefficient. Scripts regularily ask for say 50,60
@@ -1358,7 +1371,7 @@ SQD_Data::push_NativeMatrix_e(lua_State *L, const JDay &vt, const NA_Level &lev,
     //
     bool pointData = (qd->Info()->Grid() == nullptr);
     const DataIdList *dataIds =
-        ((dataIds_ && (dataIds_->size() > 0)) ? dataIds_ : nullptr);
+        ((dataIds_ && (!dataIds_->empty())) ? dataIds_ : nullptr);
 
     const MatrixPos native_gs =
         getGridSize((pointData && dataIds) ? dataIds->size() : 0);
@@ -1388,7 +1401,7 @@ SQD_Data::push_NativeMatrix_e(lua_State *L, const JDay &vt, const NA_Level &lev,
     string_or_null fstot = lua_tostring(L, -1);
     lua_pop(L, 1);
 
-    if ((!fstot.c_str()) || (fstot == "")) {
+    if ((!fstot.c_str()) || (fstot.empty())) {
       NFmiString otstr(qd->Info()->OriginTime().ToStr(kYYYYMMDDHH));
 
       lua_pushstring(L, otstr.CharPtr());
@@ -1710,7 +1723,9 @@ SQD_Data::push_NativeMatrix_e(lua_State *L, const JDay &vt, const NA_Level &lev,
  * possible.
  */
 
-static time_t JDay2time_t(JDay const &my) {
+namespace
+{
+time_t JDay2time_t(JDay const &my) {
   unsigned year = my.year();
   if (year < 1970) {
     return 0;
@@ -1736,7 +1751,7 @@ static time_t JDay2time_t(JDay const &my) {
  * serie)
  */
 
-static bool timeDiff(JDay const &j1, JDay const &j2, time_t &tDiff, time_t &t1_,
+bool timeDiff(JDay const &j1, JDay const &j2, time_t &tDiff, time_t &t1_,
                      unsigned int tStep) {
   // Times should be nonzero and in rising order. Use t1_ (the converted value
   // of j2 in previous call) if it is available
@@ -1755,6 +1770,7 @@ static bool timeDiff(JDay const &j1, JDay const &j2, time_t &tDiff, time_t &t1_,
   return (tDiff && ((!tStep) || (!(tDiff % tStep))) &&
           ((!tD) || (tDiff == tD)));
 }
+}  // namespace
 
 /*
  * 23-Sep-2011 PKi: Fetch cross using newbase. Uses native projection and
@@ -1821,7 +1837,7 @@ SQD_Data::push_NativeCross(lua_State *L, const std::vector<JDay> &vtVec,
                        &heights = pressures_or_heights;
     std::vector<NFmiLevel> hLevels;
     unsigned int nLevels = levelVec.size(), nLocs = locs.size(),
-                 nTimes = vtVec.size(), i;
+                 nTimes = vtVec.size(), i = 0;
     time_t t1 = 0, tDiff = 0;
     bool timeCross =
         ((!flightRoute) && (nLocs == 1) && (nTimes > 1) &&
@@ -1879,7 +1895,7 @@ SQD_Data::push_NativeCross(lua_State *L, const std::vector<JDay> &vtVec,
       std::vector<NFmiPoint> locations;
 
       if (!flightRoute) {
-        int locIdxIncr = 1, iLocs;
+        int locIdxIncr = 1, iLocs = 0;
 
         if (nLocs == 1) {
           // To clone the single location for Route...() call
@@ -2087,7 +2103,7 @@ static const NA_Param virtual_W( "W", NA_Param::UNIT_UNKNOWN_INTERPOLATABLE, tru
 
 FmiParameterName SQD_Data::mapParameter(const NA_Param &p, bool primary,
                                         bool *mapped) const {
-  bool dummy;
+  bool dummy = false;
   bool &isMapped = (mapped ? *mapped : dummy);
 
   isMapped = false;
@@ -2138,7 +2154,7 @@ void SQD_Data::mapParameter(
     const FmiParameterName id,
     std::map<std::string, FmiParameterName> &virtualParams) {
   string s = NA_Param::native_id_virtual_param(id);
-  if (s != "")
+  if (!s.empty())
     virtualParams.insert(make_pair(s, id));
 
   return;

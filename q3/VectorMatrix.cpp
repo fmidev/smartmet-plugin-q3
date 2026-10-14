@@ -26,11 +26,13 @@ LuaNew_ID VectorMatrixBind::ID;
 
 /*---=== Helpers ===---*/
 
+namespace
+{
 /*
  * Push the X and Y components of 'b', which is either 'VectorMatrix' or
  * 'Vector'. If some other type, return false.
  */
-static bool push_cartesian(lua_State *L, int b_index) {
+bool push_cartesian(lua_State *L, int b_index) {
 
   L_ASSERT(b_index > 0);
   L_GROW(2);
@@ -50,6 +52,7 @@ static bool push_cartesian(lua_State *L, int b_index) {
 
   return true;
 }
+}  // namespace
 
 /*---=== VectorMatrix ===---*/
 
@@ -62,7 +65,7 @@ static bool push_cartesian(lua_State *L, int b_index) {
  * This constructor MUST be called with 'new(L)' operator.
  */
 VectorMatrix::VectorMatrix(lua_State *L, bool polar_) /*throw(E_BUG)*/
-    : ApiMatrix(), LuaNew<VectorMatrixBind>(), m1(nullptr), m2(nullptr),
+    :  LuaNew<VectorMatrixBind>(), m1(nullptr), m2(nullptr),
       m1_key(0), m2_key(0), polar(polar_) {
 
   if (this != VectorMatrix::instance(L, -1)) {
@@ -83,7 +86,7 @@ VectorMatrix::VectorMatrix(lua_State *L, bool polar_) /*throw(E_BUG)*/
  */
 VectorMatrix::VectorMatrix(lua_State *L, const Matrix &a, const Matrix &b,
                            bool polar_) /*throw(E_BUG)*/
-    : ApiMatrix(), LuaNew<VectorMatrixBind>(), m1(nullptr), m2(nullptr),
+    :  LuaNew<VectorMatrixBind>(), m1(nullptr), m2(nullptr),
       m1_key(0), m2_key(0), polar(polar_) {
 
   const MatrixSize &size = a.getSize();

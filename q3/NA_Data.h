@@ -219,7 +219,7 @@ private:
 
   std::map<std::string, std::string> extra;
 
-private:
+
   NA_Info &operator=(
       const NA_Info &o) = delete;
 
@@ -331,10 +331,10 @@ public:
    * uses native projection and gridsize
    */
   virtual CONST_IF_SERVER Matrix *
-  push_NativeCross(lua_State *L, const std::vector<JDay> &vtVec,
-                   const std::vector<NA_Level> &levelVec,
-                   const LatLonList &locs, const NA_Param &p,
-                   bool flightRoute) const {
+  push_NativeCross(lua_State * /*L*/, const std::vector<JDay> & /*vtVec*/,
+                   const std::vector<NA_Level> & /*levelVec*/,
+                   const LatLonList & /*locs*/, const NA_Param & /*p*/,
+                   bool  /*flightRoute*/) const {
     return nullptr;
   }
 
@@ -342,16 +342,16 @@ public:
    * 29-Sep-2011 PKi: For fetching grid locations and data point (e.g.
    * observation station) metadata; overridden by SQD_Data
    */
-  virtual void getLocations(std::vector<LatLon> &locations,
-                            const Projection *target_proj = nullptr) const {
+  virtual void getLocations(std::vector<LatLon> & /*locations*/,
+                            const Projection * /*target_proj*/ = nullptr) const {
     return;
   }
-  virtual void getDataIds(std::vector<unsigned long> &dataIds,
-                          const Projection *target_proj = nullptr) const {
+  virtual void getDataIds(std::vector<unsigned long> & /*dataIds*/,
+                          const Projection * /*target_proj*/ = nullptr) const {
     return;
   }
-  virtual void getDataNames(std::vector<std::string> &dataNames,
-                            const Projection *target_proj = nullptr) const {
+  virtual void getDataNames(std::vector<std::string> & /*dataNames*/,
+                            const Projection * /*target_proj*/ = nullptr) const {
     return;
   }
 
@@ -364,7 +364,7 @@ public:
   /*
    * 18-Oct-2011 PKi: For virtual parameter mapping; overridden by SQD_Data
    */
-  virtual FmiParameterName mapParameter(const NA_Param &p, bool primary,
+  virtual FmiParameterName mapParameter(const NA_Param & /*p*/, bool  /*primary*/,
                                         bool *mapped) const {
     *mapped = false;
     return (FmiParameterName)0;

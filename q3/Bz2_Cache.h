@@ -39,7 +39,7 @@ private:
   Mutex mapping_m; // also protects writes to 'f'
   //
   std::map<std::string, JDay> mapping;
-  FILE *f; // 0: memory cache only, >0: persistent
+  FILE *f = nullptr; // 0: memory cache only, >0: persistent
 
   // No copying or assigning
   //

@@ -32,9 +32,9 @@ public:
       // interpolation, projection and scaling
       //
       ,
-      const Projection *target_proj_orig = nullptr,
-      const MatrixPos *target_gs_orig = nullptr, bool *target_ready = nullptr,
-      const DataIdList *dataIds = nullptr) const throw() override {
+      const Projection * /*target_proj_orig*/ = nullptr,
+      const MatrixPos * /*target_gs_orig*/ = nullptr, bool * /*target_ready*/ = nullptr,
+      const DataIdList * /*dataIds*/ = nullptr) const throw() override {
     return push_TestMatrix(L, vt, lev, p, MatrixPos(50, 50));
   }
 
@@ -42,7 +42,7 @@ public:
   push_Matrix(lua_State *L, const JDay &vt, const NA_Level &lev,
               const NA_Param &p, const Projection &proj_,
               const MatrixPos &target_gs,
-              const DataIdList *dataIds = nullptr) const throw() override {
+              const DataIdList * /*dataIds*/ = nullptr) const throw() override {
     (void)proj_; // not used
     return push_TestMatrix(L, vt, lev, p, target_gs);
   }

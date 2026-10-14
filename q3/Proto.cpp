@@ -13,7 +13,10 @@ extern "C" {
 static unsigned char proto_chunk[] =
 #include "proto.lch"
 
-    static void *PROTO_REGISTRY_KEY = (void *)&PROTO_REGISTRY_KEY; // unique
+namespace
+{
+    void *PROTO_REGISTRY_KEY = (void *)&PROTO_REGISTRY_KEY; // unique
+}  // namespace
 
 #define L_GROW(n) lua_checkstack(L, (n))
 
@@ -24,10 +27,12 @@ static unsigned char proto_chunk[] =
     }                                                                          \
   }
 
+namespace
+{
 /*
  * Provide the Lua state's "proto" function, via registry key.
  */
-static void push_proto(lua_State *L) {
+void push_proto(lua_State *L) {
   L_GROW(1);
   lua_pushlightuserdata(L, PROTO_REGISTRY_KEY);
   lua_gettable(L, LUA_REGISTRYINDEX);
@@ -36,6 +41,7 @@ static void push_proto(lua_State *L) {
     luaL_error(L, "'proto' not properly initialized");
   }
 }
+}  // namespace
 
 /*
  * Initialize the 'proto' system for both Lua and C(++) side.

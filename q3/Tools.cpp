@@ -2,6 +2,7 @@
  * TOOLS.CPP                     Copyright (c) 2008-2010, Ilmatieteen laitos
  */
 #include "Tools.h"
+#include "MoreTools.h"
 
 #include "MatrixPos.h"
 #include "NA_Level.h"
@@ -297,7 +298,7 @@ static const int CONV[] = {
  * Latin1).
  */
 static int latin1_to_utf8(unsigned char c) {
-  unsigned uc; // unicode
+  unsigned uc = 0; // unicode
 
   if (c <= 0x7f) {
     return c; // basic ASCII

@@ -28,7 +28,10 @@ struct GlyphMethodNames : public MethodNames {
     // ...
   }
 };
-static struct GlyphMethodNames glyph_method_names;
+namespace
+{
+struct GlyphMethodNames glyph_method_names;
+}  // namespace
 
 /*
  * ...= __index( Glyph_ud, key_any )

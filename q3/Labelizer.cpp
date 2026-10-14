@@ -25,6 +25,7 @@
  */
 #include "Labelizer.h"
 
+
 // 29-Dec-2011 PKi: LogTools.h instead of QDLog.h
 //
 //#include "QDLog.h"
@@ -103,7 +104,7 @@ private:
   BoundingBox bb; // for intersection optimization
 
 public:
-  ChainChunk(double area_limit_) : curve(), area_limit(area_limit_), bb() {}
+  ChainChunk(double area_limit_) :  area_limit(area_limit_) {}
 
   /*
    * Add a point to the current chunk.
@@ -174,7 +175,7 @@ public:
   ChainIterator(vector<ChainChunk> &chunks_, bool is_closed_ = false)
       : chunks(chunks_), chunk_n(), inner_n(), is_closed(is_closed_) {
 
-    if (chunks.size() > 0) {
+    if (!chunks.empty()) {
       chunk_n = inner_n = 0; // first item
     } else {
       chunk_n = inner_n = -1; // invalid (no data)
@@ -318,9 +319,9 @@ private:
     ST_BUSY,       // being still worked upon (more points coming)
     ST_DONE_OPEN,  // no more points; ends are open
     ST_DONE_CLOSED // no more points; closed loop ([0] connects to [size-1])
-  } st;
+  } st = ST_BUSY;
 
-  unsigned total_points; // number of points altogether in the chunks
+  unsigned total_points = 0; // number of points altogether in the chunks
 
   double chunk_area_limit; // area limit for chunk size (in data coords)
 
@@ -329,8 +330,8 @@ private:
 
 public:
   Chain(const FontSpec &fs_, double chunk_area_limit_, Drawer &debug_drawer_)
-      : fs(fs_), chunks(), bb(), st(ST_BUSY), total_points(0),
-        chunk_area_limit(chunk_area_limit_), prev_p(),
+      : fs(fs_),  
+        chunk_area_limit(chunk_area_limit_), 
         debug_drawer(debug_drawer_) {}
   ~Chain() = default;
 
@@ -406,7 +407,7 @@ void Labelizer::Chain::add_point(const Point &xy) {
     throw runtime_error("Cannot add points any more (chain is done)");
   }
 
-  bool empty = (chunks.size() == 0);
+  bool empty = (chunks.empty());
   if (empty) {
     // make the first chunk
     //
@@ -632,7 +633,7 @@ vector<Labelizer::TiltedRect> Labelizer::done(double scale) {
     while (true) {
       double tilt_rad = 0.0;
       bool used = false;
-      double goodness; // goodness value (starts with best)
+      double goodness = NAN; // goodness value (starts with best)
 
       CANDIDATE_PROF.start();
       // Keep the iterator, with which we can travel back/forward the chain
@@ -907,7 +908,7 @@ void Labelizer::RejectNearby(const ChainIterator &chosen,
  */
 Labelizer::TiltedRect::TiltedRect(const Point &p, const Vector &size,
                                   double tilt_rad)
-    : side(), center(p), bb_cached() {
+    : side(), center(p) {
 
   // Note: 'side[4]' is initialized here. We'd LIKE it to be initialized
   //      in the constructor chain, but how to?   --AKa 19-Jan-2009
@@ -975,10 +976,7 @@ bool Labelizer::TiltedRect::intersects(const TiltedRect &other) const {
   // way round). It is enough to check, if _any_one_ of the corners is
   // inside; they either are all in, or all out (since sides don't cross)
   //
-  if (contains(other.get_corner(0)) || other.contains(get_corner(0)))
-    return true;
-
-  return false; // no intersection, overlap, or corner touch
+  return contains(other.get_corner(0)) || other.contains(get_corner(0)); // no intersection, overlap, or corner touch
 }
 
 /*
@@ -1065,7 +1063,7 @@ Labelizer::ChainIterator Labelizer::Chain::candidate(double *tilt_rad_ref,
     bool best_prev_valid = best_prev.valid();
     bool best_next_valid = best_next.valid();
 
-    double rad;
+    double rad = NAN;
 
     if (best_prev_valid && best_next_valid) {
       // Average of surrounding vectors
@@ -1260,9 +1258,9 @@ const Labelizer::Config &Labelizer::loadCfg(lua_State *L, int idx,
         // codechecker_false_positive [security.PointerSub] both pointers point into the same
         // Labelizer::lblCfg object
         *(bool *)(cpu + ((char *)cf->bp - cpf)) =
-            (lua_toboolean(L, -1) ? true : false);
+            (lua_toboolean(L, -1) != 0);
       else
-        *(cf->bp) = (lua_toboolean(L, -1) ? true : false);
+        *(cf->bp) = (lua_toboolean(L, -1) != 0);
     else if (lua_isnumber(L, -1) && (cf->vt == Labelizer::T_INT))
       if (uConfig)
         *(int *)(cpu + ((char *)cf->ip - cpf)) = lua_tointeger(L, -1);

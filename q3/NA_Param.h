@@ -164,7 +164,7 @@ public:
       UNIT_UNKNOWN_INTERPOLATABLE; // result of mathematical operation, unit
                                    // unknown (linear interpolation)
 
-  NA_Param() : std_name(""), native_name(""), unit(UNIT_UNKNOWN_) {
+  NA_Param() :  unit(UNIT_UNKNOWN_) {
     INVARIANT();
   }
 
@@ -207,7 +207,7 @@ public:
   const std::string &getInterpolationName() const { return interpolation_name; }
   const std::string &getPrecision() const { return precision; }
 
-  operator bool() const { return !((std_name == "") && (native_name == "")); }
+  operator bool() const { return !((std_name.empty()) && (native_name.empty())); }
 
 private:
   // data members

@@ -339,7 +339,7 @@ const char *LuaNew_base::typename_(lua_State *L, int index) {
 void LuaNew_base::dump(lua_State *L, const char *file, int line) {
 
   int top = lua_gettop(L);
-  int i;
+  int i = 0;
 
   fprintf(stderr, "\n  LUA STACK: [%s:%d]\n", file, line);
 

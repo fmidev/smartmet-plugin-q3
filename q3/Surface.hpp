@@ -90,13 +90,13 @@ class Surface : public LuaNew<Surface_bind> {
     //
     virtual void image_to_out() /*const*/ {}     // by default do nothing (vectors)
 
-  protected:
+  
     // data members
     //
     cairo_surface_t *surf;
-    bool finished;
+    bool finished = false;
     
-    std::iostream *io;  // either 'fstream' (writing to file) or 'stringstream' (memory buffer)
+    std::iostream *io = nullptr;  // either 'fstream' (writing to file) or 'stringstream' (memory buffer)
 
 #ifndef NDEBUG
     void _INVARIANT( const char *, unsigned ) const {

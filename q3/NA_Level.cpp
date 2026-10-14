@@ -15,6 +15,7 @@
 // auto_ptr
 #include <fstream>
 #include <macgyver/StringConversion.h>
+#include <cmath>
 #include <cstring>
 #include <optional>
 
@@ -42,13 +43,16 @@ bool NA_Level::has_at_least_n_of(enum Type lt_, const vector<NA_Level> &vec,
 #define has_at_least_1_of(lt_, vec) has_at_least_n_of(lt_, vec, 1)
 #define has_at_least_2_of(lt_, vec) has_at_least_n_of(lt_, vec, 2)
 
+namespace
+{
 /*
  * Returns 'true' if 'vec' contains the level, exactly as-is.
  */
-static bool has_level(const NA_Level &lev, const vector<NA_Level> &vec) {
+bool has_level(const NA_Level &lev, const vector<NA_Level> &vec) {
   int idx = find_index(vec, lev);
   return idx >= 0;
 }
+}  // namespace
 
 /*
  */
@@ -233,7 +237,7 @@ bool NA_Level::covered_by(const NA_Data &data, bool &exact) const {
       if (isnanf(lv)) {
         return true;
       } else {
-        double lv_min, lv_max;
+        double lv_min = NAN, lv_max = NAN;
         if (levels_range(PRESSURE_LEVEL, vec, lv_min, lv_max) &&
             (lv_min <= lv) && (lv_max >= lv)) {
           exact = has_level(*this, vec);

@@ -3,6 +3,7 @@
  */
 #include "Vector.h"
 
+
 #include <cstring>
 #include <cmath>
 
@@ -107,7 +108,7 @@ int VectorBind::eq(lua_State *L) {
 int VectorBind::lt(lua_State *L) {
   const Vector *a = Vector::instance(L, 1);
   const Vector *b = Vector::instance(L, 2);
-  bool ret;
+  bool ret = false;
 
   if (a && b) {
     ret = a->getAbs() < b->getAbs();
@@ -127,7 +128,7 @@ int VectorBind::lt(lua_State *L) {
  */
 int VectorBind::index(lua_State *L) {
   const Vector &my = *Vector::instance(L, 1);
-  double v;
+  double v = NAN;
 
   const char *s = lua_tostring(L, 2);
   if (!s) {
@@ -278,7 +279,7 @@ Vector::Vector(double x_or_abs, double y_or_deg, bool polar_) throw()
   if (polar_) {
     // Calculate using 'double' to keep conversion inaccuracies minimal.
     //
-    double rad = ((double)v2) * M_PI / 180.0; // deg to rad
+    double rad = (v2) * M_PI / 180.0; // deg to rad
 
     if (v1 < 0.0f) {
       v1 = -v1;
@@ -312,7 +313,7 @@ Vector::Vector(double x_or_abs, double y_or_deg, bool polar_) throw()
  * faster).
  */
 double Vector::getDeg() const {
-  double deg;
+  double deg = NAN;
 
   if (polar) {
     assert(isnanf(v2) || (v2 >= 0.0 && v2 < 2.0 * M_PI));

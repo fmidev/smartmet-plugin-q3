@@ -377,19 +377,19 @@ unsigned JDay::calc_jdn(int yyyy, int mm, int dd) {
 }
 
 unsigned JDay::year() const {
-  unsigned x;
+  unsigned x = 0;
   gregorian(&x, nullptr, nullptr);
   return x;
 }
 
 unsigned JDay::month() const {
-  unsigned x;
+  unsigned x = 0;
   gregorian(nullptr, &x, nullptr);
   return x;
 }
 
 unsigned JDay::day() const {
-  unsigned x;
+  unsigned x = 0;
   gregorian(nullptr, nullptr, &x);
   return x;
 }
@@ -414,7 +414,7 @@ unsigned JDay::wday() const {
 
 unsigned JDay::yday() const {
 
-  unsigned yyyy;
+  unsigned yyyy = 0;
   gregorian(&yyyy, nullptr, nullptr);
 
   // Calculate day of year by reducing Jan 1st
@@ -437,7 +437,7 @@ unsigned JDay::yday() const {
 void JDay::gregorian(unsigned *year_ptr, unsigned *month_ptr,
                      unsigned *day_ptr) const {
   int z = (int)(jd_plus_half / 86400);
-  int A;
+  int A = 0;
   if (z < 2299161) {
     A = z;
   } else {
@@ -466,7 +466,7 @@ void JDay::gregorian(unsigned *year_ptr, unsigned *month_ptr,
 /*
  */
 string JDay::toString() const {
-  unsigned yyyy, mm, dd;
+  unsigned yyyy = 0, mm = 0, dd = 0;
   gregorian(&yyyy, &mm, &dd);
 
   char buf[20]; // enough for 'YYYYMMDDHHMMSS'

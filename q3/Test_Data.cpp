@@ -11,12 +11,14 @@
 
 using namespace std;
 
-static const NA_Info *my_info = nullptr;
+namespace
+{
+const NA_Info *my_info = nullptr;
 
 /*
  * Init 'my_info'
  */
-static struct JustOnce_Test_Data { // note: must have unique name (otherwise
+struct JustOnce_Test_Data { // note: must have unique name (otherwise
                                    // runtime problems, linker mixes the two
                                    // structs)
   JustOnce_Test_Data() {
@@ -26,7 +28,7 @@ static struct JustOnce_Test_Data { // note: must have unique name (otherwise
     vector<NA_Level> levels; // ground, height 0..inf
     vector<NA_Param> params;
 
-    time_t tt;
+    time_t tt = 0;
     JDay jd(time(&tt));
     jd.set(jd.year(), jd.month(), jd.day(), 0, 0, 0);
 
@@ -50,6 +52,7 @@ static struct JustOnce_Test_Data { // note: must have unique name (otherwise
         new NA_Info(0, 0, jd, times, nativeLevelType, levels, params, pr_empty);
   }
 } just_for_init;
+}  // namespace
 
 /*
  */
@@ -61,21 +64,23 @@ Test_Data::Test_Data()
 
 using t_param_func = bool (*)(double, double);
 
+namespace
+{
 /*
  */
-static bool f_SW(double dx, double dy) {
+bool f_SW(double dx, double dy) {
   return (dx + dy < 1.0); // lower left corner
 }
 
 /*
  */
-static bool f_SE(double dx, double dy) {
+bool f_SE(double dx, double dy) {
   return ((1.0 - dx) + dy < 1.0); // lower right corner
 }
 
 /*
  */
-static bool f_S(double dx, double dy) {
+bool f_S(double dx, double dy) {
   (void)dx;
 
   return (dy < 0.5); // lower half
@@ -83,7 +88,7 @@ static bool f_S(double dx, double dy) {
 
 /*
  */
-static bool f_FULL(double dx, double dy) {
+bool f_FULL(double dx, double dy) {
   (void)dx;
   (void)dy;
   return true;
@@ -91,7 +96,7 @@ static bool f_FULL(double dx, double dy) {
 
 /*
  */
-static bool f_NONE(double dx, double dy) {
+bool f_NONE(double dx, double dy) {
   (void)dx;
   (void)dy;
   return false;
@@ -99,13 +104,14 @@ static bool f_NONE(double dx, double dy) {
 
 /*
  */
-static bool f_BALL(double dx, double dy) {
+bool f_BALL(double dx, double dy) {
   return pow(dx - 0.5, 2) + pow(dy - 0.5, 2) < pow(0.5, 2);
 }
+}  // namespace
 
 /*
  */
-const Matrix *Test_Data::push_TestMatrix(lua_State *L, const JDay &vt,
+const Matrix *Test_Data::push_TestMatrix(lua_State *L, const JDay & /*vt*/,
                                          const NA_Level &lev, const NA_Param &p,
                                          const MatrixPos &gs) const throw() {
   (void)lev; // not used

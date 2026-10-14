@@ -5,11 +5,14 @@
  * Calculation of iso lines (contours) for matrix data.
  */
 #include "Contour.h"
+
+#include <cmath>
 #include "Matrix.h"
 #include "Proto.h"
 #include "Tools.h"
 #include "Vector.h"
 
+#include <algorithm>
 #include <cstring>
 
 // 21-Nov-2011 PKi: For drawing, filling and labeling contours
@@ -188,7 +191,7 @@ int Contour::calc_slants(lua_State *L) {
   // Read the points to a C++ vector
   //
   vector<Point> points;
-  EdgePoint *e; // 04-Nov-2011 PKi
+  EdgePoint *e = nullptr; // 04-Nov-2011 PKi
 
   lua_pushnil(L); // first key
   while (lua_next(L, table_idx)) {
@@ -297,7 +300,7 @@ int Contour::contour(lua_State *L) {
 
   ContourCollector cc(L);
 
-  MemMatrix *mm;
+  MemMatrix *mm = nullptr;
   Matrix *mys = ((argc >= 6) ? Matrix::instance(L, 6) : nullptr);
 
   if (mys) {
@@ -423,8 +426,7 @@ int Contour::contour_smoothen_one(lua_State *L) {
   if (q3smoothening) {
     // Smoothening itself
     //
-    if (factor > 1.0)
-      factor = 1.0;
+    factor = std::min(factor, 1.0);
 
     unsigned n = c2.points.size();
     int half_window = (window_size - 1) / 2; // 1/2/3
@@ -609,19 +611,22 @@ DONE:
 // 21-Nov-2011 PKi: Contour labeling code taken from Q2 CairoContours
 //
 
+namespace
+{
 /*
  * Translate pixel size to Cairo coordinates
  *
  * Note that 'cairo_device_to_user_distance()' will give negative values
  * if the translation matrix is negated (and it is, for PNG and SVG).
  */
-static double pixel_to_data_dist(cairo_t *cr, double pixel_size) {
-  double dx, dy;
+double pixel_to_data_dist(cairo_t *cr, double pixel_size) {
+  double dx = NAN, dy = NAN;
   dx = dy = pixel_size;
   cairo_device_to_user_distance(cr, &dx, &dy);
 
   return (fabs(dx) + fabs(dy)) / 2.0;
 }
+}  // namespace
 
 #define R(argb) ContourInfo_common::R(argb)
 #define G(argb) ContourInfo_common::G(argb)
@@ -633,6 +638,8 @@ static double pixel_to_data_dist(cairo_t *cr, double pixel_size) {
 const float LABEL_MARGIN_X = 5;
 const float LABEL_MARGIN_Y = 5;
 
+namespace
+{
 /*
  * Label positioning (used for both priting & clipping)
  *
@@ -644,7 +651,7 @@ const float LABEL_MARGIN_Y = 5;
  * Caller needs to use 'cairo_save/restore()' to restore the original
  * conditions.
  */
-static void label_pos(cairo_t *cr, const Vectors::Point &p, const string &s,
+void label_pos(cairo_t *cr, const Vectors::Point &p, const string &s,
                       double tilt_rad,
                       const ContourInfo_Line::LabelParams &label_specs,
                       cairo_text_extents_t &te) {
@@ -678,7 +685,7 @@ static void label_pos(cairo_t *cr, const Vectors::Point &p, const string &s,
 /*
  * Label printing
  */
-static void label(cairo_t *cr, const ContourInfo_Line::LabelParams &label_specs,
+void label(cairo_t *cr, const ContourInfo_Line::LabelParams &label_specs,
                   const Vectors::Point &p, const string &s, double tilt_rad) {
 
   cairo_save(cr);
@@ -722,7 +729,7 @@ static void label(cairo_t *cr, const ContourInfo_Line::LabelParams &label_specs,
  * (protects them from line drawing, but keeps the already applied fill patterns
  * intact).
  */
-static void label_clip(cairo_t *cr, const Labelizer::TiltedRect &tr) {
+void label_clip(cairo_t *cr, const Labelizer::TiltedRect &tr) {
 
   // The rectangle may be tilted so we don't want to use 'cairo_rectangle'
   //
@@ -736,6 +743,7 @@ static void label_clip(cairo_t *cr, const Labelizer::TiltedRect &tr) {
 
   // Collect all clipping paths together; only then (caller does) 'cairo_clip()'
 }
+}  // namespace
 
 /*
  * The drawing object is required already here, to store label styles per
@@ -925,16 +933,18 @@ public:
 #endif
 };
 
+namespace
+{
 /*
  * Provide the size of a label, in data coordinates
  *
  * State:
  *   'cr' is in the data coordinate system when this function is called.
  */
-static Vectors::Vector label_size(cairo_t *cr, float font_size,
+Vectors::Vector label_size(cairo_t *cr, float font_size,
                                   const string &label) {
 
-  double w, h;
+  double w = NAN, h = NAN;
 
   cairo_save(cr);
   {
@@ -958,6 +968,7 @@ static Vectors::Vector label_size(cairo_t *cr, float font_size,
 
   return Vectors::Vector(w, h);
 }
+}  // namespace
 
 // 02-Dec-2011 PKi: Draw contour
 //
@@ -1073,7 +1084,7 @@ int Contour::drawcontours(lua_State *L) {
     using cdefpair = pair<unsigned int, string>;
     cdefmap contourdefs;
 
-    unsigned int idx;
+    unsigned int idx = 0;
     string s;
 
     L_GROW(3);
@@ -1103,7 +1114,7 @@ int Contour::drawcontours(lua_State *L) {
     // Get contour values (labels)
     //
     vector<float> labelval;
-    float v;
+    float v = NAN;
     unsigned int nv = 0;
 
     L_GROW(3);
@@ -1149,7 +1160,7 @@ int Contour::drawcontours(lua_State *L) {
 
     auto pit = contourdefs.end();
     const ContourInfo_common *cc = nullptr;
-    unsigned int nc, pnc = 0;
+    unsigned int nc = 0, pnc = 0;
     bool first = true, fillOpen = false;
     bool labelizethis = labelize;
 

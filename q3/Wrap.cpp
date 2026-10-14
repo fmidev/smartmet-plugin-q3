@@ -51,11 +51,13 @@ static const char *const os_whitelist[] = {"clock", "date", "difftime", "time",
 //
 static const char *const debug_whitelist[] = {"getinfo", nullptr};
 
+namespace
+{
 /*
  * Build a new table on top of the stack containing only the whitelisted named
  * fields copied from the table at 'src_index'. Missing fields are skipped.
  */
-static void copy_whitelisted(lua_State *L, int src_index,
+void copy_whitelisted(lua_State *L, int src_index,
                              const char *const names[]) {
   src_index = (src_index < 0) ? lua_gettop(L) + 1 + src_index : src_index;
   lua_newtable(L); // [.. new]
@@ -74,7 +76,7 @@ static void copy_whitelisted(lua_State *L, int src_index,
  * Setting 'package.loaded' is what actually neutralizes 'require(name)', which
  * resolves modules through that table (the Lua registry '_LOADED').
  */
-static void set_package_loaded(lua_State *L, const char *name) {
+void set_package_loaded(lua_State *L, const char *name) {
   lua_getglobal(L, "package");   // [val][package]
   lua_getfield(L, -1, "loaded"); // [val][package][loaded]
   lua_pushvalue(L, -3);          // [val][package][loaded][val]
@@ -82,8 +84,9 @@ static void set_package_loaded(lua_State *L, const char *name) {
   lua_pop(L, 3);                 // pop loaded, package, val
 }
 
-static /*const*/ void *REGISTRY_KEY_HOOK =
+/*const*/ void *REGISTRY_KEY_HOOK =
     (void *)LuaWrapper::my_hook; // unique key
+}  // namespace
 
 /*---=== LuaWrapper ===---
  */

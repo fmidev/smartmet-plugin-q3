@@ -86,7 +86,7 @@ public:
   }
 
   MatrixSize(const MatrixSize &o)
-      : LuaNew_base(), LuaNew<MatrixSizeBind>(), top(o.top), bottom(o.bottom) {}
+      :  LuaNew<MatrixSizeBind>(), top(o.top), bottom(o.bottom) {}
 
   MatrixSize &operator=(const MatrixSize &o) {
     if (&o == this)
@@ -179,7 +179,7 @@ public:
 
   MatrixIter(const MatrixSize &size_);
   MatrixIter(const MatrixIter &o)
-      : LuaNew_base(), MatrixPos(o), LuaNew<MatrixIterBind>(), size(o.size) {}
+      :  MatrixPos(o), LuaNew<MatrixIterBind>(), size(o.size) {}
   ~MatrixIter() override = default;
 
   static int q3_points_iterator(lua_State *L);
@@ -228,7 +228,7 @@ private:
  */
 class ApiMatrix {
 protected:
-  ApiMatrix() : grid_key(0) { INVARIANT(); }
+  ApiMatrix()  { INVARIANT(); }
   virtual ~ApiMatrix();
 
 public:
@@ -263,7 +263,7 @@ private:
   // available matrix itself).
   //
   mutable unsigned
-      grid_key; // reference for getting to 'Grid' and sister parameters
+      grid_key = 0; // reference for getting to 'Grid' and sister parameters
 
 #ifndef NDEBUG
   void _INVARIANT(const char *, unsigned) const {
@@ -291,7 +291,7 @@ public:
   // the '__index' value in 'SubMatrix::setup()' and remember it, but that gets
   // kind of complex)
   //
-public:
+
   static int index(lua_State *L);
 
 private:
@@ -314,19 +314,19 @@ public:
 
 protected:
   Matrix(const MatrixSize &size_, const NA_Param::Unit &unit_, bool ro)
-      : ApiMatrix(), LuaNew<MatrixBind>(), size(size_), unit(unit_),
+      :  LuaNew<MatrixBind>(), size(size_), unit(unit_),
         is_readonly(ro) { /* our invariant called by derived classes */
   }
 
   Matrix(const MatrixPos &gridsize, const NA_Level &level_,
          FmiParameterName param_, const NA_Param::Unit &unit_, bool ro)
-      : ApiMatrix(), LuaNew<MatrixBind>(), size(gridsize), level(level_),
+      :  LuaNew<MatrixBind>(), size(gridsize), level(level_),
         param(param_), unit(unit_),
         is_readonly(ro) { /* our invariant called by derived classes */
   }
 
   Matrix(const NA_Param::Unit &unit_, bool ro)
-      : ApiMatrix(), LuaNew<MatrixBind>(), size(MatrixPos::ZERO), unit(unit_),
+      :  LuaNew<MatrixBind>(), size(MatrixPos::ZERO), unit(unit_),
         is_readonly(ro) { /* our invariant called by derived classes */
   }
 
@@ -439,7 +439,7 @@ public:
   bool is_2d() const override { return false; }
 
   // open for 'VectorMatrix'
-public:
+
   static int add(lua_State *L);
   static int sub(lua_State *L);
   static int mul(lua_State *L);

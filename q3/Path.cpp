@@ -51,7 +51,10 @@ struct PathMethodNames : public MethodNames {
     // ...
   }
 };
-static struct PathMethodNames path_method_names;
+namespace
+{
+struct PathMethodNames path_method_names;
+}  // namespace
 
 /*
  * ...= __index( path_ud, key_any )

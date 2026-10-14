@@ -65,7 +65,7 @@ private:
 
   // data fields
   volatile bool initialized;
-  pthread_t thread_h;
+  pthread_t thread_h = 0;
 
   // Data that has been opened recently. This is being regularily wiped
   // (in server mode) to take away data that has not been used in a while.

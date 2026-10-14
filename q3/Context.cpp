@@ -8,6 +8,7 @@
 #include "Proto.h"
 
 #include "Context.hpp"
+
 #include "FontFace.hpp"
 #include "Matrix.hpp"
 #include "Path.hpp"
@@ -46,7 +47,10 @@ struct OperatorConverter : public Converter<cairo_operator_t> {
     map(CAIRO_OPERATOR_SATURATE, "saturate");
   }
 };
-static OperatorConverter conv_operator;
+namespace
+{
+OperatorConverter conv_operator;
+}  // namespace
 
 //---
 struct FillRuleConverter : public Converter<cairo_fill_rule_t> {
@@ -55,7 +59,10 @@ struct FillRuleConverter : public Converter<cairo_fill_rule_t> {
     map(CAIRO_FILL_RULE_EVEN_ODD, "even_odd");
   }
 };
-static FillRuleConverter conv_fill_rule;
+namespace
+{
+FillRuleConverter conv_fill_rule;
+}  // namespace
 
 //---
 struct LineCapConverter : public Converter<cairo_line_cap_t> {
@@ -65,7 +72,10 @@ struct LineCapConverter : public Converter<cairo_line_cap_t> {
     map(CAIRO_LINE_CAP_SQUARE, "square");
   }
 };
-static LineCapConverter conv_line_cap;
+namespace
+{
+LineCapConverter conv_line_cap;
+}  // namespace
 
 //---
 struct LineJoinConverter : public Converter<cairo_line_join_t> {
@@ -75,7 +85,10 @@ struct LineJoinConverter : public Converter<cairo_line_join_t> {
     map(CAIRO_LINE_JOIN_BEVEL, "bevel");
   }
 };
-static LineJoinConverter conv_line_join;
+namespace
+{
+LineJoinConverter conv_line_join;
+}  // namespace
 
 //---
 struct AntialiasConverter : public Converter<cairo_antialias_t> {
@@ -86,7 +99,10 @@ struct AntialiasConverter : public Converter<cairo_antialias_t> {
     map(CAIRO_ANTIALIAS_SUBPIXEL, "subpixel");
   }
 };
-static AntialiasConverter conv_antialias;
+namespace
+{
+AntialiasConverter conv_antialias;
+}  // namespace
 
 //---
 struct FontSlantConverter : public Converter<cairo_font_slant_t> {
@@ -96,7 +112,10 @@ struct FontSlantConverter : public Converter<cairo_font_slant_t> {
     map(CAIRO_FONT_SLANT_OBLIQUE, "oblique");
   }
 };
-static FontSlantConverter conv_font_slant;
+namespace
+{
+FontSlantConverter conv_font_slant;
+}  // namespace
 
 //---
 struct FontWeightConverter : public Converter<cairo_font_weight_t> {
@@ -105,7 +124,10 @@ struct FontWeightConverter : public Converter<cairo_font_weight_t> {
     map(CAIRO_FONT_WEIGHT_BOLD, "bold");
   }
 };
-static FontWeightConverter conv_font_weight;
+namespace
+{
+FontWeightConverter conv_font_weight;
+}  // namespace
 
 //---
 struct HintStyleConverter : public Converter<cairo_hint_style_t> {
@@ -117,7 +139,10 @@ struct HintStyleConverter : public Converter<cairo_hint_style_t> {
     map(CAIRO_HINT_STYLE_FULL, "full");
   }
 };
-static HintStyleConverter conv_hint_style;
+namespace
+{
+HintStyleConverter conv_hint_style;
+}  // namespace
 
 //---
 struct HintMetricsConverter : public Converter<cairo_hint_metrics_t> {
@@ -127,7 +152,9 @@ struct HintMetricsConverter : public Converter<cairo_hint_metrics_t> {
     map(CAIRO_HINT_METRICS_ON, "on");
   }
 };
-static HintMetricsConverter conv_hint_metrics;
+namespace
+{
+HintMetricsConverter conv_hint_metrics;
 
 /*---=== Helpers ===---
  */
@@ -141,14 +168,14 @@ static HintMetricsConverter conv_hint_metrics;
  *       why bother. It's so easy to make variables in one's Lua script for
  *       the colors one actually uses (s.a. 'local red="f00").
  */
-static void parse_rgba(lua_State *L, int index, double &r, double &g, double &b,
+void parse_rgba(lua_State *L, int index, double &r, double &g, double &b,
                        double *a_ptr) {
 
   if (lua_type(L, 1) == LUA_TSTRING) {
     const char *s = lua_tostring(L, index++);
     if (*s == '#')
       ++s; // beginning hash is optional
-    char *endp;
+    char *endp = nullptr;
     long rgb = strtol(s, &endp, 16);
     if (*endp) {
     UNKNOWN_RGB:
@@ -181,6 +208,7 @@ static void parse_rgba(lua_State *L, int index, double &r, double &g, double &b,
     *a_ptr = lua_tonumber(L, index);
   }
 }
+}  // namespace
 
 /*---=== Context ===---
  */
@@ -294,7 +322,10 @@ struct ContextMethodNames : public MethodNames {
     map("text_extents", Context::text_extents);
   }
 };
-static struct ContextMethodNames context_method_names;
+namespace
+{
+struct ContextMethodNames context_method_names;
+}  // namespace
 
 /*
  * ...= __index( context_ud, key_any )
@@ -484,7 +515,7 @@ int Context::set_source_rgb(lua_State *L) {
   proto(L, lua_type(L, 1) == LUA_TNUMBER ? "number,number,number" : "string");
 
   Context &my = *Context::instance(L, lua_upvalueindex(1));
-  double r, g, b;
+  double r = NAN, g = NAN, b = NAN;
   parse_rgba(L, 1, r, g, b, nullptr);
 
   cairo_set_source_rgb(my, r, g, b);
@@ -507,7 +538,7 @@ int Context::set_source_rgba(lua_State *L) {
                                          : "string,number");
 
   Context &my = *Context::instance(L, lua_upvalueindex(1));
-  double r, g, b, a;
+  double r = NAN, g = NAN, b = NAN, a = NAN;
   parse_rgba(L, 1, r, g, b, &a);
 
   cairo_set_source_rgba(my, r, g, b, a);
@@ -630,7 +661,7 @@ int Context::set_antialias(lua_State *L) {
 int Context::set_dash(lua_State *L) {
   proto(L, "[{ [number], ... }], [number]");
   Context &my = *Context::instance(L, lua_upvalueindex(1));
-  unsigned n;
+  unsigned n = 0;
 
   if (!lua_istable(L, 1)) {
     if (!(lua_isnil(L, 1) || lua_isnone(L, 1))) {
@@ -678,7 +709,7 @@ int Context::get_dash(lua_State *L) {
 
   unsigned n = cairo_get_dash_count(my);
 
-  double offset;
+  double offset = NAN;
   auto *arr = new double[n];
   {
     cairo_get_dash(my, arr, &offset);
@@ -1309,7 +1340,7 @@ int Context::has_current_point(lua_State *L) {
 int Context::get_current_point(lua_State *L) {
   proto(L, "");
   Context &my = *Context::instance(L, lua_upvalueindex(1));
-  double x, y;
+  double x = NAN, y = NAN;
 
   cairo_get_current_point(my, &x, &y);
   status_check_ok(L, cairo_status(my));

@@ -31,7 +31,7 @@ struct ZmqLogger::impl {
 /*
  * 'addr':   "x.x.x.x:port"
  */
-ZmqLogger::ZmqLogger(const char *addr) : opaque(new impl()) {
+ZmqLogger::ZmqLogger(const char * /*addr*/) : opaque(new impl()) {
 #ifndef USE_ZMQ
   throw E_LOG_FATAL0("Zmq logging not enabled");
 #else

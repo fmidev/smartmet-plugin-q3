@@ -38,7 +38,7 @@ TrackedData::TrackedData(const char *fn, const JDay &ot_given_,
       tmp_fn(nullptr)
 #ifndef METQU
       ,
-      qd_m(), refcount(0), last_acquired(0), meta_acquired(0)
+       refcount(0), last_acquired(0), meta_acquired(0)
 #endif
       ,
       tmp_pattern(tmp_pattern_), tmp_threshold(tmp_threshold_),
@@ -56,11 +56,11 @@ TrackedData::TrackedData(const char *fn, const JDay &ot_given_,
 TrackedData::TrackedData(const char *fn, const NA_Info &info_given,
                          bool relative_uv_, const string_or_null &tmp_pattern_,
                          size_t tmp_threshold_)
-    : source(fn), info_(new NA_Info(info_given)), ot_given(), qd(nullptr),
+    : source(fn), info_(new NA_Info(info_given)),  qd(nullptr),
       tmp_fn(nullptr)
 #ifndef METQU
       ,
-      qd_m(), refcount(0), last_acquired(0), meta_acquired(0)
+       refcount(0), last_acquired(0), meta_acquired(0)
 #endif
       ,
       tmp_pattern(tmp_pattern_), tmp_threshold(tmp_threshold_),
@@ -80,7 +80,7 @@ TrackedData::TrackedData(const char *fn, const NA_Info &info_given,
 TrackedData::~TrackedData() {
   INVARIANT();
 
-  if (info_)
+  
     delete info_;
 
 #ifndef METQU

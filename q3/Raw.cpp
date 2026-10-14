@@ -37,10 +37,12 @@ LuaNew_ID RawBind::ID;
 /*---=== Helpers ===---
  */
 
+namespace
+{
 /*
  * Filter what to place in 'def_level' member.
  */
-static NA_Level process_def_level(const NA_Level &lev) {
+NA_Level process_def_level(const NA_Level &lev) {
 
   /*
    * If the 'Raw' was created with 'hybrid=true', 'hpa=true' or 'height=true'
@@ -60,6 +62,7 @@ static NA_Level process_def_level(const NA_Level &lev) {
     return lev;
   }
 }
+}  // namespace
 
 /*---=== Raw ===---
  */
@@ -94,6 +97,8 @@ Raw::~Raw() {
   }
 }
 
+namespace
+{
 /*
  * Get projection object for global 'projection' or for data native projection
  */
@@ -114,6 +119,7 @@ Projection getProjection(lua_State *L, const NA_Data *qd = nullptr) {
 
   return qd ? qd->getProjection() : Projection::NONE;
 }
+}  // namespace
 
 /*
  * ...= __index( raw_ud, key_any )
@@ -558,6 +564,8 @@ int RawBind::__index(lua_State *L) {
   return 1; // The matrix pushed there by 'GridBind::index()'
 }
 
+namespace
+{
 /*
  * Loads data point (e.g. observation station) id's from lua stack.
  *
@@ -592,8 +600,9 @@ bool get_dataids_from_ud(DataIdList &dataIds, struct lua_State *L, int index) {
     return false; // not number, not table
   }
 
-  return (dataIds.size() > 0);
+  return (!dataIds.empty());
 }
+}  // namespace
 
 /*
  * [grid_ud] [,err_str]= __call( raw_ud, [{ [time=jday_ud|time_str|true],
@@ -750,7 +759,7 @@ int RawBind::__call(lua_State *L) {
           // 22-Sep-2011 PKi: Level can be table when called for cross
           if (lua_istable(L, -1)) {
             one_or_many_levels(L, -1, key, levelVec);
-            if (levelVec.size() > 0)
+            if (!levelVec.empty())
               level = levelVec[0];
           } else
             level = one_level(L, -1, key);
@@ -798,7 +807,7 @@ int RawBind::__call(lua_State *L) {
 
   cross |= flightRoute;
 
-  if (cross && (vtVec.size() > 0))
+  if (cross && (!vtVec.empty()))
     vt = vtVec[0];
 
   if (!vt) {
@@ -865,19 +874,19 @@ int RawBind::__call(lua_State *L) {
   //				    if not, report error if called with vector(s) (call from
   //user script)
 
-  if ((cross && (locs.size() < 1)) || ((!cross) && (locs.size() > 0)))
+  if ((cross && (locs.empty())) || ((!cross) && (!locs.empty())))
     luaL_error(L, "%s option: location", cross ? "Missing" : "Unknown");
   else if (cross) {
-    if (vtVec.size() < 1)
+    if (vtVec.empty())
       vtVec.push_back(vt);
-    if (levelVec.size() < 1)
+    if (levelVec.empty())
       levelVec.push_back(level);
   } else {
     const char *op[] = {"time", "level"};
-    const char *p;
+    const char *p = nullptr;
 
-    if (((p = op[0]) && (vtVec.size() > 0)) ||
-        ((p = op[1]) && (levelVec.size() > 0)))
+    if (((p = op[0]) && (!vtVec.empty())) ||
+        ((p = op[1]) && (!levelVec.empty())))
       luaL_error(L, "Expecting scalar %s", p);
   }
 
@@ -885,7 +894,7 @@ int RawBind::__call(lua_State *L) {
   // NOTE: When there are exceptions within the 'new(L)' allocated constructor,
   //      we need to be taking care or rewinding the allocation, like this:
   //
-  Grid *g;
+  Grid *g = nullptr;
   try {
     g = new (L) Grid(r, vt, level, proj,
                      native_gs ? MatrixPos::ZERO : gridsize
@@ -895,7 +904,7 @@ int RawBind::__call(lua_State *L) {
                      ,
                      cross ? &vtVec : nullptr, cross ? &levelVec : nullptr,
                      cross ? &locs : nullptr, flightRoute,
-                     (dataIds.size() > 0) ? &dataIds : nullptr);
+                     (!dataIds.empty()) ? &dataIds : nullptr);
   } catch (const E_NO_MATCH &e) {
     // Didn't get created (but Lua did allocate the object AND attach its GC
     // to the C++ destructor. Nuke the object before it gets to GC.

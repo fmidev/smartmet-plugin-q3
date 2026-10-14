@@ -34,20 +34,20 @@ using namespace std;
 /*
  */
 SQD_Projection::SQD_Projection(const char *proj_)
-    : Projection_provider(), ap(NFmiAreaFactory::Create(proj_)) {
+    :  ap(NFmiAreaFactory::Create(proj_)) {
 
   INVARIANT();
 }
 
 SQD_Projection::SQD_Projection(const NFmiArea *area_)
-    : Projection_provider(), ap(area_->Clone()) {
+    :  ap(area_->Clone()) {
   INVARIANT();
 }
 
 /*
  */
 /*virtual*/ SQD_Projection::SQD_Projection(const SQD_Projection &o)
-    : Projection_provider(),
+    : 
       ap(o.ap.get()->Clone()) { // using 'NFmiArea::Clone'
 
   INVARIANT();

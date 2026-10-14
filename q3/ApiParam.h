@@ -23,7 +23,7 @@ public:
 
   const std::string &getName() const { return name; }
 
-  operator bool() const { return name != ""; }
+  operator bool() const { return !name.empty(); }
 
   NA_Param covered_by(const std::vector<NA_Param> &vec) const;
 
@@ -46,7 +46,7 @@ public:
   ApiParam(const char *name_ = nullptr);
 
   ApiParam(const ApiScalarParam &o)
-      : name(o.getName()), a(o), b(), polar(false) {
+      : name(o.getName()), a(o),  polar(false) {
     INVARIANT();
   }
 
@@ -73,7 +73,7 @@ public:
 
   bool covered_by(const std::vector<NA_Param> &vec) const {
     NA_Param na, nb;
-    bool polar_;
+    bool polar_ = false;
     return covered_by(vec, na, nb, polar_);
   }
 

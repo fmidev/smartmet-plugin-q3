@@ -274,7 +274,7 @@ string_or_null utf8_to_latin1(const char *);
  */
 #ifdef __SSE__
 inline float *sse_alloc(size_t bytes) {
-  void *p;
+  void *p = nullptr;
   int rc = posix_memalign(
       &p, 16, bytes); // 16 "must be power of two and multiple of sizeof(void*)"
   if (rc != 0) {
@@ -310,8 +310,8 @@ inline void sse_free(void *block) { free(block); }
 class Profiler_ms {
 private:
   using ms_t = uint64_t;
-  ms_t cumulative; // sum of profiled sections
-  ms_t last_start; // time when last section started (0 if not running)
+  ms_t cumulative = 0; // sum of profiled sections
+  ms_t last_start = 0; // time when last section started (0 if not running)
 
   static ms_t offset; // first start ever (to keep debugging values low)
 
@@ -319,7 +319,7 @@ public:
   const std::string name; // for debugging
 
   Profiler_ms(const char *name_ = nullptr)
-      : cumulative(0), last_start(0), name(name_ ? name_ : "") {}
+      :  name(name_ ? name_ : "") {}
 
   void start();
   void stop();

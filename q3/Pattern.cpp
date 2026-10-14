@@ -11,6 +11,8 @@
 #include "Matrix.hpp"
 #include "Pattern.hpp"
 
+#include <cmath>
+
 #include "Color.hpp"
 #include "Converter.hpp"
 
@@ -28,7 +30,9 @@ static const unsigned GRANT_SURFACE = 0x02;
 static const unsigned GRANT_LINEAR = 0x04;
 static const unsigned GRANT_RADIAL = 0x08;
 
-static unsigned get_grant(/*const*/ cairo_pattern_t *p) {
+namespace
+{
+unsigned get_grant(/*const*/ cairo_pattern_t *p) {
   cairo_pattern_type_t pt = cairo_pattern_get_type(p);
 
   return (pt == CAIRO_PATTERN_TYPE_SOLID)     ? GRANT_SOLID
@@ -37,6 +41,7 @@ static unsigned get_grant(/*const*/ cairo_pattern_t *p) {
          : (pt == CAIRO_PATTERN_TYPE_RADIAL)  ? GRANT_RADIAL
                                               : 0 /*should not occur*/;
 }
+}  // namespace
 
 /*---=== Converters ===---
  */
@@ -48,7 +53,10 @@ struct ExtendConverter : public Converter<cairo_extend_t> {
     map(CAIRO_EXTEND_PAD, "pad");
   }
 };
-static ExtendConverter conv_extend;
+namespace
+{
+ExtendConverter conv_extend;
+}  // namespace
 
 //--
 struct FilterConverter : public Converter<cairo_filter_t> {
@@ -61,7 +69,10 @@ struct FilterConverter : public Converter<cairo_filter_t> {
     map(CAIRO_FILTER_GAUSSIAN, "gaussian");
   }
 };
-static FilterConverter conv_filter;
+namespace
+{
+FilterConverter conv_filter;
+}  // namespace
 
 //--
 struct PatternTypeConverter : public Converter<cairo_pattern_type_t> {
@@ -72,7 +83,10 @@ struct PatternTypeConverter : public Converter<cairo_pattern_type_t> {
     map(CAIRO_PATTERN_TYPE_RADIAL, "radial");
   }
 };
-static PatternTypeConverter conv_pattern_type;
+namespace
+{
+PatternTypeConverter conv_pattern_type;
+}  // namespace
 
 /*---=== Pattern ===---
  */
@@ -106,7 +120,10 @@ struct PatternMethodNames : public MethodNames {
     // ...
   }
 };
-static struct PatternMethodNames pattern_method_names;
+namespace
+{
+struct PatternMethodNames pattern_method_names;
+}  // namespace
 
 /*
  * ...= __index( pattern_ud, key_any )
@@ -126,7 +143,7 @@ int Pattern_bind::index(lua_State *L) {
       //---
       // .argb (argb_str)   (only if the pattern is a solid color pattern)
       {
-        double r, g, b, a;
+        double r = NAN, g = NAN, b = NAN, a = NAN;
         cairo_status_t st = cairo_pattern_get_rgba(my, &r, &g, &b, &a);
         if (st == 0) {
           lua_pushliteral(L, "rgba");
@@ -314,7 +331,7 @@ int Pattern::get_color_stop_rgba(lua_State *L) {
     luaL_error(L, "Start indexing with 1");
   }
 
-  double offset, r, g, b, a;
+  double offset = NAN, r = NAN, g = NAN, b = NAN, a = NAN;
 
   cairo_status_t st =
       cairo_pattern_get_color_stop_rgba(my, index - 1, &offset, &r, &g, &b, &a);

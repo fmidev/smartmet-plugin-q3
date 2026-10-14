@@ -57,6 +57,8 @@ static unsigned char newcairo_chunk[] =
 
 #include "Color.hpp"
 
+namespace
+{
     /*
      * NOTE: Who and when should do the 'FT_Library' initialization is not
      * clear. We need it for loading TrueType fonts (from a file) and just one
@@ -66,7 +68,8 @@ static unsigned char newcairo_chunk[] =
      * don't.
      *       --AKa 8-Sep-10
      */
-    static FT_Library ft_lib;
+    FT_Library ft_lib;
+}  // namespace
 
 /*---=== Helpers ===---
  */
@@ -78,7 +81,10 @@ struct SvgVersionConverter : public Converter<cairo_svg_version_t> {
     map(CAIRO_SVG_VERSION_1_2, "1.2");
   }
 };
-static SvgVersionConverter conv_svg_version;
+namespace
+{
+SvgVersionConverter conv_svg_version;
+}  // namespace
 #endif
 
 /*---=== Top-level functions ===---*/
@@ -95,7 +101,9 @@ static SvgVersionConverter conv_svg_version;
  * (to '.surface()').
  */
 #ifdef CAIRO_HAS_IMAGE_SURFACE
-static int image_surface(lua_State *L) {
+namespace
+{
+int image_surface(lua_State *L) {
 #ifndef SANDBOX
   proto(L, "number,number,[string],[string]");
 #else
@@ -140,6 +148,7 @@ static int image_surface(lua_State *L) {
 #endif
   return 1;
 }
+}  // namespace
 #endif
 
 /*
@@ -147,7 +156,9 @@ static int image_surface(lua_State *L) {
  */
 #if (!defined SANDBOX) && (defined CAIRO_HAS_IMAGE_SURFACE) &&                 \
     (defined CAIRO_HAS_PNG_FUNCTIONS)
-static int image_surface_from_png(lua_State *L) {
+namespace
+{
+int image_surface_from_png(lua_State *L) {
   proto(L, "string");
   const char *fn = lua_tostring(L, 1);
 
@@ -178,6 +189,7 @@ static int image_surface_from_png(lua_State *L) {
   new (L) ImageSurface(surf);
   return 1;
 }
+}  // namespace
 #endif
 
 /*
@@ -186,7 +198,9 @@ static int image_surface_from_png(lua_State *L) {
  * SANDBOX
  */
 #ifdef CAIRO_HAS_PDF_SURFACE
-static int pdf_surface(lua_State *L) {
+namespace
+{
+int pdf_surface(lua_State *L) {
 #ifndef SANDBOX
   proto(L, "number,number,[string]");
 #else
@@ -210,6 +224,7 @@ static int pdf_surface(lua_State *L) {
   }
   return 1;
 }
+}  // namespace
 #endif
 
 /*
@@ -218,7 +233,9 @@ static int pdf_surface(lua_State *L) {
  * [version_required_str] )                   -- SANDBOX
  */
 #ifdef CAIRO_HAS_SVG_SURFACE
-static int svg_surface(lua_State *L) {
+namespace
+{
+int svg_surface(lua_State *L) {
 #ifndef SANDBOX
   proto(L, "number,number,[string],[string]");
 #else
@@ -244,15 +261,18 @@ static int svg_surface(lua_State *L) {
   }
   return 1;
 }
+}  // namespace
 #endif
 
 /*---=== Pattern ===---*/
 
+namespace
+{
 /*
  * pattern_ud= pattern_rgb( r_num, g_num, b_num )
  * pattern_ud= pattern_rgb( rgb_str )
  */
-static int pattern_rgb(lua_State *L) {
+int pattern_rgb(lua_State *L) {
   proto(L, lua_type(L, 1) == LUA_TNUMBER ? "number,number,number" : "string");
   Color col(L, 1);
 
@@ -269,7 +289,7 @@ static int pattern_rgb(lua_State *L) {
  * pattern_ud= pattern_rgba( r_num, g_num, b_num, a_num )
  * pattern_ud= pattern_rgba( rgb_str, a_num )
  */
-static int pattern_rgba(lua_State *L) {
+int pattern_rgba(lua_State *L) {
   proto(L, lua_type(L, 1) == LUA_TNUMBER ? "number,number,number,number"
                                          : "string,number");
   Color col(L, 1, true);
@@ -283,7 +303,7 @@ static int pattern_rgba(lua_State *L) {
 /*
  * pattern_ud= pattern_for_surface( surf_ud )
  */
-static int pattern_for_surface(lua_State *L) {
+int pattern_for_surface(lua_State *L) {
   proto(L, "CairoSurface");
   Surface &surf = Surface::instance_notnull(L, 1); // error if none
 
@@ -295,7 +315,7 @@ static int pattern_for_surface(lua_State *L) {
 /*
  * pattern_ud= pattern_linear( x0_num, y0_num, x1_num, y1_num )
  */
-static int pattern_linear(lua_State *L) {
+int pattern_linear(lua_State *L) {
   proto(L, "number,number,number,number");
   double x0 = lua_tonumber(L, 1);
   double y0 = lua_tonumber(L, 2);
@@ -311,7 +331,7 @@ static int pattern_linear(lua_State *L) {
  * pattern_ud= pattern_radial( cx0_num, cy0_num, r0_num, cx1_num, cy1_num,
  * r1_num )
  */
-static int pattern_radial(lua_State *L) {
+int pattern_radial(lua_State *L) {
   proto(L, "number,number,number,number,number,number");
   double x0 = lua_tonumber(L, 1);
   double y0 = lua_tonumber(L, 2);
@@ -334,7 +354,7 @@ static int pattern_radial(lua_State *L) {
 /*
  * matrix_ud= matrix( xx_num, yx_num, xy_num, yy_num, x0_num, y0_num )
  */
-static int matrix(lua_State *L) {
+int matrix(lua_State *L) {
   proto(L, "number,number,number,number,number,number");
   double xx = lua_tonumber(L, 1);
   double yx = lua_tonumber(L, 2);
@@ -350,7 +370,7 @@ static int matrix(lua_State *L) {
 /*
  * matrix_ud= matrix_identity()
  */
-static int matrix_identity(lua_State *L) {
+int matrix_identity(lua_State *L) {
   proto(L, "");
   cairo_matrix_init_identity(*new (L) Matrix());
   return 1;
@@ -359,7 +379,7 @@ static int matrix_identity(lua_State *L) {
 /*
  * matrix_ud= matrix_translate( tx_num, ty_num )
  */
-static int matrix_translate(lua_State *L) {
+int matrix_translate(lua_State *L) {
   proto(L, "number,number");
   double tx = lua_tonumber(L, 1);
   double ty = lua_tonumber(L, 2);
@@ -371,7 +391,7 @@ static int matrix_translate(lua_State *L) {
 /*
  * matrix_ud= matrix_scale( sx_num, sy_num )
  */
-static int matrix_scale(lua_State *L) {
+int matrix_scale(lua_State *L) {
   proto(L, "number,number");
   double sx = lua_tonumber(L, 1);
   double sy = lua_tonumber(L, 2);
@@ -383,13 +403,14 @@ static int matrix_scale(lua_State *L) {
 /*
  * matrix_ud= matrix_rotate( rad_num )
  */
-static int matrix_rotate(lua_State *L) {
+int matrix_rotate(lua_State *L) {
   proto(L, "number");
   double rad = lua_tonumber(L, 1);
 
   cairo_matrix_init_rotate(*new (L) Matrix(), rad);
   return 1;
 }
+}  // namespace
 
 /*---=== Font face ===---*/
 
@@ -397,7 +418,9 @@ static int matrix_rotate(lua_State *L) {
  * font_ud= font( ttf_path_str [,index_uint] )
  */
 #ifdef CAIRO_HAS_FT_FONT
-static int font(lua_State *L) {
+namespace
+{
+int font(lua_State *L) {
   proto(L, "string,[uint]");
 
   const char *path = lua_tostring(L, 1);
@@ -411,15 +434,18 @@ static int font(lua_State *L) {
   new (L) FontFace(ff);
   return 1;
 }
+}  // namespace
 #endif
 // CAIRO_HAS_FT_FONT
 
 /*---=== Prototype checks ===---*/
 
+namespace
+{
 /*
  * bool= is_surface( any )
  */
-static int is_surface(lua_State *L) {
+int is_surface(lua_State *L) {
   lua_pushboolean(L, Surface::instance(L, 1) != nullptr);
   return 1;
 }
@@ -427,7 +453,7 @@ static int is_surface(lua_State *L) {
 /*
  * bool= is_context( any )
  */
-static int is_context(lua_State *L) {
+int is_context(lua_State *L) {
   lua_pushboolean(L, Context::instance(L, 1) != nullptr);
   return 1;
 }
@@ -435,7 +461,7 @@ static int is_context(lua_State *L) {
 /*
  * bool= is_pattern( any )
  */
-static int is_pattern(lua_State *L) {
+int is_pattern(lua_State *L) {
   lua_pushboolean(L, Pattern::instance(L, 1) != nullptr);
   return 1;
 }
@@ -443,7 +469,7 @@ static int is_pattern(lua_State *L) {
 /*
  * bool= is_matrix( any )
  */
-static int is_matrix(lua_State *L) {
+int is_matrix(lua_State *L) {
   lua_pushboolean(L, Matrix::instance(L, 1) != nullptr);
   return 1;
 }
@@ -451,10 +477,11 @@ static int is_matrix(lua_State *L) {
 /*
  * bool= is_font( any )
  */
-static int is_font(lua_State *L) {
+int is_font(lua_State *L) {
   lua_pushboolean(L, FontFace::instance(L, 1) != nullptr);
   return 1;
 }
+}  // namespace
 
 /*---=== Initialization ===---*/
 
@@ -462,7 +489,7 @@ static int is_font(lua_State *L) {
  * Lua addon module entry point
  */
 extern "C" int WIN32_DLLEXPORT luaopen_newcairo(lua_State *L) {
-  int st;
+  int st = 0;
 
   //---
   // Push the precompiled Lua level chunk

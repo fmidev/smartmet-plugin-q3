@@ -69,7 +69,7 @@ private:
   friend class LuaNew_base;
 
 public:
-  LuaNew_ID() : ids() { ids.insert(this); /* the class itself */ }
+  LuaNew_ID()  { ids.insert(this); /* the class itself */ }
 
   void me2(const LuaNew_ID &id2) {
     ids.insert(&id2); // adds a derived class to our knowledge
@@ -85,7 +85,7 @@ protected:
   virtual ~LuaNew_base() = 0; // gateway from Lua GC -> C++ destructor of
                               // derived class
 
-protected:
+
   using f_setup = void (*)(lua_State *L);
   static void create_mt(lua_State *L, f_setup, const LuaNew_ID &_id,
                         const char *name);
@@ -117,7 +117,7 @@ public:
    *
    * Seems this needs to be 'public' (Ubuntu 9.04, gcc 4.3.3)  AKa 25-May-2009
    */
-public:
+
   static void operator delete(void *) {}
 
 private:

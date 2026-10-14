@@ -29,7 +29,7 @@ using namespace std;
 // 09-Mar-2012 PKi: Track name (used for logging only)
 TrackerBase::TrackerBase(unsigned refresh_secs_, unsigned wiping_[],
                          bool relative_uv_, const std::string &trackName_)
-    : thread_h(), data_m(), available_data(),
+    :  
       relative_uv(relative_uv_), refresh_secs(refresh_secs_), trackName(trackName_) {
   // NOTE: Must not launch 'thread_h' here yet; derived constructor will
   //      do it via 'init()' (so it is ready for 'update()' callbacks)

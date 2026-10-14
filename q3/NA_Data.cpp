@@ -40,9 +40,8 @@ NA_Info::NA_Info(const time_t loadTime_, const time_t modificationTime_,
     : loadTime(loadTime_), modificationTime(modificationTime_), ot(ot_),
       times(times_), nativeLevelType(nativeLevelType_), levels(levels_),
       params(params_), proj(projection_), wkt(wkt_), timeStep(timeStep_),
-      dx(dx_), dy(dy_), gridData(gridData_),
-      //
-      extra(/*extra_*/) {
+      dx(dx_), dy(dy_), gridData(gridData_)
+      {
   INVARIANT();
 }
 
@@ -69,7 +68,7 @@ int NA_Info::getExtra_int(const char *key, int def) const {
     return def;
   }
 
-  char *endp;
+  char *endp = nullptr;
   int ret = strtol(s.c_str(), &endp, 10);
   if (*endp) {
     throw E_LOG_USAGE("Bad syntax in extra (expected an integer): '%s=%s'", key,

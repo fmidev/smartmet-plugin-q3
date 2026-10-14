@@ -85,9 +85,9 @@ public:
   void runDataUpdateTasks() { LOG_DEBUG0("runDataUpdateTasks() ignored"); }
   // 21-Dec-2012 PKi: Dummy request handler (using the old one)
   //
-  void requestHandler(SmartMet::Spine::Reactor &theReactor,
-                      const SmartMet::Spine::HTTP::Request &theRequest,
-                      SmartMet::Spine::HTTP::Response &theResponse) override {
+  void requestHandler(SmartMet::Spine::Reactor & /*theReactor*/,
+                      const SmartMet::Spine::HTTP::Request & /*theRequest*/,
+                      SmartMet::Spine::HTTP::Response & /*theResponse*/) override {
     LOG_DEBUG0("requestHandler() ignored");
   }
 
@@ -135,26 +135,32 @@ BS_RequestResponse::BS_RequestResponse(
     set_key_val(it_p.first, it_p.second);
 }
 
+namespace
+{
 /*
  * We need a process-specific pointer because the handlers are not given
  * the plugin pointer otherwise.
  */
-static Plugin *me; // = 0;
+Plugin *me; // = 0;
 
-static void native_handler(const SmartMet::Spine::Reactor &theReactor,
+void native_handler(const SmartMet::Spine::Reactor & /*theReactor*/,
                            const SmartMet::Spine::HTTP::Request &req,
                            SmartMet::Spine::HTTP::Response &resp) {
   BS_RequestResponse proxy(req, resp);
   me->native_handler(proxy);
 }
+}  // namespace
 
 #ifdef ENABLE_OGC_WMS
-static void wms_handler(const SmartMet::Spine::Reactor &theReactor,
+namespace
+{
+void wms_handler(const SmartMet::Spine::Reactor & /*theReactor*/,
                         const SmartMet::Spine::HTTP::Request &req,
                         SmartMet::Spine::HTTP::Response &resp) {
   BS_RequestResponse proxy(req, resp);
   me->wms_handler(proxy);
 }
+}  // namespace
 #endif
 
 /*
@@ -163,7 +169,7 @@ static void wms_handler(const SmartMet::Spine::Reactor &theReactor,
  * This is called once at the startup of the SmartMet Server.
  */
 Plugin::Plugin(SmartMet::Spine::Reactor *server, const char *cfg_file)
-    : Q3Server(cfg_file), SmartMetPlugin() {
+    : Q3Server(cfg_file) {
 
   using namespace boost::placeholders;
 

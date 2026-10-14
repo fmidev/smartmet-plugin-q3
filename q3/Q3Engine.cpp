@@ -40,19 +40,19 @@ using namespace std;
 
 /*---=== Configuration ===---*/
 
-string read_config(const char *);
-
 static unsigned char config_chunk[] =
 #include "config.lch"
 
 std::map<std::string, std::string> Q3Engine::addonConfigSettings;
 
+namespace
+{
 /*
 * Read in Q3 configuration.
 *
 * 02-Dec-2011 PKi: Get Labelizer config too
 */
-static void q3_config(const char *conf,
+void q3_config(const char *conf,
                       map<string, Q3Engine::Track *> &trackers,
                       map<string, string> &addonCfg,
                       unsigned int recurse) /*throw(E_BUG)*/
@@ -187,7 +187,7 @@ static void q3_config(const char *conf,
     const char *paramname[] = {"relative_uv", "wiping", "archwiping", "metawiping", nullptr, nullptr};
 
     const int SUBT = lua_gettop(L);  // absolute index to '{ runs=..., ... }' table
-    Q3Engine::Track *t;
+    Q3Engine::Track *t = nullptr;
     {
       // Forward queries to another track (e.g. HIR to MEPS) ?
 
@@ -292,7 +292,7 @@ static void q3_config(const char *conf,
         for (auto &it : aliasvect) {
           auto alias = boost::trim_copy(it);
 
-          auto ta = new Q3Engine::Track(alias.c_str(), run_secs, tmp_pattern, tmp_threshold, key);
+          auto *ta = new Q3Engine::Track(alias.c_str(), run_secs, tmp_pattern, tmp_threshold, key);
           trackers[alias.c_str()] = ta;
         }
       }
@@ -449,6 +449,7 @@ static void q3_config(const char *conf,
 
   return;
 }
+}  // namespace
 
 /*---=== Q3Engine ===---*/
 
@@ -457,7 +458,7 @@ static void q3_config(const char *conf,
 *
 * 'conf': configuration Lua script
 */
-Q3Engine::Q3Engine(const char *conf) : trackers(map<string, Q3Engine::Track *>())
+Q3Engine::Q3Engine(const char *conf)  
 {
 #ifndef NDEBUG
   JDay::selftest();

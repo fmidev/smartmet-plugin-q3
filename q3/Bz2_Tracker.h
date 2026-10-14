@@ -50,7 +50,7 @@ private:
                                     // memory map) or open into memory
   const size_t tmp_threshold;
 
-  bool first_round;
+  bool first_round = true;
   JDay last_ot;
 
 #ifndef NDEBUG
