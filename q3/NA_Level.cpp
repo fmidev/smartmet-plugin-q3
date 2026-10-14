@@ -60,25 +60,26 @@ string NA_Level::toString(bool getLongName) const {
 
   if (lt == NA_Level::GROUND_LEVEL) {
     return (getLongName ? "Ground" : "ground");
-  } else if (lt == NA_Level::NO_LEVEL) {
+  } if (lt == NA_Level::NO_LEVEL) {
     return (getLongName ? "None" : "none");
   }
 
-  const char *s = (lt == NA_Level::HYBRID_LEVEL)
-                      ? (getLongName ? "HybridLevel" : "hybrid")
-                  : (lt == NA_Level::PRESSURE_LEVEL)
-                      ? (getLongName ? "PressureLevel" : "hPa")
-                  : (lt == NA_Level::HEIGHT_LEVEL)
-                      ? (getLongName ? "HeightLevel" : "height")
-                      : // 04-Oct-2011 PKi: "Height" level for cross call
-                      (lt == NA_Level::SOUNDING_LEVEL)
-                      ? (getLongName ? "SoundingLevel" : "sounding")
-                      : "unknown";
+  const char *s = "unknown";
+  if (lt == NA_Level::HYBRID_LEVEL) {
+    s = (getLongName ? "HybridLevel" : "hybrid");
+  } else if (lt == NA_Level::PRESSURE_LEVEL) {
+    s = (getLongName ? "PressureLevel" : "hPa");
+  } else if (lt == NA_Level::HEIGHT_LEVEL) {
+    // 04-Oct-2011 PKi: "Height" level for cross call
+    s = (getLongName ? "HeightLevel" : "height");
+  } else if (lt == NA_Level::SOUNDING_LEVEL) {
+    s = (getLongName ? "SoundingLevel" : "sounding");
+  }
 
   if (std::isnan(lv)) {
     return s;
 
-  } else if (lv == floorf(lv)) {
+  } if (lv == floorf(lv)) {
     return string_fmt("%s:%d", s, (int)lv);
 
   } else {
@@ -153,7 +154,7 @@ NA_Level::Type NA_Level::lt_enum(const char *s) {
 
   if (strcmp(s, "ground") == 0) {
     return GROUND_LEVEL;
-  } else if (strcmp(s, "hybrid") == 0) {
+  } if (strcmp(s, "hybrid") == 0) {
     return HYBRID_LEVEL;
   } else if ((strcmp(s, "hpa") == 0) || (strcmp(s, "hPa") == 0)) {
     return PRESSURE_LEVEL;
@@ -220,7 +221,7 @@ bool NA_Level::covered_by(const NA_Data &data, bool &exact) const {
     exact = true;
     return has_level(*this, vec);
 
-  } else if (lt == HYBRID_LEVEL) {
+  } if (lt == HYBRID_LEVEL) {
     if (std::isnan(lv)) { // any hybrid level(s), at all
       return has_at_least_1_of(lt, vec);
     } else {
@@ -237,7 +238,8 @@ bool NA_Level::covered_by(const NA_Data &data, bool &exact) const {
       if (isnanf(lv)) {
         return true;
       } else {
-        double lv_min = NAN, lv_max = NAN;
+        double lv_min = NAN;
+        double lv_max = NAN;
         if (levels_range(PRESSURE_LEVEL, vec, lv_min, lv_max) &&
             (lv_min <= lv) && (lv_max >= lv)) {
           exact = has_level(*this, vec);

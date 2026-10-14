@@ -96,8 +96,7 @@ public:
   void set_size(const MatrixPos &gs) {
     if ((gs.getX() * gs.getY()) > (int)getN())
       throw std::runtime_error("Cannot enlarge matrix");
-    else
-      resize(gs);
+          resize(gs);
   }
 
 private:

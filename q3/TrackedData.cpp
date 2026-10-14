@@ -80,8 +80,7 @@ TrackedData::TrackedData(const char *fn, const NA_Info &info_given,
 TrackedData::~TrackedData() {
   INVARIANT();
 
-  
-    delete info_;
+  delete info_;
 
 #ifndef METQU
   qd_m.Destroy();

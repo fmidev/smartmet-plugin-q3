@@ -63,8 +63,7 @@ int find_index(const std::vector<T> &vec, const T &value) {
   for (auto it = vec.begin(); it != vec.end(); ++it) {
     if (*it == value)
       return index;
-    else
-      ++index;
+          ++index;
   }
   return -1; // not found
 }
@@ -231,7 +230,7 @@ public:
   int compare(const string_or_null &b) const {
     if (is_null) {
       return b.is_null ? 0 : -1; // equal or 'this' is smaller
-    } else if (b.is_null) {
+    } if (b.is_null) {
       return 1; // 'this' is bigger
     } else {
       return std::string::compare(b); // both are non-nullptr
@@ -259,7 +258,7 @@ private:
   bool is_null;
 };
 
-string_or_null latin1_to_utf8(const char *);
+string_or_null latin1_to_utf8(const char * /*latin1*/);
 #ifdef METQU
 string_or_null utf8_to_latin1(const char *);
 #endif

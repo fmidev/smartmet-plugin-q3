@@ -130,13 +130,17 @@ const Matrix *Test_Data::push_TestMatrix(lua_State *L, const JDay & /*vt*/,
   //
   string ps = p.toString(true /*prefer standard name (no ':nnn') */);
 
-  t_param_func param_func = (ps == "SW")     ? f_SW
-                            : (ps == "SE")   ? f_SE
-                            : (ps == "S")    ? f_S
-                            : (ps == "FULL") ? f_FULL
-                            : (ps == "NONE") ? f_NONE
-                            : (ps == "BALL") ? f_BALL
-                                             : nullptr;
+  static const std::pair<const char *, t_param_func> patterns[] = {
+      {"SW", f_SW},     {"SE", f_SE},     {"S", f_S},
+      {"FULL", f_FULL}, {"NONE", f_NONE}, {"BALL", f_BALL}};
+
+  t_param_func param_func = nullptr;
+  for (const auto &pattern : patterns) {
+    if (ps == pattern.first) {
+      param_func = pattern.second;
+      break;
+    }
+  }
 
   if (!param_func) {
     return nullptr;

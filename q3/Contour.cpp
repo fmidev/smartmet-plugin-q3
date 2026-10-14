@@ -74,9 +74,8 @@ int ContourBind::__index(lua_State *L) {
         new (L) EdgePoint(my.points[(my.offset + (k - 1)) %
                                     n_]); // copy constructor to Lua userdata
         return 1;
-      } else {
-        return 0; // no more points
-      }
+      }         return 0; // no more points
+     
     }
   }
 
@@ -295,8 +294,8 @@ int Contour::contour(lua_State *L) {
   unsigned tos =
       argc + ((argc > 3) ? 0 : 1); // Top of stack; first return value
 
-  float lo_val = lua_tonumber(L, 2),
-        hi_val = ((argc >= 3) ? lua_tonumber(L, 3) : NAN);
+  float lo_val = lua_tonumber(L, 2);
+  float hi_val = ((argc >= 3) ? lua_tonumber(L, 3) : NAN);
 
   ContourCollector cc(L);
 
@@ -322,7 +321,10 @@ int Contour::contour(lua_State *L) {
   // 29-May-2012 PKi: Use zero smoothing length if the data has been smoothened
   // already
   //
-  int smooth_length = (mys ? 0 : ((argc >= 4) ? (int)lua_tonumber(L, 4) : 0));
+  int smooth_length = 0;
+  if (!mys && argc >= 4) {
+    smooth_length = (int)lua_tonumber(L, 4);
+  }
   int smooth_degree = ((argc >= 5) ? (int)lua_tonumber(L, 5) : 2);
 
   // 05-Jun-2012 PKi: To minimize the changes needed for using tron hints the
@@ -450,9 +452,8 @@ int Contour::contour_smoothen_one(lua_State *L) {
           if (p.edge && (abs(j) < half_window)) {
             try_smaller_window = true;
             break; // do not move this point
-          } else {
-            avg += Vectors::Point(p.x, p.y);
-          }
+          }             avg += Vectors::Point(p.x, p.y);
+         
         }
 
         if (!try_smaller_window) {
@@ -540,7 +541,8 @@ double Contour::area() const {
   // vertex. Add these." "Multiply the y coordinate of each vertex by the x
   // coordinate of the next vertex. Add these."
   //
-  double sum1 = 0.0, sum2 = 0.0;
+  double sum1 = 0.0;
+  double sum2 = 0.0;
   unsigned n = points.size();
 
   for (unsigned i = 0; i < n; ++i) {
@@ -620,7 +622,8 @@ namespace
  * if the translation matrix is negated (and it is, for PNG and SVG).
  */
 double pixel_to_data_dist(cairo_t *cr, double pixel_size) {
-  double dx = NAN, dy = NAN;
+  double dx = NAN;
+  double dy = NAN;
   dx = dy = pixel_size;
   cairo_device_to_user_distance(cr, &dx, &dy);
 
@@ -656,7 +659,8 @@ void label_pos(cairo_t *cr, const Vectors::Point &p, const string &s,
                       const ContourInfo_Line::LabelParams &label_specs,
                       cairo_text_extents_t &te) {
 
-  double x = p.x, y = p.y;
+  double x = p.x;
+  double y = p.y;
   cairo_user_to_device(cr, &x, &y);
 
   // NOTE: Most of the steps below need to be performed in EXACTLY THIS
@@ -793,7 +797,9 @@ public:
                                 double alpha = 0.2) {
 
     if (str) {
-      double r = 0.0, g = 0.0, b = 0.0;
+      double r = 0.0;
+      double g = 0.0;
+      double b = 0.0;
 
       if (strcmp(str, "red") == 0)
         r = 1.0;
@@ -944,7 +950,8 @@ namespace
 Vectors::Vector label_size(cairo_t *cr, float font_size,
                                   const string &label) {
 
-  double w = NAN, h = NAN;
+  double w = NAN;
+  double h = NAN;
 
   cairo_save(cr);
   {
@@ -1044,8 +1051,12 @@ int Contour::drawcontours(lua_State *L) {
     cairo_t *cr = nullptr;
     MatrixPos *gs = nullptr;
 
-    const int cr_idx = 1, gs_idx = 2, lcfg_idx = 3, cdef_idx = 4, cval_idx = 5,
-              contour_idx = 6;
+    const int cr_idx = 1;
+    const int gs_idx = 2;
+    const int lcfg_idx = 3;
+    const int cdef_idx = 4;
+    const int cval_idx = 5;
+    const int contour_idx = 6;
 
     if ((lua_gettop(L) == contour_idx) &&
         (lua_type(L, lcfg_idx) == LUA_TTABLE) &&
@@ -1140,7 +1151,8 @@ int Contour::drawcontours(lua_State *L) {
       lua_pop(L, 1); // remove value, keep key (for 'lua_next()')
     }
 
-    bool labelize = (nv > 0), clip_labels = false;
+    bool labelize = (nv > 0);
+    bool clip_labels = false;
 
     // Configure Labelizer (strategy for positioning labels, label color and
     // size etc.)
@@ -1155,13 +1167,16 @@ int Contour::drawcontours(lua_State *L) {
     //
     // If filling, set fill attributes for each pair of lo-hi range contours.
 
-    Contour *c = nullptr, *pc = nullptr;
+    Contour *c = nullptr;
+    Contour *pc = nullptr;
     vector<LineStore> line_store;
 
     auto pit = contourdefs.end();
     const ContourInfo_common *cc = nullptr;
-    unsigned int nc = 0, pnc = 0;
-    bool first = true, fillOpen = false;
+    unsigned int nc = 0;
+    unsigned int pnc = 0;
+    bool first = true;
+    bool fillOpen = false;
     bool labelizethis = labelize;
 
     ostringstream oss;
@@ -1323,7 +1338,8 @@ int Contour::drawcontours(lua_State *L) {
 
           // 24-Jan-2014 PKi: Set pattern transformation matrix's scale
           //
-          double ux = 1.0, uy = 1.0;
+          double ux = 1.0;
+          double uy = 1.0;
           cairo_device_to_user_distance(cr, &ux, &uy);
 
           cairo_matrix_t matrix;

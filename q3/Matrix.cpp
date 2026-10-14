@@ -119,9 +119,8 @@ const Projection &common_proj( const Matrix *a, const Matrix *b ) {
             return (proj_a == b->getProjection()) ? proj_a : Projection::NONE;
         }
         return proj_a;
-    } else {
-        return b->getProjection();
-    }
+    }         return b->getProjection();
+   
 }
 }  // namespace
 
@@ -636,7 +635,7 @@ int Matrix::reciprocal( lua_State *L ) {
         // that matters)
         //
         double tmp= (*a)[i];
-        c[i]= (tmp!=0.0f) ? (1.0/tmp) : INFINITY_F;
+        c[i]= (tmp!=0.0F) ? (1.0/tmp) : INFINITY_F;
     }
 
     return 1;   // 'c' pushed
@@ -656,7 +655,7 @@ int Matrix::unm( lua_State *L ) {
 #ifdef __SSE__
     // There is no unary minus in the SSE intrinsics, right?
     //
-    SSE_OP_mf( _mm_mul_ps, c, &a, -1.0f, i, n );
+    SSE_OP_mf( _mm_mul_ps, c, &a, -1.0F, i, n );
 #endif            
     for( ; i<n; i++ ) { c[i]= -a[i]; }
 
@@ -675,7 +674,7 @@ int Matrix::unm_deg( lua_State *L ) {
     MemMatrix &c= *new(L) MemMatrix( a.getSize(), a.getUnit(), a.getProjection() );    // always retains the param (& unit)
     offset_t n= c.getN();
     for( offset_t i=0; i<n; i++ ) { 
-        c[i]= fmodf( a[i]+180.0f, 360.0f );
+        c[i]= fmodf( a[i]+180.0F, 360.0F );
     }
 
     return 1;   // 'c' pushed
@@ -948,7 +947,10 @@ float Matrix::reduce_sum( bool avg_mode ) const {
     for( ; i<n; i++ ) {
         reduce_sum_safe( (*this)[i], sum, used );
     }
-    return used ? (avg_mode ? (sum/used) : sum) : NAN;
+    if( !used ) {
+        return NAN;
+    }
+    return avg_mode ? (sum/used) : sum;
 }
 
 namespace
@@ -1206,7 +1208,7 @@ int Matrix::q3_sum_or_avg( lua_State *L ) {
                 // Init the whole 'avg_count' with 1 (even areas where 'c' carries NAN).
                 // This matrix is only temporary, so no need for setting projection.
                 //
-                avg_count= new(L) MemMatrix( a->getSize(), 1.0f, NA_Param::UNIT_UNKNOWN_INTERPOLATABLE, nullptr );
+                avg_count= new(L) MemMatrix( a->getSize(), 1.0F, NA_Param::UNIT_UNKNOWN_INTERPOLATABLE, nullptr );
             }
             c= new(L) MemMatrix(*a);    // clone of a (data, unit and projection also)
             
@@ -1449,7 +1451,7 @@ int MatrixBind::index( lua_State *L ) {
                 new(L) MatrixPos( m.getSize().getTop() );
                 return 1;
             }
-            else if (strcmp(s,"size")==0) {
+            if (strcmp(s,"size")==0) {
                 new(L) MatrixPos( m.getSize().getXS(), m.getSize().getYS() );
                 return 1;
             }
@@ -1640,7 +1642,8 @@ void MatrixBind::setup( lua_State *L ) {
 float Matrix::at( const LatLon &latlon ) const {
 
 	bool useGrid = false;
-    double dx = 0, dy = 0;
+    double dx = 0;
+    double dy = 0;
 
 	if ((useGrid = (wantedGrid && (size.getXS() > 1) && (size.getYS() > 1)))) {
 	    NFmiPoint p = wantedGrid->LatLonToGrid( latlon.getLon(), latlon.getLat() );
@@ -1650,9 +1653,8 @@ float Matrix::at( const LatLon &latlon ) const {
 
     if (useGrid || getProjection().at( latlon, dx, dy )) {
         return at_( dx, dy );    // maybe within the grid (but not guaranteed)
-    } else {
-        return NAN;     // definately outside the grid
-    }
+    }         return NAN;     // definately outside the grid
+   
 }
 
 
@@ -1736,7 +1738,7 @@ int32_t q2_float2int( float v, int32_t scale, int32_t scaled_offset ) {
     // v_float= (v_int+offset)/scale
     //
     bool data_as_short= true;
-    auto scale = (int32_t)powf(10.0f, decimals); // 1,10,100, ..., 10^9
+    auto scale = (int32_t)powf(10.0F, decimals); // 1,10,100, ..., 10^9
     int32_t scaled_offset= 0;
     
     if (!isnanf(min_v)) {
@@ -1908,9 +1910,8 @@ double interpolate_deg( double A, double prob_A, double B, double prob_B, double
     //
     if (sum.getAbs() < 1e-6) {
         return NAN;             // no clear direction to give
-    } else {
-        return sum.getDeg();    // direction of sum is the same as direction of average
-    }
+    }         return sum.getDeg();    // direction of sum is the same as direction of average
+   
 }
 
 inline double interpolate_deg( double A, double prob_A, double B, double prob_B, double C, double prob_C ) {
@@ -1937,7 +1938,7 @@ double within_line( double a, double b, double dist_ab, NA_Param::e_Interpolatio
 
     if (std::isnan(a)) {
         return dist_ab==1.0 ? b : NAN;
-    } else if (std::isnan(b)) {
+    } if (std::isnan(b)) {
         return dist_ab==0.0 ? a : NAN;
     }
     
@@ -1951,7 +1952,7 @@ double within_line( double a, double b, double dist_ab, NA_Param::e_Interpolatio
             if (method==NA_Param::INTERPOLATE_LINEAR) {
                 return a*a_prob + b*b_prob;
 
-            } else if (method==NA_Param::INTERPOLATE_LINEAR_DEG) {
+            } if (method==NA_Param::INTERPOLATE_LINEAR_DEG) {
                 return interpolate_deg( a, a_prob, b, b_prob );
 
             } else {
@@ -1981,7 +1982,7 @@ double within_triangle( double a, double b, double dist_ab, double c, double dis
         double dist_bc= 0.5;
 
         return within_line( b, c, dist_bc, method );
-    } else if (std::isnan(b)) {
+    } if (std::isnan(b)) {
         return within_line( a, c, dist_ac, method );
     } else if (std::isnan(c)) {
         return within_line( a, b, dist_ab, method );
@@ -2000,7 +2001,7 @@ double within_triangle( double a, double b, double dist_ab, double c, double dis
             if (method==NA_Param::INTERPOLATE_LINEAR) {
                 return a*a_prob + b*b_prob + c*c_prob;
 
-            } else if (method==NA_Param::INTERPOLATE_LINEAR_DEG) {      // 0 .. 359.999...
+            } if (method==NA_Param::INTERPOLATE_LINEAR_DEG) {      // 0 .. 359.999...
                 return interpolate_deg( a, a_prob, b, b_prob, c, c_prob );
 
             } else {
@@ -2075,7 +2076,7 @@ float Matrix::at_( double fx, double fy ) const {
     //
     if (dx==0.0) {
         return within_line( A, C, dy, method );
-    } else if (dy==0.0) {
+    } if (dy==0.0) {
         return within_line( A, B, dx, method );
     }
 
@@ -2088,7 +2089,7 @@ float Matrix::at_( double fx, double fy ) const {
     if (std::isnan(A)) {
         return within_triangle( D, C, 1.0-dx /*D->C*/, B, 1.0-dy /*D->B*/, method );
     }
-    else if (std::isnan(B)) {
+    if (std::isnan(B)) {
         return within_triangle( C, A, 1.0-dy /*C->A*/, D, dx /*C->D*/, method );
     }
     else if (std::isnan(C)) {
@@ -2113,9 +2114,8 @@ float Matrix::at_( double fx, double fy ) const {
             
             if (method==NA_Param::INTERPOLATE_LINEAR) {
                 return A*a_prob + B*b_prob + C*c_prob + D*d_prob;
-            } else {
-                return interpolate_deg( A, a_prob, B, b_prob, C, c_prob, D, d_prob );
-            }
+            }                 return interpolate_deg( A, a_prob, B, b_prob, C, c_prob, D, d_prob );
+           
         }
         case NA_Param::INTERPOLATE_NEAREST:
         default:
@@ -2249,7 +2249,8 @@ int Matrix::offsetPosition(lua_State *L,const NFmiPoint &location,const MatrixPo
 int Matrix::offsetPosition(lua_State *L,const Matrix &m,const MatrixPos &pos,const MatrixPos &offset) const {
 
 	NFmiGrid * grid = (wantedGrid ? wantedGrid.get() : nullptr);
-	int x = pos.getX(),y = pos.getY();
+	int x = pos.getX();
+	int y = pos.getY();
 
 	if (grid && (x >= 0) && (x < size.getXS()) && (y >= 0) && (y < size.getYS()))
 		return m.offsetPosition(L,grid->GridToLatLon(x,y),offset);
@@ -2282,7 +2283,8 @@ int Matrix::offsetPosition(lua_State *L,const NFmiLocation &location,double xoff
 int Matrix::offsetPosition(lua_State *L,const Matrix &m,const MatrixPos &pos,double xoffsetkm,double yoffsetkm) const {
 
 	NFmiGrid * grid = (wantedGrid ? wantedGrid.get() : nullptr);
-	int x = pos.getX(),y = pos.getY();
+	int x = pos.getX();
+	int y = pos.getY();
 
 	if (grid && (x >= 0) && (x < size.getXS()) && (y >= 0) && (y < size.getYS()))
 		return m.offsetPosition(L,grid->GridToLatLon(x,y),xoffsetkm,yoffsetkm);

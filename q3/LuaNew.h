@@ -87,7 +87,7 @@ protected:
 
 
   using f_setup = void (*)(lua_State *L);
-  static void create_mt(lua_State *L, f_setup, const LuaNew_ID &_id,
+  static void create_mt(lua_State *L, f_setup /*setup_f*/, const LuaNew_ID &_id,
                         const char *name);
 
   static LuaNew_base *instance(lua_State *L, int index, const LuaNew_ID &_id);
@@ -118,7 +118,7 @@ public:
    * Seems this needs to be 'public' (Ubuntu 9.04, gcc 4.3.3)  AKa 25-May-2009
    */
 
-  static void operator delete(void *) {}
+  static void operator delete(void * /*unused*/) {}
 
 private:
   static int __gc(lua_State *L);

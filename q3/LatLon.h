@@ -77,9 +77,8 @@ private:
       lat = lat_;
       lon = lon_;
       return true;
-    } else {
-      return false;
-    }
+    }       return false;
+   
   }
 
   // data members

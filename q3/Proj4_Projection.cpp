@@ -61,7 +61,7 @@ Proj4_Projection::Proj4_Projection(const char *proj_)
 /*
  */
 /*virtual*/ Proj4_Projection::Proj4_Projection(const Proj4_Projection &o)
-    :  pj(o.pj) {
+    : Projection_provider(), pj(o.pj) {
 
   INVARIANT();
 }

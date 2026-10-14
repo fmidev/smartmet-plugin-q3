@@ -77,7 +77,7 @@ public:
     TiltedRect(const Point &p, const Vectors::Vector &size, double tilt_rad_);
 
     bool intersects(const TiltedRect &other) const;
-    bool intersects(const PointAndVector &) const;
+    bool intersects(const PointAndVector & /*v*/) const;
 
     const Point &get_center() const { return center; }
     const Point &get_corner(unsigned i) const { return side[i].p; }
@@ -86,7 +86,7 @@ public:
     const BoundingBox &get_bounding_box() const { return bb_cached; }
 
   private:
-    bool contains(const Point &) const;
+    bool contains(const Point & /*p*/) const;
   };
 
   /*
@@ -130,6 +130,7 @@ public:
                                        // horizontal
     double boost_horizontal = 1.5; // boost factor (>1.0) for such (horizontal) points
 
+    // 0 = not used (all one chunk; slooooow)
     double curve_optimization = 0.0; // Optimization fine tuning; affects processing
                                // speed How big areas of curves are stored as
                                // subcurves (chunks); in pixels
@@ -139,9 +140,7 @@ public:
     // Struct has default values; the rest can be set explicitly by the
     // application using it.
     //
-    Config()
-        
-          {}
+    Config() = default;
   };
 
   Labelizer(const Config &config_, Drawer &debug_drawer_, unsigned data_w,
@@ -234,10 +233,10 @@ private:
                          bool is_closed);
   bool LimitDirect(const Point &xy, const std::vector<TiltedRect> &done,
                    double limit);
-  bool LimitCrossingLines(const TiltedRect &,
+  bool LimitCrossingLines(const TiltedRect & /*tr*/,
                           const std::vector<Chain *> &chains,
                           const Chain *our_chain);
-  bool LimitOverlappingLabels(const TiltedRect &,
+  bool LimitOverlappingLabels(const TiltedRect & /*tr*/,
                               const std::vector<TiltedRect> &done);
 
   // 02-Dec-2011 PKi: Labelizer configuration from Q3 configuration file

@@ -139,7 +139,11 @@ JustOnce_SSE::JustOnce_SSE() {
   // opposite of how 'std::min|max<>' works (above)).
   //
   for (unsigned loop = 0; loop < 2; loop++) {
-    __m128 v1, v2, v3, v4, v5;
+    __m128 v1;
+    __m128 v2;
+    __m128 v3;
+    __m128 v4;
+    __m128 v5;
 
     if (loop == 0) {
       v1 = _mm_max_ps(m_XnanXnan, m_XnanXnan); // -> XnanXnan

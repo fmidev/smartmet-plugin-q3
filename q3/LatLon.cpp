@@ -211,9 +211,8 @@ bool LatLon::init_from_ud(lua_State *L, int index) {
   if (ud) {
     *this = *ud;
     return true;
-  } else {
-    return false;
-  }
+  }     return false;
+ 
 }
 
 /*
@@ -405,7 +404,7 @@ int LatLonList::_areamask(lua_State *L) {
   // the return value.
   //
   MemMatrix &m = *new (L) MemMatrix(
-      gs, 0.0f, NA_Param::UNIT_UNKNOWN_ /*no interpolation*/, proj);
+      gs, 0.0F, NA_Param::UNIT_UNKNOWN_ /*no interpolation*/, proj);
 
   Projection pr(proj);
 
@@ -430,7 +429,7 @@ int LatLonList::_areamask(lua_State *L) {
       if (m[it] != AT_THE_RIM) {
         switch (lll.within(ll)) {
         case LatLonList::INSIDE:
-          m[it] += 1.0f; // inside
+          m[it] += 1.0F; // inside
           break;
         case LatLonList::AT_EDGE:
           m[it] = AT_THE_RIM; // exactly at edge
@@ -454,7 +453,11 @@ int LatLonList::_areamask(lua_State *L) {
 
   for (MatrixIter it(gs); it.within(); ++it) {
     int v = (int)m[it];
-    m[it] = (v < 0) ? value_at_rim : (v % 2) ? value_inside : value_outside;
+    if (v < 0) {
+      m[it] = value_at_rim;
+    } else {
+      m[it] = (v % 2) ? value_inside : value_outside;
+    }
   }
 
   return 1;

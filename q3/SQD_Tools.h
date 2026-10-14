@@ -64,9 +64,8 @@ struct SQD_Tools { // just as a namespace
 
     if (!cut_at_colon(p.getNativeName_().c_str(), ignore, e)) {
       return (FmiParameterName)0;
-    } else {
-      return e;
-    }
+    }       return e;
+   
   }
 };
 

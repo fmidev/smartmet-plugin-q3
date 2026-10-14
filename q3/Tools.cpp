@@ -45,7 +45,13 @@ const char *pthread_rc2str(int rc) {
 
   snprintf(buf, sizeof(buf), "rc %d", rc);
 
-  return (rc == EBUSY) ? "EBUSY" : (rc == EINVAL) ? "EINVAL" : buf;
+  if (rc == EBUSY) {
+    return "EBUSY";
+  }
+  if (rc == EINVAL) {
+    return "EINVAL";
+  }
+  return buf;
 }
 
 /*---=== OS features ===---*/
@@ -303,7 +309,7 @@ static int latin1_to_utf8(unsigned char c) {
   if (c <= 0x7f) {
     return c; // basic ASCII
 
-  } else if (c <= 0x9f) {
+  } if (c <= 0x9f) {
     int tmp = CONV[c - 0x80];
     if (tmp < 0) {
       return tmp;
@@ -320,15 +326,14 @@ static int latin1_to_utf8(unsigned char c) {
     unsigned x = uc & 0x3f;
     return 0xc080 | (y << 8) | x;
 
-  } else {
-    // 0x0800 .. 0xffff (all lookup values are within this range)
+  }     // 0x0800 .. 0xffff (all lookup values are within this range)
     //
     unsigned z = (uc >> 12) & 0x0f;
     unsigned y = (uc >> 6) & 0x3f;
     unsigned x = uc & 0x3f;
 
     return 0xe08080 | (z << 16) | (y << 8) | x;
-  }
+ 
 }
 
 /*

@@ -80,11 +80,11 @@ NFmiFastQueryInfo *new_iter(NFmiQueryData *qd, const JDay &vt,
  *       --AKa 15-Dec-10
  */
 float get_WD(float v) { // SQD file -> script (360 -> 0)
-  return fmodf(v, 360.0f);
+  return fmodf(v, 360.0F);
 }
 
 float set_WD(float v) { // script -> SQD file (0 -> 360)
-  return (v == 0.0) ? 360.0f : v;
+  return (v == 0.0) ? 360.0F : v;
 }
 }  // namespace
 
@@ -205,12 +205,12 @@ float SQD_Matrix::get_value_n(offset_t n) const {
 
     int v_int = (int)v;
 
-    if (v == 32700.0f) {
-      bad = v_WS != 32700.0f;
-    } else if (v_WS == 32700.0f) {
+    if (v == 32700.0F) {
+      bad = v_WS != 32700.0F;
+    } else if (v_WS == 32700.0F) {
       bad = true; // WVEC existed but WS missing
     } else {
-      if ((v_WD == 32700.0f) && (v_int % 100 != 0)) {
+      if ((v_WD == 32700.0F) && (v_int % 100 != 0)) {
         bad = true; // WD missing but WVEC direction part != 0
       } else {
         // All three values exist. Is the formula right?
@@ -246,7 +246,10 @@ float SQD_Matrix::get_value_n(offset_t n) const {
   }
 #endif
 
-  return (v == 32700.0f) ? NAN : (get_f ? get_f(v) : v);
+  if (v == 32700.0F) {
+    return NAN;
+  }
+  return (get_f ? get_f(v) : v);
 }
 
 /*
@@ -256,6 +259,10 @@ void SQD_Matrix::set_value_n(offset_t n, float v) {
   assert(!isReadOnly()); // upper levels should have checked
 
   fi->LocationIndex(n);
-  fi->FloatValue(isnanf(v) ? 32700.0f : (set_f ? set_f(v) : v));
+  if (isnanf(v)) {
+    fi->FloatValue(32700.0f);
+  } else {
+    fi->FloatValue(set_f ? set_f(v) : v);
+  }
 }
 #endif

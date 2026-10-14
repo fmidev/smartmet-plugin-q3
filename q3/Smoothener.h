@@ -56,7 +56,7 @@ private:
 
   std::vector<PointAndEdge> rim;
 
-  bool closed = false; // Is the path to be closed back to first point?
+  bool closed = false; // Is the path to be closed back to first point? Only known at 'done()'.
                // (always is, with fills)
 
   const unsigned WINDOW = SMOOTHENING_WINDOW_SIZE; // 3/5/7 = points to use in the smoothening averaging

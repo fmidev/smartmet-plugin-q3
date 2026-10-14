@@ -116,8 +116,7 @@ int SubMatrix::set_radius(lua_State *L) {
   // non-invariant states)
   //
   if (isnanf(my.r_km)) {
-    
-      delete my.latlon;
+    delete my.latlon;
     my.latlon = nullptr;
   } else {
     // We take the LONLAT matrix from Lua, since they're most likely having it

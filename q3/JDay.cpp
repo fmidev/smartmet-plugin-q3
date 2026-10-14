@@ -205,7 +205,7 @@ int JDayBind::sub(lua_State *L) {
       lua_pushnumber(L, (a->jd_plus_half - b->jd_plus_half) / 3600.0);
       return 1;
 
-    } else if (lua_isnumber(L, 2)) {
+    } if (lua_isnumber(L, 2)) {
       new (L) JDay(a->sub_hours(lua_tointeger(L, 2)));
       return 1;
     }
@@ -249,9 +249,8 @@ int JDayBind::tostring(lua_State *L) {
   if (a) {
     lua_pushstring(L, a.toString().c_str());
     return 1;
-  } else {
-    return 0; // undefined time
-  }
+  }     return 0; // undefined time
+ 
 }
 
 /*
@@ -466,7 +465,9 @@ void JDay::gregorian(unsigned *year_ptr, unsigned *month_ptr,
 /*
  */
 string JDay::toString() const {
-  unsigned yyyy = 0, mm = 0, dd = 0;
+  unsigned yyyy = 0;
+  unsigned mm = 0;
+  unsigned dd = 0;
   gregorian(&yyyy, &mm, &dd);
 
   char buf[20]; // enough for 'YYYYMMDDHHMMSS'
@@ -490,11 +491,10 @@ bool JDay::covered_by(const vector<JDay> &times, bool &exact) const {
   if ((*this < times.front()) || (*this > times.back())) {
     return false;
 
-  } else {
-    int n = find_index<JDay>(times, *this);
+  }     int n = find_index<JDay>(times, *this);
     exact = (n >= 0);
     return true;
-  }
+ 
 }
 
 /*

@@ -503,7 +503,8 @@ int distance_km(lua_State *L) {
   // from
   //       strings automatically to 'LatLon' (also 'proto.latlon' uses that).
   //
-  LatLon a, b;
+  LatLon a;
+  LatLon b;
   bool ok_a = a.init_from_ud(L, 1);
   bool ok_b = b.init_from_ud(L, 2);
 

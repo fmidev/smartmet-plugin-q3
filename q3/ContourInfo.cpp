@@ -392,13 +392,21 @@ void find_limits(const ContourMatrix<float> &data, float step,
     // Round 'min' upwards to next 'step'
     //
     float mod = fmodf(fabsf(min), step);
-    *lo_ref = (mod == 0.0) ? min : (min > 0.0) ? min + (step - mod) : min + mod;
+    if (mod == 0.0) {
+      *lo_ref = min;
+    } else {
+      *lo_ref = (min > 0.0) ? min + (step - mod) : min + mod;
+    }
   }
   if (hi_ref) {
     // Round 'max' downwards to next 'step'
     //
     float mod = fmodf(fabsf(max), step);
-    *hi_ref = (mod == 0.0) ? max : (max > 0.0) ? max - mod : max - (step - mod);
+    if (mod == 0.0) {
+      *hi_ref = max;
+    } else {
+      *hi_ref = (max > 0.0) ? max - mod : max - (step - mod);
+    }
   }
 }
 }  // namespace
@@ -432,7 +440,10 @@ ContourInfo_Line::create(const string &conf, const ContourMatrix<float> &data) {
   if (type == 1) {
     // "1 step zero-level min max ..."
     //
-    float step = NAN, zero_level = NAN, lo = NAN, hi = NAN;
+    float step = NAN;
+    float zero_level = NAN;
+    float lo = NAN;
+    float hi = NAN;
     ss >> step >> zero_level >> lo >> hi;
     if (ss.bad()) {
       LOG_USAGE("Bad contour spec: %s", conf.c_str());
@@ -481,9 +492,16 @@ ContourInfo_Line::create(const string &conf, const ContourMatrix<float> &data) {
 
   // i.e. "rgba(40,40,40,100) none 2 2.0 2 20 def none none 1"
   //
-  string stroke_color, fill_color, stroke_width, smooth_factor, label_strategy,
-      label_font_height, label_text_color, label_box_fill_color,
-      label_box_stroke_color, label_box_stroke_width;
+  string stroke_color;
+  string fill_color;
+  string stroke_width;
+  string smooth_factor;
+  string label_strategy;
+  string label_font_height;
+  string label_text_color;
+  string label_box_fill_color;
+  string label_box_stroke_color;
+  string label_box_stroke_width;
 
   ss >> stroke_color >> fill_color >> stroke_width >> smooth_factor >>
       label_strategy >> label_font_height >> label_text_color >>
@@ -508,7 +526,10 @@ ContourInfo_Line::create(const string &conf, const ContourMatrix<float> &data) {
 cairo_pattern_t *
 ContourInfo_Fill::FillParams::cairo_pattern_create(size_t size) const {
 
-  double r = R(color), g = G(color), b = B(color), a = A(color);
+  double r = R(color);
+  double g = G(color);
+  double b = B(color);
+  double a = A(color);
 
   if (hatch_width == 0) {
     // Solid fill (possibly with transparency)
@@ -538,7 +559,8 @@ ContourInfo_Fill::FillParams::cairo_pattern_create(size_t size) const {
   cairo_set_line_cap(cr, CAIRO_LINE_CAP_SQUARE);
 
   if (hatch_offset) {
-    double dx = 0, dy = 0;
+    double dx = 0;
+    double dy = 0;
 
     switch (hatch_type) {
     case HATCH_HORIZONTAL:
@@ -619,7 +641,10 @@ ContourInfo_Fill::create(const string &conf, const ContourMatrix<float> & /*data
   if (type == 3) {
     // "3 step zero-level min max ..."
     //
-    float step = NAN, zero_level = NAN, lo = NAN, hi = NAN;
+    float step = NAN;
+    float zero_level = NAN;
+    float lo = NAN;
+    float hi = NAN;
     ss >> step >> zero_level >> lo >> hi;
     if (ss.bad()) {
       LOG_USAGE("Bad contour spec: %s", conf.c_str());
@@ -653,7 +678,8 @@ ContourInfo_Fill::create(const string &conf, const ContourMatrix<float> & /*data
     int count = 0;
     ss >> count;
     for (int i = 0; i < count; i++) {
-      float a = NAN, b = NAN;
+      float a = NAN;
+      float b = NAN;
       ss >> a >> b;
       if (ss.bad())
         break;
@@ -678,7 +704,10 @@ ContourInfo_Fill::create(const string &conf, const ContourMatrix<float> & /*data
 
   // i.e. "rgba(40,40,40,100) none 2 2.0"
   //
-  string stroke_color, fill_color, stroke_width, smooth_factor;
+  string stroke_color;
+  string fill_color;
+  string stroke_width;
+  string smooth_factor;
 
   ss >> stroke_color >> fill_color >> stroke_width >> smooth_factor;
   if (ss.bad()) {

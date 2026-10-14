@@ -47,7 +47,7 @@ SQD_Projection::SQD_Projection(const NFmiArea *area_)
 /*
  */
 /*virtual*/ SQD_Projection::SQD_Projection(const SQD_Projection &o)
-    : 
+    : Projection_provider(),
       ap(o.ap.get()->Clone()) { // using 'NFmiArea::Clone'
 
   INVARIANT();

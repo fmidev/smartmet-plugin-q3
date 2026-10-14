@@ -246,15 +246,14 @@ public:
     //
     if (!file) {
       return what_nosource();
-    } else {
-      // Prepare for multiple calls along the cascade (craft 'buf' only once)
+    }       // Prepare for multiple calls along the cascade (craft 'buf' only once)
       if (buf.empty()) {
         std::ostringstream o;
         o << file << ":" << line << ": " << msg;
         buf = o.str();
       }
       return buf.c_str();
-    }
+   
   }
 
   // Only the message (no file & line)

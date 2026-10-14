@@ -73,9 +73,8 @@ int NA_Info::getExtra_int(const char *key, int def) const {
   if (*endp) {
     throw E_LOG_USAGE("Bad syntax in extra (expected an integer): '%s=%s'", key,
                       s.c_str());
-  } else {
-    return ret;
-  }
+  }     return ret;
+ 
 }
 
 NA_Info &NA_Info::setExtra(const char *key, unsigned v) {
@@ -261,8 +260,7 @@ NA_Data::push_Matrix(lua_State *L, const JDay &vt, const NA_Level &lev,
   if ((target_proj == native_proj) && (target_gs == native_gs)) {
     return m_native; // on top of Lua stack
 
-  } else {
-    auto *m = new (L) MemMatrix(target_gs, p.getUnit(), target_proj);
+  }     auto *m = new (L) MemMatrix(target_gs, p.getUnit(), target_proj);
 
     m->fit_from_(*m_native);
 
@@ -270,5 +268,5 @@ NA_Data::push_Matrix(lua_State *L, const JDay &vt, const NA_Level &lev,
 
     m->set_readonly();
     return m;
-  }
+ 
 }

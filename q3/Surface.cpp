@@ -340,16 +340,20 @@ int Surface::contents(lua_State *L) {
   L_GROW(2);
 
   cairo_surface_type_t st = cairo_surface_get_type(my);
-  const char *mime = (st == CAIRO_SURFACE_TYPE_IMAGE) ? "image/png" :
+  const char *mime = nullptr;
+  if (st == CAIRO_SURFACE_TYPE_IMAGE) {
+    mime = "image/png";
+  }
 #ifdef CAIRO_HAS_PDF_SURFACE
-                     (st == CAIRO_SURFACE_TYPE_PDF) ? "application/pdf"
-                     :
+  else if (st == CAIRO_SURFACE_TYPE_PDF) {
+    mime = "application/pdf";
+  }
 #endif
 #ifdef CAIRO_HAS_SVG_SURFACE
-                     (st == CAIRO_SURFACE_TYPE_SVG) ? "image/svg+xml"
-                                                    :
+  else if (st == CAIRO_SURFACE_TYPE_SVG) {
+    mime = "image/svg+xml";
+  }
 #endif
-                                                    nullptr;
   if (!mime) {
     luaL_error(L, "Internal error: unknown surface type");
   }

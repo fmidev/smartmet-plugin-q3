@@ -147,8 +147,13 @@ void *TrackerBase::polling_thread(void *me_v) {
         // Release memory mapping if no users and last acquire was old enough.
         // Use global or track specific, or filemask specific wiping cycle (the
         // last array slot) if given
-        d->Wipe(my->wiping[my->wiping[3] ? 3 : (my->archived() ? 1 : 0)],
-                my->wiping[2]);
+        int slot = 0;
+        if (my->wiping[3]) {
+          slot = 3;
+        } else if (my->archived()) {
+          slot = 1;
+        }
+        d->Wipe(my->wiping[slot], my->wiping[2]);
       }
     }
 
@@ -302,7 +307,9 @@ JDay TrackerBase::getLastOriginTime_fast(NA_Level::Type &leveltype) const
 JDay TrackerBase::getLastOriginTime_LOCKED(NA_Level::Type &leveltype) const
     throw() {
   JDay last_ot;
-  NA_Level::Type leveltype1, leveltype2, lt = NA_Level::NO_LEVEL;
+  NA_Level::Type leveltype1;
+  NA_Level::Type leveltype2;
+  NA_Level::Type lt = NA_Level::NO_LEVEL;
 
   if (leveltype == NA_Level::PRESSUREORHYBRID_LEVEL) {
     leveltype1 = NA_Level::PRESSURE_LEVEL;

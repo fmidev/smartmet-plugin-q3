@@ -57,7 +57,7 @@ NA_Level SQD_Tools::q3_level(FmiLevelType lt, double lv) /*throw(E_BUG)*/ {
   if (lt == kFmiGroundSurface) {
     return NA_Level(NA_Level::GROUND_LEVEL); // ignore 'lv'
 
-  } else if (lt == kFmiHybridLevel) {
+  } if (lt == kFmiHybridLevel) {
     return NA_Level(NA_Level::HYBRID_LEVEL, lv);
 
   } else if (lt == kFmiPressureLevel) {
@@ -73,7 +73,9 @@ NA_Level SQD_Tools::q3_level(FmiLevelType lt, double lv) /*throw(E_BUG)*/ {
 /*
  */
 NFmiMetTime SQD_Tools::jd2mt(const JDay &a) {
-  unsigned yyyy = 0, mm = 0, dd = 0;
+  unsigned yyyy = 0;
+  unsigned mm = 0;
+  unsigned dd = 0;
   a.gregorian(&yyyy, &mm, &dd); // faster to convert them all at once
 
   // NOTE: Seconds are lost in conversion to 'NFmiMetTime()'
@@ -96,10 +98,9 @@ JDay SQD_Tools::mt2jd(const NFmiMetTime &mt) {
 #endif
   {
     return {}; // NAN (no date)
-  } else {
-    return JDay(mt.GetYear(), mt.GetMonth(), mt.GetDay(), mt.GetHour(),
+  }     return JDay(mt.GetYear(), mt.GetMonth(), mt.GetDay(), mt.GetHour(),
                 mt.GetMin(), mt.GetSec());
-  }
+ 
 }
 
 /*---=== Projections ===---
@@ -703,8 +704,7 @@ NA_Param::Unit SQD_Tools::unit_by_id(FmiParameterName p) {
 #endif
     return it->second;
 
-  } else {
-    if (!p) {
+  }     if (!p) {
       return NA_Param::UNIT_UNKNOWN_; // shouldn't happen
     }
 
@@ -712,7 +712,7 @@ NA_Param::Unit SQD_Tools::unit_by_id(FmiParameterName p) {
     // linear interpolation, float range.
     //
     return NA_Param::UNIT_UNKNOWN_INTERPOLATABLE;
-  }
+ 
 }
 
 /*

@@ -28,6 +28,7 @@
 #include <cstring>
 #include <stdexcept>
 #include <string>
+#include <utility>
 #include <vector>
 
 using namespace std;
@@ -42,17 +43,19 @@ processes. Default." "local0".."local7": LOG_LOCAL0..7 "Reserved for local use."
 the configuration file give us integers). Also,
 */
 SyslogLogger::SyslogLogger(const char *facility) {
-  int fac = (strcmp(facility, "daemon") == 0)   ? LOG_DAEMON
-            : (strcmp(facility, "user") == 0)   ? LOG_USER
-            : (strcmp(facility, "local0") == 0) ? LOG_LOCAL0
-            : (strcmp(facility, "local1") == 0) ? LOG_LOCAL1
-            : (strcmp(facility, "local2") == 0) ? LOG_LOCAL2
-            : (strcmp(facility, "local3") == 0) ? LOG_LOCAL3
-            : (strcmp(facility, "local4") == 0) ? LOG_LOCAL4
-            : (strcmp(facility, "local5") == 0) ? LOG_LOCAL5
-            : (strcmp(facility, "local6") == 0) ? LOG_LOCAL6
-            : (strcmp(facility, "local7") == 0) ? LOG_LOCAL7
-                                                : -1;
+  static const std::pair<const char *, int> facilities[] = {
+      {"daemon", LOG_DAEMON}, {"user", LOG_USER},     {"local0", LOG_LOCAL0},
+      {"local1", LOG_LOCAL1}, {"local2", LOG_LOCAL2}, {"local3", LOG_LOCAL3},
+      {"local4", LOG_LOCAL4}, {"local5", LOG_LOCAL5}, {"local6", LOG_LOCAL6},
+      {"local7", LOG_LOCAL7}};
+
+  int fac = -1;
+  for (const auto &f : facilities) {
+    if (strcmp(facility, f.first) == 0) {
+      fac = f.second;
+      break;
+    }
+  }
 
   if (fac < 0) {
     throw E_LOG_FATAL("Bad syslog facility: %s", facility);

@@ -170,7 +170,7 @@ public:
 
   // 25-Oct-2011 PKi: Now needed by server too
   //#ifdef METQU
-  NA_Param(const char *);
+  NA_Param(const char * /*s*/);
   //#endif
 
 #ifdef USE_NEWBASE

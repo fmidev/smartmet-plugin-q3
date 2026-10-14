@@ -657,7 +657,7 @@ void Q3Server::native_handler(RequestResponse &rr)
         binary_q2 = true;
         continue;
       }
-      else if (val == "text")
+      if (val == "text")
       {
         // nothing; default
         continue;

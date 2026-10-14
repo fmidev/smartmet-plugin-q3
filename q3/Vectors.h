@@ -92,7 +92,15 @@ private:
                               // >=0: cached (use this value)
 #endif
 
-  static int SIGN(double v) { return (v < 0.0) ? -1 : (v > 0.0) ? +1 : 0; }
+  static int SIGN(double v) {
+    if (v < 0.0) {
+      return -1;
+    }
+    if (v > 0.0) {
+      return +1;
+    }
+    return 0;
+  }
 
 #ifdef VECTORS_CACHE_NORM
   Vector(double dx_, double dy_, double norm_cached_)
@@ -153,8 +161,7 @@ public:
     double z = dx * o.dy - dy * o.dx;
     if (fabs(z) < Point::epsilon)
       return 0.0; // so close to zero, we'll tell it's zero
-    else
-      return z;
+          return z;
   }
 
   /*
@@ -229,8 +236,8 @@ public:
 
   Point end() const { return Point(p.x + get_dx(), p.y + get_dy()); }
 
-  bool intersects(const Point &) const;
-  bool intersects(const PointAndVector &) const;
+  bool intersects(const Point & /*p2*/) const;
+  bool intersects(const PointAndVector & /*other*/) const;
 
 #ifdef LABELIZER_SELFTEST_ENABLE
   static void selftest();

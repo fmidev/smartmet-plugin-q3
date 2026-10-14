@@ -71,7 +71,7 @@ using namespace std;
  */
 class Plugin : public Q3Server, public SmartMetPlugin {
 public:
-  Plugin(SmartMet::Spine::Reactor *, const char *);
+  Plugin(SmartMet::Spine::Reactor * /*server*/, const char * /*cfg_file*/);
   void init() override;
   void shutdown() override;
   ~Plugin() override;

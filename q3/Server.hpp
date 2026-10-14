@@ -29,9 +29,9 @@ public:
   Q3Server(const char *conf);
   ~Q3Server();
 
-  void native_handler(RequestResponse &);
+  void native_handler(RequestResponse & /*rr*/);
 #ifdef ENABLE_OGC_WMS
-  void wms_handler(RequestResponse &);
+  void wms_handler(RequestResponse & /*rr*/);
 #endif
 
 private:

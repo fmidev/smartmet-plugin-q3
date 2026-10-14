@@ -197,7 +197,8 @@ void q3_config(const char *conf,
       lua_gettable(L, SUBT);
       if (!lua_isnil(L, -1))
       {
-        string aliases = lua_tostring(L, -1), tmp;
+        string aliases = lua_tostring(L, -1);
+        string tmp;
         boost::split(aliasvect, aliases, boost::is_any_of(","));
 
         for (auto &it : aliasvect) {
@@ -399,7 +400,8 @@ void q3_config(const char *conf,
     const unsigned t_idx = 5;
     L_ASSERT(lua_istable(L, t_idx));
 
-    string includeFile, includeGlobals;
+    string includeFile;
+    string includeGlobals;
 
     lua_pushnil(L);  // first key
     while (lua_next(L, t_idx))
@@ -513,11 +515,10 @@ const Q3Engine::Track *Q3Engine::getTrack(const char *name, bool getAlias) const
   {
     return it->second;
   }
-  else
-  {
-    LOG_DEBUG("No tracker named '%s'", name);
+  
+      LOG_DEBUG("No tracker named '%s'", name);
     return nullptr;
-  }
+ 
 }
 
 /*

@@ -36,7 +36,7 @@ public:
   }
 
 private:
-  Proj4_Projection(const Proj4_Projection &); // accessed through '.clone_()'
+  Proj4_Projection(const Proj4_Projection & /*o*/); // accessed through '.clone_()'
   Proj4_Projection &operator=(const Proj4_Projection &o); // not allowed
 
   // data members

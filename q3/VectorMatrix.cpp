@@ -262,7 +262,7 @@ int VectorMatrixBind::index(lua_State *L) {
         }
       }
       return 1;
-    } else if (strcmp(s, "y") == 0) {
+    } if (strcmp(s, "y") == 0) {
       const Matrix *mm =
           me.getMY_(); // non-nullptr if data is stored as X/Y components
       if (mm) {

@@ -58,7 +58,8 @@ public:
   }
 
   bool is_2d(bool &polar_) const {
-    ApiScalarParam aa, bb;
+    ApiScalarParam aa;
+    ApiScalarParam bb;
     return is_2d(aa, bb, polar_);
   }
 
@@ -72,7 +73,8 @@ public:
                   bool &polar_) const;
 
   bool covered_by(const std::vector<NA_Param> &vec) const {
-    NA_Param na, nb;
+    NA_Param na;
+    NA_Param nb;
     bool polar_ = false;
     return covered_by(vec, na, nb, polar_);
   }

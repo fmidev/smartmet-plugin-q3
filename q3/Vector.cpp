@@ -281,7 +281,7 @@ Vector::Vector(double x_or_abs, double y_or_deg, bool polar_) throw()
     //
     double rad = (v2) * M_PI / 180.0; // deg to rad
 
-    if (v1 < 0.0f) {
+    if (v1 < 0.0F) {
       v1 = -v1;
       rad += M_PI; // turns the direction around
     }
@@ -296,7 +296,7 @@ Vector::Vector(double x_or_abs, double y_or_deg, bool polar_) throw()
     //
     v2 = (float)rad; // converts very slightly negative double to 0.0 as float
 
-    if (v2 < 0.0f) {
+    if (v2 < 0.0F) {
       v2 += 2.0 * M_PI; // now within [0, 2pi) range
     }
   }
@@ -353,9 +353,8 @@ double Vector::getDeg() const {
 Vector Vector::operator-() const {
   if (!polar) {
     return Vector(-v1, -v2, false);
-  } else {
-    return Vector(-v1, v2, true); // will normalize into angle turn instead
-  }
+  }     return Vector(-v1, v2, true); // will normalize into angle turn instead
+ 
 }
 
 /*
@@ -371,11 +370,10 @@ Vector Vector::operator+(const Vector &o) const {
 Vector Vector::operator*(double d) const {
   if (!polar) {
     return Vector(v1 * d, v2 * d, false);
-  } else {
-    return Vector(
+  }     return Vector(
         v1 * d, v2,
         true); // constructor will turn the direction if 'v' is negative
-  }
+ 
 }
 
 #ifndef NDEBUG

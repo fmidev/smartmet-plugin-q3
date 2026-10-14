@@ -289,7 +289,7 @@ void SQD_Data::setIter(NFmiFastQueryInfo &fi, const JDay &vt,
   bool exact = false;
   if (!lev.covered_by(*this, exact)) {
     throw E_NO_MATCH(lev); // outside
-  } else if (exact) {
+  } if (exact) {
     if ((!lev) || lev.isGroundLevel()) {
       fi.FirstLevel();
     } else {
@@ -316,7 +316,8 @@ void SQD_Data::setIter(NFmiFastQueryInfo &fi, const JDay &vt,
  */
 void SQD_Data::setIter_exact(NFmiFastQueryInfo &fi, const JDay &vt,
                              const NA_Level &lev, const NA_Param &p) {
-  bool exact_time = false, exact_level = false;
+  bool exact_time = false;
+  bool exact_level = false;
 
   try {
     setIter(fi, vt, lev, p, exact_time, exact_level);
@@ -432,8 +433,7 @@ vector<NA_Level> getLevels(const NFmiQueryInfo &info,
   if (vec[0].isPressureLevel()) {
     if (vec[0].getValue() > vec[1].getValue()) {
       return vec;
-    } else {
-    REVERSE:
+    }     REVERSE:
       // Note: Seems 'std::reverse()' is not available.
       //
       // 31-Aug-2011 PKi: Must use original level order when creating a raw
@@ -444,7 +444,7 @@ vector<NA_Level> getLevels(const NFmiQueryInfo &info,
 
       revorder = true;
       return reverse_vector(vec);
-    }
+   
   }
 
   //---
@@ -464,7 +464,7 @@ vector<NA_Level> getLevels(const NFmiQueryInfo &info,
 
   if ((p2_order > 0) || (p3_order > 0)) {
     return vec;
-  } else if ((p2_order < 0) || (p3_order < 0)) {
+  } if ((p2_order < 0) || (p3_order < 0)) {
     goto REVERSE;
   }
 
@@ -475,7 +475,7 @@ vector<NA_Level> getLevels(const NFmiQueryInfo &info,
 
   if (p1_order > 0) {
     return vec;
-  } else if (p1_order < 0) {
+  } if (p1_order < 0) {
     goto REVERSE;
   }
 
@@ -505,7 +505,8 @@ std::string interpolation_name(FmiInterpolationMethod method) {
 }
 
 void addParam(vector<NA_Param> &vec, NFmiQueryInfo &info, FmiParameterName e) {
-  std::string interpolation, precision;
+  std::string interpolation;
+  std::string precision;
 
   if (info.Param(e)) {
     interpolation =
@@ -1018,7 +1019,8 @@ NA_Info SQD_Data::read_info(const char *fn) {
     throw E_LOG_BAD_FILE(fn, e.what());
   }
 
-  bool has_326 = false, has_19 = false;
+  bool has_326 = false;
+  bool has_19 = false;
   vector<NA_Param> params = ::getParams(info, has_326, has_19);
 
   if (times.empty()) {
@@ -1502,19 +1504,16 @@ SQD_Data::push_NativeMatrix_e(lua_State *L, const JDay &vt, const NA_Level &lev,
     //
     bool retMissing = pointData && (!(exact_time && exact_level));
 
-    MemMatrix *m_ =
-        retMissing
-            ? L ? new (L) MemMatrix(native_gs, NAN, lev, e, unit,
-                                    target_proj ? *target_proj : native_proj)
-                : ::new MemMatrix(native_gs, NAN, lev, e, unit,
-                                  target_proj ? *target_proj : native_proj)
-        : L ? new (L)
-                  MemMatrix((!pointData) && target_gs ? *target_gs : native_gs,
-                            lev, e, unit,
-                            target_proj ? *target_proj : native_proj)
-            : ::new MemMatrix(
-                  (!pointData) && target_gs ? *target_gs : native_gs, lev, e,
-                  unit, target_proj ? *target_proj : native_proj);
+    const Projection &m_proj = target_proj ? *target_proj : native_proj;
+    MemMatrix *m_ = nullptr;
+    if (retMissing) {
+      m_ = L ? new (L) MemMatrix(native_gs, NAN, lev, e, unit, m_proj)
+             : ::new MemMatrix(native_gs, NAN, lev, e, unit, m_proj);
+    } else {
+      const MatrixPos &m_gs = (!pointData) && target_gs ? *target_gs : native_gs;
+      m_ = L ? new (L) MemMatrix(m_gs, lev, e, unit, m_proj)
+             : ::new MemMatrix(m_gs, lev, e, unit, m_proj);
+    }
 
     NFmiDataMatrix<float> nm;
     const Projection *pr = nullptr;
@@ -1756,7 +1755,9 @@ bool timeDiff(JDay const &j1, JDay const &j2, time_t &tDiff, time_t &t1_,
   // Times should be nonzero and in rising order. Use t1_ (the converted value
   // of j2 in previous call) if it is available
 
-  time_t t1 = (t1_ ? t1_ : JDay2time_t(j1)), t2 = JDay2time_t(j2), tD = tDiff;
+  time_t t1 = (t1_ ? t1_ : JDay2time_t(j1));
+  time_t t2 = JDay2time_t(j2);
+  time_t tD = tDiff;
 
   if ((!t1) || (!t2) || (t1 >= t2))
     tDiff = 0;
@@ -1833,12 +1834,15 @@ SQD_Data::push_NativeCross(lua_State *L, const std::vector<JDay> &vtVec,
     NFmiDataMatrix<float> nm;
 
     std::vector<float> pressures_or_heights;
-    std::vector<float> &pressures = pressures_or_heights,
-                       &heights = pressures_or_heights;
+    std::vector<float> &pressures = pressures_or_heights;
+    std::vector<float> &heights = pressures_or_heights;
     std::vector<NFmiLevel> hLevels;
-    unsigned int nLevels = levelVec.size(), nLocs = locs.size(),
-                 nTimes = vtVec.size(), i = 0;
-    time_t t1 = 0, tDiff = 0;
+    unsigned int nLevels = levelVec.size();
+    unsigned int nLocs = locs.size();
+    unsigned int nTimes = vtVec.size();
+    unsigned int i = 0;
+    time_t t1 = 0;
+    time_t tDiff = 0;
     bool timeCross =
         ((!flightRoute) && (nLocs == 1) && (nTimes > 1) &&
          timeDiff(vtVec[0], vtVec[1], tDiff, t1, NewBaseMinTimeStepInSecs));
@@ -1895,7 +1899,8 @@ SQD_Data::push_NativeCross(lua_State *L, const std::vector<JDay> &vtVec,
       std::vector<NFmiPoint> locations;
 
       if (!flightRoute) {
-        int locIdxIncr = 1, iLocs = 0;
+        int locIdxIncr = 1;
+        int iLocs = 0;
 
         if (nLocs == 1) {
           // To clone the single location for Route...() call

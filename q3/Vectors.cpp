@@ -58,7 +58,8 @@ namespace
  */
 inline bool detached(double a, double da, double b, double db) {
 
-  double a_min = NAN, a_max = NAN;
+  double a_min = NAN;
+  double a_max = NAN;
 
   if (da >= 0.0) {
     a_min = a;
@@ -98,9 +99,8 @@ namespace
 inline bool within(double v, double a, double da) {
   if (da >= 0.0) {
     return (v >= a) && (v <= a + da);
-  } else {
-    return (v >= a + da) && (v <= a);
-  }
+  }     return (v >= a + da) && (v <= a);
+ 
 }
 }  // namespace
 
@@ -140,9 +140,8 @@ bool PointAndVector::intersects(const PointAndVector &other) const {
   if (fabs(_norm) < Point::epsilon) {
     if (fabs(_o_norm) < Point::epsilon) {
       return p == other.p; // intersects if the points are the same
-    } else {
-      return other.intersects(this->p);
-    }
+    }       return other.intersects(this->p);
+   
   } else if (_o_norm == 0.0) {
     return intersects(other.p);
   }
@@ -151,8 +150,10 @@ bool PointAndVector::intersects(const PointAndVector &other) const {
    * Calculate crossing of 'other' (or its extension) on our line (or its
    * extension)
    */
-  double dx = get_dx(), dy = get_dy();
-  double o_dx = other.get_dx(), o_dy = other.get_dy();
+  double dx = get_dx();
+  double dy = get_dy();
+  double o_dx = other.get_dx();
+  double o_dy = other.get_dy();
 
   if (fabs(dx) < Point::epsilon) {
     if (fabs(o_dx) < Point::epsilon) {
@@ -232,8 +233,7 @@ bool PointAndVector::intersects(const PointAndVector &other) const {
       //
       return judge_by_projection(other);
 
-    } else {
-      // If the crossing point is within 'this' and 'other' lines,
+    }       // If the crossing point is within 'this' and 'other' lines,
       // it's a hit.
       //
       double x = divident / divider;
@@ -241,7 +241,7 @@ bool PointAndVector::intersects(const PointAndVector &other) const {
       if (within(x, p.x, dx) && within(x, other.p.x, o_dx)) {
         return true; // YES, they do intersect
       }
-    }
+   
   }
   return false;
 }

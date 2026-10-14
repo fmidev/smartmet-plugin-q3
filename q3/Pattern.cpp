@@ -33,13 +33,18 @@ static const unsigned GRANT_RADIAL = 0x08;
 namespace
 {
 unsigned get_grant(/*const*/ cairo_pattern_t *p) {
-  cairo_pattern_type_t pt = cairo_pattern_get_type(p);
-
-  return (pt == CAIRO_PATTERN_TYPE_SOLID)     ? GRANT_SOLID
-         : (pt == CAIRO_PATTERN_TYPE_SURFACE) ? GRANT_SURFACE
-         : (pt == CAIRO_PATTERN_TYPE_LINEAR)  ? GRANT_LINEAR
-         : (pt == CAIRO_PATTERN_TYPE_RADIAL)  ? GRANT_RADIAL
-                                              : 0 /*should not occur*/;
+  switch (cairo_pattern_get_type(p)) {
+    case CAIRO_PATTERN_TYPE_SOLID:
+      return GRANT_SOLID;
+    case CAIRO_PATTERN_TYPE_SURFACE:
+      return GRANT_SURFACE;
+    case CAIRO_PATTERN_TYPE_LINEAR:
+      return GRANT_LINEAR;
+    case CAIRO_PATTERN_TYPE_RADIAL:
+      return GRANT_RADIAL;
+    default:
+      return 0; /*should not occur*/
+  }
 }
 }  // namespace
 
@@ -143,7 +148,10 @@ int Pattern_bind::index(lua_State *L) {
       //---
       // .argb (argb_str)   (only if the pattern is a solid color pattern)
       {
-        double r = NAN, g = NAN, b = NAN, a = NAN;
+        double r = NAN;
+        double g = NAN;
+        double b = NAN;
+        double a = NAN;
         cairo_status_t st = cairo_pattern_get_rgba(my, &r, &g, &b, &a);
         if (st == 0) {
           lua_pushliteral(L, "rgba");
@@ -331,7 +339,11 @@ int Pattern::get_color_stop_rgba(lua_State *L) {
     luaL_error(L, "Start indexing with 1");
   }
 
-  double offset = NAN, r = NAN, g = NAN, b = NAN, a = NAN;
+  double offset = NAN;
+  double r = NAN;
+  double g = NAN;
+  double b = NAN;
+  double a = NAN;
 
   cairo_status_t st =
       cairo_pattern_get_color_stop_rgba(my, index - 1, &offset, &r, &g, &b, &a);
@@ -341,9 +353,8 @@ int Pattern::get_color_stop_rgba(lua_State *L) {
 
   if (st == CAIRO_STATUS_INVALID_INDEX) {
     return 0; // no such index (push nothing)
-  } else {
-    status_check(L, st);
-  }
+  }     status_check(L, st);
+ 
 
   lua_pushnumber(L, offset);
   lua_pushnumber(L, r);

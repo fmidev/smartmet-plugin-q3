@@ -58,9 +58,8 @@ NA_Level process_def_level(const NA_Level &lev) {
        (!lev.hasValue())) ||
       (lt == NA_Level::HEIGHT_LEVEL)) {
     return {}; // NO_LEVEL (use the first level)
-  } else {
-    return lev;
-  }
+  }     return lev;
+ 
 }
 }  // namespace
 
@@ -157,9 +156,8 @@ int RawBind::__index(lua_State *L) {
     if (s_.c_str()) {
       lua_pushstring(L, s_.c_str());
       return 1;
-    } else {
-      return 0;
-    }
+    }       return 0;
+   
   }
 
   // [uint]= .sqd_producer          (available only for SQD files)
@@ -170,9 +168,8 @@ int RawBind::__index(lua_State *L) {
     if (prod > 0) {
       lua_pushinteger(L, prod);
       return 1;
-    } else {
-      return 0; // not SQD, does not have a producer code
-    }
+    }       return 0; // not SQD, does not have a producer code
+   
   }
 #endif
 
@@ -675,7 +672,8 @@ int RawBind::__call(lua_State *L) {
   NA_Level level; // NA_Level::NO_LEVEL
 
   // 22-Sep-2011 PKi: For cross call
-  bool cross = false, flightRoute = false;
+  bool cross = false;
+  bool flightRoute = false;
   std::vector<JDay> vtVec;
   std::vector<NA_Level> levelVec;
   LatLonList locs;

@@ -47,7 +47,7 @@ public:
     INVARIANT();
   } // empty (no) projection
   Projection(const char *s);
-  Projection(const Projection &);
+  Projection(const Projection & /*o*/);
   ~Projection();
 
   // Used when the particular type of the underlying projection is known for
@@ -60,7 +60,7 @@ public:
   }
 #endif
 
-  Projection &operator=(const Projection &);
+  Projection &operator=(const Projection & /*o*/);
 
   bool at(const LatLon &ll, double &dx, double &dy) const {
     assert(proj);

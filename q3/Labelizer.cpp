@@ -362,8 +362,8 @@ public:
 
   const FontSpec &get_fs() const { return fs; }
 
-  bool intersects(const PointAndVector &) /*const*/;
-  bool intersects(const TiltedRect &) /*const*/;
+  bool intersects(const PointAndVector & /*v*/) /*const*/;
+  bool intersects(const TiltedRect & /*tr*/) /*const*/;
 
   void draw_labels(Labelizer::Drawer &drawer);
 };
@@ -506,8 +506,7 @@ void Labelizer::Chain::done(const Config &config) {
     //
     if (!it_next.valid()) {
       continue; // start/end point (if open ended); skip
-    } else {
-      // Standardization of x,y to (0,0)..(pi,pi) coordinates
+    }       // Standardization of x,y to (0,0)..(pi,pi) coordinates
       //
       double x = M_PI * ((bb_w == 0.0) ? 0.5 : ((p.x - bb.lo.x) / bb_w));
       double y = M_PI * ((bb_h == 0.0) ? 0.5 : ((p.y - bb.lo.y) / bb_h));
@@ -536,7 +535,7 @@ void Labelizer::Chain::done(const Config &config) {
         score *= config.boost_horizontal;
       }
       it->score = score;
-    }
+   
   };
 }
 
@@ -573,10 +572,9 @@ void Labelizer::add_point(const Point &xy) {
   if ((current_chain->size() > 0) && (last_point == xy)) {
     return; // skipped; already in the chain
 
-  } else {
-    current_chain->add_point(xy);
+  }     current_chain->add_point(xy);
     last_point = xy;
-  }
+ 
 }
 
 /*
@@ -1227,7 +1225,8 @@ const Labelizer::Config &Labelizer::loadCfg(lua_State *L, int idx,
                                             Labelizer::Config &lCfg,
                                             bool uConfig) {
   const Labelizer::_configFlds *lcfp = Labelizer::getConfigFlds();
-  char *cpf = (char *)&Labelizer::lblCfg, *cpu = (char *)&lCfg;
+  char *cpf = (char *)&Labelizer::lblCfg;
+  char *cpu = (char *)&lCfg;
   int n = 0;
 
   lua_pushnil(L); // first key

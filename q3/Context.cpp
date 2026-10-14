@@ -479,9 +479,12 @@ int Context::push_group(lua_State *L) {
   bool content_color = lua_isboolean(L, 1) ? lua_toboolean(L, 1) : true;
   bool content_alpha = lua_isboolean(L, 2) ? lua_toboolean(L, 2) : true;
 
-  cairo_content_t v = (!content_alpha)   ? CAIRO_CONTENT_COLOR
-                      : (!content_color) ? CAIRO_CONTENT_ALPHA
-                                         : CAIRO_CONTENT_COLOR_ALPHA;
+  cairo_content_t v = CAIRO_CONTENT_COLOR_ALPHA;
+  if (!content_alpha) {
+    v = CAIRO_CONTENT_COLOR;
+  } else if (!content_color) {
+    v = CAIRO_CONTENT_ALPHA;
+  }
   cairo_push_group_with_content(my, v);
   status_check_ok(L, cairo_status(my));
 
@@ -515,7 +518,9 @@ int Context::set_source_rgb(lua_State *L) {
   proto(L, lua_type(L, 1) == LUA_TNUMBER ? "number,number,number" : "string");
 
   Context &my = *Context::instance(L, lua_upvalueindex(1));
-  double r = NAN, g = NAN, b = NAN;
+  double r = NAN;
+  double g = NAN;
+  double b = NAN;
   parse_rgba(L, 1, r, g, b, nullptr);
 
   cairo_set_source_rgb(my, r, g, b);
@@ -538,7 +543,10 @@ int Context::set_source_rgba(lua_State *L) {
                                          : "string,number");
 
   Context &my = *Context::instance(L, lua_upvalueindex(1));
-  double r = NAN, g = NAN, b = NAN, a = NAN;
+  double r = NAN;
+  double g = NAN;
+  double b = NAN;
+  double a = NAN;
   parse_rgba(L, 1, r, g, b, &a);
 
   cairo_set_source_rgba(my, r, g, b, a);
@@ -1340,7 +1348,8 @@ int Context::has_current_point(lua_State *L) {
 int Context::get_current_point(lua_State *L) {
   proto(L, "");
   Context &my = *Context::instance(L, lua_upvalueindex(1));
-  double x = NAN, y = NAN;
+  double x = NAN;
+  double y = NAN;
 
   cairo_get_current_point(my, &x, &y);
   status_check_ok(L, cairo_status(my));

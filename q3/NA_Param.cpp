@@ -227,9 +227,8 @@ FmiParameterName NA_Param::standard_param_native_id(const char *s) {
   auto it = id_by_name.find(s);
   if (it != id_by_name.end()) {
     return it->second; // the enum
-  } else {
-    return (FmiParameterName)0; // not a standard name
-  }
+  }     return (FmiParameterName)0; // not a standard name
+ 
 }
 
 namespace
@@ -245,9 +244,8 @@ string standard_param_name(FmiParameterName e) {
   auto it = name_by_id.find(e);
   if (it != name_by_id.end()) {
     return it->second; // the name
-  } else {
-    return ""; // no standard name
-  }
+  }     return ""; // no standard name
+ 
 }
 }  // namespace
 
@@ -280,9 +278,8 @@ string NA_Param::native_id_virtual_param(FmiParameterName e) {
   auto it = virtualname_by_id.find(e);
   if (it != virtualname_by_id.end()) {
     return it->second; // the name
-  } else {
-    return ""; // no virtual name
-  }
+  }     return ""; // no virtual name
+ 
 }
 #endif
 // USE_NEWBASE
@@ -452,7 +449,7 @@ string NA_Param::toString(bool prefer_standard_names) const {
   if (prefer_standard_names && (!std_name.empty())) {
     return std_name;
 
-  } else if (!native_name.empty()) {
+  } if (!native_name.empty()) {
     return native_name;
 
   } else {

@@ -65,9 +65,9 @@ const char *my_reader(lua_State * /*L*/, void *st_v, size_t *size) {
     return &st.buf;
   }
 
-  do {
+  for (bool more = true; more; more = (*st.p) && (*st.p != ' ') && (*st.p != '%')) {
     st.p++;
-  } while ((*st.p) && (*st.p != ' ') && (*st.p != '%'));
+  }
   *size = st.p - start;
   return start;
 }

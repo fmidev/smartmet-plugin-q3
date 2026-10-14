@@ -248,7 +248,7 @@ public:
   // Even the binary format needs decimals.
   //
 #ifdef CONFIG_BINARY_OUTPUT_ENABLED
-  virtual void asBinary_q2_(std::ostream &, int) const {
+  virtual void asBinary_q2_(std::ostream & /*unused*/, int /*unused*/) const {
     // Binary storage is only for scalar matrices (not matrix of vector).
     //
     throw E_LOG_USAGE0("Binary storage not supported for this matrix.");
@@ -424,7 +424,7 @@ public:
   string_or_null getLevelTypeStr() const {
     if (level.isPressureLevel())
       return "hpa";
-    else if (level.isHybridLevel())
+    if (level.isHybridLevel())
       return "hybrid";
     else if (level.isHeightLevel())
       return "height";

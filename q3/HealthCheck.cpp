@@ -198,9 +198,16 @@ Hugepagesize:     2048 kB
 __attribute__((unused))
 string mem_stat(bool initial) {
 #ifdef __linux__
-  long memtotal_kB = 0, memfree_kB = 0, buffers_kB = 0, cached_kB = 0,
-       swapcached_kB = 0, swaptotal_kB = 0, swapfree_kB = 0, mapped_kB = 0,
-       slab_kB = 0, committed_AS_kB = 0;
+  long memtotal_kB = 0;
+  long memfree_kB = 0;
+  long buffers_kB = 0;
+  long cached_kB = 0;
+  long swapcached_kB = 0;
+  long swaptotal_kB = 0;
+  long swapfree_kB = 0;
+  long mapped_kB = 0;
+  long slab_kB = 0;
+  long committed_AS_kB = 0;
 
   ifstream fs("/proc/meminfo");
   char buf[100]; // must fit all lines, otherwise 'getline()' stops iterating
@@ -278,8 +285,7 @@ string mem_stat(bool initial) {
   if (initial) {
     return ""; // not used
     // return string_fmt( "{ total_MB: %.2lf }", memtotal_kB/1024.0 );
-  } else {
-    long used_kB = memtotal_kB - (memfree_kB + buffers_kB + cached_kB +
+  }     long used_kB = memtotal_kB - (memfree_kB + buffers_kB + cached_kB +
                                   swapcached_kB + slab_kB);
     long swapped_kB = swaptotal_kB - swapfree_kB;
 
@@ -288,7 +294,7 @@ string mem_stat(bool initial) {
                       "%.2lf }",
                       used_kB / 1024.0, mapped_kB / 1024.0, swapped_kB / 1024.0,
                       memfree_kB / 1024.0, committed_AS_kB / 1024.0);
-  }
+ 
 
 // return string_fmt( "{ total_kB: %ld, free_kB: %ld, mapped_kB: %ld }",
 // total_kB, free_kB, mapped_kB );

@@ -199,7 +199,7 @@ public:
 private:
   friend class ContourInfo_common;
   static const ContourInfo_Fill *create(const std::string &conf,
-                                        const ContourMatrix<float> &);
+                                        const ContourMatrix<float> & /*unused*/);
 
   size_t pSize = 10;
 };

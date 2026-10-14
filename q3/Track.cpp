@@ -219,7 +219,7 @@ TrackedData *Q3Engine::Track::getData_must_release_(const JDay &ot,
           if (!required_level.covered_by(*qd, exact)) {
             missing_level = required_level.toString();
             break;  // out of the iterator
-          } else if (!exact) {
+          } if (!exact) {
             all_match_exactly = false;  // at least one level would need to be calculated
           }
         }
@@ -281,7 +281,7 @@ TrackedData *Q3Engine::Track::getData_must_release_(const JDay &ot,
       d3->Release();
     return d2;
   }
-  else if (d3)
+  if (d3)
   {
     return d3;
   }
@@ -571,7 +571,9 @@ int TrackProxyBind::call(lua_State *L)
   TrackedData *d =
       nullptr; // (must be here to avoid goto's past a variable declaration)
 
-  bool demand_z_param = false, demand_p_param = false, metaQuery = false;
+  bool demand_z_param = false;
+  bool demand_p_param = false;
+  bool metaQuery = false;
 
   int otindex = 1;     // Set to <= 0 if relative origintime=n (<= 0) is given
 
@@ -604,7 +606,7 @@ int TrackProxyBind::call(lua_State *L)
         }
         return 1;
       }
-      else if (strcmp(s, "runs") == 0)
+      if (strcmp(s, "runs") == 0)
       {
         lua_pushinteger(L, my.getRunSecs());
         return 1;
@@ -659,7 +661,7 @@ int TrackProxyBind::call(lua_State *L)
           }
           return 1;
         }
-        else if (strcmp(key, "origintime") == 0)
+        if (strcmp(key, "origintime") == 0)
         {
           ot_absolute = JDay(L, v_idx);
           if (!ot_absolute)
@@ -882,10 +884,13 @@ int TrackProxyBind::call(lua_State *L)
     //
     // If first data/leveltype does not match the query, try the other leveltype
 
-    NA_Level::Type leveltype(mode == ONLY_SOUNDING ? NA_Level::NO_LEVEL
-                             : mode == ONLY_GROUND ? NA_Level::GROUND_LEVEL
-                             : mode == ONLY_PRESSURE ? NA_Level::PRESSUREORHYBRID_LEVEL
-                             : NA_Level::HYBRID_LEVEL);
+    NA_Level::Type leveltype = NA_Level::HYBRID_LEVEL;
+    if (mode == ONLY_SOUNDING)
+      leveltype = NA_Level::NO_LEVEL;
+    else if (mode == ONLY_GROUND)
+      leveltype = NA_Level::GROUND_LEVEL;
+    else if (mode == ONLY_PRESSURE)
+      leveltype = NA_Level::PRESSUREORHYBRID_LEVEL;
 
     for (int v = 0; (v < 2); v++)
     {
@@ -951,7 +956,8 @@ int TrackProxyBind::call(lua_State *L)
       //      find the _nearest_ available data.
       //
       string err_ignored;
-      JDay ot1, ot2;  // time range of our swipe
+      JDay ot1;
+      JDay ot2;  // time range of our swipe
 
       ot_absolute = JDay(ot_absolute.year(),
                          ot_absolute.month(),
@@ -1050,7 +1056,7 @@ int TrackProxyBind::call(lua_State *L)
         Raw(d, default_level, MatrixPos::ZERO, metaQuery);  // use it - GC will call 'd->Acquire()'
     return 1;
   }
-  else if (err.empty())
+  if (err.empty())
   {
     // no data found, at all
     //

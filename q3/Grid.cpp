@@ -297,7 +297,8 @@ Grid::Grid(const Raw_interface &r, const JDay &vt_, const NA_Level &lev_,
   assert(data->isReadOnly());
 #endif
 
-  unsigned int i = 0, n = 0;
+  unsigned int i = 0;
+  unsigned int n = 0;
 
   if ((n = vtVec.size()) < 1) {
     if (!vt.covered_by(data->getTimes())) {
@@ -372,7 +373,8 @@ Grid::push_Matrix(lua_State *L, const ApiParam &p) CONST_IF_SERVER {
 
   const vector<NA_Param> &params = data->getParams();
 
-  NA_Param na, nb;
+  NA_Param na;
+  NA_Param nb;
   bool polar = false;
 
   if (!p.covered_by(params, na, nb, polar)) {
@@ -387,13 +389,12 @@ Grid::push_Matrix(lua_State *L, const ApiParam &p) CONST_IF_SERVER {
 
   if (!nb) {
     return ma;
-  } else {
-    CONST_IF_SERVER Matrix *mb = push_ScalarMatrix(L, nb);
+  }     CONST_IF_SERVER Matrix *mb = push_ScalarMatrix(L, nb);
     assert(mb);
     (void)mb;
 
     return new (L) VectorMatrix(L, polar); // eats components
-  }
+ 
 }
 
 /*
@@ -413,8 +414,7 @@ Grid::push_ScalarMatrix(lua_State *L, const NA_Param &p) CONST_IF_SERVER {
     //	} else if (!gridsize) {
     //  	return data->push_NativeMatrix( L, vt, level, p, nullptr,
     //  nullptr, nullptr, &dataIds);
-  } else {
-    const Matrix *m = data->push_Matrix(L, vt, level, p, proj, gridsize,
+  }     const Matrix *m = data->push_Matrix(L, vt, level, p, proj, gridsize,
                                         &dataIds); // project and scale
 #ifdef METQU
     // We're returning a non-const pointer but essentially it's a read-only
@@ -428,7 +428,7 @@ Grid::push_ScalarMatrix(lua_State *L, const NA_Param &p) CONST_IF_SERVER {
 #else
     return m;
 #endif
-  }
+ 
 }
 
 /*

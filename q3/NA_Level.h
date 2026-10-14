@@ -69,7 +69,7 @@ public:
     return covered_by(data, dummy);
   }
 
-  static Type lt_enum(const char *);
+  static Type lt_enum(const char * /*s*/);
 
   operator bool() const { return lt != NO_LEVEL; }
 
