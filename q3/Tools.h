@@ -237,9 +237,8 @@ public:
       return b.is_null ? 0 : -1; // equal or 'this' is smaller
     } if (b.is_null) {
       return 1; // 'this' is bigger
-    } else {
-      return std::string::compare(b); // both are non-nullptr
-    }
+    }       return std::string::compare(b); // both are non-nullptr
+
   }
 
   bool operator==(const string_or_null &b) const { return compare(b) == 0; }

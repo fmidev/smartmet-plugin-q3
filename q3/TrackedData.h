@@ -102,8 +102,8 @@ private:
 
   // Don't allow (would render refcount useless)
   //
-  TrackedData(const TrackedData &);
-  TrackedData &operator=(const TrackedData &);
+  TrackedData(const TrackedData &) = delete;
+  TrackedData &operator=(const TrackedData &) = delete;
 
 #ifndef NDEBUG
   void _INVARIANT(const char *file, unsigned line) const {

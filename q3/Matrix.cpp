@@ -1453,7 +1453,7 @@ int MatrixBind::index( lua_State *L ) {
                 new(L) MatrixPos( m.getSize().getXS(), m.getSize().getYS() );
                 return 1;
             }
-            else if (strcmp(s,"level")==0) {
+            if (strcmp(s,"level")==0) {
             	// For ground level data getLevelTypeStr returns an empty string; nothing is returned
             	//
             	// NOLINTNEXTLINE(cppcoreguidelines-slicing): the null flag has been checked
@@ -1480,7 +1480,7 @@ int MatrixBind::index( lua_State *L ) {
 
                 return 0;
             }
-            else if (strcmp(s,"param")==0) {
+            if (strcmp(s,"param")==0) {
             	if (!m.getParamStr().empty()) {
             		lua_pushstring( L, m.getParamStr().c_str() );
             		return 1;
@@ -1956,10 +1956,9 @@ double within_line( double a, double b, double dist_ab, NA_Param::e_Interpolatio
             } if (method==NA_Param::INTERPOLATE_LINEAR_DEG) {
                 return interpolate_deg( a, a_prob, b, b_prob );
 
-            } else {
-                assert( method==NA_Param::INTERPOLATE_LINEAR_LON);
+            }                 assert( method==NA_Param::INTERPOLATE_LINEAR_LON);
                 return deg_to_lon( interpolate_deg( a, a_prob, b, b_prob ) );
-            }
+
         }
         case NA_Param::INTERPOLATE_NEAREST:
         default:
@@ -1985,7 +1984,7 @@ double within_triangle( double a, double b, double dist_ab, double c, double dis
         return within_line( b, c, dist_bc, method );
     } if (std::isnan(b)) {
         return within_line( a, c, dist_ac, method );
-    } else if (std::isnan(c)) {
+    } if (std::isnan(c)) {
         return within_line( a, b, dist_ab, method );
     }
 
@@ -2005,10 +2004,9 @@ double within_triangle( double a, double b, double dist_ab, double c, double dis
             } if (method==NA_Param::INTERPOLATE_LINEAR_DEG) {      // 0 .. 359.999...
                 return interpolate_deg( a, a_prob, b, b_prob, c, c_prob );
 
-            } else {
-                assert( method==NA_Param::INTERPOLATE_LINEAR_LON );     // -179.999... .. 180.0
+            }                 assert( method==NA_Param::INTERPOLATE_LINEAR_LON );     // -179.999... .. 180.0
                 return deg_to_lon( interpolate_deg( a, a_prob, b, b_prob, c, c_prob ) );
-            }
+
         }
 
         case NA_Param::INTERPOLATE_NEAREST:
@@ -2093,10 +2091,10 @@ float Matrix::at_( double fx, double fy ) const {
     if (std::isnan(B)) {
         return within_triangle( C, A, 1.0-dy /*C->A*/, D, dx /*C->D*/, method );
     }
-    else if (std::isnan(C)) {
+    if (std::isnan(C)) {
         return within_triangle( B, D, dy /*B->D*/, A, 1.0-dx /*B->A*/, method );
     } 
-    else if (std::isnan(D)) {
+    if (std::isnan(D)) {
         return within_triangle( A, B, dx /*A->B*/, C, dy /*A->C*/, method );
     }
 

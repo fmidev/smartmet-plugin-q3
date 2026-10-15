@@ -48,8 +48,8 @@ public:
   operator lua_State *() { return L; }
 
 private:
-  LuaWrapper(const LuaWrapper &);     // no copy constructor
-  void operator=(const LuaWrapper &); // no assignment
+  LuaWrapper(const LuaWrapper &) = delete;     // no copy constructor
+  void operator=(const LuaWrapper &) = delete; // no assignment
 
   static int my_traceback(lua_State *L);
 

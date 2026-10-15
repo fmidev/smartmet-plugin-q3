@@ -43,8 +43,8 @@ private:
 
   // Disallow copying and assigning
   //
-  Q3Engine(const Q3Engine &other);
-  Q3Engine &operator=(const Q3Engine &other);
+  Q3Engine(const Q3Engine &other) = delete;
+  Q3Engine &operator=(const Q3Engine &other) = delete;
 };
 
 // Reads the configuration file (Server.cpp)

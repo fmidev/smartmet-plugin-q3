@@ -60,10 +60,10 @@ NA_Level SQD_Tools::q3_level(FmiLevelType lt, double lv) /*throw(E_BUG)*/ {
   } if (lt == kFmiHybridLevel) {
     return NA_Level(NA_Level::HYBRID_LEVEL, lv);
 
-  } else if (lt == kFmiPressureLevel) {
+  } if (lt == kFmiPressureLevel) {
     return NA_Level(NA_Level::PRESSURE_LEVEL, lv);
 
-  } else if (lt == kFmiSoundingLevel) {
+  } if (lt == kFmiSoundingLevel) {
     return NA_Level(NA_Level::SOUNDING_LEVEL, lv);
   }
 

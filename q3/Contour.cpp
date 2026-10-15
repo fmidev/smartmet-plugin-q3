@@ -810,7 +810,7 @@ public:
       else if (strcmp(str, "magenta") == 0)
         r = b = 1.0;
       else if (strcmp(str, "gray") == 0) { /*nothing*/
-        ;
+
       }
 
       cairo_set_source_rgba(cr, r, g, b, alpha);

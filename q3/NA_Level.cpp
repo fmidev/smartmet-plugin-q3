@@ -82,9 +82,8 @@ string NA_Level::toString(bool getLongName) const {
   } if (lv == floorf(lv)) {
     return string_fmt("%s:%d", s, (int)lv);
 
-  } else {
-    return string_fmt("%s:%lf", s, lv);
-  }
+  }     return string_fmt("%s:%lf", s, lv);
+
 }
 
 /*---=== NA_Level ===---
@@ -156,9 +155,9 @@ NA_Level::Type NA_Level::lt_enum(const char *s) {
     return GROUND_LEVEL;
   } if (strcmp(s, "hybrid") == 0) {
     return HYBRID_LEVEL;
-  } else if ((strcmp(s, "hpa") == 0) || (strcmp(s, "hPa") == 0)) {
+  } if ((strcmp(s, "hpa") == 0) || (strcmp(s, "hPa") == 0)) {
     return PRESSURE_LEVEL;
-  } else if (strcmp(s, "height") ==
+  } if (strcmp(s, "height") ==
              0) { // 04-Oct-2011 PKi: "Height" level for cross call
     return HEIGHT_LEVEL;
   } else if (strcmp(s, "sounding") == 0) {
@@ -224,12 +223,11 @@ bool NA_Level::covered_by(const NA_Data &data, bool &exact) const {
   } if (lt == HYBRID_LEVEL) {
     if (std::isnan(lv)) { // any hybrid level(s), at all
       return has_at_least_1_of(lt, vec);
-    } else {
-      exact = true;
+    }       exact = true;
       return has_level(*this, vec); // must match precisely
-    }
 
-  } else if (lt == PRESSURE_LEVEL) {
+
+  } if (lt == PRESSURE_LEVEL) {
     /*
      * Pressure levels (pre-calculated) can exist in the data, either exact or
      * interpolated.
@@ -237,15 +235,14 @@ bool NA_Level::covered_by(const NA_Data &data, bool &exact) const {
     if (has_at_least_1_of(PRESSURE_LEVEL, vec)) {
       if (isnanf(lv)) {
         return true;
-      } else {
-        double lv_min = NAN;
+      }         double lv_min = NAN;
         double lv_max = NAN;
         if (levels_range(PRESSURE_LEVEL, vec, lv_min, lv_max) &&
             (lv_min <= lv) && (lv_max >= lv)) {
           exact = has_level(*this, vec);
           return true;
         }
-      }
+
     }
 
     /*

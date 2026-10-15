@@ -452,8 +452,7 @@ string NA_Param::toString(bool prefer_standard_names) const {
   } if (!native_name.empty()) {
     return native_name;
 
-  } else {
-    assert(std_name != "");
+  }     assert(std_name != "");
     return std_name;
-  }
+
 }

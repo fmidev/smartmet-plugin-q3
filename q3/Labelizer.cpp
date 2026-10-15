@@ -537,7 +537,7 @@ void Labelizer::Chain::done(const Config &config) {
       }
       it->score = score;
    
-  };
+  }
 }
 
 /*

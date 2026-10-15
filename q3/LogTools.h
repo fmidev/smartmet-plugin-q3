@@ -104,7 +104,7 @@ public:
     if (logger && file) {
       logger->log(cat, file, line, id_, msg.c_str(), msg.length());
     }
-  };
+  }
   static int LOG_(lua_State *L); // logging from Lua
 
   // Derived classes implement their actual logger

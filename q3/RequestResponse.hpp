@@ -42,7 +42,7 @@ class RequestResponse {
     void set_script( const char *s );
 
     void set_output( unsigned resp_code, const char *mime, const char *s, size_t bytes=(size_t)(-1) );
-    void set_first_origintime( const char * fstot ) { set_header(HTTPHdr_First_Origintime,fstot); };
+    void set_first_origintime( const char * fstot ) { set_header(HTTPHdr_First_Origintime,fstot); }
 
     std::map<std::string, std::string>::const_iterator begin() const { return kk.begin(); }
     std::map<std::string, std::string>::const_iterator end() const { return kk.end(); }

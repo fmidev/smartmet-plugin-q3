@@ -48,6 +48,7 @@
 #include <ostream>
 
 #include <memory>
+#include <utility>
 
 class Projection;
 
@@ -113,7 +114,7 @@ public:
   std::string asString() const;
 
 private:
-  MatrixSize(); // not allowed
+  MatrixSize() = delete; // not allowed
 
   // data members
   MatrixPos top, bottom; // either symmetrix (-x,-y)..(x,y)
@@ -199,7 +200,7 @@ public:
   }
 
 private:
-  MatrixIter(); // not allowed
+  MatrixIter() = delete; // not allowed
 
   // data members
   const MatrixSize size;
@@ -364,7 +365,7 @@ public:
     return get_value_n(offset(p));
   }
 
-  void setGrid(std::shared_ptr<NFmiGrid> grid) { wantedGrid = grid; }
+  void setGrid(std::shared_ptr<NFmiGrid> grid) { wantedGrid = std::move(grid); }
   std::shared_ptr<NFmiGrid> getGrid() { return wantedGrid; }
 
   /*
@@ -428,7 +429,7 @@ public:
       return "hpa";
     if (level.isHybridLevel())
       return "hybrid";
-    else if (level.isHeightLevel())
+    if (level.isHeightLevel())
       return "height";
 
     return "";

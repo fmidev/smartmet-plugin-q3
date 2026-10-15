@@ -19,10 +19,10 @@
 // 31-Oct-2011 PKi: Parameter mapping for virtual parameters
 //
 struct virtualParameterName {
-  virtualParameterName(FmiParameterName p, FmiParameterName s) {
-    primaryId = p;
-    secondaryId = s;
-  };
+  virtualParameterName(FmiParameterName p, FmiParameterName s) : primaryId(p), secondaryId(s) {
+
+
+  }
 
   FmiParameterName primaryId;   // primary parameter's native id in SQD file
   FmiParameterName secondaryId; // secondary parameter's native id in SQD file

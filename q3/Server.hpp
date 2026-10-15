@@ -46,8 +46,8 @@ private:
 
   // Disallow copying
   //
-  Q3Server(const Q3Server &);
-  Q3Server &operator=(const Q3Server &);
+  Q3Server(const Q3Server &) = delete;
+  Q3Server &operator=(const Q3Server &) = delete;
 
   Q3Engine *itsEngine;
 };

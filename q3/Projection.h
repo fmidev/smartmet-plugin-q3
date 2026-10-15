@@ -31,8 +31,8 @@ public:
   virtual std::string creationPrefix() const { return ""; }
 
 private:
-  Projection_provider(const Projection_provider &);            // not allowed
-  Projection_provider &operator=(const Projection_provider &); // -''-
+  Projection_provider(const Projection_provider &) = delete;            // not allowed
+  Projection_provider &operator=(const Projection_provider &) = delete; // -''-
 
   // no data fields
 };

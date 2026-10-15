@@ -278,7 +278,7 @@ int VectorMatrixBind::index(lua_State *L) {
         }
       }
       return 1;
-    } else if (strcmp(s, "abs") == 0) {
+    } if (strcmp(s, "abs") == 0) {
       const Matrix *mm =
           me.getAbs_(); // non-nullptr if data is stored as polar coords
       if (mm) {
@@ -294,7 +294,7 @@ int VectorMatrixBind::index(lua_State *L) {
         }
       }
       return 1;
-    } else if (strcmp(s, "deg") == 0) {
+    } if (strcmp(s, "deg") == 0) {
       const Matrix *mm =
           me.getDeg_(); // non-nullptr if data is stored as polar coords
       if (mm) {

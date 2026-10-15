@@ -43,8 +43,8 @@ private:
 
   // No copying or assigning
   //
-  Bz2_Cache(const Bz2_Cache &);
-  Bz2_Cache &operator=(const Bz2_Cache &);
+  Bz2_Cache(const Bz2_Cache &) = delete;
+  Bz2_Cache &operator=(const Bz2_Cache &) = delete;
 };
 
 #endif

@@ -142,7 +142,7 @@ bool PointAndVector::intersects(const PointAndVector &other) const {
       return p == other.p; // intersects if the points are the same
     }       return other.intersects(this->p);
    
-  } else if (_o_norm == 0.0) {
+  } if (_o_norm == 0.0) {
     return intersects(other.p);
   }
 

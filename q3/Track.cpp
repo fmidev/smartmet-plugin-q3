@@ -734,7 +734,7 @@ int TrackProxyBind::call(lua_State *L)
 
           // mode= BEST_VERTICAL;
 
-          ;
+
 #endif
         }
         else
@@ -818,7 +818,7 @@ int TrackProxyBind::call(lua_State *L)
     } else if (required_level.getType() == NA_Level::HEIGHT_LEVEL) {
       // HYBRID and BEST_VERTICAL remain
       //
-      ;
+
     } else if (required_level.isSoundingLevel()) {
       mode = ONLY_SOUNDING;
     } else {

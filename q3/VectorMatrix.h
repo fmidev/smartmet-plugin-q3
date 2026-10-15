@@ -137,7 +137,7 @@ private:
   void push_cartesian(lua_State *L, int index_of_this, bool choose_x) const;
 
 
-  VectorMatrix(); // no such
+  VectorMatrix() = delete; // no such
 
   friend class VectorMatrixBind;
 

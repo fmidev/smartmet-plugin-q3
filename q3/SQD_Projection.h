@@ -44,7 +44,7 @@ public:
 
 private:
   SQD_Projection(const SQD_Projection &o); // accessed through '.clone()'
-  SQD_Projection &operator=(const SQD_Projection &o); // not allowed
+  SQD_Projection &operator=(const SQD_Projection &o) = delete; // not allowed
 
   // data members
   //
