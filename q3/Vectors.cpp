@@ -51,28 +51,6 @@ Point Point::operator-(const Vector &v) const {
   return Point(x - v.get_dx(), y - v.get_dy());
 }
 
-namespace
-{
-/*
- * Return 'true' if the ranges [a..a+da] and [b..b+db] do not touch.
- */
-inline bool detached(double a, double da, double b, double db) {
-
-  double a_min = NAN;
-  double a_max = NAN;
-
-  if (da >= 0.0) {
-    a_min = a;
-    a_max = a + da;
-  } else {
-    a_min = a + da;
-    a_max = a;
-  }
-
-  return (((b < a_min) && (b + db < a_min)) ||
-          ((b > a_max) && (b + db > a_max)));
-}
-}  // namespace
 
 /*
  * Check if a point is within a line.
