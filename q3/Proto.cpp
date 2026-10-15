@@ -20,12 +20,9 @@ namespace
 
 #define L_GROW(n) lua_checkstack(L, (n))
 
-#define L_ASSERT(cond)                                                         \
-  {                                                                            \
-    if (!(cond)) {                                                             \
-      luaL_error(L, "Assert failed at %s:%d: %s", __FILE__, __LINE__, #cond);  \
-    }                                                                          \
-  }
+#define L_ASSERT(cond) \
+  ((cond) ? void()   \
+          : (void)luaL_error(L, "Assert failed at %s:%d: %s", __FILE__, __LINE__, #cond))
 
 namespace
 {

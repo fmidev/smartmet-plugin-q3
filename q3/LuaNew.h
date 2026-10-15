@@ -190,19 +190,13 @@ public:
 #define L_string_or_typename(n)                                                \
   (lua_isstring(L, (n)) ? lua_tostring(L, (n)) : LuaNew_base::typename_(L, (n)))
 
-#define L_GROW(n)                                                              \
-  {                                                                            \
-    if (!lua_checkstack(L, n)) {                                               \
-      throw std::runtime_error("Out of Lua stack");                            \
-    }                                                                          \
-  }
+// Expressions, so that the ';' after a call is part of the statement
+#define L_GROW(n) \
+  (lua_checkstack(L, (n)) ? void() : throw std::runtime_error("Out of Lua stack"))
 
-#define L_ASSERT(cond)                                                         \
-  {                                                                            \
-    if (!(cond)) {                                                             \
-      luaL_error(L, "Assert failed at %s:%d: %s", __FILE__, __LINE__, #cond);  \
-    }                                                                          \
-  }
+#define L_ASSERT(cond) \
+  ((cond) ? void()   \
+          : (void)luaL_error(L, "Assert failed at %s:%d: %s", __FILE__, __LINE__, #cond))
 
 #define L_ABS(n)                                                               \
   (((n) >= 0 || (n) <= -10000 /*LUA_REGISTRYINDEX*/)                           \
