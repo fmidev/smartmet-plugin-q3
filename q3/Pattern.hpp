@@ -36,6 +36,8 @@ class Pattern : public LuaNew<Pattern_bind> {
 
     Pattern( cairo_pattern_t *cp_ );
     ~Pattern() override;
+    Pattern(const Pattern&) = delete;
+    Pattern& operator=(const Pattern&) = delete;
 
     static int add_color_stop_rgb( lua_State *L );
     static int add_color_stop_rgba( lua_State *L );

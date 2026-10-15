@@ -181,6 +181,7 @@ public:
   MatrixIter(const MatrixIter &o)
       :  MatrixPos(o), LuaNew<MatrixIterBind>(), size(o.size) {}
   ~MatrixIter() override = default;
+  MatrixIter& operator=(const MatrixIter&) = default;
 
   static int q3_points_iterator(lua_State *L);
 
@@ -310,6 +311,7 @@ private:
 class NFmiGrid;
 class Matrix : public ApiMatrix, public LuaNew<MatrixBind> {
 public:
+  Matrix& operator=(const Matrix&) = default;
   /*virtual*/ ~Matrix() override = default;
 
 protected:

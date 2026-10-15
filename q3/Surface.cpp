@@ -470,7 +470,7 @@ cairo_status_t Surface::collect_f(void *v_this, const unsigned char *data,
  */
 ImageSurface::~ImageSurface() {
   if (!finished) {
-    image_to_out();
+    ImageSurface::image_to_out();
   }
 }
 

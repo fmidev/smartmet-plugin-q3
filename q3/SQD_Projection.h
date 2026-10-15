@@ -28,6 +28,7 @@ class SQD_Projection : public Projection_provider {
 public:
   SQD_Projection(const char *proj_);
   SQD_Projection(const NFmiArea *area_);
+  ~SQD_Projection() = default;
 
   /*virtual*/ bool at(const LatLon &ll, double &dx, double &dy) const override;
 

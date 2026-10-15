@@ -33,6 +33,8 @@ class Q3Engine::Track
         size_t tmp_threshold_,
         const std::string &alias_ = "");
   ~Track();
+  Track(const Track&) = delete;
+  Track& operator=(const Track&) = delete;
 
   TrackedData *getData_must_release_(const JDay &ot,
                                      const std::vector<JDay> &required_times,

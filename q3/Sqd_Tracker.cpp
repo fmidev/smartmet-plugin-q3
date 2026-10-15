@@ -73,14 +73,9 @@ bool Sqd_Tracker::update(set<string> &seen_already) throw() {
     //
     pair<set<string>::iterator, bool> p = seen_already.insert(fn_abs);
     if (!p.second) {
-      const char *fn_f = strrchr(fn_abs, '/');
-      if (fn_f && *(fn_f + 1))
-        fn_f++;
-      else
-        fn_f = fn_abs;
       LOG_OK("%s: Seen already(%d: %d/%d): %s", getTrackName().c_str(),
              (int)pthread_self(), (int)seen_already.size(),
-             (int)available_data.size(), fn_f);
+             (int)available_data.size(), fn_abs);
       continue; // was already there
     }
 

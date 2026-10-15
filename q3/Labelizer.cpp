@@ -209,6 +209,7 @@ public:
     is_closed = o.is_closed;
     return *this;
   }
+  ~ChainIterator() = default;
 
   bool valid() const { return chunk_n >= 0; }
 
@@ -519,7 +520,7 @@ void Labelizer::Chain::done(const Config &config) {
       //
       double score = sin(x) + sin(y) - 2 * pow(sin(x) * sin(y), 2.0);
 
-      Vector A = *it;      // N-1 to N
+      const Vector& A = *it;      // N-1 to N
       const Vector& B = *it_next; // N to N+1
 
       // Dampen score if the position is a corner (not smooth line)
@@ -937,6 +938,8 @@ Labelizer::TiltedRect::TiltedRect(const Point &p, const Vector &size,
       break;
     case 3:
       rad = -alpha;
+      break;
+    default:
       break;
     }
     rad += tilt_rad;

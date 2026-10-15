@@ -123,6 +123,8 @@ public:
   }
 
   ~Mutex() { Destroy(); }
+  Mutex(const Mutex&) = delete;
+  Mutex& operator=(const Mutex&) = delete;
 
   void Destroy() {
     if (mm) {
@@ -155,6 +157,8 @@ class ClaimMutex {
 public:
   ClaimMutex(Mutex &m_) : m(m_) { m.Lock(); }
   ~ClaimMutex() { m.Unlock(); }
+  ClaimMutex(const ClaimMutex&) = delete;
+  ClaimMutex& operator=(const ClaimMutex&) = delete;
 
 private:
   Mutex &m;
@@ -221,6 +225,7 @@ public:
     is_null = (s == nullptr);
     return *this;
   }
+  ~string_or_null() = default;
 
   /*
    * Like 'std::string::compare()'

@@ -77,7 +77,7 @@ void Sleep_ms(unsigned ms) {
 #if 0
     _PTHREAD_CALL( pthread_delay_np, &ts_sleep );
 #else
-  struct timespec ts_remaining;
+  struct timespec ts_remaining{};
   const struct timespec *ts = &ts_sleep;
 
   while (nanosleep(ts, &ts_remaining) != 0) {
@@ -90,7 +90,7 @@ void Sleep_ms(unsigned ms) {
  * Returns millisecond timing for the current time.
  */
 uint64_t now_ms() {
-  struct timeval tv;
+  struct timeval tv{};
   // {
   //   time_t       tv_sec;   /* seconds since Jan. 1, 1970 */
   //   suseconds_t  tv_usec;  /* and microseconds */
@@ -118,6 +118,7 @@ const char *glob_fn(const char *fn_mask, glob_t &gbuf, int &gbuf_i,
 
   if (gbuf_i < 0) { /* first call */
     gbuf.gl_offs = 0;
+    // NOLINTNEXTLINE(concurrency-mt-unsafe): safe while no thread changes the locale or environment
     int rc = glob(fn_mask, 0 /*flags*/, nullptr /*errfunc*/, &gbuf);
     //
     // 0: ok
@@ -143,7 +144,7 @@ const char *glob_fn(const char *fn_mask, glob_t &gbuf, int &gbuf_i,
 
     assert(fn);
 
-    struct stat st;
+    struct stat st{};
     if (stat(fn, &st) != 0) {
       //
       // EACCES   Search permission is denied for a component of the path prefix

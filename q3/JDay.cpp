@@ -96,7 +96,7 @@ int JDayBind::index(lua_State *L) {
         luaL_error(L, "Cannot provide epoch values for < 1970");
       }
 
-      struct tm tmp;
+      struct tm tmp{};
       //
       memset(&tmp, 0, sizeof(tmp));
       tmp.tm_year = my.year() - 1900;
@@ -296,7 +296,7 @@ void JDayBind::setup(lua_State *L) {
 /*
  */
 JDay::jd_T JDay::calc(time_t ticks) {
-  struct tm tmp;
+  struct tm tmp{};
   gmtime_r(&ticks, &tmp);
 
   return calc(1900 + tmp.tm_year, 1 + tmp.tm_mon, tmp.tm_mday, tmp.tm_hour,
@@ -471,7 +471,7 @@ string JDay::toString() const {
   gregorian(&yyyy, &mm, &dd);
 
   char buf[20]; // enough for 'YYYYMMDDHHMMSS'
-  sprintf(buf, "%04d%02d%02d%02d%02d%02d", yyyy, mm, dd, hour(), min(), sec());
+  sprintf(buf, "%04u%02u%02u%02u%02u%02u", yyyy, mm, dd, hour(), min(), sec());
   return string(buf);
 }
 

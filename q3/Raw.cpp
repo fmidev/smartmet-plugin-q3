@@ -680,7 +680,6 @@ int RawBind::__call(lua_State *L) {
   DataIdList dataIds;
 
   // 13-Oct-2011 PKi: To check level type
-  NA_Level::Type lt = NA_Level::NO_LEVEL;
 
   if (lua_gettop(L) > 1) {
 
@@ -742,8 +741,7 @@ int RawBind::__call(lua_State *L) {
 #ifdef CONFIG_FLIGHT_LEVELS_API
           (strcmp(key, "flight") == 0) ||
 #endif
-          // 13-Oct-2011 PKi: Remember level type to check it later
-          (lt = NA_Level::lt_enum(key))) {
+          (NA_Level::lt_enum(key) != NA_Level::NO_LEVEL)) {
         if (level) {
           luaL_error(
               L, "Must give only one of: 'ground', 'hybrid', 'hpa', 'height'"

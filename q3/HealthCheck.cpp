@@ -391,7 +391,7 @@ suuli:/arch/pal       1.5T  1.3T  229G  85% /smartmet/archive
 */
 __attribute__((unused))
 string_or_null disk_usage(const char *path) {
-  struct statvfs d;
+  struct statvfs d{};
   //
   // unsigned long  f_bsize;    // file system block size         <<<
   // unsigned long  f_frsize;   // fragment size                  <

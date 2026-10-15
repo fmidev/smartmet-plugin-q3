@@ -159,6 +159,8 @@ int MatrixPosBind::index( lua_State *L ) {
                 return 1;
             }
             break;
+        default:
+            break;
     }
     luaL_error( L, "Bad index (for matrixpos): %s", s ? s : L_typename(2) );
 }
@@ -339,16 +341,12 @@ int MatrixSizeBind::index( lua_State *L ) {
     (void)my;
 
     const char *s= lua_tostring(L,2);
-    if (s) switch(*s) {
-/**
-        case 'blahblah':
-            if (!s[1]) {
-                lua_pushinteger( L, my.x );
-                return 1;
-            }
-            break;
-**/
-    }
+    // No fields can be indexed yet. A field would be handled like this:
+    //
+    //  if (s && strcmp(s, "blahblah") == 0) {
+    //      lua_pushinteger( L, my.x );
+    //      return 1;
+    //  }
     luaL_error( L, "Bad index (for matrixsize): %s", s ? s : L_typename(2) );
 }
 
@@ -1458,6 +1456,7 @@ int MatrixBind::index( lua_State *L ) {
             else if (strcmp(s,"level")==0) {
             	// For ground level data getLevelTypeStr returns an empty string; nothing is returned
             	//
+            	// NOLINTNEXTLINE(cppcoreguidelines-slicing): the null flag has been checked
             	string lt = m.getLevelTypeStr();
 
             	if (!lt.empty()) {
@@ -1525,6 +1524,8 @@ int MatrixBind::index( lua_State *L ) {
                 return 1;
             }
         } break;
+        default:
+          break;
     }
     
     // Check for location indices (userdata or array of userdata)

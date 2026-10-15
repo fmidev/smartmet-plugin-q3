@@ -82,6 +82,8 @@ class Surface : public LuaNew<Surface_bind> {
     Surface( cairo_surface_t *surf_ );
 #endif
     ~Surface() override;
+    Surface(const Surface&) = delete;
+    Surface& operator=(const Surface&) = delete;
 
   protected:
 
@@ -131,6 +133,8 @@ class ImageSurface : public Surface {
     ImageSurface( cairo_surface_t *surf_ ) : Surface(surf_) { INVARIANT(); }
 # endif
     ~ImageSurface() override;
+    ImageSurface(const ImageSurface&) = delete;
+    ImageSurface& operator=(const ImageSurface&) = delete;
 
 #ifndef SANDBOX
     static int write_to_png( lua_State *L );

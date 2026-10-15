@@ -20,7 +20,7 @@ using namespace std;
  */
 struct my_reader_st {
   const char *p;
-  char buf; // used for storage of decoded characters
+  char buf = 0; // used for storage of decoded characters
 
   my_reader_st(const char *code) : p(code) {}
 };

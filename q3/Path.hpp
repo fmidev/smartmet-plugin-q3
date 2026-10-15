@@ -36,6 +36,8 @@ class Path : public LuaNew<Path_bind> {
 
     Path( cairo_path_t *cp_ );
     ~Path() override;
+    Path(const Path&) = delete;
+    Path& operator=(const Path&) = delete;
 
     //static int set_matrix( lua_State *L );
 

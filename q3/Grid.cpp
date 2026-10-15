@@ -300,7 +300,7 @@ Grid::Grid(const Raw_interface &r, const JDay &vt_, const NA_Level &lev_,
   unsigned int i = 0;
   unsigned int n = 0;
 
-  if ((n = vtVec.size()) < 1) {
+  if (vtVec.empty()) {
     if (!vt.covered_by(data->getTimes())) {
       throw E_NO_MATCH(vt);
     }

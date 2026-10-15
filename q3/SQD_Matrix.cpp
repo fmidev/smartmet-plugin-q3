@@ -49,6 +49,9 @@ NFmiFastQueryInfo *new_iter(NFmiQueryData *qd, const JDay &vt,
     ok = fi->Level(SQD_Tools::newbase_level(lev));
     assert(ok);
   }
+#ifdef NDEBUG
+  (void)ok;
+#endif
 
   if (!fi->Param(NFmiParam(e))) {
     delete fi;

@@ -193,6 +193,8 @@ public:
       cairo_pattern_destroy(pattern);
     }
   }
+  ContourInfo_Fill(const ContourInfo_Fill &) = delete;
+  ContourInfo_Fill &operator=(const ContourInfo_Fill &) = delete;
 
   bool line_type() const override { return false; }
 
@@ -213,7 +215,7 @@ private:
   unsigned points = 0; // 0..2
 
 public:
-  long x[2], y[2], xx[2], yy[2]; // x,y in pixel coords is xx,yy data coords
+  long x[2]{}, y[2]{}, xx[2]{}, yy[2]{}; // x,y in pixel coords is xx,yy data coords
 
   s_projection()  {}
 

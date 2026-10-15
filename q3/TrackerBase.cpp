@@ -158,7 +158,6 @@ void *TrackerBase::polling_thread(void *me_v) {
     }
 
     LOG_DEBUG("Wiping done (%.3lf secs)", (now_ms() - ms2) / 1000.0);
-    ms0 = now_ms();
   }
 
   LOG_WARNING("Exiting update thread (refresh_secs==%d)", refresh_secs);
@@ -222,7 +221,7 @@ TrackedData *TrackerBase::getData_must_release(const JDay &ot_orig,
       if (data) {
         try {
           data->Acquire(metaQuery); // matching 'Release()' by the caller
-        } catch (const E_BAD_FILE &e) {
+        } catch (const E_BAD_FILE &) {
           // A file has been removed (or is invalid by its contents). Take it
           // away from 'available_data' and return nullptr
           //

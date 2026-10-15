@@ -341,6 +341,7 @@ int LuaWrapper::run2_(lua_State *L) {
     }
 
     if (mime2.c_str()) {
+      // NOLINTNEXTLINE(cppcoreguidelines-slicing): the null flag has been checked
       mime = mime2;
     }
 

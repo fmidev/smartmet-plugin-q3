@@ -75,6 +75,8 @@ public:
   void init() override;
   void shutdown() override;
   ~Plugin() override;
+  Plugin(const Plugin&) = delete;
+  Plugin& operator=(const Plugin&) = delete;
 
   const string &getPluginName() const override {
     static const string name("Q3");

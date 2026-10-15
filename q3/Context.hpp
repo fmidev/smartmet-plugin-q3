@@ -38,6 +38,8 @@ class Context : public LuaNew<Context_bind> {
 
     Context( cairo_surface_t *cs );
     ~Context() override;
+    Context(const Context&) = delete;
+    Context& operator=(const Context&) = delete;
 
     static int save( lua_State *L );
     static int restore( lua_State *L );

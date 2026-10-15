@@ -26,6 +26,8 @@
 class TrackerBase {
 public:
   virtual ~TrackerBase() = 0;
+  TrackerBase(const TrackerBase&) = delete;
+  TrackerBase& operator=(const TrackerBase&) = delete;
 
   // Whether to return origintimes for current, archived or all known data
   enum OriginTimeQuery { Current, Archived, All, NA };
@@ -64,7 +66,7 @@ private:
   JDay getLastOriginTime_LOCKED(NA_Level::Type &leveltype) const throw();
 
   // data fields
-  volatile bool initialized;
+  volatile bool initialized = false;
   pthread_t thread_h = 0;
 
   // Data that has been opened recently. This is being regularily wiped
@@ -77,7 +79,7 @@ protected:
   mutable Mutex data_m;
   //
   std::map<JDay, TrackedData *> available_data;
-  unsigned wiping[4]; // wiping cycle for "normal", archived and metadata
+  unsigned wiping[4]{}; // wiping cycle for "normal", archived and metadata
                       // access, plus an extra slot for filemask specific
                       // setting ("normal" or archived)
   bool relative_uv; // Set if U and V are relative to the grid

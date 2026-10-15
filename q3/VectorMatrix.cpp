@@ -340,6 +340,8 @@ int VectorMatrixBind::index(lua_State *L) {
       return 1;
     }
   } break;
+  default:
+    break;
   }
 
   // Check for location indices

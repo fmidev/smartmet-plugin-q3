@@ -88,6 +88,8 @@ public:
 
 #ifdef METQU
   Raw(const NA_Info &info) throw(); // from scratch (read-write)
+  Raw(const Raw&) = delete;
+  Raw& operator=(const Raw&) = delete;
   bool /*not cancelled*/ fill_from(lua_State *L, const Raw_interface &r_from,
                                    NA_Data::ProgressCallback *cb);
 #endif
@@ -102,6 +104,7 @@ public:
   /*virtual*/ const NA_Data *getData() const override { return qd; }
 
   /*virtual*/ string_or_null getSource() const override {
+    // NOLINTNEXTLINE(cppcoreguidelines-slicing): the null flag has been checked
     return td ? td->getSource() : string_or_null();
   }
 

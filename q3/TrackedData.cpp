@@ -156,12 +156,7 @@ void TrackedData::Wipe_LOCKED() /*throw(E_FATAL)*/ {
   */
 #endif
 
-  const char *fn_f = strrchr(source.c_str(), '/');
-  if (fn_f && *(fn_f + 1))
-    fn_f++;
-  else
-    fn_f = source.c_str();
-  LOG_OK("Wipe_LOCKED(%d: %s)", (int)pthread_self(), fn_f);
+  LOG_OK("Wipe_LOCKED(%d: %s)", (int)pthread_self(), source.c_str());
   if (qd) {
     delete qd;
     qd = nullptr;

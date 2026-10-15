@@ -40,6 +40,8 @@ class FontFace : public LuaNew<FontFace_bind> {
 
     FontFace( cairo_font_face_t *ff_ );
     ~FontFace() override;
+    FontFace(const FontFace&) = delete;
+    FontFace& operator=(const FontFace&) = delete;
 
     //static int save( lua_State *L );
 

@@ -69,6 +69,8 @@ private:
 class SubMatrix : protected Matrix, public LuaNew<SubMatrixBind> {
 public:
   SubMatrix(Matrix &m_, const MatrixPos &window_size_);
+  SubMatrix(const SubMatrix&) = delete;
+  SubMatrix& operator=(const SubMatrix&) = delete;
   /*virtual*/ ~SubMatrix() override;
 
   /*virtual*/ float get_value_n(offset_t n) const override;

@@ -105,8 +105,8 @@ public:
 #endif
 
 private:
-  double v1, v2; // x,y or abs,rad (we store angles internally as radians)
-  bool polar;
+  double v1 = 0.0, v2 = 0.0; // x,y or abs,rad (we store angles internally as radians)
+  bool polar = false;
 
 
   friend class VectorBind;

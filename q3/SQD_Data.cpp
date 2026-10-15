@@ -521,6 +521,7 @@ uint getDataTimeStep(NFmiQueryInfo &info) {
   uint timeStep = 0;
 
   if (info.FirstTime()) {
+    // NOLINTNEXTLINE(cppcoreguidelines-slicing): only the time is wanted, not the time step
     NFmiTime t1 = info.ValidTime();
     timeStep =
         (info.NextTime() ? info.ValidTime().DifferenceInMinutes(t1) : 60);
@@ -686,6 +687,7 @@ vector<NA_Param> getParams(NFmiQueryInfo &info, bool &has_326,
     // SQD parameter names are in Windows Latin-1 encoding (i.e. "Lämpötila").
     // Scripts see them in UTF-8.
     //
+    // NOLINTNEXTLINE(cppcoreguidelines-slicing): the null flag has been checked
     string name = latin1_to_utf8(latin1_name);
 
     assert(e);
@@ -1054,7 +1056,7 @@ NA_Info SQD_Data::read_info(const char *fn) {
       grid ? Projection(area->AreaStr().c_str(), SQD_Projection(area))
            : Projection(nullptr));
 
-  struct stat attrib;
+  struct stat attrib{};
   stat(fn, &attrib);
 
   NA_Info info2(
@@ -1730,7 +1732,7 @@ time_t JDay2time_t(JDay const &my) {
     return 0;
   }
 
-  struct tm tmp;
+  struct tm tmp{};
   //
   memset(&tmp, 0, sizeof(tmp));
   tmp.tm_year = my.year() - 1900;
@@ -1855,7 +1857,7 @@ SQD_Data::push_NativeCross(lua_State *L, const std::vector<JDay> &vtVec,
     // Ground level is handled as hybrid level
     //
     if (ground)
-      hybrid = (!(ground = false));
+      hybrid = true;
 
     if (hybrid)
       for (i = 0; (i < nLevels); i++)

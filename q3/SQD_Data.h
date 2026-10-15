@@ -41,6 +41,8 @@ public:
 #endif
 
   ~SQD_Data() override;
+  SQD_Data(const SQD_Data&) = delete;
+  SQD_Data& operator=(const SQD_Data&) = delete;
 
 #ifdef METQU
   /*virtual*/ bool isReadOnly() const { return is_readonly; }

@@ -51,6 +51,7 @@ public:
         : label(label_), size(size_), lp(lp_) {}
     FontSpec(const FontSpec &other) = default;
     FontSpec &operator=(const FontSpec &) = default;
+    ~FontSpec() = default;
   };
 
   class TiltedRect {
@@ -150,6 +151,8 @@ public:
         bb(Point(0, 0), Point(data_w - 1, data_h - 1)) {}
 
   ~Labelizer();
+  Labelizer(const Labelizer&) = delete;
+  Labelizer& operator=(const Labelizer&) = delete;
 
   void add_point(const Point &xy, const FontSpec &fs);
   void add_point(const Point &xy);
@@ -221,6 +224,7 @@ private:
     ChosenLabel(const ChosenLabel &o)
         : center(o.center), rad(o.rad), fs(o.fs) {}
     ChosenLabel &operator=(const ChosenLabel &) = default;
+    ~ChosenLabel() = default;
   };
   std::vector<ChosenLabel> chosenlabels;
 

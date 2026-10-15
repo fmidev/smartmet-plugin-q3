@@ -42,6 +42,7 @@ struct Point {
   Point() : x(0.0), y(0.0) {}
 
   Point& operator = (const Point&) = default;
+  ~Point() = default;
 
   static constexpr double epsilon = 0.0000001;
 
@@ -129,6 +130,7 @@ public:
   Vector(double dx_, double dy_) : dx(dx_), dy(dy_) {}
   Vector(const Point &p) : dx(p.x), dy(p.y) {}
   Vector(const Point &a, const Point &b) : dx(b.x - a.x), dy(b.y - a.y) {}
+  ~Vector() = default;
 #endif
 
   Vector operator*(double f) const { return Vector(f * dx, f * dy); }
@@ -233,6 +235,7 @@ public:
   // it but the COMPILER does. --AKa 19-Jan-2009
   //
   PointAndVector()  {}
+  ~PointAndVector() = default;
 
   Point end() const { return Point(p.x + get_dx(), p.y + get_dy()); }
 
@@ -282,6 +285,7 @@ public:
   // them.
   //
   BoundingBox() : lo(MAXFLOAT, MAXFLOAT), hi(-MAXFLOAT, -MAXFLOAT) {}
+  ~BoundingBox() = default;
 
   void extend(const Point &p) {
     // Note: need to check against both min&max; first point resets them

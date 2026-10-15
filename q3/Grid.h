@@ -64,6 +64,7 @@ public:
        std::vector<NA_Level> const *levelVec = nullptr,
        LatLonList const *locs = nullptr, bool flightRoute = false,
        const DataIdList *dataIds = nullptr);
+  ~Grid() = default;
 
   void set_rkey(unsigned rk) {
     assert(rkey == 0);
@@ -81,6 +82,7 @@ public:
   const MatrixPos &getGridSize() const {
     return gridsize;
   } // 'MatrixPos::ZERO' for native gridsize
+  // NOLINTNEXTLINE(cppcoreguidelines-slicing): returns a copy of the info part
   NA_Info getInfo() const { return *data; } // does a copy
 
 #ifdef METQU

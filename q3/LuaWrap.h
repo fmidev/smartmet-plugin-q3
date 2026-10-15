@@ -15,6 +15,8 @@ struct LuaWrap {
 public:
   LuaWrap(const luaL_Reg *libs, const unsigned char *chunk, size_t chunk_size);
   ~LuaWrap();
+  LuaWrap(const LuaWrap&) = delete;
+  LuaWrap& operator=(const LuaWrap&) = delete;
   operator lua_State *() { return L; }
 
 private:

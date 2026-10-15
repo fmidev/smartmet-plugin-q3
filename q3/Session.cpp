@@ -1038,7 +1038,7 @@ int Session::init(lua_State *L) {
 
     // UTC date as JDay
     //
-    struct timeval tv;
+    struct timeval tv{};
     // {
     //   time_t       tv_sec;   /* seconds since Jan. 1, 1970 */
     //   suseconds_t  tv_usec;  /* and microseconds */
@@ -1049,7 +1049,7 @@ int Session::init(lua_State *L) {
     assert(rc == 0);
     (void)rc;
 
-    struct tm tmp;
+    struct tm tmp{};
     gmtime_r(&tv.tv_sec, &tmp); // Split it out into year, month etc.
                                 //
                                 // tm_year  /*0..*/ +1900

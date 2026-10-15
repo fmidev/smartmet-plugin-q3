@@ -30,6 +30,8 @@ public:
             const Projection &proj_);
 
   MemMatrix(const Matrix &o); // copy constructor from _any_ matrix
+  MemMatrix(const MemMatrix&) = delete;
+  MemMatrix& operator=(const MemMatrix&) = delete;
                                       // (also 'SQD_Matrix' and 'MQD_Matrix')
   /*virtual*/ ~MemMatrix() override;
 

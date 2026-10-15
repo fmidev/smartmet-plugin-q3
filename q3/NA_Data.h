@@ -68,6 +68,8 @@ public:
           const std::string &wkt_ = "", const uint timeStep_ = 0,
           const double dx_ = 0, const double dy_ = 0,
           const bool gridData_ = true) throw();
+  NA_Info(const NA_Info &o) = default;
+  ~NA_Info() = default;
 
   JDay getLoadTime() const { return loadTime; }
   JDay getModificationTime() const { return modificationTime; }
