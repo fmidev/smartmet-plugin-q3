@@ -2,7 +2,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet q3 plugin
 Name: %{SPECNAME}
-Version: 26.10.13
+Version: 26.10.15
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -30,29 +30,29 @@ BuildRequires: bzip2-devel >= 1.0.6
 BuildRequires: libpng-devel >= 1.5.13
 BuildRequires: libjpeg-turbo-devel >= 1.2.90
 BuildRequires: cairo-devel
-BuildRequires: smartmet-library-macgyver-devel >= 26.10.11
-BuildRequires: smartmet-library-trax-devel >= 26.10.3
-BuildRequires: smartmet-library-spine-devel >= 26.10.13
+BuildRequires: smartmet-library-macgyver-devel >= 26.10.15
+BuildRequires: smartmet-library-trax-devel >= 26.10.15
+BuildRequires: smartmet-library-spine-devel >= 26.10.15
 Requires: proj97 >= 9.5.1
 Requires: luajit >= 2.1.0
 Requires: bzip2-libs >= 1.0.6
 Requires: libpng >= 1.5.13
 Requires: libjpeg-turbo >= 1.2.90
 Requires: cairo
-Requires: smartmet-library-newbase >= 26.10.13
-Requires: smartmet-library-trax >= 26.10.3
-Requires: smartmet-library-spine >= 26.10.13
-Requires: smartmet-server >= 26.10.11
+Requires: smartmet-library-newbase >= 26.10.15
+Requires: smartmet-library-trax >= 26.10.15
+Requires: smartmet-library-spine >= 26.10.15
+Requires: smartmet-server >= 26.10.15
 Obsoletes: fmi-q3-lib
 Obsoletes: fmi-q3-config
 Obsoletes: fmi-q3-brainstorm
 
-#TestRequires: smartmet-server >= 26.10.11
-#TestRequires: smartmet-library-spine >= 26.10.13
-#TestRequires: smartmet-library-spine-plugin-test >= 26.10.11
-#TestRequires: smartmet-library-trax >= 26.10.3
-#TestRequires: smartmet-library-macgyver >= 26.10.11
-#TestRequires: smartmet-library-newbase >= 26.10.13
+#TestRequires: smartmet-server >= 26.10.15
+#TestRequires: smartmet-library-spine >= 26.10.15
+#TestRequires: smartmet-library-spine-plugin-test >= 26.10.15
+#TestRequires: smartmet-library-trax >= 26.10.15
+#TestRequires: smartmet-library-macgyver >= 26.10.15
+#TestRequires: smartmet-library-newbase >= 26.10.15
 #TestRequires: smartmet-test-data
 #TestRequires: cairo
 #TestRequires: libjpeg-turbo >= 1.2.90
@@ -92,9 +92,9 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/smartmet/plugins/q3plugin.conf
 
 %changelog
-* Tue Oct 13 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.10.13-1.fmi
+* Thu Oct 15 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.10.15-1.fmi
 - Declare member functions and parameters const where nothing is modified (const correctness), no functional changes
-- Requires 26.10.13 versions of newbase, spine due to their ABI changes
+- Requires 26.10.15 versions of newbase, spine due to their ABI changes
 - Unknown level types are printed as 'unknown' instead of dereferencing a null string, round with std::lround and initialize the label rotation
 - Do not dereference missing wind direction or speed data when checking wind vector values
 - Fixed mechanical clang-tidy findings (internal linkage, unused parameters, initialization, redundant code), no functional changes
