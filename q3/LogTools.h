@@ -111,7 +111,7 @@ public:
   //
 protected:
   virtual void log(enum category cat, const char *file, unsigned line,
-                   const unique_t id_, const char *msg, size_t msg_len) = 0;
+                   unique_t id_, const char *msg, size_t msg_len) = 0;
 
 public:
   static void DEBUG(const char *fn, unsigned line, const unique_t id,
@@ -196,7 +196,7 @@ class StderrLogger : public Logger {
 public:
   StderrLogger() : Logger() {}
   /*virtual*/ void log(category cat, const char *file, unsigned line,
-                       const unique_t id, const char *msg,
+                       unique_t id, const char *msg,
                        size_t msg_len) override;
 
 private:

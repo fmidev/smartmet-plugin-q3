@@ -46,7 +46,7 @@ class Q3Engine::Track
                                      bool metaQuery,
                                      std::string &err) const throw();
 
-  std::vector<JDay> getOriginTimes(const TrackerBase::OriginTimeQuery originTimeQuery) const
+  std::vector<JDay> getOriginTimes(TrackerBase::OriginTimeQuery originTimeQuery) const
       throw();
   std::vector<TrackedData *> getOriginTimeDatas(const JDay &ot) const throw();
 

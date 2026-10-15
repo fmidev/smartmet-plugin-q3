@@ -293,7 +293,7 @@ void q3_config(const char *conf,
         for (auto &it : aliasvect) {
           auto alias = boost::trim_copy(it);
 
-          auto *ta = new Q3Engine::Track(alias.c_str(), run_secs, tmp_pattern, tmp_threshold, key);
+          auto *ta = new Q3Engine::Track(alias, run_secs, tmp_pattern, tmp_threshold, key);
           trackers[alias.c_str()] = ta;
         }
       }
@@ -507,7 +507,7 @@ const Q3Engine::Track *Q3Engine::getTrack(const char *name, bool getAlias) const
 
     if (!alias.empty())
     {
-      it = trackers.find(alias.c_str());
+      it = trackers.find(alias);
     }
   }
 

@@ -691,7 +691,7 @@ vector<NA_Param> getParams(NFmiQueryInfo &info, bool &has_326,
     string name = latin1_to_utf8(latin1_name);
 
     assert(e);
-    NA_Param param(show_id ? e : (FmiParameterName)0, name.c_str(),
+    NA_Param param(show_id ? e : (FmiParameterName)0, name,
                    SQD_Tools::unit_by_id(e),
                    interpolation_name(id.GetParam()->InterpolationMethod()),
                    id.GetParam()->Precision().CharPtr());
@@ -1990,7 +1990,7 @@ SQD_Data::push_NativeCross(lua_State *L, const std::vector<JDay> &vtVec,
   if (fi.Grid()) {
     const Projection &proj = target_proj ? *target_proj : getProjection();
     NFmiAreaFactory::return_type area =
-        NFmiAreaFactory::Create(proj.toString().c_str());
+        NFmiAreaFactory::Create(proj.toString());
     Fmi::CoordinateMatrix cm = fi.LocationsXY(*(area.get()));
 
     const size_t xs = cm.width();

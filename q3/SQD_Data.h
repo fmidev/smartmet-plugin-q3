@@ -72,7 +72,7 @@ public:
     31-Oct-2011 PKi: Virtual parameter mapping for native parameters
   */
   static void
-  mapParameter(const FmiParameterName id,
+  mapParameter(FmiParameterName id,
                std::map<std::string, FmiParameterName> &virtualParams);
 
 private:
