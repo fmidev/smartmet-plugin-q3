@@ -592,7 +592,7 @@ ContourInfo_Fill::FillParams::cairo_pattern_create(size_t size) const {
     }
     if (hatch_type == HATCH_HORIZONTAL)
       break;
-    /* fall through */
+    [[fallthrough]];
 
   case HATCH_VERTICAL:
     cairo_move_to(cr, mid_x, -((int)size));
@@ -609,7 +609,7 @@ ContourInfo_Fill::FillParams::cairo_pattern_create(size_t size) const {
     cairo_line_to(cr, size, -((int)size));
     if (hatch_type == HATCH_DOWN)
       break;
-    /* fall through */
+    [[fallthrough]];
 
   case HATCH_UP:
     cairo_move_to(cr, -((int)size), -((int)size));
