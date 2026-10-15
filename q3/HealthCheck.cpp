@@ -515,5 +515,4 @@ void *HealthCheck::thread(void *me_v) {
     }
   }
 
-  return nullptr; // never
 }
