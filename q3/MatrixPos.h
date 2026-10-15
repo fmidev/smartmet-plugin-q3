@@ -103,7 +103,7 @@ protected:
   xy_t x, y;
 
 private:
-  friend class MatrixPosBind;
+  friend struct MatrixPosBind;
 
 #ifndef NDEBUG
   void _INVARIANT(const char *, unsigned) const {}

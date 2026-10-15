@@ -139,7 +139,7 @@ private:
 
   VectorMatrix() = delete; // no such
 
-  friend class VectorMatrixBind;
+  friend struct VectorMatrixBind;
 
   Matrix *m1; // fast pointer to Lua objects stored in env.table
   Matrix

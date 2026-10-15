@@ -18,7 +18,7 @@
 
 class MatrixPos;
 class MatrixSize;
-class NA_Level;
+struct NA_Level;
 class NA_Param;
 class JDay;
 

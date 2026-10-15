@@ -11,7 +11,7 @@
 
 #include <cmath>
 
-class Point; // at 'Contour.h'
+struct Point; // at 'Contour.h'
 
 /*---=== Vector ===---*
  *
@@ -109,7 +109,7 @@ private:
   bool polar = false;
 
 
-  friend class VectorBind;
+  friend struct VectorBind;
 
 #ifndef NDEBUG
   void _INVARIANT(const char *file, unsigned line) const {

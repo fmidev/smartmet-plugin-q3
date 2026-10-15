@@ -120,7 +120,7 @@ private:
   MatrixPos top, bottom; // either symmetrix (-x,-y)..(x,y)
                          // or (0,0)..(x,y)
 
-  friend class MatrixSizeBind;
+  friend struct MatrixSizeBind;
 
 #ifndef NDEBUG
   void _INVARIANT(const char *file, unsigned line) const {
@@ -205,7 +205,7 @@ private:
   // data members
   const MatrixSize size;
 
-  friend class MatrixIterBind;
+  friend struct MatrixIterBind;
 
 #ifndef NDEBUG
   void _INVARIANT(const char *file, unsigned line) const {
@@ -538,7 +538,7 @@ protected:
   std::shared_ptr<NFmiGrid> wantedGrid;
 
 private:
-  friend class MatrixBind;
+  friend struct MatrixBind;
 
 #ifndef NDEBUG
 protected:

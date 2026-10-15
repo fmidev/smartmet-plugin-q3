@@ -25,7 +25,7 @@
  */
 #define SQD_WD_WS_TRACKING
 
-class NA_Level;
+struct NA_Level;
 class NFmiFastQueryInfo;
 
 /*---=== SQD_Matrix ===---

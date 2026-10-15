@@ -63,7 +63,7 @@ public:
 
 private:
   friend class LatLonList;
-  friend class LatLonBind;
+  friend struct LatLonBind;
 
   static const LatLon MIN, MAX;
 

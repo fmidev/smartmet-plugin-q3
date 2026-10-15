@@ -123,7 +123,7 @@ private:
   SubMatrix &operator=(const Matrix &); // no assigning (from any matrix)
   SubMatrix(const Matrix &o);           // no copy constructor (from any matrix)
 
-  friend class SubMatrixBind;
+  friend struct SubMatrixBind;
 
 #ifndef NDEBUG
   void _INVARIANT(const char *file, unsigned line) const {

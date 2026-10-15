@@ -122,7 +122,7 @@ public:
 #endif
 
 private:
-  friend class JDayBind;
+  friend struct JDayBind;
 
   using jd_T = int64_t; // current (2010) values are around 212136537600 (>2^37)
 

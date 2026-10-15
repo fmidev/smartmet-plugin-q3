@@ -106,7 +106,7 @@ class TrackProxy : public LuaNew<TrackProxyBind>
   const Q3Engine::Track *t;
   const std::string a;
 
-  friend class TrackProxyBind;
+  friend struct TrackProxyBind;
 
 #ifndef NDEBUG
   void _INVARIANT(const char *file, unsigned line) const { assert_invariant(t); }

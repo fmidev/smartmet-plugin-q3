@@ -127,7 +127,7 @@ public:
                      // the contour to Lua
 
 private:
-  friend class ContourBind;
+  friend struct ContourBind;
 
   double area() const;
   void stretch_out(double factor);

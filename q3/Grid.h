@@ -136,7 +136,7 @@ private:
   DataIdList dataIds; // 07-Apr-2015 PKi: Data point (e.g. observation station)
                       // id's for point data query
 
-  friend class GridBind;
+  friend struct GridBind;
 
 #ifndef NDEBUG
   void _INVARIANT(const char *file, unsigned line) const {
