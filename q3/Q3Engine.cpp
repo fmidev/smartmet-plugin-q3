@@ -232,35 +232,6 @@ void q3_config(const char *conf,
                     lua_tostring(L, -1));
       }
 
-      lua_pushliteral(L, "tmp_pattern");
-      lua_gettable(L, SUBT);
-      const char *tmp_pattern = lua_tostring(L, -1);  // valid ONLY until popped!
-
-      lua_pushliteral(L, "tmp_threshold");
-      lua_gettable(L, SUBT);
-      const char *s = lua_tostring(L, -1);  // "x[.x]MB" or "x[.x]GB"
-      size_t tmp_threshold = 0;
-
-      if (s)
-      {
-        const std::string str(s);
-        const std::string number = str.size() > 2 ? str.substr(0, str.size() - 2) : "";
-        const std::string unit = str.size() > 2 ? str.substr(str.size() - 2) : "";
-        const auto d = Fmi::stod_opt(number);
-        if (d && *d >= 0 && unit == "MB")
-        {
-          tmp_threshold = (size_t)((1024 * 1024) * *d);
-        }
-        else if (d && *d >= 0 && unit == "GB")
-        {
-          tmp_threshold = (size_t)((1024 * 1024 * 1024) * *d);
-        }
-        else
-        {
-          LOG_WARNING("Bad 'tmp_threshold' syntax: %s (ignored)", s);
-        }
-      }
-
       for (int w = 0; paramname[w]; w++)
       {
         lua_pushstring(L, paramname[w]);
@@ -285,7 +256,7 @@ void q3_config(const char *conf,
         lua_pop(L, 1);
       }
 
-      t = new Q3Engine::Track(key, run_secs, tmp_pattern, tmp_threshold);
+      t = new Q3Engine::Track(key, run_secs);
       trackers[key] = t;
 
       if (!aliasvect.empty())
@@ -293,12 +264,12 @@ void q3_config(const char *conf,
         for (auto &it : aliasvect) {
           auto alias = boost::trim_copy(it);
 
-          auto *ta = new Q3Engine::Track(alias, run_secs, tmp_pattern, tmp_threshold, key);
+          auto *ta = new Q3Engine::Track(alias, run_secs, key);
           trackers[alias.c_str()] = ta;
         }
       }
     }
-    lua_settop(L, SUBT);  // restore stack to where it was (pops 3)
+    lua_settop(L, SUBT);  // restore stack to where it was
 
     // Gather file filters as indexed members of 'SUBT'
     //

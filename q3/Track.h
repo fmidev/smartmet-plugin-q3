@@ -29,8 +29,6 @@ class Q3Engine::Track
  public:
   Track(const std::string &name_,
         time_t run_secs_,
-        const char *tmp_pattern_,
-        size_t tmp_threshold_,
         const std::string &alias_ = "");
   ~Track();
   Track(const Track&) = delete;
@@ -65,9 +63,6 @@ class Q3Engine::Track
   const std::string alias; // Track alias name, e.g. 'MEPS' for 'HIR'
 
   const time_t run_secs;  // difference between subsequent runs (0 = no regular runs)
-
-  const string_or_null tmp_pattern;
-  const size_t tmp_threshold;
 
 #ifndef NDEBUG
   void _INVARIANT(const char *, unsigned) const {}

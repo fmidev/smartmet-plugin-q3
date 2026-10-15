@@ -758,12 +758,9 @@ void label_clip(cairo_t *cr, const Labelizer::TiltedRect &tr) {
 class MyDrawer : public Labelizer::Drawer {
 private:
   cairo_t *cr;
-  unsigned w, h; // 'cr' can be used for getting canvas dimensions only if
-                 // it's image surface (PNG); not for SVG.
 
 public:
-  MyDrawer(cairo_t *cr_, unsigned w_, unsigned h_)
-      : Labelizer::Drawer(), cr(cr_), w(w_), h(h_) {}
+  explicit MyDrawer(cairo_t *cr_) : Labelizer::Drawer(), cr(cr_) {}
   ~MyDrawer() override = default;
 
   void label(const Vectors::Point &p, const std::string &label_text,
@@ -1157,7 +1154,7 @@ int Contour::drawcontours(lua_State *L) {
     // Configure Labelizer (strategy for positioning labels, label color and
     // size etc.)
     //
-    MyDrawer my_drawer(cr, 0, 0);
+    MyDrawer my_drawer(cr);
     Labelizer::Config lCfg;
     Labelizer lzer(Labelizer::loadUserCfg(L, lcfg_idx, lCfg), my_drawer,
                    gs->getX() - 1, gs->getY() - 1);
