@@ -174,11 +174,11 @@ public:
   //#endif
 
 #ifdef USE_NEWBASE
-  NA_Param(FmiParameterName e, const std::string &interpolation_name_ = "",
-           const std::string &precision_ = "");
+  NA_Param(FmiParameterName e, std::string interpolation_name_ = "",
+           std::string precision_ = "");
   NA_Param(FmiParameterName e, const std::string &native_name_,
-           const Unit &unit_, const std::string &interpolation_name_ = "",
-           const std::string &precision_ = "");
+           const Unit &unit_, std::string interpolation_name_ = "",
+           std::string precision_ = "");
 
   static FmiParameterName standard_param_native_id(const char *s);
 

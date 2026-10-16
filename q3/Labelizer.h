@@ -7,6 +7,7 @@
 #define LABELIZER_H
 
 #include <string>
+#include <utility>
 #include <vector>
 
 #include <values.h>
@@ -46,9 +47,9 @@ public:
     /*const*/ Vectors::Vector size; // width & height in data coordinates
     const ContourInfo_Line::LabelParams *lp;
 
-    FontSpec(const std::string &label_, const Vectors::Vector &size_,
+    FontSpec(std::string label_, const Vectors::Vector &size_,
              const ContourInfo_Line::LabelParams *lp_)
-        : label(label_), size(size_), lp(lp_) {}
+        : label(std::move(label_)), size(size_), lp(lp_) {}
     FontSpec(const FontSpec &other) = default;
     FontSpec &operator=(const FontSpec &) = default;
     ~FontSpec() = default;
@@ -222,7 +223,7 @@ private:
     ChosenLabel(const Point &center_, double rad_, const FontSpec &fs_)
         : center(center_), rad(rad_), fs(fs_) {}
     ChosenLabel(const ChosenLabel &o)
-        : center(o.center), rad(o.rad), fs(o.fs) {}
+        = default;
     ChosenLabel &operator=(const ChosenLabel &) = default;
     ~ChosenLabel() = default;
   };

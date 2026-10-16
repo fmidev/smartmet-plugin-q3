@@ -304,7 +304,7 @@ void q3_config(const char *conf,
         {
           luaL_error(L, "Missing 'refresh' value (give 'false' for no refresh)");
         }
-        else if (strcmp(s, "false"))
+        else if (strcmp(s, "false") != 0)
         {
           luaL_error(L, "Bad value: refresh = %s", s);
         }

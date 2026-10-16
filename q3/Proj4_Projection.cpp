@@ -68,7 +68,7 @@ Proj4_Projection::Proj4_Projection(const char *proj_)
 
 /*
  */
-Proj4_Projection::~Proj4_Projection() { }
+Proj4_Projection::~Proj4_Projection() = default;
 
 /*
  * Get the relative grid coordinates (0..1, 0..1) within the projection for

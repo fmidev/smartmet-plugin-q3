@@ -28,6 +28,7 @@
 
 #include <boost/format.hpp>
 #include <boost/lexical_cast.hpp>
+#include <utility>
 
 #include "Smoothener.h"
 
@@ -1031,8 +1032,8 @@ struct LineStore {
   ContourInfo_common::StrokeParams sp;
   const Contour *curves;
 
-  LineStore(const ContourInfo_common::StrokeParams &sp_, const Contour *curves_)
-      : sp(sp_), curves(curves_) {}
+  LineStore(ContourInfo_common::StrokeParams sp_, const Contour *curves_)
+      : sp(std::move(sp_)), curves(curves_) {}
 };
 
 /* 21-Nov-2011 PKi: Draw, fill and labelize contours

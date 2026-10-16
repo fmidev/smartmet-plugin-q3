@@ -53,9 +53,9 @@ public:
        LatLonList const *locs = nullptr, bool flightRoute = false,
        const DataIdList *dataIds = nullptr);
 #endif
-  Grid(const Raw_interface &r_, const JDay &vt, const NA_Level &lev,
+  Grid(const Raw_interface &r_, JDay vt, const NA_Level &lev,
        const Projection &projection,
-       const MatrixPos &gs = MatrixPos::ZERO
+       MatrixPos gs = MatrixPos::ZERO
        //
        // 22-Sep-2011 PKi: For fetching cross using newbase
        //

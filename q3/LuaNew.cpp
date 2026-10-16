@@ -210,7 +210,7 @@ bool LuaNew_base::push_alive(lua_State *L, int index_this, unsigned key) {
   lua_getfenv(L, index_this_abs);
   if (lua_isnil(L, -1)) {
     lua_pop(L, 1);
-    L_MID(0)
+    L_MID(0);
     return false; // no environment table
   }
   L_ASSERT(lua_istable(L, -1));

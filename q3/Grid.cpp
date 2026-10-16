@@ -9,6 +9,8 @@
  * Revised:  15-Oct-2010 AKa
  */
 #include "Grid.h"
+
+#include <utility>
 #include "Tools.h"
 #include "VectorMatrix.h"
 
@@ -268,9 +270,9 @@ Grid::Grid(Raw_interface &r, const JDay &vt_, const NA_Level &lev_,
 }
 #endif
 
-Grid::Grid(const Raw_interface &r, const JDay &vt_, const NA_Level &lev_,
+Grid::Grid(const Raw_interface &r, JDay vt_, const NA_Level &lev_,
            const Projection &proj_,
-           const MatrixPos &gs_
+           MatrixPos gs_
            //
            // 22-Sep-2011 PKi: For fetching cross using newbase
            //
@@ -285,7 +287,7 @@ Grid::Grid(const Raw_interface &r, const JDay &vt_, const NA_Level &lev_,
       data(r.getData())
 #endif
       ,
-      vt(vt_), level(lev_), proj(proj_), gridsize(gs_), 
+      vt(std::move(vt_)), level(lev_), proj(proj_), gridsize(std::move(gs_)),
       vtVec(vtVec_ ? *vtVec_ : std::vector<JDay>()),
       levelVec(levelVec_ ? *levelVec_ : std::vector<NA_Level>()),
       locs(locs_ ? *locs_ : LatLonList()), flightRoute(flightRoute_),

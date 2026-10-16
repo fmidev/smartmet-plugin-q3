@@ -94,7 +94,7 @@ private:
  */
 class MethodNames {
 protected:
-  MethodNames()  {}
+  MethodNames()  = default;
 
   /*
    * 'grant' has bits set for subtypes _allowed_ to use the function

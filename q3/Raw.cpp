@@ -27,6 +27,7 @@
 
 #include <cstring>
 #include <stdexcept>
+#include <utility>
 
 #include "newbase/NFmiEnumConverter.h"
 
@@ -72,9 +73,9 @@ NA_Level process_def_level(const NA_Level &lev) {
  * really let the data go.
  */
 Raw::Raw(TrackedData *td_, const NA_Level &def_level_,
-         const MatrixPos &def_gridsize_, bool metaQuery) throw()
+         MatrixPos def_gridsize_, bool metaQuery) throw()
     : td(td_), qd(td->Acquire(metaQuery)),
-      def_level(process_def_level(def_level_)), def_gridsize(def_gridsize_) {
+      def_level(process_def_level(def_level_)), def_gridsize(std::move(def_gridsize_)) {
   assert(qd);
 
   INVARIANT();

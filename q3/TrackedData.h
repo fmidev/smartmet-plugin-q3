@@ -26,7 +26,7 @@
  */
 class TrackedData {
 public:
-  TrackedData(const char *fn, const JDay &ot_given_,
+  TrackedData(const char *fn, JDay ot_given_,
               const string_or_null &tmp_pattern_, size_t tmp_threshold,
               bool relative_uv);
   TrackedData(const char *fn, const NA_Info &info_given, bool relative_uv_,

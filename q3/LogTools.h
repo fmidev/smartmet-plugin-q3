@@ -15,6 +15,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <utility>
 
 class MatrixPos;
 class MatrixSize;
@@ -159,10 +160,10 @@ private:
   static Logger *logger; // current logger (nullptr: none; set only once)
 };
 
-#define LOG_DEBUG(fmt, ...)
-#define LOG_OK(fmt, ...)
-#define LOG_STAT(fmt, ...)
-#define LOG_TIMING(fmt, ...)
+#define LOG_DEBUG(fmt, ...) static_cast<void>(0)
+#define LOG_OK(fmt, ...) static_cast<void>(0)
+#define LOG_STAT(fmt, ...) static_cast<void>(0)
+#define LOG_TIMING(fmt, ...) static_cast<void>(0)
 #define LOG_WARNING(fmt, ...)                                                  \
   Logger::WARNING(__FILE__, __LINE__, 0, string_fmt(fmt, __VA_ARGS__))
 #define LOG_ERROR(fmt, ...)                                                    \
@@ -223,11 +224,11 @@ public:
       Logger::LOG(cat, f, l, id, m);
   }
 
-  E_ANY(const char *f, unsigned l, const std::string &m)
-      :  file(f), line(l), msg(m) {}
+  E_ANY(const char *f, unsigned l, std::string m)
+      :  file(f), line(l), msg(std::move(m)) {}
 
-  E_ANY(const std::string &m)
-      :  file(nullptr), line(0), msg(m) {}
+  E_ANY(std::string m)
+      :  file(nullptr), line(0), msg(std::move(m)) {}
 
   // general copy constructor is fine
 

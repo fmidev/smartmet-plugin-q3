@@ -76,8 +76,8 @@ private:
  */
 class MatrixSize : public LuaNew<MatrixSizeBind> {
 public:
-  MatrixSize(const MatrixPos &top_, const MatrixPos &bottom_)
-      : top(top_), bottom(bottom_) {
+  MatrixSize(MatrixPos top_, MatrixPos bottom_)
+      : top(std::move(top_)), bottom(std::move(bottom_)) {
     INVARIANT();
   }
 

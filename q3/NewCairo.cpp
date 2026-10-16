@@ -622,7 +622,7 @@ extern "C" int WIN32_DLLEXPORT luaopen_newcairo(lua_State *L) {
         .set("CairoMatrix", is_matrix)
         .set("CairoFont", is_font);
   }
-  L_END(0);
+  L_END(0)
 
   // [1]: newcairo_chunk
   // [2]: C++ level binding table

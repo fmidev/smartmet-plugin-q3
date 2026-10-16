@@ -64,10 +64,10 @@ static void mm_print_uint128( const __m128 &a ) {
 #endif
 
 #define always_assert(eq)                                                      \
-  if (!(eq)) {                                                                 \
+  ((eq) ? static_cast<void>(0) : [&] {                                         \
     LOG_FATAL("Assertion failed in %s:%d (%s)", __FILE__, __LINE__, #eq);      \
     abort();                                                                   \
-  }
+  }())
 
 namespace
 {

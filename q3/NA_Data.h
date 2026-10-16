@@ -61,11 +61,11 @@ std::vector<NA_Level> reverse_vector(const std::vector<NA_Level> &vec);
 class NA_Info {
 public:
   NA_Info(time_t loadTime_, time_t modificationTime_,
-          const JDay &ot_, const std::vector<JDay> &times_,
-          const std::string &nativeLevelType,
+          JDay ot_, const std::vector<JDay> &times_,
+          std::string nativeLevelType,
           const std::vector<NA_Level> &levels_,
           const std::vector<NA_Param> &params_, const Projection &projection_,
-          const std::string &wkt_ = "", uint timeStep_ = 0,
+          std::string wkt_ = "", uint timeStep_ = 0,
           double dx_ = 0, double dy_ = 0,
           bool gridData_ = true) throw();
   NA_Info(const NA_Info &o) = default;

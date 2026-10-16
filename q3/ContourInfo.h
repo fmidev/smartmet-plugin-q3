@@ -97,7 +97,7 @@ public:
   virtual ~ContourInfo_common()= default;
 
 protected:
-  ContourInfo_common(const StrokeParams &stroke_) : stroke(stroke_) {}
+  ContourInfo_common(StrokeParams stroke_) : stroke(std::move(stroke_)) {}
 };
 
 /*
@@ -217,7 +217,7 @@ private:
 public:
   long x[2]{}, y[2]{}, xx[2]{}, yy[2]{}; // x,y in pixel coords is xx,yy data coords
 
-  s_projection()  {}
+  s_projection()  = default;
 
   void set_point(long x_, long y_, long xx_, long yy_) {
     if (points < 2) {

@@ -48,7 +48,7 @@ public:
 
 protected:
   TrackerBase(unsigned refresh_secs_, unsigned wiping_[], bool relative_uv_,
-              const std::string &trackName_);
+              std::string trackName_);
 
   void init(); // to be called by derived constructors, once they're all done
 

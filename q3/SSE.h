@@ -69,7 +69,7 @@ bool SSE_hasnan(const float *ptr, MatrixPos::offset_t n);
  *       Don't even try.
  */
 #define SSE_OP_mm(OP, C, A, B, I, N)                                           \
-  {                                                                            \
+  ([&] {                                                                            \
     const float *a_data = (A)->getData();                                      \
     const float *b_data = (B)->getData();                                      \
     if (a_data && b_data) {                                                    \
@@ -100,7 +100,7 @@ bool SSE_hasnan(const float *ptr, MatrixPos::offset_t n);
         (I) += 4;                                                              \
       }                                                                        \
     } /* last 0..3 values left for regular loop */                             \
-  }
+  }())
 
 /*
  * c= a op scalar
@@ -112,7 +112,7 @@ bool SSE_hasnan(const float *ptr, MatrixPos::offset_t n);
  *           - unary minus (mulps with -1.0)
  */
 #define SSE_OP_mf(OP, C, A, SCALAR, I, N)                                      \
-  {                                                                            \
+  ([&] {                                                                            \
     const float *a_data = (A)->getData();                                      \
     if (a_data) {                                                              \
       /* assert( ((size_t)a_data)%16==0 ); */                                  \
@@ -142,7 +142,7 @@ bool SSE_hasnan(const float *ptr, MatrixPos::offset_t n);
         (I) += 4;                                                              \
       }                                                                        \
     } /* last 0..3 values left for regular loop */                             \
-  }
+  }())
 
 /*
  * c= scalar op b
@@ -150,7 +150,7 @@ bool SSE_hasnan(const float *ptr, MatrixPos::offset_t n);
  * Used by:  - (subps) for scalar - matrix
  */
 #define SSE_OP_fm(OP, C, SCALAR, B, I, N)                                      \
-  {                                                                            \
+  ([&] {                                                                            \
     const float *b_data = (B)->getData();                                      \
     if (b_data) {                                                              \
       /* assert( ((size_t)b_data)%16==0 ); */                                  \
@@ -180,7 +180,7 @@ bool SSE_hasnan(const float *ptr, MatrixPos::offset_t n);
         (I) += 4;                                                              \
       }                                                                        \
     } /* last 0..3 values left for regular loop */                             \
-  }
+  }())
 
 /*
  * c= op a
@@ -188,7 +188,7 @@ bool SSE_hasnan(const float *ptr, MatrixPos::offset_t n);
  * Used by:  'sqrt()' & '^0.5' (sqrtps) for matrix
  */
 #define SSE_OP_m(OP, C, A, I, N)                                               \
-  {                                                                            \
+  ([&] {                                                                            \
     const float *a_data = (A)->getData();                                      \
     if (a_data) {                                                              \
       /* assert( ((size_t)a_data)%16==0 ); */                                  \
@@ -216,7 +216,7 @@ bool SSE_hasnan(const float *ptr, MatrixPos::offset_t n);
         (I) += 4;                                                              \
       }                                                                        \
     } /* last 0..3 values left for regular loop */                             \
-  }
+  }())
 
 /*
  * v= op a
@@ -227,7 +227,7 @@ bool SSE_hasnan(const float *ptr, MatrixPos::offset_t n);
  *          'max()' (maxps) -''-
  */
 #define SSE_OP_minmax_1(OP, V, A, I, N, std_maxmin)                            \
-  {                                                                            \
+  ([&] {                                                                            \
     const float *a_data = (A)->getData();                                      \
     if (a_data) {                                                              \
       /* assert( ((size_t)a_data)%16==0 ); */                                  \
@@ -250,7 +250,7 @@ bool SSE_hasnan(const float *ptr, MatrixPos::offset_t n);
       const float *vf = (const float *)&vv;                                    \
       (V) = std_maxmin(std_maxmin(vf[0], vf[1]), std_maxmin(vf[2], vf[3]));    \
     }                                                                          \
-  } /* last 0..3 values left for regular loop */
+  }()) /* last 0..3 values left for regular loop */
 
 /*
  * Detecting NANs using SSE.
@@ -290,7 +290,7 @@ bool SSE_hasnan(const float *ptr, MatrixPos::offset_t n);
  *          'max()' (maxps) -''-
  */
 #define SSE_OP_minmax(OP, C, B, I, N, minmax_safe)                             \
-  {                                                                            \
+  ([&] {                                                                            \
     const float *b_data = (B)->getData();                                      \
     if (b_data) {                                                              \
       /* assert( ((size_t)b_data)%16==0 ); */                                  \
@@ -315,7 +315,7 @@ bool SSE_hasnan(const float *ptr, MatrixPos::offset_t n);
         }                                                                      \
       }                                                                        \
     } /* last 0..7 values left for regular loop */                             \
-  }
+  }())
 
 /*
  * c= c op scalar
@@ -328,7 +328,7 @@ bool SSE_hasnan(const float *ptr, MatrixPos::offset_t n);
  * this process (scalars only affect the non-NAN portion of the result).
  */
 #define SSE_OP_minmax_scalar(OP, C, SCALAR, I, N, minmax_keep_nans)            \
-  {                                                                            \
+  ([&] {                                                                            \
     float *c_data = (C).data;                                                  \
     assert(c_data /* && ((size_t)c_data)%16==0 */);                            \
                                                                                \
@@ -349,7 +349,7 @@ bool SSE_hasnan(const float *ptr, MatrixPos::offset_t n);
         vc += 2;                                                               \
       }                                                                        \
     }                                                                          \
-  } /* last 0..7 values left for regular loop */
+  }()) /* last 0..7 values left for regular loop */
 
 #endif
 // SSE_H

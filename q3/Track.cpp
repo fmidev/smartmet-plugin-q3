@@ -28,6 +28,7 @@
 #include <cassert>
 
 #include <map>
+#include <utility>
 #include <vector>
 #include <cstdlib>
 #include <cassert>
@@ -51,12 +52,12 @@ static const ApiScalarParam Z("Z");
 /*---=== Track ===---
 */
 
-Q3Engine::Track::Track(const string &name_,
+Q3Engine::Track::Track(string name_,
                        time_t run_secs_,
-                       const string &alias_)
+                       string alias_)
     : 
-      name(name_),
-      alias(alias_),
+      name(std::move(name_)),
+      alias(std::move(alias_)),
       run_secs(run_secs_)
 {
 }

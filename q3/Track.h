@@ -9,6 +9,7 @@
 #ifndef Q3_TRACK_H
 #define Q3_TRACK_H
 
+#include <utility>
 #include <vector>
 #include <string>
 
@@ -27,9 +28,9 @@
 class Q3Engine::Track
 {
  public:
-  Track(const std::string &name_,
+  Track(std::string name_,
         time_t run_secs_,
-        const std::string &alias_ = "");
+        std::string alias_ = "");
   ~Track();
   Track(const Track&) = delete;
   Track& operator=(const Track&) = delete;
@@ -93,7 +94,7 @@ private:
 class TrackProxy : public LuaNew<TrackProxyBind>
 {
  public:
-  TrackProxy(const Q3Engine::Track *t_, const std::string &a_ = "") : t(t_), a(a_) { INVARIANT(); }
+  TrackProxy(const Q3Engine::Track *t_, std::string a_ = "") : t(t_), a(std::move(a_)) { INVARIANT(); }
   ~TrackProxy() override = default;
   const Q3Engine::Track *getTrack() const { return t; }
   const std::string &getAlias() const { return a; }

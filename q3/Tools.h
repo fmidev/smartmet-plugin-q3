@@ -96,10 +96,10 @@ typename std::vector<T>::const_iterator find_it(const std::vector<T> &vec,
  */
 #ifndef NDEBUG
 #define assert_invariant(cond)                                                 \
-  if (!(cond)) {                                                               \
+  ((cond) ? static_cast<void>(0) : [&] {                                       \
     Logger::FATAL(file, line, 0, string_fmt("INVARIANT '%s' failed", #cond));  \
     abort();                                                                   \
-  }
+  }())
 #endif
 
 using uint_t = unsigned int;
@@ -107,14 +107,14 @@ using uint_t = unsigned int;
 const char *pthread_rc2str(int rc);
 
 #define PTHREAD_CALL(func, ...)                                                \
-  {                                                                            \
+  ([&] {                                                                            \
     int rc = func(__VA_ARGS__);                                                \
     if (rc) {                                                                  \
       Logger::FATAL(__FILE__, __LINE__, 0,                                     \
                     string_fmt("%s failed: %s", #func, pthread_rc2str(rc)));   \
       abort();                                                                 \
     }                                                                          \
-  }
+  }())
 
 class Mutex {
 public:

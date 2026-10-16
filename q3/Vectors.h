@@ -124,7 +124,7 @@ public:
       : dx(b.x - a.x), dy(b.y - a.y), norm_cached(-1.0) {}
 #else
   Vector() : dx(0.0), dy(0.0) {}
-  Vector(const Vector &o) : dx(o.dx), dy(o.dy) {}
+  Vector(const Vector &o)  = default;
   Vector &operator=(const Vector &) = default;
 
   Vector(double dx_, double dy_) : dx(dx_), dy(dy_) {}
@@ -228,13 +228,13 @@ public:
   PointAndVector(const Point &a, const Point &b) : Vector(a, b), p(a) {}
   PointAndVector(const Point &p_, const Vector &v) : Vector(v), p(p_) {}
 
-  PointAndVector(const PointAndVector &o) : Vector(o), p(o.p) {}
+  PointAndVector(const PointAndVector &o)  = default;
   PointAndVector &operator=(const PointAndVector &) = default;
 
   // We don't really WANT this constructor to be there - we don't NEED
   // it but the COMPILER does. --AKa 19-Jan-2009
   //
-  PointAndVector()  {}
+  PointAndVector()  = default;
   ~PointAndVector() = default;
 
   Point end() const { return Point(p.x + get_dx(), p.y + get_dy()); }
@@ -278,7 +278,7 @@ public:
     }
   }
 
-  BoundingBox(const BoundingBox &o) : lo(o.lo), hi(o.hi) {}
+  BoundingBox(const BoundingBox &o)  = default;
   BoundingBox &operator=(const BoundingBox &) = default;
 
   // Default bounding box has no bounds; calling 'extend()' will make

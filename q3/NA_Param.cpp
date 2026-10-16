@@ -11,6 +11,7 @@
 
 #include <map>
 #include <string>
+#include <utility>
 
 using namespace std;
 
@@ -413,11 +414,11 @@ NA_Param::NA_Param(const char *s)
  */
 #ifdef USE_NEWBASE
 NA_Param::NA_Param(FmiParameterName e, const std::string &sqd_name_,
-                   const Unit &unit_, const std::string &interpolation_name_,
-                   const std::string &precision_)
+                   const Unit &unit_, std::string interpolation_name_,
+                   std::string precision_)
     : std_name(standard_param_name(e)), // i.e. "T" for id 4
       native_name(string_fmt("%s:%d", sqd_name_.c_str(), (int)e)), unit(unit_),
-      interpolation_name(interpolation_name_), precision(precision_) {
+      interpolation_name(std::move(interpolation_name_)), precision(std::move(precision_)) {
 
   assert(e); // SQD data always has an id on all params
 
@@ -428,11 +429,11 @@ NA_Param::NA_Param(FmiParameterName e, const std::string &sqd_name_,
 /*
  */
 #ifdef USE_NEWBASE
-NA_Param::NA_Param(FmiParameterName e, const std::string &interpolation_name_,
-                   const std::string &precision_)
+NA_Param::NA_Param(FmiParameterName e, std::string interpolation_name_,
+                   std::string precision_)
     : std_name(standard_param_name(e)), // i.e. "T" for id 4
       native_name(string_fmt(":%d", (int)e)), unit(SQD_Tools::unit_by_id(e)),
-      interpolation_name(interpolation_name_), precision(precision_) {
+      interpolation_name(std::move(interpolation_name_)), precision(std::move(precision_)) {
 
   assert(e); // SQD data always has an id on all params
 

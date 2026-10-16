@@ -5,6 +5,7 @@
 
 #include <cerrno>
 #include <cstring>
+#include <utility>
 
 #include <sys/statvfs.h>
 
@@ -31,10 +32,10 @@ const char *TrackedData::four_Xs = "XXXX";
  * Note:
  *       To actually load the data, caller must call 'Acquire'
  */
-TrackedData::TrackedData(const char *fn, const JDay &ot_given_,
+TrackedData::TrackedData(const char *fn, JDay ot_given_,
                          const string_or_null &tmp_pattern_,
                          size_t tmp_threshold_, bool relative_uv_)
-    : source(fn), info_(nullptr), ot_given(ot_given_), qd(nullptr),
+    : source(fn), info_(nullptr), ot_given(std::move(ot_given_)), qd(nullptr),
       tmp_fn(nullptr)
 #ifndef METQU
       ,

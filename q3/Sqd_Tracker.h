@@ -10,6 +10,7 @@
 
 #include <map>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include <set>
@@ -24,11 +25,11 @@
 class Sqd_Tracker : public TrackerBase {
 public:
   // 09-Mar-2012 PKi: Track name (used for logging only)
-  Sqd_Tracker(const std::string &fn_abs_mask_, unsigned refresh_ms,
+  Sqd_Tracker(std::string fn_abs_mask_, unsigned refresh_ms,
               unsigned wiping_[], bool relative_uv_,
               const std::string &trackName_)
       : TrackerBase(refresh_ms, wiping_, relative_uv_, trackName_),
-        fn_abs_mask(fn_abs_mask_) {
+        fn_abs_mask(std::move(fn_abs_mask_)) {
     init();
   }
 

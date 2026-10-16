@@ -7,6 +7,7 @@
 
 #include "MemMatrix.h"
 #include <macgyver/StringConversion.h>
+#include <utility>
 #include <vector>
 #include <limits>
 
@@ -31,15 +32,15 @@ const char *NA_Info::EXTRA_KEY_SQD_RELATIVE_UV = "sqd_relative_uv";
  */
 
 NA_Info::NA_Info(const time_t loadTime_, const time_t modificationTime_,
-                 const JDay &ot_, const vector<JDay> &times_,
-                 const string &nativeLevelType_,
+                 JDay ot_, const vector<JDay> &times_,
+                 string nativeLevelType_,
                  const vector<NA_Level> &levels_,
                  const vector<NA_Param> &params_, const Projection &projection_,
-                 const string &wkt_, const uint timeStep_, const double dx_,
+                 string wkt_, const uint timeStep_, const double dx_,
                  const double dy_, const bool gridData_) throw()
-    : loadTime(loadTime_), modificationTime(modificationTime_), ot(ot_),
-      times(times_), nativeLevelType(nativeLevelType_), levels(levels_),
-      params(params_), proj(projection_), wkt(wkt_), timeStep(timeStep_),
+    : loadTime(loadTime_), modificationTime(modificationTime_), ot(std::move(ot_)),
+      times(times_), nativeLevelType(std::move(nativeLevelType_)), levels(levels_),
+      params(params_), proj(projection_), wkt(std::move(wkt_)), timeStep(timeStep_),
       dx(dx_), dy(dy_), gridData(gridData_)
       {
   INVARIANT();
