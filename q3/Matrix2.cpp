@@ -47,6 +47,24 @@ struct MatrixMethodNames : public MethodNames {
 namespace
 {
 struct MatrixMethodNames matrix_method_names;
+
+// Push the value of the named data member of the matrix, return false for an unknown name
+bool push_matrix_member( lua_State *L, const cairo_matrix_t &tmp, const char *s ) {
+    static const struct {
+        const char *name;
+        double cairo_matrix_t::*member;
+    } members[]= {
+        {"xx", &cairo_matrix_t::xx}, {"yx", &cairo_matrix_t::yx}, {"xy", &cairo_matrix_t::xy},
+        {"yy", &cairo_matrix_t::yy}, {"x0", &cairo_matrix_t::x0}, {"y0", &cairo_matrix_t::y0}};
+
+    for (const auto &m : members) {
+        if (strcmp(s,m.name)==0) {
+            lua_pushnumber(L,tmp.*(m.member));
+            return true;
+        }
+    }
+    return false;
+}
 }  // namespace
 
 /*
@@ -64,30 +82,8 @@ int Matrix_bind::index( lua_State *L ) {
         if ((*s=='x') || (*s=='y')) {
             cairo_matrix_t tmp= *my;
 
-            if (strcmp(s,"xx")==0) {
-                lua_pushnumber(L,tmp.xx);
+            if (push_matrix_member(L,tmp,s))
                 return 1;
-            }
-            if (strcmp(s,"yx")==0) {
-                lua_pushnumber(L,tmp.yx);
-                return 1;
-            }
-            if (strcmp(s,"xy")==0) {
-                lua_pushnumber(L,tmp.xy);
-                return 1;
-            }
-            if (strcmp(s,"yy")==0) {
-                lua_pushnumber(L,tmp.yy);
-                return 1;
-            }
-            if (strcmp(s,"x0")==0) {
-                lua_pushnumber(L,tmp.x0);
-                return 1;
-            }
-            if (strcmp(s,"y0")==0) {
-                lua_pushnumber(L,tmp.y0);
-                return 1;
-            }
         }
 
         if (strcmp(s,"info")==0) {
