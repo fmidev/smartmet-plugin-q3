@@ -84,7 +84,7 @@ class Raw : public Raw_interface {
 public:
   Raw(TrackedData *td_, const NA_Level &def_level_,
       MatrixPos def_gridsize_ = MatrixPos::ZERO,
-      bool metaQuery = false) throw(); // from disk (read-only; server)
+      bool metaQuery = false) noexcept; // from disk (read-only; server)
 
 #ifdef METQU
   Raw(const NA_Info &info) throw(); // from scratch (read-write)

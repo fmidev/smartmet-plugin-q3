@@ -188,7 +188,7 @@ void TrackerBase::wait_until_initialized() const {
  */
 TrackedData *TrackerBase::getData_must_release(const JDay &ot_orig,
                                                bool archivedData,
-                                               bool metaQuery) throw() {
+                                               bool metaQuery) noexcept {
   if (!archivedData && archived())
     return nullptr;
 
@@ -240,7 +240,7 @@ TrackedData *TrackerBase::getData_must_release(const JDay &ot_orig,
  * Get the available set of origintimes, sorted to descending order ([0] is
  * latest).
  */
-vector<JDay> TrackerBase::getOriginTimes_sort() const throw() {
+vector<JDay> TrackerBase::getOriginTimes_sort() const noexcept {
   vector<JDay> vec;
   addOriginTimes_unsorted(vec);
 
@@ -254,7 +254,7 @@ vector<JDay> TrackerBase::getOriginTimes_sort() const throw() {
  * Duplicate entries are not removed.
  */
 void TrackerBase::addOriginTimes_unsorted(
-    vector<JDay> &vec, const OriginTimeQuery originTimeQuery) const throw() {
+    vector<JDay> &vec, const OriginTimeQuery originTimeQuery) const noexcept {
   if ((originTimeQuery != TrackerBase::OriginTimeQuery::All) &&
       ((originTimeQuery == TrackerBase::OriginTimeQuery::Archived) !=
        archived()))
@@ -272,7 +272,7 @@ void TrackerBase::addOriginTimes_unsorted(
 
 void TrackerBase::addDatas_must_release(const JDay &ot,
                                         vector<TrackedData *> &vec) const
-    throw() {
+    noexcept {
   wait_until_initialized();
 
   {
@@ -293,7 +293,7 @@ void TrackerBase::addDatas_must_release(const JDay &ot,
  * This function is FAST and does not cause locks to be required.
  */
 JDay TrackerBase::getLastOriginTime_fast(NA_Level::Type &leveltype) const
-    throw() {
+    noexcept {
   wait_until_initialized();
 
   {
@@ -305,7 +305,7 @@ JDay TrackerBase::getLastOriginTime_fast(NA_Level::Type &leveltype) const
 /*
  */
 JDay TrackerBase::getLastOriginTime_LOCKED(NA_Level::Type &leveltype) const
-    throw() {
+    noexcept {
   JDay last_ot;
   NA_Level::Type leveltype1;
   NA_Level::Type leveltype2;
@@ -350,7 +350,7 @@ JDay TrackerBase::getLastOriginTime_LOCKED(NA_Level::Type &leveltype) const
  * TBD: Getting this faster (not needing the lock) might be welcome for upper
  * layers.
  */
-JDay TrackerBase::getFirstOriginTime_fast() const throw() {
+JDay TrackerBase::getFirstOriginTime_fast() const noexcept {
   JDay first_ot;
 
   // Exact origintime must be used to access archived data

@@ -234,13 +234,13 @@ public:
 
   // Needed for 'std::exception' derivation (otherwise "looser throw specifier")
   //
-  /*virtual*/ ~E_ANY() throw() override = default;
+  /*virtual*/ ~E_ANY() noexcept override = default;
 
   // Create the 'what()' message only if needed (= if the catcher asks for it)
   //
   // Note: We must keep it in a member, to provide lifespan.
   //
-  /*virtual*/ const char *what() const throw() override {
+  /*virtual*/ const char *what() const noexcept override {
     // Note: Using 'ostringstream' makes no limits to the length of the message.
     //       'string_fmt()' would have an internal limit (and truncate longer
     //       stuff).
@@ -259,7 +259,7 @@ public:
 
   // Only the message (no file & line)
   //
-  const char *what_nosource() const throw() { return msg.c_str(); }
+  const char *what_nosource() const noexcept { return msg.c_str(); }
 
 protected:
   static std::string to_str(const MatrixSize &sz);

@@ -38,7 +38,7 @@ public:
 
 private:
   // private funcs
-  bool update(std::set<std::string> &seen_already) throw() override;
+  bool update(std::set<std::string> &seen_already) noexcept override;
 
   // data fields
   const std::string fn_abs_mask;

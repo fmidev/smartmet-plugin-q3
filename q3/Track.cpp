@@ -31,7 +31,6 @@
 #include <utility>
 #include <vector>
 #include <cstdlib>
-#include <cassert>
 #include <cstring>
 
 extern "C" {
@@ -123,7 +122,7 @@ TrackedData *Q3Engine::Track::getData_must_release_(const JDay &ot,
                                                     bool only_pressure,  // mode==ONLY_PRESSURE
                                                     bool archivedData,
                                                     bool metaQuery,
-                                                    std::string &err) const throw()
+                                                    std::string &err) const noexcept
 {
   TrackedData *d = nullptr;
   TrackedData *d2 =
@@ -297,7 +296,7 @@ TrackedData *Q3Engine::Track::getData_must_release_(const JDay &ot,
  *      returned is being used.
  */
 vector<JDay> Q3Engine::Track::getOriginTimes(
-    const TrackerBase::OriginTimeQuery originTimeQuery) const throw()
+    const TrackerBase::OriginTimeQuery originTimeQuery) const noexcept
 {
   vector<JDay> vec;
 
@@ -309,7 +308,7 @@ vector<JDay> Q3Engine::Track::getOriginTimes(
   return vec;
 }
 
-vector<TrackedData *> Q3Engine::Track::getOriginTimeDatas(const JDay &ot) const throw()
+vector<TrackedData *> Q3Engine::Track::getOriginTimeDatas(const JDay &ot) const noexcept
 {
   vector<TrackedData *> vec;
 

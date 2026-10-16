@@ -15,7 +15,7 @@
 #endif
 
 class out_of_memory : public std::exception {
-  /*virtual*/ const char *what() const throw() override {
+  /*virtual*/ const char *what() const noexcept override {
     return "out of memory";
   }
 };

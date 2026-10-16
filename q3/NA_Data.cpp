@@ -37,7 +37,7 @@ NA_Info::NA_Info(const time_t loadTime_, const time_t modificationTime_,
                  const vector<NA_Level> &levels_,
                  const vector<NA_Param> &params_, const Projection &projection_,
                  string wkt_, const uint timeStep_, const double dx_,
-                 const double dy_, const bool gridData_) throw()
+                 const double dy_, const bool gridData_) noexcept
     : loadTime(loadTime_), modificationTime(modificationTime_), ot(std::move(ot_)),
       times(times_), nativeLevelType(std::move(nativeLevelType_)), levels(levels_),
       params(params_), proj(projection_), wkt(std::move(wkt_)), timeStep(timeStep_),

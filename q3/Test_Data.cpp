@@ -113,7 +113,7 @@ bool f_BALL(double dx, double dy) {
  */
 const Matrix *Test_Data::push_TestMatrix(lua_State *L, const JDay & /*vt*/,
                                          const NA_Level &lev, const NA_Param &p,
-                                         const MatrixPos &gs) const throw() {
+                                         const MatrixPos &gs) const noexcept {
   (void)lev; // not used
 
   // LOG_DEBUG( "Lev: %d %lf", (int)lev.getType(), lev.getValue() );

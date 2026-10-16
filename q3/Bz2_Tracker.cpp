@@ -131,7 +131,7 @@ Bz2_Tracker::Bz2_Tracker(const string &fn_abs_mask, uint_t refresh_ms_,
 /*
  * 'update()' called from 'TrackerBase' polling thread.
  */
-bool Bz2_Tracker::update(set<string> &seen_already) throw() {
+bool Bz2_Tracker::update(set<string> &seen_already) noexcept {
   assert(cache);
 
   // On the first round, update 'available_data' from cache. This allows us to
@@ -158,7 +158,7 @@ bool Bz2_Tracker::update(set<string> &seen_already) throw() {
  *           false if we're running with memory caching only (nothing to
  * initialize)
  */
-bool Bz2_Tracker::update_from_cache(set<string> &seen_already) throw() {
+bool Bz2_Tracker::update_from_cache(set<string> &seen_already) noexcept {
   assert(cache);
 
   if (!cache->hasCacheFile()) {
@@ -217,7 +217,7 @@ bool Bz2_Tracker::update_from_cache(set<string> &seen_already) throw() {
  * Returns the most recent origintime in the newly found data.
  */
 void Bz2_Tracker::update_subpath(const char *path_abs,
-                                 set<string> &seen_already) throw() {
+                                 set<string> &seen_already) noexcept {
   const char *mask = file_mask.c_str();
 
   assert(cache);

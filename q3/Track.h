@@ -43,11 +43,11 @@ class Q3Engine::Track
                                      bool only_pressure,
                                      bool archivedData,
                                      bool metaQuery,
-                                     std::string &err) const throw();
+                                     std::string &err) const noexcept;
 
   std::vector<JDay> getOriginTimes(TrackerBase::OriginTimeQuery originTimeQuery) const
-      throw();
-  std::vector<TrackedData *> getOriginTimeDatas(const JDay &ot) const throw();
+      noexcept;
+  std::vector<TrackedData *> getOriginTimeDatas(const JDay &ot) const noexcept;
 
   JDay getOriginTimeOfRun_(int x, NA_Level::Type &leveltype) const;
 

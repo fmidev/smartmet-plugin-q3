@@ -67,7 +67,7 @@ public:
           const std::vector<NA_Param> &params_, const Projection &projection_,
           std::string wkt_ = "", uint timeStep_ = 0,
           double dx_ = 0, double dy_ = 0,
-          bool gridData_ = true) throw();
+          bool gridData_ = true) noexcept;
   NA_Info(const NA_Info &o) = default;
   ~NA_Info() = default;
 

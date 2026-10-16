@@ -43,7 +43,7 @@ struct T_String {
     return s;
   }
 
-  static const std::string &toString(const std::string &s) throw() { return s; }
+  static const std::string &toString(const std::string &s) noexcept { return s; }
 };
 
 /*
@@ -65,7 +65,7 @@ struct T_Level {
   }
 #endif
 
-  static std::string toString(const NA_Level &p) throw() {
+  static std::string toString(const NA_Level &p) noexcept {
     return p.toString();
   }
 };
@@ -108,7 +108,7 @@ struct T_NativeParam {
   }
 #endif
 
-  static std::string toString(const NA_Param &p) throw() {
+  static std::string toString(const NA_Param &p) noexcept {
     return p.toString(false /*prefer native names*/);
   }
 };
@@ -129,7 +129,7 @@ struct T_JDay {
 
   // Output time in "YYYYMMDDMMHHSS" format
   //
-  static std::string toString(const JDay &t) throw() { return t.toString(); }
+  static std::string toString(const JDay &t) noexcept { return t.toString(); }
 };
 
 /*---=== Vector tools ===---*/

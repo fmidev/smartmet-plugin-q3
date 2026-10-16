@@ -43,7 +43,7 @@ using namespace std;
  * Return the most recent origintime of newly added files (or 0 for no files
  * added).
  */
-bool Sqd_Tracker::update(set<string> &seen_already) throw() {
+bool Sqd_Tracker::update(set<string> &seen_already) noexcept {
   set<string> current_files;
   const char *fn_abs = nullptr;
 

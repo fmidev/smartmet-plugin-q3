@@ -73,7 +73,7 @@ NA_Level process_def_level(const NA_Level &lev) {
  * really let the data go.
  */
 Raw::Raw(TrackedData *td_, const NA_Level &def_level_,
-         MatrixPos def_gridsize_, bool metaQuery) throw()
+         MatrixPos def_gridsize_, bool metaQuery) noexcept
     : td(td_), qd(td->Acquire(metaQuery)),
       def_level(process_def_level(def_level_)), def_gridsize(std::move(def_gridsize_)) {
   assert(qd);

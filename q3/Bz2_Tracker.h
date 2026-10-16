@@ -25,17 +25,17 @@ public:
               const string_or_null &tmp_pattern_,
               size_t tmp_threshold_);
   ~Bz2_Tracker() override = default;
-  TrackedData *getData_must_release(time_t ot) throw();
+  TrackedData *getData_must_release(time_t ot) noexcept;
 
   static void cache_init(const char *fn);
 
   bool archived() const override { return true; }
   // private funcs
 private:
-  /*virtual*/ bool update(std::set<std::string> &seen_already) throw() override;
-  bool update_from_cache(std::set<std::string> &seen_already) throw();
+  /*virtual*/ bool update(std::set<std::string> &seen_already) noexcept override;
+  bool update_from_cache(std::set<std::string> &seen_already) noexcept;
   void update_subpath(const char *path_abs,
-                      std::set<std::string> &seen_already) throw();
+                      std::set<std::string> &seen_already) noexcept;
 
   /*virtual*/ std::string id_str() const override {
     return base_path + "**/" + file_mask;

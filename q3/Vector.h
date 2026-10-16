@@ -57,9 +57,9 @@ private:
  */
 class Vector : public LuaNew<VectorBind> {
 public:
-  Vector(double x_or_abs, double y_or_deg, bool polar_) throw();
+  Vector(double x_or_abs, double y_or_deg, bool polar_) noexcept;
 
-  Vector() throw() = default; // leave uninitialized (called when 'VectorMatrix'
+  Vector() noexcept = default; // leave uninitialized (called when 'VectorMatrix'
                               // constructor does 'new')
   /*virtual*/ ~Vector() override = default;
 
