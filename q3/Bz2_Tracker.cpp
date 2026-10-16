@@ -31,6 +31,21 @@ Bz2_Cache *cache; // shared by all threads (one per process)
 
 /* ======= Helpers ======== */
 
+bool file_mask_match(const char *mask, const char *fn);
+
+/*
+ * Tell whether the 'mask' tail matches 'p' after skipping any number of
+ * characters (or none) in 'p'
+ */
+bool tail_matches(const char *mask, const char *p) {
+  for (unsigned i = 0; i < strlen(p); i++) {
+    if (file_mask_match(mask, p + i)) {
+      return true; // found a matching tail
+    }
+  }
+  return false; // no match
+}
+
 /*
  * Tell whether 'fn' matches a filename 'mask' (which can contain '*' or '?' and
  * '/ ** /' for skipping 1..N directory levels).
@@ -49,12 +64,7 @@ bool file_mask_match(const char *mask, const char *fn) {
     case '*':
       // skip any number of characters (or none) in 'fn' - for the tail to match
       //
-      for (unsigned i = 0; i < strlen(p); i++) {
-        if (file_mask_match(r + 1, p + i)) {
-          return true; // found a matching tail
-        }
-      }
-      return false; // no match
+      return tail_matches(r + 1, p);
 
     case '/':
       if (begins_with(r, "/**/")) {
