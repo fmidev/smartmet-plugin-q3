@@ -26,6 +26,45 @@ JDay::jd_T JDay::INVALID_VALUE = LLONG_MAX;
 
 /*---=== Helpers ===---*/
 
+namespace {
+/*
+ * Push the value of the named 'os.date()' compatible integer field, return
+ * false for other names
+ */
+bool push_integer_field(lua_State *L, const JDay &my, const char *s) {
+  using Getter = lua_Integer (*)(const JDay &);
+  static const struct {
+    const char *name;
+    Getter getter;
+  } fields[] = {
+      // i.e. 2010
+      {"year", [](const JDay &d) -> lua_Integer { return d.year(); }},
+      // 1..12
+      {"month", [](const JDay &d) -> lua_Integer { return d.month(); }},
+      // 1..31
+      {"day", [](const JDay &d) -> lua_Integer { return d.day(); }},
+      // 0..23
+      {"hour", [](const JDay &d) -> lua_Integer { return d.hour(); }},
+      // 0..59
+      {"min", [](const JDay &d) -> lua_Integer { return d.min(); }},
+      // 0..60 (never jump seconds)
+      {"sec", [](const JDay &d) -> lua_Integer { return d.sec(); }},
+      // 1 (Sunday) .. 7 (Saturday)
+      {"wday", [](const JDay &d) -> lua_Integer { return d.wday(); }},
+      // day of the year (1..366)
+      {"yday", [](const JDay &d) -> lua_Integer { return d.yday(); }},
+  };
+
+  for (const auto &field : fields) {
+    if (strcmp(s, field.name) == 0) {
+      lua_pushinteger(L, field.getter(my));
+      return true;
+    }
+  }
+  return false;
+}
+} // namespace
+
 /*---=== JDayBind ===---*/
 
 /*
@@ -43,38 +82,8 @@ int JDayBind::index(lua_State *L) {
     // The fields are compatible with Lua 'os.date()' and 'os.time()' so an
     // object of this kind should be usable with them.
     //
-    if (strcmp(s, "year") == 0) {
-      lua_pushinteger(L, my.year()); // i.e. 2010
+    if (push_integer_field(L, my, s))
       return 1;
-    }
-    if (strcmp(s, "month") == 0) {
-      lua_pushinteger(L, my.month()); // 1..12
-      return 1;
-    }
-    if (strcmp(s, "day") == 0) {
-      lua_pushinteger(L, my.day()); // 1..31
-      return 1;
-    }
-    if (strcmp(s, "hour") == 0) {
-      lua_pushinteger(L, my.hour()); // 0..23
-      return 1;
-    }
-    if (strcmp(s, "min") == 0) {
-      lua_pushinteger(L, my.min()); // 0..59
-      return 1;
-    }
-    if (strcmp(s, "sec") == 0) {
-      lua_pushinteger(L, my.sec()); // 0..60 (never jump seconds)
-      return 1;
-    }
-    if (strcmp(s, "wday") == 0) {
-      lua_pushinteger(L, my.wday()); // 1 (Sunday) .. 7 (Saturday)
-      return 1;
-    }
-    if (strcmp(s, "yday") == 0) {
-      lua_pushinteger(L, my.yday()); // day of the year (1..366)
-      return 1;
-    }
     if (strcmp(s, "isdst") == 0) {
       lua_pushboolean(L,
                       false); // always UTC (for compatibility with 'os.date()')
