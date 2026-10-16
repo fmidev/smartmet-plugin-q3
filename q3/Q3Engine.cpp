@@ -419,8 +419,6 @@ void q3_config(const char *conf,
         luaL_error(L, "Configuration recursion too deep: '%s'", includeFile.c_str());
     }
   }
-
-  return;
 }
 }  // namespace
 

@@ -2013,8 +2013,6 @@ SQD_Data::push_NativeCross(lua_State *L, const std::vector<JDay> &vtVec,
         locations.emplace_back(p.Y(), p.X());
     }
   }
-
-  return;
 }
 
 /*
@@ -2041,8 +2039,6 @@ SQD_Data::push_NativeCross(lua_State *L, const std::vector<JDay> &vtVec,
   } else
     for (fi.ResetLocation(); fi.NextLocation();)
       dataIds.push_back(fi.Location()->GetIdent());
-
-  return;
 }
 
 /*
@@ -2071,8 +2067,6 @@ SQD_Data::push_NativeCross(lua_State *L, const std::vector<JDay> &vtVec,
     for (fi.ResetLocation(); fi.NextLocation();)
       dataNames.emplace_back(reinterpret_cast<const char *>(
           fi.Location()->GetName().GetCharPtr()));
-
-  return;
 }
 
 /*
@@ -2163,6 +2157,4 @@ void SQD_Data::mapParameter(
   string s = NA_Param::native_id_virtual_param(id);
   if (!s.empty())
     virtualParams.insert(make_pair(s, id));
-
-  return;
 }

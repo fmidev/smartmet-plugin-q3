@@ -1017,8 +1017,6 @@ void Contour::draw_path(cairo_t *cr, bool line) const {
 
   if (!had_gap)
     cairo_close_path(cr);
-
-  return;
 }
 
 // 21-Nov-2011 PKi: Storage for contours and stroke attributes

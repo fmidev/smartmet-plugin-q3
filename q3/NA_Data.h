@@ -345,17 +345,11 @@ public:
    * observation station) metadata; overridden by SQD_Data
    */
   virtual void getLocations(std::vector<LatLon> & /*locations*/,
-                            const Projection * /*target_proj*/ = nullptr) const {
-    return;
-  }
+                            const Projection * /*target_proj*/ = nullptr) const {}
   virtual void getDataIds(std::vector<unsigned long> & /*dataIds*/,
-                          const Projection * /*target_proj*/ = nullptr) const {
-    return;
-  }
+                          const Projection * /*target_proj*/ = nullptr) const {}
   virtual void getDataNames(std::vector<std::string> & /*dataNames*/,
-                            const Projection * /*target_proj*/ = nullptr) const {
-    return;
-  }
+                            const Projection * /*target_proj*/ = nullptr) const {}
 
   /*
    * 13-Oct-2011 PKi: For checking the availability of height levels in data;

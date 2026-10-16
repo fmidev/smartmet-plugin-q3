@@ -173,6 +173,7 @@ vector<string> ApiParam::convert_to_api(const std::vector<NA_Param> &vec,
                                         bool prefer_standard_names) {
   vector<string> ret;
 
+  ret.reserve(vec.size());
   for (const auto &it : vec) {
     ret.push_back(it.toString(prefer_standard_names));
   }
