@@ -147,6 +147,139 @@ Logger *logger_parse(const char *conf)
 /*---=== Configuration file ===---
 */
 
+namespace
+{
+/*
+* Split a configuration line in 'buf' (modified in place) to 'key' and 'val'.
+*
+* 'key': non-nullptr if "key =" existed
+* "val": non-nullptr if non-whitespace string followed
+*/
+void split_config_line(char *buf, const char *&key, const char *&val)
+{
+  for (char *pp = buf; *pp; pp++)
+  {
+    if (!key)
+    {  // looking for '='
+      if (isspace(*pp))
+      {
+        *pp = '\0';  // cut at first white space (don't expect spaces within key names)
+      }
+      else if (*pp == '=')
+      {
+        *pp = '\0';  // in case there wasn't white space
+        key = buf;
+      }
+    }
+    else if (isspace(*pp))
+    {
+      // skip white space after the '=' (if any)
+    }
+    else
+    {
+      // Cut white space trail off 'val' (there's at least a newline)
+      //
+      int i = 0;
+      for (i = strlen(pp) - 1; i >= 0; i--)
+      {
+        if (!isspace(pp[i]))
+          break;
+      }
+      // 'i' is the index of the last non-space char or -1
+      //
+      pp[i + 1] = '\0';
+
+      val = pp;
+      break;  // done!
+    }
+  }
+}
+
+/*
+* Parse a 'killtime' value [Xh][YYmin][ZZsec] - same syntax as for Q3 engine
+* time values.
+*
+* Note: The loop runs only if the line had a tail comment ('comment' is the
+*       position of the removed '#' in 'line', or nullptr).
+*/
+unsigned parse_killtime(const char *val, const char *comment, const char *line)
+{
+  unsigned secs = 0;  // no limit
+
+  const char *pp = val;
+  while (comment)
+  {
+    char *end = nullptr;
+    int v = strtol(pp, &end, 10);
+
+    if (begins_with(end, "h"))
+    {
+      secs += 60 * 60 * v;
+      pp = end + 1;
+    }
+    else if (begins_with(end, "min"))
+    {
+      secs += 60 * v;
+      pp = end + 3;
+    }
+    else if (begins_with(end, "sec"))
+    {
+      secs += v;
+      pp = end + 3;
+    }
+    else
+    {
+      LOG_USAGE("Bad configuration: '%s'", line);
+      secs = 0;
+      break;
+    }
+  }
+  return secs;
+}
+
+/*
+* Set the global of a configuration entry. Returns false for keys not used
+* here.
+*/
+bool apply_config_entry(const char *key, const char *val, const char *line, const char *comment)
+{
+  if (strcmp(key, "log") == 0)
+  {
+    Logger *lgr = logger_parse(val);
+    if (!lgr)
+    {
+      throw runtime_error(string_fmt("Bad log entry: %s", line));
+    }
+    Logger::init(lgr);  // remains valid throughout process lifespan (not deleted)
+  }
+  else if (strcmp(key, "package_path") == 0)
+  {
+    package_path = val;
+  }
+  else if (strcmp(key, "package_cpath") == 0)
+  {
+    package_cpath = val;
+  }
+  else if (strcmp(key, "killtime") == 0)
+  {
+    killtime_secs = 0;  // no limit
+    if (val)
+    {
+      killtime_secs = parse_killtime(val, comment, line);
+    }
+  }
+  else if (strcmp(key, "testbed") == 0)
+  {
+    testbed = val;
+  }
+  else
+  {
+    return false;
+  }
+  return true;
+}
+}  // namespace
+
 /*
 * Read certain entries from the configuration, and set them to globals.
 *
@@ -189,111 +322,12 @@ string read_config(const char *fn)
     const char *key = nullptr;
     const char *val = nullptr;
 
-    for (char *pp = buf; *pp; pp++)
-    {
-      if (!key)
-      {  // looking for '='
-        if (isspace(*pp))
-        {
-          *pp = '\0';  // cut at first white space (don't expect spaces within key names)
-        }
-        else if (*pp == '=')
-        {
-          *pp = '\0';  // in case there wasn't white space
-          key = buf;
-        }
-      }
-      else if (isspace(*pp))
-      {
-        // skip white space after the '=' (if any)
-      }
-      else
-      {
-        // Cut white space trail off 'val' (there's at least a newline)
-        //
-        int i = 0;
-        for (i = strlen(pp) - 1; i >= 0; i--)
-        {
-          if (!isspace(pp[i]))
-            break;
-        }
-        // 'i' is the index of the last non-space char or -1
-        //
-        pp[i + 1] = '\0';
+    split_config_line(buf, key, val);
 
-        val = pp;
-        break;  // done!
-      }
-    }
     // 'key': non-nullptr if "key =" existed
     // "val": non-nullptr if non-whitespace string followed
 
-    bool eat_line = (key != nullptr);
-    if (key)
-    {
-      if (strcmp(key, "log") == 0)
-      {
-        Logger *lgr = logger_parse(val);
-        if (!lgr)
-        {
-          throw runtime_error(string_fmt("Bad log entry: %s", line));
-        }
-        Logger::init(lgr);  // remains valid throughout process lifespan (not deleted)
-      }
-      else if (strcmp(key, "package_path") == 0)
-      {
-        package_path = val;
-      }
-      else if (strcmp(key, "package_cpath") == 0)
-      {
-        package_cpath = val;
-      }
-      else if (strcmp(key, "killtime") == 0)
-      {
-        killtime_secs = 0;  // no limit
-        if (val)
-        {
-          // [Xh][YYmin][ZZsec] - same syntax as for Q3 engine time values
-          //
-          const char *pp = val;
-          while (p)
-          {
-            char *end = nullptr;
-            int v = strtol(pp, &end, 10);
-
-            if (begins_with(end, "h"))
-            {
-              killtime_secs += 60 * 60 * v;
-              pp = end + 1;
-            }
-            else if (begins_with(end, "min"))
-            {
-              killtime_secs += 60 * v;
-              pp = end + 3;
-            }
-            else if (begins_with(end, "sec"))
-            {
-              killtime_secs += v;
-              pp = end + 3;
-            }
-            else
-            {
-              LOG_USAGE("Bad configuration: '%s'", line);
-              killtime_secs = 0;
-              break;
-            }
-          }
-        }
-      }
-      else if (strcmp(key, "testbed") == 0)
-      {
-        testbed = val;
-      }
-      else
-      {
-        eat_line = false;
-      }
-    }
+    bool eat_line = (key != nullptr) && apply_config_entry(key, val, line, p);
     s += eat_line ? "\n" : line;
   }
   if (line)
