@@ -212,65 +212,25 @@ string mem_stat(bool initial) {
   ifstream fs("/proc/meminfo");
   char buf[100]; // must fit all lines, otherwise 'getline()' stops iterating
 
-  while (fs.getline(buf, sizeof(buf))) {
-    long *addr = nullptr;
-    switch (*buf) {
-    case 'B':
-      if (begins_with(buf, "Buffers:")) {
-        addr = &buffers_kB;
-        break;
-      }
-      break;
-    case 'C':
-      if (begins_with(buf, "Cached:")) {
-        addr = &cached_kB;
-        break;
-      }
-      if (begins_with(buf, "Committed_AS:")) {
-        addr = &committed_AS_kB;
-        break;
-      }
-      break;
-    case 'M':
-      if (begins_with(buf, "Mapped:")) {
-        addr = &mapped_kB;
-        break;
-      }
-      if (begins_with(buf, "MemFree:")) {
-        addr = &memfree_kB;
-        break;
-      }
-      if (begins_with(buf, "MemTotal:")) {
-        addr = &memtotal_kB;
-        break;
-      }
-      break;
-    case 'S':
-      if (begins_with(buf, "Slab:")) {
-        addr = &slab_kB;
-        break;
-      }
-      if (begins_with(buf, "SwapCached:")) {
-        addr = &swapcached_kB;
-        break;
-      }
-      if (begins_with(buf, "SwapFree:")) {
-        addr = &swapfree_kB;
-        break;
-      }
-      if (begins_with(buf, "SwapTotal:")) {
-        addr = &swaptotal_kB;
-        break;
-      }
-      break;
-    default:
-      break;
-    }
+  const struct {
+    const char *name;
+    long *addr;
+  } fields[] = {
+      {"Buffers:", &buffers_kB},     {"Cached:", &cached_kB},
+      {"Committed_AS:", &committed_AS_kB}, {"Mapped:", &mapped_kB},
+      {"MemFree:", &memfree_kB},     {"MemTotal:", &memtotal_kB},
+      {"Slab:", &slab_kB},           {"SwapCached:", &swapcached_kB},
+      {"SwapFree:", &swapfree_kB},   {"SwapTotal:", &swaptotal_kB},
+  };
 
-    if (addr) {
-      const char *p = strchr(buf, ':');
-      if (p) {
-        *addr = strtol(p + 1, nullptr, 10);
+  while (fs.getline(buf, sizeof(buf))) {
+    for (const auto &field : fields) {
+      if (begins_with(buf, field.name)) {
+        const char *p = strchr(buf, ':');
+        if (p) {
+          *field.addr = strtol(p + 1, nullptr, 10);
+        }
+        break;
       }
     }
   }
@@ -285,7 +245,8 @@ string mem_stat(bool initial) {
   if (initial) {
     return ""; // not used
     // return string_fmt( "{ total_MB: %.2lf }", memtotal_kB/1024.0 );
-  }     long used_kB = memtotal_kB - (memfree_kB + buffers_kB + cached_kB +
+  }
+    long used_kB = memtotal_kB - (memfree_kB + buffers_kB + cached_kB +
                                   swapcached_kB + slab_kB);
     long swapped_kB = swaptotal_kB - swapfree_kB;
 
