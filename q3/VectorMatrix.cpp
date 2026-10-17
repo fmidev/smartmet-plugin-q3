@@ -220,6 +220,93 @@ void VectorMatrixBind::setup(lua_State *L) {
   lua_settable(L, -3);
 }
 
+namespace {
+/*
+ * Push a copy of the component matrix 'mm' or, if it is nullptr, a matrix of
+ * the component given by 'get' for each vector of 'me'
+ */
+template <typename Get>
+void push_vector_component(lua_State *L, const VectorMatrix &me,
+                           const Matrix *mm, const NA_Param::Unit &unit,
+                           Get get) {
+  if (mm) {
+    new (L) MemMatrix(*mm); // it's a copy; changes won't affect us
+    return;
+  }
+
+  MemMatrix &m = *new (L) MemMatrix(me.getSize(), unit, me.getProjection());
+  VectorMatrix::offset_t n = m.getN();
+  for (VectorMatrix::offset_t i = 0; i < n; i++) {
+    m[i] = get(me[i]);
+  }
+}
+
+/*
+ * Push the value of a named field of 'me'. Returns the number of pushed
+ * values or -1 for unknown names (location indices, s.a. 'Helsinki').
+ */
+int push_vector_matrix_field(lua_State *L, const VectorMatrix &me,
+                             const char *s) {
+  const Matrix *m1 = me.getM1();
+
+  if (strcmp(s, "x") == 0) {
+    // Matrix is polar if no X component; do conversion to cartesian
+    // coordinates
+    //
+    // (getMX_ is non-nullptr if data is stored as X/Y components)
+    push_vector_component(L, me, me.getMX_(), m1->getUnit(),
+                          [](const Vector &v) { return v.getX(); });
+    return 1;
+  }
+  if (strcmp(s, "y") == 0) {
+    // Take the 'abs' component's (m1) unit for both X and Y
+    //
+    // (getMY_ is non-nullptr if data is stored as X/Y components)
+    push_vector_component(L, me, me.getMY_(), m1->getUnit(),
+                          [](const Vector &v) { return v.getY(); });
+    return 1;
+  }
+  if (strcmp(s, "abs") == 0) {
+    // Both 'm1' and 'm2' should have the same unit
+    //
+    // (getAbs_ is non-nullptr if data is stored as polar coords)
+    push_vector_component(L, me, me.getAbs_(), m1->getUnit(),
+                          [](const Vector &v) { return v.getAbs(); });
+    return 1;
+  }
+  if (strcmp(s, "deg") == 0) {
+    // (getDeg_ is non-nullptr if data is stored as polar coords)
+    push_vector_component(L, me, me.getDeg_(), NA_Param::UNIT_DEG,
+                          [](const Vector &v) { return v.getDeg(); });
+    return 1;
+  }
+  if (strcmp(s, "top") == 0) {
+    new (L) MatrixPos(m1->getSize().getTop());
+    return 1;
+  }
+  if (strcmp(s, "size") == 0) {
+    new (L) MatrixPos(m1->getGridSize());
+    return 1;
+  }
+  if (strcmp(s, "unit") == 0) {
+    lua_pushstring(L, m1->getUnitName().c_str()); // may be nullptr
+    return 1;
+  }
+  if (strcmp(s, "projection") == 0) {
+    lua_pushstring(L, me.getProjection().toString().c_str());
+    return 1;
+  }
+  if (strcmp(s, "grid") == 0) {
+    if (LuaNew_base::push_alive(L, 1, me.getGridKey())) {
+      L_ASSERT(Grid::instance(L, -1));
+      return 1;
+    }
+    return 0; // no grid for this matrix
+  }
+  return -1;
+}
+}  // namespace
+
 /*
  * [vector_ud]= __index( m2_ud, pos_ud )   -- m2[pos]
  * m_ud= __index( m2_ud, "x" )       -- m2.x
@@ -239,94 +326,14 @@ void VectorMatrixBind::setup(lua_State *L) {
 int VectorMatrixBind::index(lua_State *L) {
   const VectorMatrix &me = *VectorMatrix::instance(L, 1);
 
-  using offset_t = VectorMatrix::offset_t;
-
   switch (lua_type(L, 2)) {
   case LUA_TSTRING: {
     const char *s = lua_tostring(L, 2);
     assert(s);
 
-    if (strcmp(s, "x") == 0) {
-      const Matrix *mm =
-          me.getMX_(); // non-nullptr if data is stored as X/Y components
-      if (mm) {
-        new (L) MemMatrix(*mm); // it's a copy; changes won't affect us
-      } else {
-        // Matrix is polar; do conversion to cartesian coordinates
-        //
-        MemMatrix &m = *new (L) MemMatrix(me.getSize(), me.m1->getUnit(),
-                                          me.getProjection());
-        offset_t n = m.getN();
-        for (offset_t i = 0; i < n; i++) {
-          m[i] = me[i].getX();
-        }
-      }
-      return 1;
-    } if (strcmp(s, "y") == 0) {
-      const Matrix *mm =
-          me.getMY_(); // non-nullptr if data is stored as X/Y components
-      if (mm) {
-        new (L) MemMatrix(*mm); // it's a copy; changes won't affect us
-      } else {
-        // Take the 'abs' component's (m1) unit for both X and Y
-        //
-        MemMatrix &m = *new (L) MemMatrix(me.getSize(), me.m1->getUnit(),
-                                          me.getProjection());
-        offset_t n = m.getN();
-        for (offset_t i = 0; i < n; i++) {
-          m[i] = me[i].getY();
-        }
-      }
-      return 1;
-    } if (strcmp(s, "abs") == 0) {
-      const Matrix *mm =
-          me.getAbs_(); // non-nullptr if data is stored as polar coords
-      if (mm) {
-        new (L) MemMatrix(*mm); // it's a copy; changes won't affect us
-      } else {
-        // Both 'm1' and 'm2' should have the same unit
-        //
-        MemMatrix &m = *new (L) MemMatrix(me.getSize(), me.m1->getUnit(),
-                                          me.getProjection());
-        offset_t n = m.getN();
-        for (offset_t i = 0; i < n; i++) {
-          m[i] = me[i].getAbs();
-        }
-      }
-      return 1;
-    } if (strcmp(s, "deg") == 0) {
-      const Matrix *mm =
-          me.getDeg_(); // non-nullptr if data is stored as polar coords
-      if (mm) {
-        new (L) MemMatrix(*mm); // it's a copy; changes won't affect us
-      } else {
-        MemMatrix &m = *new (L) MemMatrix(me.getSize(), NA_Param::UNIT_DEG,
-                                          me.getProjection());
-        offset_t n = m.getN();
-        for (offset_t i = 0; i < n; i++) {
-          m[i] = me[i].getDeg();
-        }
-      }
-      return 1;
-    } else if (strcmp(s, "top") == 0) {
-      new (L) MatrixPos(me.m1->getSize().getTop());
-      return 1;
-    } else if (strcmp(s, "size") == 0) {
-      new (L) MatrixPos(me.m1->getGridSize());
-      return 1;
-    } else if (strcmp(s, "unit") == 0) {
-      lua_pushstring(L, me.m1->getUnitName().c_str()); // may be nullptr
-      return 1;
-    } else if (strcmp(s, "projection") == 0) {
-      lua_pushstring(L, me.getProjection().toString().c_str());
-      return 1;
-    } else if (strcmp(s, "grid") == 0) {
-      if (LuaNew_base::push_alive(L, 1, me.getGridKey())) {
-        L_ASSERT(Grid::instance(L, -1));
-        return 1;
-      }
-      return 0; // no grid for this matrix
-    }
+    int results = push_vector_matrix_field(L, me, s);
+    if (results >= 0)
+      return results;
   } break; // go try location indices (s.a. 'Helsinki')
 
   case LUA_TUSERDATA: {
