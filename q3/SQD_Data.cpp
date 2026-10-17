@@ -1920,14 +1920,181 @@ bool timeDiff(JDay const &j1, JDay const &j2, time_t &tDiff, time_t &t1_,
   return (tDiff && ((!tStep) || (!(tDiff % tStep))) &&
           ((!tD) || (tDiff == tD)));
 }
+
+const unsigned int NewBaseMinTimeStepInSecs = 60;
+
+/*
+ * Levels of a cross section query
+ */
+struct CrossLevels {
+  bool hybrid = false;
+  bool height = false;
+  std::vector<NFmiLevel> hLevels;           // hybrid levels
+  std::vector<float> pressures_or_heights; // pressure or height levels
+};
+
+/*
+ * Convert the cross section levels
+ */
+void set_cross_levels(const std::vector<NA_Level> &levelVec, CrossLevels &cl) {
+  unsigned int nLevels = levelVec.size();
+
+  cl.hybrid = (levelVec[0].getType() == NA_Level::HYBRID_LEVEL);
+  cl.height = (levelVec[0].getType() == NA_Level::HEIGHT_LEVEL);
+  bool ground =
+      ((nLevels == 1) && (levelVec[0].getType() == NA_Level::GROUND_LEVEL));
+
+  // Ground level is handled as hybrid level
+  //
+  if (ground)
+    cl.hybrid = true;
+
+  if (cl.hybrid)
+    for (unsigned int i = 0; (i < nLevels); i++)
+      cl.hLevels.push_back(SQD_Tools::newbase_level(levelVec[i]));
+  else
+    for (unsigned int i = 0; (i < nLevels); i++)
+      cl.pressures_or_heights.push_back(levelVec[i].getValue());
+}
+
+/*
+ * Check for constant timestep (the first two times have been checked)
+ */
+bool has_constant_timestep(const std::vector<JDay> &vtVec, time_t &tDiff,
+                           time_t &t1) {
+  unsigned int nTimes = vtVec.size();
+
+  for (unsigned int i = 2; (i < nTimes); i++)
+    if (!timeDiff(vtVec[i - 1], vtVec[i], tDiff, t1, NewBaseMinTimeStepInSecs))
+      return false;
+
+  return true;
+}
+
+/*
+ * Time cross section at one location
+ */
+NFmiDataMatrix<float> time_cross_section_values(NFmiFastQueryInfo &fi,
+                                                CrossLevels &cl,
+                                                const LatLonList &locs,
+                                                NFmiTimeBag &validTimes) {
+  std::vector<float> &pressures = cl.pressures_or_heights;
+  std::vector<float> &heights = cl.pressures_or_heights;
+
+  //    	if (ground)
+  //    		fi.TimeCrossSectionValuesGround( nm,
+  //    NFmiPoint(locs[0].getLon(), locs[0].getLat()), validTimes );
+  //    else
+  if (cl.hybrid)
+    return fi.TimeCrossSectionValuesHybrid(
+        cl.hLevels, NFmiPoint(locs[0].getLon(), locs[0].getLat()), validTimes);
+  if (cl.height)
+    return fi.TimeCrossSectionValues(
+        heights, NFmiPoint(locs[0].getLon(), locs[0].getLat()), validTimes);
+  return fi.TimeCrossSectionValuesLogP(
+      pressures, NFmiPoint(locs[0].getLon(), locs[0].getLat()), validTimes);
+}
+
+/*
+ * Cross section at one time ('cross') or route cross section. 'nTimes' is
+ * set to the number of locations for a cross section.
+ */
+NFmiDataMatrix<float> cross_section_values(NFmiFastQueryInfo &fi,
+                                           CrossLevels &cl,
+                                           const std::vector<JDay> &vtVec,
+                                           const LatLonList &locs, bool cross,
+                                           unsigned int &nTimes) {
+  std::vector<float> &pressures = cl.pressures_or_heights;
+  std::vector<float> &heights = cl.pressures_or_heights;
+  std::vector<NFmiMetTime> validTimes;
+  std::vector<NFmiPoint> locations;
+  unsigned int nLocs = locs.size();
+
+  int locIdxIncr = 1;
+  int iLocs = 0;
+
+  if (nLocs == 1) {
+    // To clone the single location for Route...() call
+    locIdxIncr = 0;
+  }
+
+  if (cross) {
+    // To loop the locations
+    nTimes = nLocs;
+  }
+
+  for (unsigned int i = iLocs = 0; (i < nTimes); i++, iLocs += locIdxIncr) {
+    if ((!i) || (!cross))
+      validTimes.push_back(SQD_Tools::jd2mt(vtVec[i]));
+    locations.emplace_back(locs[iLocs].getLon(), locs[iLocs].getLat());
+  }
+
+  if (cross) {
+    //        	if (ground)
+    //            	fi.CrossSectionValuesGround( nm, validTimes[0],
+    //            locations );
+    //        	else
+    if (cl.hybrid)
+      return fi.CrossSectionValuesHybrid(validTimes[0], cl.hLevels, locations);
+    if (cl.height)
+      return fi.CrossSectionValues(validTimes[0], heights, locations);
+    return fi.CrossSectionValuesLogP(validTimes[0], pressures, locations);
+  }
+  //      else if (ground)
+  //      	fi.RouteCrossSectionValuesGround( nm, locations,
+  //      validTimes );
+  if (cl.hybrid)
+    return fi.RouteCrossSectionValuesHybrid(cl.hLevels, locations, validTimes);
+  if (cl.height)
+    return fi.RouteCrossSectionValues(heights, locations, validTimes);
+  return fi.RouteCrossSectionValuesLogP(pressures, locations, validTimes);
+}
+
+/*
+ * Flight route values (one value per location/level/time). 'nTimes' and
+ * 'nLevels' are set to the result size.
+ */
+NFmiDataMatrix<float> flight_route_values(NFmiFastQueryInfo &fi,
+                                          CrossLevels &cl,
+                                          const std::vector<JDay> &vtVec,
+                                          const LatLonList &locs,
+                                          unsigned int &nTimes,
+                                          unsigned int &nLevels) {
+  std::vector<float> &pressures = cl.pressures_or_heights;
+  std::vector<float> &heights = cl.pressures_or_heights;
+  std::vector<NFmiMetTime> validTimes;
+  std::vector<NFmiPoint> locations;
+  unsigned int nLocs = locs.size();
+  NFmiDataMatrix<float> nm;
+
+  for (unsigned int i = 0; (i < nTimes); i++)
+    validTimes.push_back(SQD_Tools::jd2mt(vtVec[i]));
+  for (unsigned int i = 0; (i < nLocs); i++)
+    locations.emplace_back(locs[i].getLon(), locs[i].getLat());
+
+  if (cl.hybrid)
+    nm = fi.FlightRouteValuesHybrid(cl.hLevels, locations, validTimes);
+  else if (cl.height)
+    nm = fi.FlightRouteValues(heights, locations, validTimes);
+  else
+    nm = fi.FlightRouteValuesLogP(pressures, locations, validTimes);
+
+  if (nm.NX() == 0)
+    throw E_LOG_USAGE0("FlightRouteValues() returned no data; must have "
+                       "equal number of locations, levels and "
+                       "times");
+
+  nTimes = nm.NX();
+  nLevels = 1;
+
+  return nm;
+}
 }  // namespace
 
 /*
  * 23-Sep-2011 PKi: Fetch cross using newbase. Uses native projection and
  * gridsize
  */
-
-const unsigned int NewBaseMinTimeStepInSecs = 60;
 
 /*virtual*/ CONST_IF_SERVER Matrix *
 SQD_Data::push_NativeCross(lua_State *L, const std::vector<JDay> &vtVec,
@@ -1982,132 +2149,34 @@ SQD_Data::push_NativeCross(lua_State *L, const std::vector<JDay> &vtVec,
 
     NFmiDataMatrix<float> nm;
 
-    std::vector<float> pressures_or_heights;
-    std::vector<float> &pressures = pressures_or_heights;
-    std::vector<float> &heights = pressures_or_heights;
-    std::vector<NFmiLevel> hLevels;
+    CrossLevels cl;
     unsigned int nLevels = levelVec.size();
     unsigned int nLocs = locs.size();
     unsigned int nTimes = vtVec.size();
-    unsigned int i = 0;
     time_t t1 = 0;
     time_t tDiff = 0;
     bool timeCross =
         ((!flightRoute) && (nLocs == 1) && (nTimes > 1) &&
          timeDiff(vtVec[0], vtVec[1], tDiff, t1, NewBaseMinTimeStepInSecs));
     bool cross = ((!flightRoute) && (nTimes == 1));
-    bool hybrid = (levelVec[0].getType() == NA_Level::HYBRID_LEVEL);
-    bool height = (levelVec[0].getType() == NA_Level::HEIGHT_LEVEL);
-    bool ground =
-        ((nLevels == 1) && (levelVec[0].getType() == NA_Level::GROUND_LEVEL));
 
-    // Ground level is handled as hybrid level
+    set_cross_levels(levelVec, cl);
+
+    // Check for constant timestep
     //
-    if (ground)
-      hybrid = true;
-
-    if (hybrid)
-      for (i = 0; (i < nLevels); i++)
-        hLevels.push_back(SQD_Tools::newbase_level(levelVec[i]));
-    else
-      for (i = 0; (i < nLevels); i++)
-        pressures_or_heights.push_back(levelVec[i].getValue());
-
-    if (timeCross) {
-      // Check for constant timestep
-
-      for (i = 2; (i < nTimes); i++)
-        if (!timeDiff(vtVec[i - 1], vtVec[i], tDiff, t1,
-                      NewBaseMinTimeStepInSecs)) {
-          timeCross = false;
-          break;
-        }
-    }
+    if (timeCross)
+      timeCross = has_constant_timestep(vtVec, tDiff, t1);
 
     if (timeCross) {
       NFmiTimeBag validTimes(SQD_Tools::jd2mt(vtVec[0]),
                              SQD_Tools::jd2mt(vtVec[nTimes - 1]),
                              tDiff / NewBaseMinTimeStepInSecs);
 
-      //    	if (ground)
-      //    		fi.TimeCrossSectionValuesGround( nm,
-      //    NFmiPoint(locs[0].getLon(), locs[0].getLat()), validTimes );
-      //    else
-      if (hybrid)
-        nm = fi.TimeCrossSectionValuesHybrid(
-            hLevels, NFmiPoint(locs[0].getLon(), locs[0].getLat()), validTimes);
-      else if (height)
-        nm = fi.TimeCrossSectionValues(
-            heights, NFmiPoint(locs[0].getLon(), locs[0].getLat()), validTimes);
-      else
-        nm = fi.TimeCrossSectionValuesLogP(
-            pressures, NFmiPoint(locs[0].getLon(), locs[0].getLat()),
-            validTimes);
+      nm = time_cross_section_values(fi, cl, locs, validTimes);
+    } else if (!flightRoute) {
+      nm = cross_section_values(fi, cl, vtVec, locs, cross, nTimes);
     } else {
-      std::vector<NFmiMetTime> validTimes;
-      std::vector<NFmiPoint> locations;
-
-      if (!flightRoute) {
-        int locIdxIncr = 1;
-        int iLocs = 0;
-
-        if (nLocs == 1) {
-          // To clone the single location for Route...() call
-          locIdxIncr = 0;
-        }
-
-        if (cross) {
-          // To loop the locations
-          nTimes = nLocs;
-        }
-
-        for (i = iLocs = 0; (i < nTimes); i++, iLocs += locIdxIncr) {
-          if ((!i) || (!cross))
-            validTimes.push_back(SQD_Tools::jd2mt(vtVec[i]));
-          locations.emplace_back(locs[iLocs].getLon(), locs[iLocs].getLat());
-        }
-
-        if (cross)
-          //        	if (ground)
-          //            	fi.CrossSectionValuesGround( nm, validTimes[0],
-          //            locations );
-          //        	else
-          if (hybrid)
-            nm = fi.CrossSectionValuesHybrid(validTimes[0], hLevels, locations);
-          else if (height)
-            nm = fi.CrossSectionValues(validTimes[0], heights, locations);
-          else
-            nm = fi.CrossSectionValuesLogP(validTimes[0], pressures, locations);
-        //      else if (ground)
-        //      	fi.RouteCrossSectionValuesGround( nm, locations,
-        //      validTimes );
-        else if (hybrid)
-          nm = fi.RouteCrossSectionValuesHybrid(hLevels, locations, validTimes);
-        else if (height)
-          nm = fi.RouteCrossSectionValues(heights, locations, validTimes);
-        else
-          nm = fi.RouteCrossSectionValuesLogP(pressures, locations, validTimes);
-      } else {
-        for (i = 0; (i < nTimes); i++)
-          validTimes.push_back(SQD_Tools::jd2mt(vtVec[i]));
-        for (i = 0; (i < nLocs); i++)
-          locations.emplace_back(locs[i].getLon(), locs[i].getLat());
-
-        if (hybrid)
-          nm = fi.FlightRouteValuesHybrid(hLevels, locations, validTimes);
-        else if (height)
-          nm = fi.FlightRouteValues(heights, locations, validTimes);
-        else
-          nm = fi.FlightRouteValuesLogP(pressures, locations, validTimes);
-
-        if (nm.NX() == 0)
-          throw E_LOG_USAGE0("FlightRouteValues() returned no data; must have "
-                             "equal number of locations, levels and "
-                             "times");
-
-        nTimes = nm.NX();
-        nLevels = 1;
-      }
+      nm = flight_route_values(fi, cl, vtVec, locs, nTimes, nLevels);
     }
 
     const MatrixPos native_gs(nTimes, nLevels);
