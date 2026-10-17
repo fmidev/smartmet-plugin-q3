@@ -15,6 +15,7 @@
 // SSE intrinsics (kernel header); use '-msse'
 
 #include "MatrixPos.h"
+#include <cassert>
 class Matrix;
 class MemMatrix;
 
@@ -68,39 +69,40 @@ bool SSE_hasnan(const float *ptr, MatrixPos::offset_t n);
  * Note: Using 'divps' with a zero divisor leads to a CPU level math interrupt.
  *       Don't even try.
  */
+template <typename Op, typename IndexT, typename CountT>
+inline void sse_op_mm(Op op, float *c_data, const float *a_data,
+                      const float *b_data, IndexT &i, CountT n) {
+  if (a_data && b_data) {
+    /*assert( ((size_t)a_data)%16==0 );*/
+    /*assert( ((size_t)b_data)%16==0 );*/
+
+    assert(c_data /* && ((size_t)c_data)%16==0 */);
+
+    const __m128 *va = (const __m128 *)a_data;
+    const __m128 *vb = (const __m128 *)b_data;
+    __m128 *vc = (__m128 *)c_data;
+
+    while (i + (32 - 1) < n) { /* bulk handled here */
+      *(vc++) = op(*va++, *vb++);
+      *(vc++) = op(*va++, *vb++);
+      *(vc++) = op(*va++, *vb++);
+      *(vc++) = op(*va++, *vb++);
+      *(vc++) = op(*va++, *vb++);
+      *(vc++) = op(*va++, *vb++);
+      *(vc++) = op(*va++, *vb++);
+      *(vc++) = op(*va++, *vb++);
+      i += 32;
+    }
+    while (i + (4 - 1) < n) { /* last 4..31 values (just an optimization) */
+      *(vc++) = op(*va++, *vb++);
+      i += 4;
+    }
+  } /* last 0..3 values left for regular loop */
+}
+
 #define SSE_OP_mm(OP, C, A, B, I, N)                                           \
-  ([&] {                                                                            \
-    const float *a_data = (A)->getData();                                      \
-    const float *b_data = (B)->getData();                                      \
-    if (a_data && b_data) {                                                    \
-      /*assert( ((size_t)a_data)%16==0 );*/                                    \
-      /*assert( ((size_t)b_data)%16==0 );*/                                    \
-                                                                               \
-      float *c_data = (C).data;                                                \
-      assert(c_data /* && ((size_t)c_data)%16==0 */);                          \
-                                                                               \
-      const __m128 *va = (const __m128 *)a_data;                               \
-      const __m128 *vb = (const __m128 *)b_data;                               \
-      __m128 *vc = (__m128 *)c_data;                                           \
-                                                                               \
-      while ((I) + (32 - 1) < (N)) { /* bulk handled here */                   \
-        *(vc++) = OP(*va++, *vb++);                                            \
-        *(vc++) = OP(*va++, *vb++);                                            \
-        *(vc++) = OP(*va++, *vb++);                                            \
-        *(vc++) = OP(*va++, *vb++);                                            \
-        *(vc++) = OP(*va++, *vb++);                                            \
-        *(vc++) = OP(*va++, *vb++);                                            \
-        *(vc++) = OP(*va++, *vb++);                                            \
-        *(vc++) = OP(*va++, *vb++);                                            \
-        (I) += 32;                                                             \
-      }                                                                        \
-      while ((I) + (4 - 1) <                                                   \
-             (N)) { /* last 4..31 values (just an optimization) */             \
-        *(vc++) = OP(*va++, *vb++);                                            \
-        (I) += 4;                                                              \
-      }                                                                        \
-    } /* last 0..3 values left for regular loop */                             \
-  }())
+  sse_op_mm([](__m128 x, __m128 y) { return OP(x, y); }, (C).data,            \
+            (A)->getData(), (B)->getData(), I, N)
 
 /*
  * c= a op scalar
@@ -111,112 +113,117 @@ bool SSE_hasnan(const float *ptr, MatrixPos::offset_t n);
  *           / (divps) -''-              (divisor MUST be non-zero!)
  *           - unary minus (mulps with -1.0)
  */
+template <typename Op, typename IndexT, typename CountT>
+inline void sse_op_mf(Op op, float *c_data, const float *a_data, float scalar,
+                      IndexT &i, CountT n) {
+  if (a_data) {
+    /* assert( ((size_t)a_data)%16==0 ); */
+
+    assert(c_data /* && ((size_t)c_data)%16==0 */);
+
+    const __m128 *va = (const __m128 *)a_data;
+    const __m128 vv =
+        _mm_set1_ps(scalar); /* { SCALAR, SCALAR, SCALAR, SCALAR } */
+    __m128 *vc = (__m128 *)c_data;
+
+    while (i + (32 - 1) < n) { /* bulk handled here */
+      *(vc++) = op(*va++, vv);
+      *(vc++) = op(*va++, vv);
+      *(vc++) = op(*va++, vv);
+      *(vc++) = op(*va++, vv);
+      *(vc++) = op(*va++, vv);
+      *(vc++) = op(*va++, vv);
+      *(vc++) = op(*va++, vv);
+      *(vc++) = op(*va++, vv);
+      i += 32;
+    }
+    while (i + (4 - 1) < n) { /* last 4..31 values (just an optimization) */
+      *(vc++) = op(*va++, vv);
+      i += 4;
+    }
+  } /* last 0..3 values left for regular loop */
+}
+
 #define SSE_OP_mf(OP, C, A, SCALAR, I, N)                                      \
-  ([&] {                                                                            \
-    const float *a_data = (A)->getData();                                      \
-    if (a_data) {                                                              \
-      /* assert( ((size_t)a_data)%16==0 ); */                                  \
-                                                                               \
-      float *c_data = (C).data;                                                \
-      assert(c_data /* && ((size_t)c_data)%16==0 */);                          \
-                                                                               \
-      const __m128 *va = (const __m128 *)a_data;                               \
-      const __m128 vv =                                                        \
-          _mm_set1_ps(SCALAR); /* { SCALAR, SCALAR, SCALAR, SCALAR } */        \
-      __m128 *vc = (__m128 *)c_data;                                           \
-                                                                               \
-      while ((I) + (32 - 1) < (N)) { /* bulk handled here */                   \
-        *(vc++) = OP(*va++, vv);                                               \
-        *(vc++) = OP(*va++, vv);                                               \
-        *(vc++) = OP(*va++, vv);                                               \
-        *(vc++) = OP(*va++, vv);                                               \
-        *(vc++) = OP(*va++, vv);                                               \
-        *(vc++) = OP(*va++, vv);                                               \
-        *(vc++) = OP(*va++, vv);                                               \
-        *(vc++) = OP(*va++, vv);                                               \
-        (I) += 32;                                                             \
-      }                                                                        \
-      while ((I) + (4 - 1) <                                                   \
-             (N)) { /* last 4..31 values (just an optimization) */             \
-        *(vc++) = OP(*va++, vv);                                               \
-        (I) += 4;                                                              \
-      }                                                                        \
-    } /* last 0..3 values left for regular loop */                             \
-  }())
+  sse_op_mf([](__m128 x, __m128 y) { return OP(x, y); }, (C).data,            \
+            (A)->getData(), SCALAR, I, N)
 
 /*
  * c= scalar op b
  *
  * Used by:  - (subps) for scalar - matrix
  */
+template <typename Op, typename IndexT, typename CountT>
+inline void sse_op_fm(Op op, float *c_data, float scalar, const float *b_data,
+                      IndexT &i, CountT n) {
+  if (b_data) {
+    /* assert( ((size_t)b_data)%16==0 ); */
+
+    assert(c_data /* && ((size_t)c_data)%16==0 */);
+
+    const __m128 *vb = (const __m128 *)b_data;
+    const __m128 vv =
+        _mm_set1_ps(scalar); /* { SCALAR, SCALAR, SCALAR, SCALAR } */
+    __m128 *vc = (__m128 *)c_data;
+
+    while (i + (32 - 1) < n) { /* bulk handled here */
+      *(vc++) = op(vv, *vb++);
+      *(vc++) = op(vv, *vb++);
+      *(vc++) = op(vv, *vb++);
+      *(vc++) = op(vv, *vb++);
+      *(vc++) = op(vv, *vb++);
+      *(vc++) = op(vv, *vb++);
+      *(vc++) = op(vv, *vb++);
+      *(vc++) = op(vv, *vb++);
+      i += 32;
+    }
+    while (i + (4 - 1) < n) { /* last 4..31 values (just an optimization) */
+      *(vc++) = op(vv, *vb++);
+      i += 4;
+    }
+  } /* last 0..3 values left for regular loop */
+}
+
 #define SSE_OP_fm(OP, C, SCALAR, B, I, N)                                      \
-  ([&] {                                                                            \
-    const float *b_data = (B)->getData();                                      \
-    if (b_data) {                                                              \
-      /* assert( ((size_t)b_data)%16==0 ); */                                  \
-                                                                               \
-      float *c_data = (C).data;                                                \
-      assert(c_data /* && ((size_t)c_data)%16==0 */);                          \
-                                                                               \
-      const __m128 *vb = (const __m128 *)b_data;                               \
-      const __m128 vv =                                                        \
-          _mm_set1_ps(SCALAR); /* { SCALAR, SCALAR, SCALAR, SCALAR } */        \
-      __m128 *vc = (__m128 *)c_data;                                           \
-                                                                               \
-      while ((I) + (32 - 1) < (N)) { /* bulk handled here */                   \
-        *(vc++) = OP(vv, *vb++);                                               \
-        *(vc++) = OP(vv, *vb++);                                               \
-        *(vc++) = OP(vv, *vb++);                                               \
-        *(vc++) = OP(vv, *vb++);                                               \
-        *(vc++) = OP(vv, *vb++);                                               \
-        *(vc++) = OP(vv, *vb++);                                               \
-        *(vc++) = OP(vv, *vb++);                                               \
-        *(vc++) = OP(vv, *vb++);                                               \
-        (I) += 32;                                                             \
-      }                                                                        \
-      while ((I) + (4 - 1) <                                                   \
-             (N)) { /* last 4..31 values (just an optimization) */             \
-        *(vc++) = OP(vv, *vb++);                                               \
-        (I) += 4;                                                              \
-      }                                                                        \
-    } /* last 0..3 values left for regular loop */                             \
-  }())
+  sse_op_fm([](__m128 x, __m128 y) { return OP(x, y); }, (C).data, SCALAR,    \
+            (B)->getData(), I, N)
 
 /*
  * c= op a
  *
  * Used by:  'sqrt()' & '^0.5' (sqrtps) for matrix
  */
+template <typename Op, typename IndexT, typename CountT>
+inline void sse_op_m(Op op, float *c_data, const float *a_data, IndexT &i,
+                     CountT n) {
+  if (a_data) {
+    /* assert( ((size_t)a_data)%16==0 ); */
+
+    assert(c_data /* && assert( ((size_t)c_data)%16==0 */);
+
+    const __m128 *va = (const __m128 *)a_data;
+    __m128 *vc = (__m128 *)c_data;
+
+    while (i + (32 - 1) < n) { /* bulk handled here */
+      *(vc++) = op(*va++);
+      *(vc++) = op(*va++);
+      *(vc++) = op(*va++);
+      *(vc++) = op(*va++);
+      *(vc++) = op(*va++);
+      *(vc++) = op(*va++);
+      *(vc++) = op(*va++);
+      *(vc++) = op(*va++);
+      i += 32;
+    }
+    while (i + (4 - 1) < n) { /* last 4..31 values (just an optimization) */
+      *(vc++) = op(*va++);
+      i += 4;
+    }
+  } /* last 0..3 values left for regular loop */
+}
+
 #define SSE_OP_m(OP, C, A, I, N)                                               \
-  ([&] {                                                                            \
-    const float *a_data = (A)->getData();                                      \
-    if (a_data) {                                                              \
-      /* assert( ((size_t)a_data)%16==0 ); */                                  \
-                                                                               \
-      float *c_data = (C).data;                                                \
-      assert(c_data /* && assert( ((size_t)c_data)%16==0 */);                  \
-                                                                               \
-      const __m128 *va = (const __m128 *)a_data;                               \
-      __m128 *vc = (__m128 *)c_data;                                           \
-                                                                               \
-      while ((I) + (32 - 1) < (N)) { /* bulk handled here */                   \
-        *(vc++) = OP(*va++);                                                   \
-        *(vc++) = OP(*va++);                                                   \
-        *(vc++) = OP(*va++);                                                   \
-        *(vc++) = OP(*va++);                                                   \
-        *(vc++) = OP(*va++);                                                   \
-        *(vc++) = OP(*va++);                                                   \
-        *(vc++) = OP(*va++);                                                   \
-        *(vc++) = OP(*va++);                                                   \
-        (I) += 32;                                                             \
-      }                                                                        \
-      while ((I) + (4 - 1) <                                                   \
-             (N)) { /* last 4..31 values (just an optimization) */             \
-        *(vc++) = OP(*va++);                                                   \
-        (I) += 4;                                                              \
-      }                                                                        \
-    } /* last 0..3 values left for regular loop */                             \
-  }())
+  sse_op_m([](__m128 x) { return OP(x); }, (C).data, (A)->getData(), I, N)
 
 /*
  * v= op a
@@ -226,31 +233,35 @@ bool SSE_hasnan(const float *ptr, MatrixPos::offset_t n);
  * Used by: 'min()' (minps) for matrix -> scalar
  *          'max()' (maxps) -''-
  */
+template <typename Op, typename MaxMin, typename IndexT, typename CountT>
+inline void sse_op_minmax_1(Op op, float &v, const float *a_data, IndexT &i,
+                            CountT n, MaxMin std_maxmin) {
+  if (a_data) {
+    /* assert( ((size_t)a_data)%16==0 ); */
+    const __m128 *va = (const __m128 *)a_data;
+    __m128 vv = _mm_set1_ps(v); /* { [-]INF, [-]INF, [-]INF, [-]INF } */
+
+    /* Possible NAN values need to be in the LEFT SSE operand. */
+    while (i + (16 - 1) < n) { /* bulk handled here */
+      vv = op(*va++, vv);
+      vv = op(*va++, vv);
+      vv = op(*va++, vv);
+      vv = op(*va++, vv);
+      i += 16;
+    }
+    while (i + (4 - 1) < n) { /* last 4..15 values (just an optimization) */
+      vv = op(*va++, vv);
+      i += 4;
+    }
+    const float *vf = (const float *)&vv;
+    v = std_maxmin(std_maxmin(vf[0], vf[1]), std_maxmin(vf[2], vf[3]));
+  }
+} /* last 0..3 values left for regular loop */
+
 #define SSE_OP_minmax_1(OP, V, A, I, N, std_maxmin)                            \
-  ([&] {                                                                            \
-    const float *a_data = (A)->getData();                                      \
-    if (a_data) {                                                              \
-      /* assert( ((size_t)a_data)%16==0 ); */                                  \
-      const __m128 *va = (const __m128 *)a_data;                               \
-      __m128 vv = _mm_set1_ps(V); /* { [-]INF, [-]INF, [-]INF, [-]INF } */     \
-                                                                               \
-      /* Possible NAN values need to be in the LEFT SSE operand. */            \
-      while ((I) + (16 - 1) < (N)) { /* bulk handled here */                   \
-        vv = OP(*va++, vv);                                                    \
-        vv = OP(*va++, vv);                                                    \
-        vv = OP(*va++, vv);                                                    \
-        vv = OP(*va++, vv);                                                    \
-        (I) += 16;                                                             \
-      }                                                                        \
-      while ((I) + (4 - 1) <                                                   \
-             (N)) { /* last 4..15 values (just an optimization) */             \
-        vv = OP(*va++, vv);                                                    \
-        (I) += 4;                                                              \
-      }                                                                        \
-      const float *vf = (const float *)&vv;                                    \
-      (V) = std_maxmin(std_maxmin(vf[0], vf[1]), std_maxmin(vf[2], vf[3]));    \
-    }                                                                          \
-  }()) /* last 0..3 values left for regular loop */
+  sse_op_minmax_1([](__m128 x, __m128 y) { return OP(x, y); }, V,             \
+                  (A)->getData(), I, N,                                        \
+                  [](float x, float y) { return std_maxmin(x, y); })
 
 /*
  * Detecting NANs using SSE.
@@ -289,33 +300,39 @@ bool SSE_hasnan(const float *ptr, MatrixPos::offset_t n);
  * Used by: 'min()' (minps) for two matrices
  *          'max()' (maxps) -''-
  */
+template <typename Op, typename Safe, typename CM, typename BM,
+          typename IndexT, typename CountT>
+inline void sse_op_minmax(Op op, float *c_data, CM &c, const BM *b,
+                          const float *b_data, IndexT &i, CountT n,
+                          Safe minmax_safe) {
+  if (b_data) {
+    /* assert( ((size_t)b_data)%16==0 ); */
+    assert(c_data /* && ((size_t)c_data)%16==0 */);
+
+    const __m128 *vb = (const __m128 *)b_data;
+    __m128 *vc = (__m128 *)c_data;
+
+    for (; i + (8 - 1) < n; i += 8) { /* bulk handled here */
+      if (NO_NANS_8(vb)) {
+        *vc = op(*vc, *vb++);
+        ++vc;
+        *vc = op(*vc, *vb++);
+        ++vc;
+      } else {
+        for (unsigned j = i; j < i + 8; j++) {
+          c[j] = minmax_safe(c[j], (*b)[j]);
+        }
+        vb += 2;
+        vc += 2;
+      }
+    }
+  } /* last 0..7 values left for regular loop */
+}
+
 #define SSE_OP_minmax(OP, C, B, I, N, minmax_safe)                             \
-  ([&] {                                                                            \
-    const float *b_data = (B)->getData();                                      \
-    if (b_data) {                                                              \
-      /* assert( ((size_t)b_data)%16==0 ); */                                  \
-      float *c_data = (C).data;                                                \
-      assert(c_data /* && ((size_t)c_data)%16==0 */);                          \
-                                                                               \
-      const __m128 *vb = (const __m128 *)b_data;                               \
-      __m128 *vc = (__m128 *)c_data;                                           \
-                                                                               \
-      for (; (I) + (8 - 1) < (N); (I) += 8) { /* bulk handled here */          \
-        if (NO_NANS_8(vb)) {                                                   \
-          *vc = OP(*vc, *vb++);                                                \
-          ++vc;                                                                \
-          *vc = OP(*vc, *vb++);                                                \
-          ++vc;                                                                \
-        } else {                                                               \
-          for (unsigned j = (I); j < (I) + 8; j++) {                           \
-            (C)[j] = minmax_safe((C)[j], (*(B))[j]);                           \
-          }                                                                    \
-          vb += 2;                                                             \
-          vc += 2;                                                             \
-        }                                                                      \
-      }                                                                        \
-    } /* last 0..7 values left for regular loop */                             \
-  }())
+  sse_op_minmax([](__m128 x, __m128 y) { return OP(x, y); }, (C).data, C, B,  \
+                (B)->getData(), I, N,                                          \
+                [](float x, float y) { return minmax_safe(x, y); })
 
 /*
  * c= c op scalar
@@ -327,29 +344,36 @@ bool SSE_hasnan(const float *ptr, MatrixPos::offset_t n);
  * scalars. If all the matrices had a NAN (a hole) that hole REMAINS through
  * this process (scalars only affect the non-NAN portion of the result).
  */
+template <typename Op, typename KeepNans, typename CM, typename IndexT,
+          typename CountT>
+inline void sse_op_minmax_scalar(Op op, float *c_data, CM &c, float scalar,
+                                 IndexT &i, CountT n,
+                                 KeepNans minmax_keep_nans) {
+  assert(c_data /* && ((size_t)c_data)%16==0 */);
+
+  const __m128 vv =
+      _mm_set1_ps(scalar); /* { SCALAR, SCALAR, SCALAR, SCALAR } */
+  __m128 *vc = (__m128 *)c_data;
+
+  for (; i + (8 - 1) < n; i += 8) { /* bulk handled here */
+    if (NO_NANS_8(vc)) {
+      *vc = op(*vc, vv);
+      ++vc;
+      *vc = op(*vc, vv);
+      ++vc;
+    } else {
+      for (unsigned j = i; j < i + 8; j++) {
+        c[j] = minmax_keep_nans(c[j], scalar);
+      }
+      vc += 2;
+    }
+  }
+} /* last 0..7 values left for regular loop */
+
 #define SSE_OP_minmax_scalar(OP, C, SCALAR, I, N, minmax_keep_nans)            \
-  ([&] {                                                                            \
-    float *c_data = (C).data;                                                  \
-    assert(c_data /* && ((size_t)c_data)%16==0 */);                            \
-                                                                               \
-    const __m128 vv =                                                          \
-        _mm_set1_ps(SCALAR); /* { SCALAR, SCALAR, SCALAR, SCALAR } */          \
-    __m128 *vc = (__m128 *)c_data;                                             \
-                                                                               \
-    for (; (I) + (8 - 1) < (N); (I) += 8) { /* bulk handled here */            \
-      if (NO_NANS_8(vc)) {                                                     \
-        *vc = OP(*vc, vv);                                                     \
-        ++vc;                                                                  \
-        *vc = OP(*vc, vv);                                                     \
-        ++vc;                                                                  \
-      } else {                                                                 \
-        for (unsigned j = (I); j < (I) + 8; j++) {                             \
-          (C)[j] = minmax_keep_nans((C)[j], SCALAR);                           \
-        }                                                                      \
-        vc += 2;                                                               \
-      }                                                                        \
-    }                                                                          \
-  }()) /* last 0..7 values left for regular loop */
+  sse_op_minmax_scalar([](__m128 x, __m128 y) { return OP(x, y); }, (C).data,  \
+                       C, SCALAR, I, N,                                        \
+                       [](float x, float y) { return minmax_keep_nans(x, y); })
 
 #endif
 // SSE_H
