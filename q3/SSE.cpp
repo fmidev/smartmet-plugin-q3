@@ -63,11 +63,21 @@ static void mm_print_uint128( const __m128 &a ) {
 }
 #endif
 
-#define always_assert(eq)                                                      \
-  ((eq) ? static_cast<void>(0) : [&] {                                         \
-    LOG_FATAL("Assertion failed in %s:%d (%s)", __FILE__, __LINE__, #eq);      \
-    abort();                                                                   \
-  }())
+namespace
+{
+/*
+ * Abort with a fatal log message if 'eq' is false
+ */
+void always_assert_(bool eq, const char *file, int line, const char *expr)
+{
+  if (!eq) {
+    LOG_FATAL("Assertion failed in %s:%d (%s)", file, line, expr);
+    abort();
+  }
+}
+}  // namespace
+
+#define always_assert(eq) always_assert_((eq), __FILE__, __LINE__, #eq)
 
 namespace
 {
