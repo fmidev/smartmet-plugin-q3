@@ -121,19 +121,31 @@ Projection getProjection(lua_State *L, const NA_Data *qd = nullptr) {
 }
 }  // namespace
 
+namespace
+{
 /*
- * ...= __index( raw_ud, key_any )
+ * Push a table of a string property of the real parameters of 'qd'
  */
-int RawBind::__index(lua_State *L) {
-  const Raw_interface &r = *Raw_interface::instance(L, 1);
-  const NA_Data *qd = r.getData();
-  assert(qd);
+template <typename Getter>
+void push_real_param_strings(lua_State *L, const NA_Data *qd, Getter getter) {
+  lua_newtable(L);
 
-  const char *s = lua_tostring(L, 2);
-  if (!s) {
-    luaL_error(L, "Bad index (for raw): %s", L_typename(2));
+  const vector<NA_Param> vec = ApiParam::realParams(qd);
+  unsigned i = 1;
+
+  for (const auto &it : vec) {
+    lua_pushinteger(L, i++);
+    lua_pushstring(L, getter(it).c_str());
+    lua_settable(L, -3);
   }
+}
 
+/*
+ * Push the value of a raw data information field (times, source, projection,
+ * levels). Returns the number of pushed values, or -1 for other names.
+ */
+int push_raw_info(lua_State *L, const Raw_interface &r, const NA_Data *qd,
+                  const char *s) {
   // [time_str]= .mt_loadtime
   //
   if (strcmp(s, "mt_loadtime") == 0) {
@@ -157,8 +169,8 @@ int RawBind::__index(lua_State *L) {
     if (s_.c_str()) {
       lua_pushstring(L, s_.c_str());
       return 1;
-    }       return 0;
-   
+    }
+    return 0;
   }
 
   // [uint]= .sqd_producer          (available only for SQD files)
@@ -169,8 +181,8 @@ int RawBind::__index(lua_State *L) {
     if (prod > 0) {
       lua_pushinteger(L, prod);
       return 1;
-    }       return 0; // not SQD, does not have a producer code
-   
+    }
+    return 0; // not SQD, does not have a producer code
   }
 #endif
 
@@ -254,6 +266,14 @@ int RawBind::__index(lua_State *L) {
     return 1;
   }
 
+  return -1;
+}
+
+/*
+ * Push the value of a parameter information field. Returns the number of
+ * pushed values, or -1 for other names.
+ */
+int push_raw_param_info(lua_State *L, const NA_Data *qd, const char *s) {
   // { str [, ...] }= .params
   //
   // Lists the parameters, prefering to give their standard names (i.e. "T" for
@@ -287,18 +307,11 @@ int RawBind::__index(lua_State *L) {
   // that are native to the file itself.
   //
   if (strcmp(s, "native_params") == 0) {
-    lua_newtable(L);
-
     // 25-Oct-2011 PKi: Ignore virtual parameters
     // const vector<NA_Param> &vec= qd->getParams();
-    const vector<NA_Param> vec = ApiParam::realParams(qd);
-    unsigned i = 1;
-
-    for (const auto &it : vec) {
-      lua_pushinteger(L, i++);
-      lua_pushstring(L, it.toString(false /*native names*/).c_str());
-      lua_settable(L, -3);
-    }
+    push_real_param_strings(L, qd, [](const NA_Param &it) -> string {
+      return it.toString(false /*native names*/);
+    });
     return 1;
   }
 
@@ -307,71 +320,39 @@ int RawBind::__index(lua_State *L) {
   // Lists the native parameters using the enumerated names (i.e.
   // "Temperature:4").
   if (strcmp(s, "mt_paramidents") == 0) {
-    lua_newtable(L);
-
     NFmiEnumConverter converter;
-    const vector<NA_Param> vec = ApiParam::realParams(qd);
-    unsigned i = 1;
-
-    for (const auto &it : vec) {
-      lua_pushinteger(L, i++);
+    push_real_param_strings(L, qd, [&converter](const NA_Param &it) -> string {
       const char *cp = strrchr(it.getNativeName_().c_str(), ':');
       int id = (cp ? Fmi::stoi_opt(cp + 1).value_or(0) : 0);
       string name = converter.ToString(id);
       if (name.empty())
         name = it.getNativeName_();
-
-      lua_pushstring(L, name.c_str());
-      lua_settable(L, -3);
-    }
+      return name;
+    });
     return 1;
   }
 
   // { str [, ...] }= .mt_paramdescriptions
   //
   if (strcmp(s, "mt_paramdescriptions") == 0) {
-    lua_newtable(L);
-
-    const vector<NA_Param> vec = ApiParam::realParams(qd);
-    unsigned i = 1;
-
-    for (const auto &it : vec) {
-      lua_pushinteger(L, i++);
-      lua_pushstring(L, it.getNativeName_().c_str());
-      lua_settable(L, -3);
-    }
+    push_real_param_strings(
+        L, qd, [](const NA_Param &it) -> string { return it.getNativeName_(); });
     return 1;
   }
 
   // { str [, ...] }= .mt_interpolations
   //
   if (strcmp(s, "mt_interpolations") == 0) {
-    lua_newtable(L);
-
-    const vector<NA_Param> vec = ApiParam::realParams(qd);
-    unsigned i = 1;
-
-    for (const auto &it : vec) {
-      lua_pushinteger(L, i++);
-      lua_pushstring(L, it.getInterpolationName().c_str());
-      lua_settable(L, -3);
-    }
+    push_real_param_strings(
+        L, qd, [](const NA_Param &it) -> string { return it.getInterpolationName(); });
     return 1;
   }
 
   // { str [, ...] }= .mt_precisions
   //
   if (strcmp(s, "mt_precisions") == 0) {
-    lua_newtable(L);
-
-    const vector<NA_Param> vec = ApiParam::realParams(qd);
-    unsigned i = 1;
-
-    for (const auto &it : vec) {
-      lua_pushinteger(L, i++);
-      lua_pushstring(L, it.getPrecision().c_str());
-      lua_settable(L, -3);
-    }
+    push_real_param_strings(
+        L, qd, [](const NA_Param &it) -> string { return it.getPrecision(); });
     return 1;
   }
 
@@ -382,6 +363,14 @@ int RawBind::__index(lua_State *L) {
     return 1;
   }
 
+  return -1;
+}
+
+/*
+ * Push the value of a time or data point information field. Returns the
+ * number of pushed values, or -1 for other names.
+ */
+int push_raw_point_info(lua_State *L, const NA_Data *qd, const char *s) {
   // { jday_ud [, ...] }= .times
   //
   if (strcmp(s, "times") == 0) {
@@ -476,6 +465,31 @@ int RawBind::__index(lua_State *L) {
     }
     return 1;
   }
+
+  return -1;
+}
+}  // namespace
+
+/*
+ * ...= __index( raw_ud, key_any )
+ */
+int RawBind::__index(lua_State *L) {
+  const Raw_interface &r = *Raw_interface::instance(L, 1);
+  const NA_Data *qd = r.getData();
+  assert(qd);
+
+  const char *s = lua_tostring(L, 2);
+  if (!s) {
+    luaL_error(L, "Bad index (for raw): %s", L_typename(2));
+  }
+
+  int results = push_raw_info(L, r, qd, s);
+  if (results < 0)
+    results = push_raw_param_info(L, qd, s);
+  if (results < 0)
+    results = push_raw_point_info(L, qd, s);
+  if (results >= 0)
+    return results;
 
   // func= .write
   // void= func( filename_str )
