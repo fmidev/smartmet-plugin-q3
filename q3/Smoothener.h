@@ -62,6 +62,8 @@ private:
   const unsigned WINDOW = SMOOTHENING_WINDOW_SIZE; // 3/5/7 = points to use in the smoothening averaging
   const unsigned SKIP;   // (WINDOW-1)/2
 
+  bool is_movable(unsigned i, unsigned n, bool closed_) const;
+
 public:
   SmoothPath()
       :  

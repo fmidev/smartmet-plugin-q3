@@ -22,6 +22,21 @@
 using namespace std;
 
 /*
+ * Can point 'i' (of 'n') be moved: it is not an open end ('closed_' is false)
+ * nor at the edge or next to it
+ */
+bool SmoothPath::is_movable(unsigned i, unsigned n, bool closed_) const {
+  if (!(closed_ || ((i >= SKIP) && (i + SKIP < n))))
+    return false;
+
+  for (int j = -1; j <= 1; j++)
+    if (rim[(j + i + n) % n].at_edge())
+      return false;
+
+  return true;
+}
+
+/*
  * The actual smoothening of chain of points (modified in place)
  *
  * 'factor':     How much is the curve to be smoothened (0.0 = none)
@@ -111,28 +126,20 @@ void SmoothPath::done(float factor, bool closed_) {
 #endif
 
   for (unsigned i = 0; i < n; i++) {
-    if (closed_ || ((i >= SKIP) && (i + SKIP < n))) {
-
-      // Do not move points that are at the edge or next to it
-      //
-      bool move = true;
-      for (int j = -1; (j <= 1) && move; j++)
-        if (rim[(j + i + n) % n].at_edge())
-          move = false;
-
-      if (move) {
+    // Do not move open ends or points that are at the edge or next to it
+    //
+    if (is_movable(i, n, closed_)) {
 #ifdef SMOOTH_AND_STRETCH
-        double before = Vectors::Vector(center, rim[i]).norm();
-        total_sum += before;
+      double before = Vectors::Vector(center, rim[i]).norm();
+      total_sum += before;
 #endif
-        mir[i] +=
-            Vectors::Vector(rim[i], avg / WINDOW) * factor; // move the point
+      mir[i] +=
+          Vectors::Vector(rim[i], avg / WINDOW) * factor; // move the point
 
 #ifdef SMOOTH_AND_STRETCH
-        double after = Vectors::Vector(center, mir[i]).norm();
-        shrunken_sum += before - after;
+      double after = Vectors::Vector(center, mir[i]).norm();
+      shrunken_sum += before - after;
 #endif
-      }
     }
     avg += rim[(i + SKIP + 1) % n] - rim[(i + n - SKIP) % n];
   }
@@ -152,15 +159,8 @@ void SmoothPath::done(float factor, bool closed_) {
     for (unsigned i = 0; i < n; i++) {
       // Leave unmoved points (open ends and edges) also un-expanded.
       //
-      if (closed_ || ((i >= SKIP) && (i + SKIP < n))) {
-        bool move = true;
-        for (int j = -1; (j <= 1) && move; j++)
-          if (rim[(j + i + n) % n].at_edge())
-            move = false;
-
-        if (move) {
-          rim[i] += Vectors::Vector(center, rim[i]) * f;
-        }
+      if (is_movable(i, n, closed_)) {
+        rim[i] += Vectors::Vector(center, rim[i]) * f;
       }
     }
   }
