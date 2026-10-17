@@ -369,6 +369,129 @@ bool file_to(RequestResponse &rr, const char *fn)
 
 /*---=== Query handling ===---*/
 
+namespace
+{
+/*
+* Set 'key_val' as globals
+*/
+void set_globals(lua_State *L, const map<string, string> &key_val)
+{
+  for (const auto &it : key_val) {
+    lua_pushstring(L, it.first.c_str());
+    lua_pushstring(L, it.second.c_str());
+    lua_rawset(L, LUA_GLOBALSINDEX);
+  }
+}
+
+/*
+* Set producer proxies ('HIR' etc.)
+*/
+void set_track_proxies(lua_State *L, const Q3Engine &engine, const vector<string> &names)
+{
+  for (const auto &name : names) {
+    const char *cstr = name.c_str();
+    const Q3Engine::Track *track = engine.getTrack(cstr);
+    if (!track)
+    {
+      LOG_BUG("No track for %s", cstr);
+      continue;
+    }
+
+    lua_pushstring(L, cstr);
+    new (L) TrackProxy(track, (cstr != track->getName() ? cstr : ""));
+    lua_settable(L, LUA_GLOBALSINDEX);
+  }
+}
+
+/*
+* Set the names of the tracks (other than aliases) as 'mt_tracknames' global
+*/
+void set_track_names(lua_State *L, const Q3Engine &engine, const vector<string> &names)
+{
+  lua_newtable(L);
+  int i = 0;
+
+  for (const auto &name : names) {
+    const char *cstr = name.c_str();
+    const Q3Engine::Track *track = engine.getTrack(cstr, false);
+    if (!track)
+    {
+      LOG_BUG("No track for %s", cstr);
+      continue;
+    }
+
+    if (!(track->getAlias().empty()))
+      continue;
+
+    lua_pushinteger(L, i + 1);
+    lua_pushstring(L, name.c_str());
+    lua_settable(L, -3);
+
+    i++;
+  }
+
+  lua_setglobal(L, "mt_tracknames");
+}
+
+/*
+* Run the code chunk from user (function at [1])
+*/
+int run_code(LuaWrapper &L,
+             const map<string, string> &key_val,
+             bool key_val_as_globals,
+             RequestResponse &rr,
+             int decimals
+#ifdef CONFIG_BINARY_OUTPUT_ENABLED
+             ,
+             bool binary_q2
+#endif
+             )
+{
+  unsigned args = 0;
+
+  // Pass 'key_val' as param table (not globals)
+  //
+  if (!key_val_as_globals)
+  {
+    L_GROW(3);
+    lua_newtable(L);
+    for (const auto &it : key_val) {
+      lua_pushstring(L, it.first.c_str());
+      lua_pushstring(L, it.second.c_str());
+      lua_rawset(L, -3);
+    }
+    args = 1;
+  }
+
+  lua_pushstring(L, "");
+  lua_setglobal(L, "first_origintime");
+
+  return L.run(args,
+               rr,
+               killtime_secs,
+               decimals
+#ifdef CONFIG_BINARY_OUTPUT_ENABLED
+               ,
+               binary_q2
+#endif
+               );
+}
+
+/*
+* Set the origintime of the first used querydata (stored as a lua global) to
+* response header
+*/
+void set_first_origintime(lua_State *L, RequestResponse &rr)
+{
+  lua_getglobal(L, "first_origintime");
+  string_or_null fstot = lua_tostring(L, -1);
+  lua_pop(L, 1);
+
+  if (fstot.c_str() && (!fstot.empty()))
+    rr.set_first_origintime(fstot.c_str());
+}
+}  // namespace
+
 /*
  * Data responses (to the caller) are to be provided over the 'rr' class
  * whereas errors (Lua 'error' calls, or syntax errors) are over 'error'
@@ -401,11 +524,7 @@ int Q3Server::query(const map<string, string> &key_val,
   //
   if (key_val_as_globals)
   {
-    for (const auto &it : key_val) {
-      lua_pushstring(L, it.first.c_str());
-      lua_pushstring(L, it.second.c_str());
-      lua_rawset(L, LUA_GLOBALSINDEX);
-    }
+    set_globals(L, key_val);
   }
 
   lua_pushcfunction(L, Session::init);
@@ -464,43 +583,8 @@ int Q3Server::query(const map<string, string> &key_val,
     //
     vector<string> names = itsEngine->getNames();
 
-    for (auto &name : names) {
-      const char *cstr = name.c_str();
-      const Q3Engine::Track *track = itsEngine->getTrack(cstr);
-      if (!track)
-      {
-        LOG_BUG("No track for %s", cstr);
-        continue;
-      }
-
-      lua_pushstring(L, cstr);
-      new (L) TrackProxy(track, (cstr != track->getName() ? cstr : ""));
-      lua_settable(L, LUA_GLOBALSINDEX);
-    }
-
-    lua_newtable(L);
-    int i = 0;
-
-    for (auto &name : names) {
-      const char *cstr = name.c_str();
-      const Q3Engine::Track *track = itsEngine->getTrack(cstr, false);
-      if (!track)
-      {
-        LOG_BUG("No track for %s", cstr);
-        continue;
-      }
-
-      if (!(track->getAlias().empty()))
-        continue;
-
-      lua_pushinteger(L, i + 1);
-      lua_pushstring(L, name.c_str());
-      lua_settable(L, -3);
-
-      i++;
-    }
-
-    lua_setglobal(L, "mt_tracknames");
+    set_track_proxies(L, *itsEngine, names);
+    set_track_names(L, *itsEngine, names);
 
 // Make sure none of the preparations accidentially set '_' global
 // (this is just to keep clean).
@@ -530,34 +614,16 @@ int Q3Server::query(const map<string, string> &key_val,
     {
       // [1]: code chunk from user (function)
       //
-      unsigned args = 0;
-
-      // Pass 'key_val' as param table (not globals)
-      //
-      if (!key_val_as_globals)
-      {
-        L_GROW(3);
-        lua_newtable(L);
-        for (const auto &it : key_val) {
-          lua_pushstring(L, it.first.c_str());
-          lua_pushstring(L, it.second.c_str());
-          lua_rawset(L, -3);
-        }
-        args = 1;
-      }
-
-      lua_pushstring(L, "");
-      lua_setglobal(L, "first_origintime");
-
-      st = L.run(args,
-                 rr,
-                 killtime_secs,
-                 decimals
+      st = run_code(L,
+                    key_val,
+                    key_val_as_globals,
+                    rr,
+                    decimals
 #ifdef CONFIG_BINARY_OUTPUT_ENABLED
-                 ,
-                 binary_q2
+                    ,
+                    binary_q2
 #endif
-                 );
+                    );
     }
   }
 
@@ -570,12 +636,7 @@ int Q3Server::query(const map<string, string> &key_val,
     // 16-Apr-2015 PKi: If any querydata was used, first querydata's origintime was stored as a lua
     // global; set it to response header
 
-    lua_getglobal(L, "first_origintime");
-    string_or_null fstot = lua_tostring(L, -1);
-    lua_pop(L, 1);
-
-    if (fstot.c_str() && (!fstot.empty()))
-      rr.set_first_origintime(fstot.c_str());
+    set_first_origintime(L, rr);
   }
 
 // Note: If we ever cache the Lua states, also the cleanup should be done
@@ -604,6 +665,126 @@ namespace
 void content_error(RequestResponse &rr, const string &s)
 {
   rr.set_output(CODE_ERROR, "text/html", s.c_str());
+}
+
+/*
+* Move params from 'rr' to a standard mapping. Returns false with 'err' set
+* for bad params.
+*/
+bool read_request_params(RequestResponse &rr,
+                         map<string, string> &key_val,
+                         int &decimals,
+#ifdef CONFIG_BINARY_OUTPUT_ENABLED
+                         bool &binary_q2,
+#endif
+                         string &err)
+{
+  for (const auto &it : rr) {
+    string key = it.first;
+    string val = it.second;
+    // const char *key_c= key.c_str();
+    const char *val_c = val.c_str();
+
+    // Note: SmartMet Server or Shttpserver seems to be erroneously giving us
+    //      "_"=<big number> i.e. if there is "code=return%20_" in the params.
+    //      Eliminate this ('_' is normally used in Lua as a local 'ignore' drain,
+    //      and its global should not carry a value).   --AKa 1-Feb-2010
+    //
+    if (key == "_")
+    {
+      continue;  // ignore
+    }
+
+    if ((key == "code") || (key == "callback") /*JSONP*/)
+    {
+      continue;  // already used
+    }
+
+    if (key == "decimals" ||
+        key == "maxdecimals"  // AKa 2-Feb-2010: should really decide on the proper names?
+#ifdef Q2_URL_ALIASES
+        ||
+        key == "maxDecimals"
+#endif
+        )
+    {
+      decimals = Fmi::stoi(val_c);  // 0..n
+    }
+    else if (key == "output")
+    {
+#ifdef CONFIG_BINARY_OUTPUT_ENABLED
+      if (val == "bin")
+      {
+        binary_q2 = true;
+        continue;
+      }
+      if (val == "text")
+      {
+        // nothing; default
+        continue;
+      }
+      err = string_fmt("Unknown param: output=%s (expected 'bin')", val_c);
+      return false;
+#else
+      err = "Binary output disabled.";
+      return false;
+#endif
+    }
+    else if (val.empty())
+    {
+// "..&key=&.."; no value for the key is skipped. We don't set the value to an empty
+//      string. This is mostly for making life easy for test suite Makefile.
+
+#ifdef Q2_URL_ALIASES
+    }
+    else if ((key == "validTime") || (key == "gridSize") || (key == "originTime"))
+    {
+      key_val[string_tolower(key)] = val;
+#endif
+    }
+    else
+    {
+      // Q3 itself uses 'validtime', 'projection', 'gridsize' and 'origintime'.
+      // Other globals can be used for giving parameters to the script.
+      //
+      key_val[key] = val;
+    }
+  }
+  return true;
+}
+
+/*
+* Output the error of a query
+*/
+void output_query_error(RequestResponse &rr, int err_code, const string &err)
+{
+  const char *title = nullptr;
+  switch (err_code)
+  {
+    case LUA_ERRSYNTAX:
+      title = "Syntax error";
+      break;
+    case LUA_ERRRUN:
+      title = "Runtime error";
+      break;
+    case LUA_ERRMEM:
+      title = "Out of memory";
+      break;
+    default:
+      title = "Unknown error";
+      break;  // i.e. no 'code' field
+  }
+
+  // Let the client format the message, always.
+  // Convention now is we start with 'xxx error[: ...]' (without hyphens) which means an error.
+  // Any valid returned string will be in JSON format (with hyphens)
+  //  --AKa 11-Dec-2009
+  //
+  const char *err_c = err.c_str();
+  string out = (!err_c) ? string(title) : string_fmt("%s: %s", title, err_c);
+  LOG_DEBUG("Giving out error: %s", out.c_str());
+
+  rr.set_output(CODE_ERROR, "text/plain", out.c_str());
 }
 }  // namespace
 
@@ -652,76 +833,16 @@ void Q3Server::native_handler(RequestResponse &rr)
   string err;
   int err_code = -1;
 
-  for (const auto &it : rr) {
-    string key = it.first;
-    string val = it.second;
-    // const char *key_c= key.c_str();
-    const char *val_c = val.c_str();
-
-    // Note: SmartMet Server or Shttpserver seems to be erroneously giving us
-    //      "_"=<big number> i.e. if there is "code=return%20_" in the params.
-    //      Eliminate this ('_' is normally used in Lua as a local 'ignore' drain,
-    //      and its global should not carry a value).   --AKa 1-Feb-2010
-    //
-    if (key == "_")
-    {
-      continue;  // ignore
-    }
-
-    if ((key == "code") || (key == "callback") /*JSONP*/)
-    {
-      continue;  // already used
-    }
-
-    if (key == "decimals" ||
-        key == "maxdecimals"  // AKa 2-Feb-2010: should really decide on the proper names?
-#ifdef Q2_URL_ALIASES
-        ||
-        key == "maxDecimals"
-#endif
-        )
-    {
-      decimals = Fmi::stoi(val_c);  // 0..n
-    }
-    else if (key == "output")
-    {
+  if (!read_request_params(rr,
+                           key_val,
+                           decimals,
 #ifdef CONFIG_BINARY_OUTPUT_ENABLED
-      if (val == "bin")
-      {
-        binary_q2 = true;
-        continue;
-      }
-      if (val == "text")
-      {
-        // nothing; default
-        continue;
-      }
-      err = string_fmt("Unknown param: output=%s (expected 'bin')", val_c);
-      goto ERROR;
-#else
-      err = "Binary output disabled.";
-      goto ERROR;
+                           binary_q2,
 #endif
-    }
-    else if (val.empty())
-    {
-// "..&key=&.."; no value for the key is skipped. We don't set the value to an empty
-//      string. This is mostly for making life easy for test suite Makefile.
-
-#ifdef Q2_URL_ALIASES
-    }
-    else if ((key == "validTime") || (key == "gridSize") || (key == "originTime"))
-    {
-      key_val[string_tolower(key)] = val;
-#endif
-    }
-    else
-    {
-      // Q3 itself uses 'validtime', 'projection', 'gridsize' and 'origintime'.
-      // Other globals can be used for giving parameters to the script.
-      //
-      key_val[key] = val;
-    }
+                           err))
+  {
+    output_query_error(rr, err_code, err);
+    return;
   }
 
   err_code = query(key_val,
@@ -737,36 +858,9 @@ void Q3Server::native_handler(RequestResponse &rr)
 
 // Note: We could use different status codes (5xx) for the syntax, runtime and memory errors
 //
-ERROR:
   if (err_code)
   {
-    const char *title = nullptr;
-    switch (err_code)
-    {
-      case LUA_ERRSYNTAX:
-        title = "Syntax error";
-        break;
-      case LUA_ERRRUN:
-        title = "Runtime error";
-        break;
-      case LUA_ERRMEM:
-        title = "Out of memory";
-        break;
-      default:
-        title = "Unknown error";
-        break;  // i.e. no 'code' field
-    }
-
-    // Let the client format the message, always.
-    // Convention now is we start with 'xxx error[: ...]' (without hyphens) which means an error.
-    // Any valid returned string will be in JSON format (with hyphens)
-    //  --AKa 11-Dec-2009
-    //
-    const char *err_c = err.c_str();
-    string out = (!err_c) ? string(title) : string_fmt("%s: %s", title, err_c);
-    LOG_DEBUG("Giving out error: %s", out.c_str());
-
-    rr.set_output(CODE_ERROR, "text/plain", out.c_str());
+    output_query_error(rr, err_code, err);
   }
 }
 
