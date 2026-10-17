@@ -1168,6 +1168,31 @@ int Matrix::q3_tan( lua_State *L ) {
 * Upvalues:
 *   1: 'true' for calculating average (false or non-existing for sum)
 */
+namespace {
+/*
+* Add the non-NAN values of 'a' to 'c', counting the used values in
+* 'avg_count' (if not nullptr)
+*/
+void accumulate_sum( MemMatrix &c, MemMatrix *avg_count, const Matrix &a ) {
+    MatrixPos::offset_t n= c.getN();
+
+    for( MatrixPos::offset_t j=0; j<n; j++ ) { 
+        float av= a[j];
+        float cv= c[j];
+        
+        if (!isnanf(av)) {
+            if (isnanf(cv)) {
+                c[j]= av;    // first value in this slot
+                assert( (!avg_count) || ((*avg_count)[j] == 1.0f) );  // already right
+            } else {
+                c[j] += av;  // adding to already used slot
+                if (avg_count) ++((*avg_count)[j]);
+            }
+        }
+    }
+}
+}  // namespace
+
 int Matrix::q3_sum_or_avg( lua_State *L ) {
     proto( L, "[Matrix],..." );
 
@@ -1219,22 +1244,7 @@ int Matrix::q3_sum_or_avg( lua_State *L ) {
                 c->scrap_projection();
             }
 
-            offset_t n= c->getN();
-
-            for( offset_t j=0; j<n; j++ ) { 
-                float av= (*a)[j];
-                float cv= (*c)[j];
-                
-                if (!isnanf(av)) {
-                    if (isnanf(cv)) {
-                        (*c)[j]= av;    // first value in this slot
-                        assert( (*avg_count)[j] == 1.0f );  // already right
-                    } else {
-                        (*c)[j] += av;  // adding to already used slot
-                        if (avg_count) ++((*avg_count)[j]);
-                    }
-                }
-            }
+            accumulate_sum( *c, avg_count, *a );
         }
     }
 
@@ -1421,6 +1431,87 @@ GOT_IT:
     return 1;
 }
 
+namespace {
+/*
+* Push the level of the matrix as { leveltype = levelvalue }, nothing for
+* ground level data. Returns the number of pushed values.
+*/
+int push_matrix_level( lua_State *L, const Matrix &m ) {
+    // For ground level data getLevelTypeStr returns an empty string; nothing is returned
+    //
+    // NOLINTNEXTLINE(cppcoreguidelines-slicing): the null flag has been checked
+    string lt = m.getLevelTypeStr();
+
+    if (!lt.empty()) {
+        lua_newtable( L );
+        lua_pushstring( L, lt.c_str() );
+
+        double lv = m.getLevelValue();
+
+        // hpa=nn.n, hybrid=nn or height=nn.n
+
+        if (lt != "hybrid")
+            lua_pushnumber( L, lv );
+        else {
+            lua_pushinteger( L, (int) (lv + 0.01));
+        }
+
+        lua_settable( L, -3 );
+
+        return 1;
+    }
+
+    return 0;
+}
+
+/*
+* Push the value of a named matrix field. Returns the number of pushed values
+* or -1 for unknown names (location indices, s.a. 'Helsinki').
+*/
+int push_matrix_field( lua_State *L, const Matrix &m, const char *s ) {
+    // Note: it is intentional to push 'MatrixPos' and not a 'MatrixSize'
+    //       mostly because the script level is otherwise not in touch
+    //       with the size, at all.
+    //
+    if (strcmp(s,"top")==0) {
+        new(L) MatrixPos( m.getSize().getTop() );
+        return 1;
+    }
+    if (strcmp(s,"size")==0) {
+        new(L) MatrixPos( m.getSize().getXS(), m.getSize().getYS() );
+        return 1;
+    }
+    if (strcmp(s,"level")==0) {
+        return push_matrix_level( L, m );
+    }
+    if (strcmp(s,"param")==0) {
+        if (!m.getParamStr().empty()) {
+            lua_pushstring( L, m.getParamStr().c_str() );
+            return 1;
+        }
+
+        return 0;
+    }
+    if (strcmp(s,"unit")==0) {
+        lua_pushstring( L, m.getUnitName().c_str() );    // may be nullptr
+        return 1;
+    }
+    if (strcmp(s,"projection")==0) {
+        lua_pushstring( L, m.getProjection().toString().c_str() );
+        return 1;
+    }
+    if (strcmp(s,"grid")==0) {
+        unsigned key= m.getGridKey();
+        if (LuaNew_base::push_alive( L, 1, key )) {
+            L_ASSERT( Grid::instance(L,-1) );
+            return 1;
+        }
+        return 0;   // no grid for this matrix
+    }
+    return -1;
+}
+}  // namespace
+
 /*
 * pos_ud= __index( m_ud, "top" )     -- m.top
 * pos_ud= __index( m_ud, "size" )    -- m.size
@@ -1441,69 +1532,9 @@ int MatrixBind::index( lua_State *L ) {
             const char *s= lua_tostring(L,2);
             assert(s);
             
-            // Note: it is intentional to push 'MatrixPos' and not a 'MatrixSize'
-            //       mostly because the script level is otherwise not in touch
-            //       with the size, at all.
-            //
-            if (strcmp(s,"top")==0) {
-                new(L) MatrixPos( m.getSize().getTop() );
-                return 1;
-            }
-            if (strcmp(s,"size")==0) {
-                new(L) MatrixPos( m.getSize().getXS(), m.getSize().getYS() );
-                return 1;
-            }
-            if (strcmp(s,"level")==0) {
-            	// For ground level data getLevelTypeStr returns an empty string; nothing is returned
-            	//
-            	// NOLINTNEXTLINE(cppcoreguidelines-slicing): the null flag has been checked
-            	string lt = m.getLevelTypeStr();
-
-            	if (!lt.empty()) {
-                	lua_newtable( L );
-                	lua_pushstring( L, lt.c_str() );
-
-                	double lv = m.getLevelValue();
-
-                	// hpa=nn.n, hybrid=nn or height=nn.n
-
-                	if (lt != "hybrid")
-                		lua_pushnumber( L, lv );
-                	else {
-                		lua_pushinteger( L, (int) (lv + 0.01));
-                	}
-
-                	lua_settable( L, -3 );
-
-                    return 1;
-            	}
-
-                return 0;
-            }
-            if (strcmp(s,"param")==0) {
-            	if (!m.getParamStr().empty()) {
-            		lua_pushstring( L, m.getParamStr().c_str() );
-            		return 1;
-            	}
-
-                return 0;
-            }
-            else if (strcmp(s,"unit")==0) {
-                lua_pushstring( L, m.getUnitName().c_str() );    // may be nullptr
-                return 1;
-            }
-            else if (strcmp(s,"projection")==0) {
-                lua_pushstring( L, m.getProjection().toString().c_str() );
-                return 1;
-            }
-            else if (strcmp(s,"grid")==0) {
-                unsigned key= m.getGridKey();
-                if (LuaNew_base::push_alive( L, 1, key )) {
-                    L_ASSERT( Grid::instance(L,-1) );
-                    return 1;
-                }
-                return 0;   // no grid for this matrix
-            }
+            int results= push_matrix_field( L, m, s );
+            if (results >= 0)
+                return results;
         } break;  // go try location indices (s.a. 'Helsinki')
 
         case LUA_TUSERDATA: {
