@@ -48,6 +48,190 @@ static const ApiScalarParam Z("Z");
 /*---=== Helpers ===---
 */
 
+namespace
+{
+/*
+ * Check that the data covers all the required times. If not, appends 'err'
+ * with the reason.
+ */
+bool covers_required_times(const NA_Info &info,
+                           const std::vector<JDay> &required_times,
+                           std::string &err)
+{
+  const vector<JDay> &times = info.getTimes();
+
+  for (const auto &required_time : required_times) {
+    if (!required_time.covered_by(times)) {
+      string tmp = required_time.toString();
+      err += string_fmt("\t%s (no validtime %s)\n", info.getExtra_fn().c_str(), tmp.c_str());
+      return false;
+    }
+  }
+  return true;
+}
+
+/*
+ * Check that the data has all the required params. If not, appends 'err'
+ * with the reason.
+ */
+bool has_required_params(TrackedData *d,
+                         const NA_Info &info,
+                         const std::vector<ApiParam> &required_params,
+                         bool metaQuery,
+                         std::string &err)
+{
+  string missing_param;
+
+  NA_Data *qd = d->Acquire(metaQuery);
+  {
+    const std::vector<NA_Param> &qd_params = qd->getParams();
+
+    for (const auto &required_param : required_params) {
+      if (!required_param.covered_by(qd_params)) {
+        //          LOG_DEBUG("No param found: %s", it->toString().c_str());
+        missing_param = required_param.toString();
+        break;
+      }
+    }
+  }
+  d->Release();
+
+  if (!missing_param.empty())
+  {
+    err +=
+        string_fmt("\t%s (no param '%s')\n", info.getExtra_fn().c_str(), missing_param.c_str());
+    return false;
+  }
+  return true;
+}
+
+/*
+ * Check that the data covers all the required levels. If not, appends 'err'
+ * with the reason. Clears 'all_match_exactly' if some level would need to be
+ * calculated.
+ */
+bool has_required_levels(TrackedData *d,
+                         const NA_Info &info,
+                         const std::vector<NA_Level> &required_levels,
+                         bool metaQuery,
+                         std::string &err,
+                         bool &all_match_exactly)
+{
+  string missing_level;
+
+  NA_Data *qd = d->Acquire(metaQuery);
+  {
+    for (auto required_level : required_levels) {
+      bool exact = false;
+      if (!required_level.covered_by(*qd, exact)) {
+        missing_level = required_level.toString();
+        break;  // out of the iterator
+      } if (!exact) {
+        all_match_exactly = false;  // at least one level would need to be calculated
+      }
+    }
+  }
+  d->Release();
+
+  if (!missing_level.empty())
+  {
+    err +=
+        string_fmt("\t%s (no level '%s')\n", info.getExtra_fn().c_str(), missing_level.c_str());
+    return false;
+  }
+  return true;
+}
+
+/*
+ * Release the alternative choices (if any)
+ */
+void release_alternatives(TrackedData *d2, TrackedData *d3)
+{
+  if (d2)
+    d2->Release();
+  if (d3)
+    d3->Release();
+}
+
+/*
+ * Return the 2nd ('d2') or 3rd ('d3') best choice (if any), releasing the other
+ */
+TrackedData *best_alternative(TrackedData *d2, TrackedData *d3)
+{
+  if (d2)
+  {
+    if (d3)
+      d3->Release();
+    return d2;
+  }
+  if (d3)
+  {
+    return d3;
+  }
+
+  return nullptr;
+}
+
+/*
+ * Keep 'd' as the secondary (hybrid data, 'd2') or third (pressure data, 'd3')
+ * alternative unless there already is one. A kept data is moved out of 'd'.
+ */
+void keep_as_alternative(TrackedData *&d, bool is_hybrid_data, TrackedData *&d2, TrackedData *&d3)
+{
+  if (is_hybrid_data)
+  {
+    if (!d2)
+      d2 = d;  // first hybrid data we found
+  }
+  else
+  {
+    if (!d3)
+      d3 = d;  // first pressure data we found
+  }
+//      LOG_DEBUG0("\tstill looking for perfect pressure data");
+
+  // 08-Mar-2012 PKi: Keep the data when needed to release it
+  if ((d == d2) || (d == d3))
+    d = nullptr;
+}
+
+/*
+ * Is 'ot' a better latest origintime than 'ot_last' (of level type 'lt_last')?
+ */
+bool is_better_last_origintime(const JDay &ot,
+                               const JDay &ot_last,
+                               NA_Level::Type leveltype,
+                               NA_Level::Type lt_last)
+{
+  if (!ot)
+    return false;
+
+  return (!ot_last) || (ot > ot_last) ||
+         ((ot == ot_last) && (leveltype == NA_Level::PRESSUREORHYBRID_LEVEL) &&
+          (lt_last == NA_Level::HYBRID_LEVEL));
+}
+
+/*
+ * Origintime of the 'abs_x'th latest run of tracks with unpredictable runs
+ * (empty if there are not so many origintimes available)
+ */
+JDay nth_latest_origintime(const std::vector<TrackerBase *> &watch, unsigned abs_x)
+{
+  vector<JDay> vec;
+
+  for (auto *it : watch) {
+    it->addOriginTimes_unsorted(vec);
+  }
+  sort_descending(vec, true);  // remove duplicates
+
+  if (abs_x < vec.size())
+  {
+    return vec[abs_x];
+  }
+  return {};
+}
+}  // namespace
+
 /*---=== Track ===---
 */
 
@@ -148,18 +332,7 @@ TrackedData *Q3Engine::Track::getData_must_release_(const JDay &ot,
     //---
     // Does it cover the required times?
     //
-    const vector<JDay> &times = info.getTimes();
-    bool match = true;
-
-    for (const auto &required_time : required_times) {
-      if (!required_time.covered_by(times)) {
-        string tmp = required_time.toString();
-        err += string_fmt("\t%s (no validtime %s)\n", info.getExtra_fn().c_str(), tmp.c_str());
-        match = false;
-        break;  // out of the iterator
-      }
-    }
-    if (!match)
+    if (!covers_required_times(info, required_times, err))
       continue;  // next mask
 
     //---
@@ -167,28 +340,8 @@ TrackedData *Q3Engine::Track::getData_must_release_(const JDay &ot,
     //
     if (!required_params.empty())
     {
-      string missing_param;
-
-      NA_Data *qd = d->Acquire(metaQuery);
-      {
-        const std::vector<NA_Param> &qd_params = qd->getParams();
-
-        for (const auto &required_param : required_params) {
-          if (!required_param.covered_by(qd_params)) {
-            //          LOG_DEBUG("No param found: %s", it->toString().c_str());
-            missing_param = required_param.toString();
-            break;
-          }
-        }
-      }
-      d->Release();
-
-      if (!missing_param.empty())
-      {
-        err +=
-            string_fmt("\t%s (no param '%s')\n", info.getExtra_fn().c_str(), missing_param.c_str());
+      if (!has_required_params(d, info, required_params, metaQuery, err))
         continue;  // next mask
-      }
     }
 
     //---
@@ -206,27 +359,8 @@ TrackedData *Q3Engine::Track::getData_must_release_(const JDay &ot,
     {
       const bool is_hybrid_data = levels.front().isHybridLevel();
       bool all_match_exactly = true;
-      string missing_level;
-
-      NA_Data *qd = d->Acquire(metaQuery);
-      {
-        for (auto required_level : required_levels) {
-          bool exact = false;
-          if (!required_level.covered_by(*qd, exact)) {
-            missing_level = required_level.toString();
-            break;  // out of the iterator
-          } if (!exact) {
-            all_match_exactly = false;  // at least one level would need to be calculated
-          }
-        }
-      }
-      d->Release();
-      if (!missing_level.empty())
-      {
-        err +=
-            string_fmt("\t%s (no level '%s')\n", info.getExtra_fn().c_str(), missing_level.c_str());
+      if (!has_required_levels(d, info, required_levels, metaQuery, err, all_match_exactly))
         continue;  // next mask
-      }
 
       // Any match with ONLY_GROUND or ONLY_HYBRID is good; use it.
 
@@ -234,34 +368,14 @@ TrackedData *Q3Engine::Track::getData_must_release_(const JDay &ot,
       {
         // Keep this one as a secondary (or third) alternative
         //
-        if (is_hybrid_data)
-        {
-          if (!d2)
-            d2 = d;  // first hybrid data we found
-        }
-        else
-        {
-          if (!d3)
-            d3 = d;  // first pressure data we found
-        }
-//      LOG_DEBUG0("\tstill looking for perfect pressure data");
-
-        // 08-Mar-2012 PKi: Keep the data when needed to release it
-        if ((d == d2) || (d == d3))
-          d = nullptr;
-
+        keep_as_alternative(d, is_hybrid_data, d2, d3);
         continue;
       }
     }
 
-    if (d)
-    {
-      if (d2)
-        d2->Release();
-      if (d3)
-        d3->Release();
-      return d;
-    }
+    // 'd' is never nullptr here
+    release_alternatives(d2, d3);
+    return d;
 
   } // for all entries
 
@@ -271,18 +385,7 @@ TrackedData *Q3Engine::Track::getData_must_release_(const JDay &ot,
 
   // Return the 2nd or 3rd best choice (if any)
   //
-  if (d2)
-  {
-    if (d3)
-      d3->Release();
-    return d2;
-  }
-  if (d3)
-  {
-    return d3;
-  }
-
-  return nullptr;  // 'err' has the collected reasons
+  return best_alternative(d2, d3);  // nullptr: 'err' has the collected reasons
 }
 
 /*
@@ -354,16 +457,7 @@ JDay Q3Engine::Track::getOriginTimeOfRun_(int x, NA_Level::Type &leveltype) cons
       //
       NA_Level::Type lt = leveltype;
       JDay ot = it->getLastOriginTime_fast(lt);
-      if (ot &&
-          (
-           (!ot_last) || (ot > ot_last) ||
-           (
-            (ot == ot_last) &&
-            (leveltype == NA_Level::PRESSUREORHYBRID_LEVEL) &&
-            (lt_last == NA_Level::HYBRID_LEVEL)
-           )
-          )
-         )
+      if (is_better_last_origintime(ot, ot_last, leveltype, lt_last))
       {
         ot_last = ot;
         lt_last = lt;
@@ -390,17 +484,7 @@ JDay Q3Engine::Track::getOriginTimeOfRun_(int x, NA_Level::Type &leveltype) cons
   }
   else
   {  // Unpredictable runs ('run_secs'==0), 'x'<0
-    vector<JDay> vec;
-
-    for (auto *it : watch) {
-      it->addOriginTimes_unsorted(vec);
-    }
-    sort_descending(vec, true);  // remove duplicates
-
-    if (abs_x < vec.size())
-    {
-      return vec[abs_x];
-    }
+    return nth_latest_origintime(watch, abs_x);
   }
 
   return {}; // no data that old
@@ -460,6 +544,632 @@ static unsigned char track_proxy_chunk[] =
   lua_pushcfunction(L, call);
   lua_settable(L, -3);
 }
+
+namespace
+{
+// Check the level requirement for sanity etc.
+//
+enum level_mode
+{
+  UNDEFINED = 0,  // default: restrict like ONLY_GROUND
+  ONLY_GROUND,    // ground level only
+  HYBRID,         // hybrid level explicitly requested (may also have pressure level requests)
+  ONLY_PRESSURE,  // Pressure levels only (or flight levels; they mean the same). Try to find
+                  // exact,
+  // if not interpolate from hybrid data if supports pressure data, if not interpolate
+  // from pressure data.
+  BEST_VERTICAL,  // Prefer matches with hybrid data (better vertical resolution) if
+  // the hybrid data can be used for height calculations. Otherwise, use pressure data.
+  ONLY_SOUNDING  // Sounding levels only
+};
+
+/*
+ * The requirements of a track proxy call
+ */
+struct TrackQuery
+{
+  JDay ot_absolute;     // origintime as YYYYMMDDHHMMSS (or NOW, TODAY)
+  bool any_ot = false;  // reel back in time; any origintime that otherwise matches will do
+
+  level_mode mode = UNDEFINED;
+
+  /*
+  * Times, levels and parameters required for the raw data to have.
+  */
+  vector<JDay> required_times;
+  vector<ApiParam> required_params;
+  vector<NA_Level> required_levels;
+
+  bool demand_z_param = false;
+  bool demand_p_param = false;
+  bool metaQuery = false;
+
+  int otindex = 1;     // Set to <= 0 if relative origintime=n (<= 0) is given
+};
+
+/*
+ * Result of reading a call argument
+ */
+enum class ArgResult
+{
+  Next,    // go on
+  Pushed,  // a result has been pushed, return it
+  Failed,  // bad value, return the error
+  BadKey   // unexpected key, leads to Lua error
+};
+
+/*
+ * Give the error 'err' as a Lua error or as 'nil,err'
+ */
+int track_error(lua_State *L, const string &err)
+{
+#ifdef CONFIG_TRACK_ERRORS_ENABLED
+  luaL_error(L, err.c_str());
+  return 0;  // not reached
+#else
+  return L_nilerr(err.c_str());
+#endif
+}
+
+/*
+ * Handle the string calls "origintimes", "archorigintimes", "allorigintimes"
+ * and "runs". Returns false (nothing pushed) for other strings.
+ */
+bool push_string_query(lua_State *L, const Q3Engine::Track &my, const char *s)
+{
+  TrackerBase::OriginTimeQuery originTimeQuery = TrackerBase::OriginTimeQuery::NA;
+  if (strcmp(s, "origintimes") == 0)
+    originTimeQuery = TrackerBase::OriginTimeQuery::Current;
+  else if (strcmp(s, "archorigintimes") == 0)
+    originTimeQuery = TrackerBase::OriginTimeQuery::Archived;
+  else if (strcmp(s, "allorigintimes") == 0)
+    originTimeQuery = TrackerBase::OriginTimeQuery::All;
+
+  if (originTimeQuery != TrackerBase::OriginTimeQuery::NA)
+  {
+    vector<JDay> v = my.getOriginTimes(originTimeQuery);
+
+    lua_newtable(L);
+    for (unsigned i = 0; i < v.size(); i++)
+    {
+      lua_pushinteger(L, i + 1);
+      new (L) JDay(v[i]);
+      lua_settable(L, -3);
+    }
+    return true;
+  }
+  if (strcmp(s, "runs") == 0)
+  {
+    lua_pushinteger(L, my.getRunSecs());
+    return true;
+  }
+  return false;
+}
+
+/*
+ * Push a table of the raw data of the 'origintimes' value at 'v_idx'.
+ * Returns false with 'err' set for a bad origintime.
+ */
+bool push_origintime_datas(lua_State *L,
+                           const Q3Engine::Track &my,
+                           int v_idx,
+                           TrackQuery &q,
+                           string &err)
+{
+  q.ot_absolute = JDay(L, v_idx);
+  if (!q.ot_absolute)
+  {
+    err = string_fmt("Bad origintime: %s", L_string_or_typename(v_idx));
+    return false;
+  }
+
+  vector<TrackedData *> v = my.getOriginTimeDatas(q.ot_absolute);
+  NA_Level default_level;
+
+  lua_newtable(L);
+  for (unsigned i = 0; i < v.size(); i++)
+  {
+    lua_pushinteger(L, i + 1);
+    new (L) Raw(v[i], default_level);
+    lua_settable(L, -3);
+  }
+  return true;
+}
+
+/*
+ * Read the 'origintime' value at 'v_idx'. Returns false with 'err' set for a
+ * bad value.
+ */
+bool read_origintime(lua_State *L, int v_idx, TrackQuery &q, string &err)
+{
+  q.ot_absolute = JDay(L, v_idx);
+  if (q.ot_absolute)
+    return true;
+
+  if (lua_isboolean(L, v_idx) && lua_toboolean(L, v_idx))
+  {
+    q.any_ot = true;  // try origintimes from latest to oldest, until a match
+    return true;
+  }
+  if (lua_isnumber(L, v_idx))
+  {
+    double dd = lua_tonumber(L, v_idx);
+    if ((floor(dd) == dd) && dd <= 0.0)
+    {
+      /* Do not select origintime yet, get all keys first (taking leveltype etc into account too)
+      //
+      // Find by relative origintime (0,-1,...)
+      //
+      ot_absolute = my.getOriginTimeOfRun_((int)dd);  // [0] is latest ot
+
+      // Empty 'ot' means there is absolutely no data
+      //
+      if (!ot_absolute)
+      {
+        err = "no raw data";
+        goto ERROR;
+      }
+      */
+
+      q.otindex = (int) dd;
+      return true;
+    }
+  }
+
+  err = string_fmt("Bad origintime: %s", L_string_or_typename(v_idx));
+  return false;
+}
+
+/*
+ * Read a level type key ('ground', 'hpa', ...). Returns false for unknown keys.
+ */
+bool read_level_key(lua_State *L, const char *key, int v_idx, TrackQuery &q)
+{
+  NA_Level::Type lt = NA_Level::lt_enum(key);
+  if (!lt)
+    return false;
+
+  one_or_many_levels(L, v_idx, key, q.required_levels);  // may throw E_USAGE
+
+  // 23-Nov-2012 PKi: Height value query support
+  //
+  if (lt == NA_Level::HEIGHT_LEVEL)
+    q.demand_z_param = true;
+  else if (lt == NA_Level::SOUNDING_LEVEL)
+    q.demand_p_param = true;
+
+  return true;
+}
+
+/*
+ * Read one key of the call table, its value is at 'v_idx'.
+ */
+ArgResult read_query_key(lua_State *L,
+                         const Q3Engine::Track &my,
+                         const char *key,
+                         int v_idx,
+                         TrackQuery &q,
+                         string &err)
+{
+  // Note: Bad values in origintime, times, level and params are NOT to be
+  //      treated with Lua error. Return nil,err instead.
+  //      This allows upper levels (those handing i.e. 'HIR.xxx') to not need
+  //      'pcall()' - which is a heavy operation. --AKa 25-Jan-10
+  //
+  try
+  {
+    if (strcmp(key, "origintimes") == 0)
+      return push_origintime_datas(L, my, v_idx, q, err) ? ArgResult::Pushed : ArgResult::Failed;
+
+    if (strcmp(key, "origintime") == 0)
+      return read_origintime(L, v_idx, q, err) ? ArgResult::Next : ArgResult::Failed;
+
+    if (strcmp(key, "times") == 0)
+    {
+      q.required_times = vector_of_times(L, v_idx);  // may throw E_USAGE
+      return ArgResult::Next;
+    }
+    if (strcmp(key, "params") == 0)
+    {
+      q.required_params = vector_of_apiparams(L, v_idx);  // may throw E_USAGE
+      return ArgResult::Next;
+    }
+    if (strcmp(key, "metaquery") == 0)
+    {
+      q.metaQuery = true;
+      return ArgResult::Next;
+    }
+#ifdef CONFIG_FLIGHT_LEVELS_API
+    if (strcmp(key, "flight") == 0)
+    {
+      // This call takes care of conversion to 'hpa' level(s)
+      //
+      one_or_many_levels(L, v_idx, key, q.required_levels);  // may throw E_USAGE
+
+      // This demands best vertical resolution but unlike 'height=true', we don't require Z
+      // param
+      // to exist.
+      //
+      // 25-Aug-2011 PKi: Flight level handling analogical to pressure level (leaving mode
+      // untouched)
+
+      // mode= BEST_VERTICAL;
+
+      return ArgResult::Next;
+    }
+#endif
+    return read_level_key(L, key, v_idx, q) ? ArgResult::Next : ArgResult::BadKey;
+  }
+  catch (const E_USAGE &e)
+  {
+    // Some of 'times', 'levels', 'params' required by the caller were of bad name.
+    //
+    err = e.what_nosource();  // just the message, no file & line
+    return ArgResult::Failed;
+  }
+}
+
+/*
+ * Read the call arguments (string or table at [2], if any) into 'q'.
+ */
+ArgResult read_query_args(lua_State *L, const Q3Engine::Track &my, TrackQuery &q, string &err)
+{
+  if (lua_gettop(L) < 2)
+    return ArgResult::Next;
+
+  /*
+  * Read properties
+  */
+  const char *s = lua_tostring(L, 2);
+  if (s && push_string_query(L, my, s))
+    return ArgResult::Pushed;
+  // fall through and give "expected table, got ..." error
+
+  if (!lua_istable(L, 2))
+  {
+    luaL_error(L, "Expected table, got %s", L_typename(2));
+  }
+
+  // Iterate the table keys
+  //
+  lua_pushnil(L);  // first key
+  while (lua_next(L, 2))
+  {
+    // [-2]: key
+    // [-1]: value
+
+    const char *key = lua_tostring(L, -2);
+    ArgResult result = ArgResult::BadKey;
+    if (key)
+    {
+      int v_idx = lua_gettop(L);
+      result = read_query_key(L, my, key, v_idx, q, err);
+    }
+
+    if (result == ArgResult::BadKey)
+      luaL_error(L, "Unexpected key: %s", L_string_or_typename(-2));
+    if (result != ArgResult::Next)
+      return result;
+
+    lua_pop(L, 1);  // remove the value
+  }                 // while( lua_next() )
+
+  return ArgResult::Next;
+}
+
+/*
+ * The level mode after taking 'required_level' into account
+ */
+level_mode next_level_mode(const NA_Level &required_level, level_mode mode)
+{
+  if (required_level.isGroundLevel())
+    return ONLY_GROUND;
+
+  if (required_level.isHybridLevel())
+  {
+    // Having one requirement a hybrid level forces all other levels to be calculated
+    // from it.
+    //
+    return HYBRID;
+  }
+  if (required_level.isPressureLevel())
+  {
+    // (also flight levels get here; stored as pressure levels)
+    //
+    // HYBRID and BEST_VERTICAL remain; we can calculate pressures from such
+    //
+    // NOTE: We can ONLY calculate pressure from hybrid level if ':1' parameter is present.
+    //
+    return (mode == UNDEFINED ? ONLY_PRESSURE : mode);
+  }
+
+  // 23-Nov-2012 PKi: Height value query support
+  //
+  if (required_level.getType() == NA_Level::HEIGHT_LEVEL)
+  {
+    // HYBRID and BEST_VERTICAL remain
+    //
+    return mode;
+  }
+  if (required_level.isSoundingLevel())
+    return ONLY_SOUNDING;
+
+  throw E_LOG_BUG0("Unexpected level type");  // shouldn't happen
+}
+
+/*
+ * Set 'q.mode' according to the required levels. Returns false with 'err' set
+ * for conflicting requirements.
+ */
+bool resolve_level_mode(TrackQuery &q, string &err)
+{
+  for (auto &required_level : q.required_levels) {
+    if ((required_level.isGroundLevel() && (q.mode != UNDEFINED)) ||
+        (q.mode == ONLY_GROUND)) {
+      err = "Cannot require ground level and some other level";
+      return false;
+    }
+    if ((required_level.isSoundingLevel() && (q.mode != UNDEFINED)) ||
+        (q.mode == ONLY_SOUNDING)) {
+      err = "Cannot require sounding levels and some other level";
+      return false;
+    }
+
+    q.mode = next_level_mode(required_level, q.mode);
+  }
+
+  if (q.mode == UNDEFINED)
+  {
+    q.mode = ONLY_GROUND;
+  }
+  return true;
+}
+
+/*
+ * Take default origintime from globals (if any)
+ */
+void take_default_origintime(lua_State *L, TrackQuery &q)
+{
+  if ((q.otindex > 0) && (!q.any_ot) && (!q.ot_absolute))
+  {
+    lua_pushliteral(L, "origintime");
+    lua_rawget(L, LUA_GLOBALSINDEX);
+    q.ot_absolute = JDay(L, -1);
+    lua_pop(L, 1);
+
+    if (!q.ot_absolute)
+    {
+      q.any_ot = true;
+    }
+  }
+}
+
+/*
+ * Get the data of origintime 'ot' matching the requirements
+ */
+TrackedData *get_query_data(const Q3Engine::Track &my,
+                            const TrackQuery &q,
+                            const JDay &ot,
+                            bool archivedData,
+                            string &err)
+{
+  return my.getData_must_release_(ot,
+                                  q.required_times,
+                                  q.required_params,
+                                  q.required_levels,
+                                  q.mode == ONLY_GROUND,
+                                  q.mode == ONLY_PRESSURE || q.mode == BEST_VERTICAL,
+                                  archivedData,
+                                  q.metaQuery,
+                                  err);
+}
+
+/*
+ * Loop runs 0,-1,... until there is a match (or none, at all)
+ */
+TrackedData *find_any_origintime(const Q3Engine::Track &my, TrackQuery &q, string &err)
+{
+  NA_Level::Type leveltype = NA_Level::NO_LEVEL;
+
+  for (int run = 0; true; run--)
+  {
+    q.ot_absolute = my.getOriginTimeOfRun_(run, leveltype);
+    if (!q.ot_absolute)
+      return nullptr;  // checked all data
+
+    // LOG_DEBUG( "[%x] getData_must_release_ run %d", (int) pthread_self(), run );
+    TrackedData *d = get_query_data(my, q, q.ot_absolute, false, err);
+    if (d)
+      return d;  // Got it!
+  }
+}
+
+/*
+ * Find data of the relative origintime 'q.otindex' (0,-1,...)
+ */
+TrackedData *find_relative_origintime(const Q3Engine::Track &my, TrackQuery &q, string &err)
+{
+  // For vertical nonsounding data try pressure data (primary to search for exact pressure match)
+  // or hybrid data first whichever is newer
+  //
+  // getOriginTimeOfRun_ sets the selected leveltype (pressure or hybrid) when called
+  // with PRESSUREORHYBRID_LEVEL
+  //
+  // If first data/leveltype does not match the query, try the other leveltype
+
+  NA_Level::Type leveltype = NA_Level::HYBRID_LEVEL;
+  if (q.mode == ONLY_SOUNDING)
+    leveltype = NA_Level::NO_LEVEL;
+  else if (q.mode == ONLY_GROUND)
+    leveltype = NA_Level::GROUND_LEVEL;
+  else if (q.mode == ONLY_PRESSURE)
+    leveltype = NA_Level::PRESSUREORHYBRID_LEVEL;
+
+  for (int v = 0; (v < 2); v++)
+  {
+    q.ot_absolute = my.getOriginTimeOfRun_(q.otindex, leveltype);
+    if (!q.ot_absolute)
+      return nullptr;
+
+    // LOG_DEBUG( "[%x] getData_must_release_ run %d", (int) pthread_self(), run );
+    TrackedData *d = get_query_data(my, q, q.ot_absolute, false, err);
+
+    if (d || ((leveltype != NA_Level::PRESSURE_LEVEL) && (leveltype != NA_Level::HYBRID_LEVEL)))
+      return d;
+
+    // Try with the other (pressure or hybrid) leveltype
+
+    if ((v == 0) && (leveltype == NA_Level::HYBRID_LEVEL))
+      leveltype = NA_Level::PRESSURE_LEVEL;
+    else
+      leveltype = NA_Level::HYBRID_LEVEL;
+  }
+  return nullptr;
+}
+
+/*
+ * Sweep the hour before 'q.ot_absolute' (minutes 59..01)
+ */
+TrackedData *sweep_earlier_hour(const Q3Engine::Track &my, const TrackQuery &q, string &err)
+{
+  for (unsigned mm = 59; mm >= 1; --mm)
+  {
+    TrackedData *d = get_query_data(my, q, q.ot_absolute.sub_mins(60 - mm), true, err);
+    if (d)
+      return d;  // match!
+  }
+  return nullptr;
+}
+
+/*
+ * Scan back/forth from 'q.ot_absolute' (minutes 'mm') within the ongoing hour,
+ * nearest entries first
+ */
+TrackedData *sweep_nearest(const Q3Engine::Track &my,
+                           const TrackQuery &q,
+                           unsigned mm,
+                           string &err)
+{
+  const unsigned step_rev_last = mm - 1;
+  const unsigned step_fwd_last = 60 - mm;
+
+  for (unsigned step = 1; step < 60; step++)
+  {
+    if (step <= step_rev_last)
+    {
+      TrackedData *d = get_query_data(my, q, q.ot_absolute.sub_mins(step), true, err);
+      if (d)
+        return d;
+    }
+    if (step <= step_fwd_last)
+    {
+      TrackedData *d = get_query_data(my, q, q.ot_absolute.add_mins(step), true, err);
+      if (d)
+        return d;
+    }
+  }
+  return nullptr;
+}
+
+/*
+ * Special treatment for randomly originated data: look for a nearby origintime
+ */
+TrackedData *find_nearby_origintime(const Q3Engine::Track &my, TrackQuery &q, string &err)
+{
+  // Not exactly on a certain origintime, look at its surroundings.
+  //
+  // If 'ot' minutes==0, scan earlier hour backwards 59..01
+  // It 'ot' minutes>0, scan ongoing hour back and forth (1..60) to
+  //      find the _nearest_ available data.
+  //
+  string err_ignored;
+  JDay ot1;
+  JDay ot2;  // time range of our swipe
+  TrackedData *d = nullptr;
+
+  q.ot_absolute = JDay(q.ot_absolute.year(),
+                       q.ot_absolute.month(),
+                       q.ot_absolute.day(),
+                       q.ot_absolute.hour(),
+                       q.ot_absolute.min(),
+                       0 /*secs*/);
+
+  unsigned mm = q.ot_absolute.min();
+  if (mm == 0)
+  {
+    // Sweep earlier hour 59..01 minutes
+    //
+    d = sweep_earlier_hour(my, q, err_ignored);
+
+    ot1 = q.ot_absolute.sub_mins(59);
+    ot2 = q.ot_absolute;
+  }
+  else
+  {
+    // Scan back/forth within 1..60 range, nearest entries first
+    //
+    d = sweep_nearest(my, q, mm, err_ignored);
+
+    ot1 = q.ot_absolute.sub_mins(mm - 1);  // hh:01 ('mm'>=1)
+    ot2 = ot1.add_mins(59);                // (hh+1):00
+  }
+
+  // When giving an error, mention all the times we've seen through (lowest first).
+  //
+  if (!d)
+  {
+    string ot1_s = ot1.toString();
+    string ot2_s = ot2.toString();
+    err = string_fmt("No matching data (origintimes %s .. %s)", ot1_s.c_str(), ot2_s.c_str());
+  }
+  return d;
+}
+
+/*
+ * Find data of the precise origintime 'q.ot_absolute'
+ */
+TrackedData *find_exact_origintime(const Q3Engine::Track &my, TrackQuery &q, string &err)
+{
+  // Note: currently (by passing !metaQuery to my.getData_must_release_) we do not support/allow
+  // meta query for archived data.
+  // Lua side metadataquery() loops thru all track's 'normal' origintimes, and archived data
+  // having the given origintime
+  // could be selected by my.getData_must_release_()
+  //
+  // LOG_DEBUG( "[%x] getData_must_release_ abs %s", (int) pthread_self(),
+  // ot_absolute.toString().c_str() );
+  TrackedData *d = get_query_data(my, q, q.ot_absolute, !q.metaQuery, err);
+
+  // Special treatment for randomly originated data: look for a nearby origintime
+  //
+  if ((!d) && (my.getRunSecs() == 0))
+    d = find_nearby_origintime(my, q, err);
+
+  return d;
+}
+
+/*
+ * The error message when no data was found
+ */
+string no_data_error(const JDay &ot_absolute, const string &err)
+{
+  if (err.empty())
+  {
+    // no data found, at all
+    //
+    if (ot_absolute)
+    {
+      string ot_s = ot_absolute.toString();
+      return string_fmt("No matching data (origintime %s)", ot_s.c_str());
+    }
+    return "No data at all";  // Otherwise we should have gotten a reason in 'err' why it wasn't used
+  }
+
+  // Remove last newline
+  //
+  return "No matching data (tried these):\n" + err.substr(0, err.length() - 1);
+}
+}  // namespace
 
 /*
 * [raw_ud] [,err_str](*)= __call( track_proxy_ud, [{ [origintime=jday_ud|time_str|int|true,]
@@ -538,548 +1248,61 @@ int TrackProxyBind::call(lua_State *L)
     LOG_WARNING("Warning: using track alias %s (%s)",
                 my.getName().c_str(), proxy->getAlias().c_str());
 
-  JDay ot_absolute;     // origintime as YYYYMMDDHHMMSS (or NOW, TODAY)
-  bool any_ot = false;  // reel back in time; any origintime that otherwise matches will do
-
-  // Check the level requirement for sanity etc.
-  //
-  enum level_mode
-  {
-    UNDEFINED = 0,  // default: restrict like ONLY_GROUND
-    ONLY_GROUND,    // ground level only
-    HYBRID,         // hybrid level explicitly requested (may also have pressure level requests)
-    ONLY_PRESSURE,  // Pressure levels only (or flight levels; they mean the same). Try to find
-                    // exact,
-    // if not interpolate from hybrid data if supports pressure data, if not interpolate
-    // from pressure data.
-    BEST_VERTICAL,  // Prefer matches with hybrid data (better vertical resolution) if
-    // the hybrid data can be used for height calculations. Otherwise, use pressure data.
-    ONLY_SOUNDING  // Sounding levels only
-  } mode = UNDEFINED;
-
-  /*
-  * Times, levels and parameters required for the raw data to have.
-  */
-  vector<JDay> required_times;
-  vector<ApiParam> required_params;
-  vector<NA_Level> required_levels;
+  TrackQuery q;
   string err;
-  TrackedData *d =
-      nullptr; // (must be here to avoid goto's past a variable declaration)
 
-  bool demand_z_param = false;
-  bool demand_p_param = false;
-  bool metaQuery = false;
+  ArgResult args = read_query_args(L, my, q, err);
+  if (args == ArgResult::Pushed)
+    return 1;
+  if (args == ArgResult::Failed)
+    return track_error(L, err);
 
-  int otindex = 1;     // Set to <= 0 if relative origintime=n (<= 0) is given
-
-  if (lua_gettop(L) >= 2)
+  if (q.demand_z_param)
   {
-    /*
-    * Read properties
-    */
-    const char *s = lua_tostring(L, 2);
-    if (s)
-    {
-      TrackerBase::OriginTimeQuery originTimeQuery = TrackerBase::OriginTimeQuery::NA;
-      if (strcmp(s, "origintimes") == 0)
-        originTimeQuery = TrackerBase::OriginTimeQuery::Current;
-      else if (strcmp(s, "archorigintimes") == 0)
-        originTimeQuery = TrackerBase::OriginTimeQuery::Archived;
-      else if (strcmp(s, "allorigintimes") == 0)
-        originTimeQuery = TrackerBase::OriginTimeQuery::All;
-
-      if (originTimeQuery != TrackerBase::OriginTimeQuery::NA)
-      {
-        vector<JDay> v = my.getOriginTimes(originTimeQuery);
-
-        lua_newtable(L);
-        for (unsigned i = 0; i < v.size(); i++)
-        {
-          lua_pushinteger(L, i + 1);
-          new (L) JDay(v[i]);
-          lua_settable(L, -3);
-        }
-        return 1;
-      }
-      if (strcmp(s, "runs") == 0)
-      {
-        lua_pushinteger(L, my.getRunSecs());
-        return 1;
-      }
-      // fall through and give "expected table, got ..." error
-    }
-
-    if (!lua_istable(L, 2))
-    {
-      luaL_error(L, "Expected table, got %s", L_typename(2));
-    }
-
-    // Iterate the table keys
-    //
-    lua_pushnil(L);  // first key
-    while (lua_next(L, 2))
-    {
-      // [-2]: key
-      // [-1]: value
-
-      const char *key = lua_tostring(L, -2);
-      if (!key)
-      {
-      BAD_KEY:
-        luaL_error(L, "Unexpected key: %s", L_string_or_typename(-2));
-      }
-
-      int v_idx = lua_gettop(L);
-
-      // Note: Bad values in origintime, times, level and params are NOT to be
-      //      treated with Lua error. Return nil,err instead.
-      //      This allows upper levels (those handing i.e. 'HIR.xxx') to not need
-      //      'pcall()' - which is a heavy operation. --AKa 25-Jan-10
-      //
-      try
-      {
-        if (strcmp(key, "origintimes") == 0)
-        {
-          ot_absolute = JDay(L, v_idx);
-          if (!ot_absolute)
-            goto BAD_ORIGINTIME;
-
-          vector<TrackedData *> v = my.getOriginTimeDatas(ot_absolute);
-          NA_Level default_level;
-
-          lua_newtable(L);
-          for (unsigned i = 0; i < v.size(); i++)
-          {
-            lua_pushinteger(L, i + 1);
-            new (L) Raw(v[i], default_level);
-            lua_settable(L, -3);
-          }
-          return 1;
-        }
-        if (strcmp(key, "origintime") == 0)
-        {
-          ot_absolute = JDay(L, v_idx);
-          if (!ot_absolute)
-          {
-            if (lua_isboolean(L, v_idx) && lua_toboolean(L, v_idx))
-            {
-              any_ot = true;  // try origintimes from latest to oldest, until a match
-            }
-            else if (lua_isnumber(L, v_idx))
-            {
-              double dd = lua_tonumber(L, v_idx);
-              if ((floor(dd) == dd) && dd <= 0.0)
-              {
-                /* Do not select origintime yet, get all keys first (taking leveltype etc into account too)
-                //
-                // Find by relative origintime (0,-1,...)
-                //
-                ot_absolute = my.getOriginTimeOfRun_((int)dd);  // [0] is latest ot
-
-                // Empty 'ot' means there is absolutely no data
-                //
-                if (!ot_absolute)
-                {
-                  err = "no raw data";
-                  goto ERROR;
-                }
-                */
-
-                otindex = (int) dd;
-              }
-              else
-              {
-                goto BAD_ORIGINTIME;
-              }
-            }
-            else
-            {
-            BAD_ORIGINTIME:
-              err = string_fmt("Bad origintime: %s", L_string_or_typename(v_idx));
-              goto ERROR;
-            }
-          }
-        }
-        else if (strcmp(key, "times") == 0)
-        {
-          required_times = vector_of_times(L, v_idx);  // may throw E_USAGE
-        }
-        else if (strcmp(key, "params") == 0)
-        {
-          required_params = vector_of_apiparams(L, v_idx);  // may throw E_USAGE
-        }
-        else if (strcmp(key, "metaquery") == 0)
-        {
-          metaQuery = true;
-
-#ifdef CONFIG_FLIGHT_LEVELS_API
-        }
-        else if (strcmp(key, "flight") == 0)
-        {
-          // This call takes care of conversion to 'hpa' level(s)
-          //
-          one_or_many_levels(L, v_idx, key, required_levels);  // may throw E_USAGE
-
-          // This demands best vertical resolution but unlike 'height=true', we don't require Z
-          // param
-          // to exist.
-          //
-          // 25-Aug-2011 PKi: Flight level handling analogical to pressure level (leaving mode
-          // untouched)
-
-          // mode= BEST_VERTICAL;
-
-
-#endif
-        }
-        else
-        {
-          NA_Level::Type lt = NA_Level::lt_enum(key);
-          if (lt)
-          {
-            one_or_many_levels(L, v_idx, key, required_levels);  // may throw E_USAGE
-
-            // 23-Nov-2012 PKi: Height value query support
-            //
-            if (lt == NA_Level::HEIGHT_LEVEL)
-              demand_z_param = true;
-            else if (lt == NA_Level::SOUNDING_LEVEL)
-              demand_p_param = true;
-          }
-          else
-          {
-            goto BAD_KEY;  // leads to Lua error
-          }
-        }
-      }
-      catch (const E_USAGE &e)
-      {
-        // Some of 'times', 'levels', 'params' required by the caller were of bad name.
-        //
-        err = e.what_nosource();  // just the message, no file & line
-        goto ERROR;
-      }
-
-      lua_pop(L, 1);  // remove the value
-    }                 // while( lua_next() )
-  }
-
-  if (demand_z_param)
-  {
-    mode = BEST_VERTICAL;
+    q.mode = BEST_VERTICAL;
 
 #ifdef HEIGHT_TRUE_PULLS_IN_Z
-    required_params.emplace_back(Z);
+    q.required_params.emplace_back(Z);
 #endif
   }
 
-  if (demand_p_param)
+  if (q.demand_p_param)
   {
-    required_params.emplace_back("P");
+    q.required_params.emplace_back("P");
   }
 
-  for (auto &required_level : required_levels) {
-    if ((required_level.isGroundLevel() && (mode != UNDEFINED)) ||
-        (mode == ONLY_GROUND)) {
-      err = "Cannot require ground level and some other level";
-      goto ERROR;
-    } else if ((required_level.isSoundingLevel() && (mode != UNDEFINED)) ||
-               (mode == ONLY_SOUNDING)) {
-      err = "Cannot require sounding levels and some other level";
-      goto ERROR;
-    }
-
-    if (required_level.isGroundLevel()) {
-      mode = ONLY_GROUND;
-    } else if (required_level.isHybridLevel()) {
-      // Having one requirement a hybrid level forces all other levels to be calculated
-      // from it.
-      //
-      mode = HYBRID;
-    } else if (required_level
-                   .isPressureLevel()) { // (also flight levels get here; stored
-                                         // as pressure levels)
-      // HYBRID and BEST_VERTICAL remain; we can calculate pressures from such
-      //
-      // NOTE: We can ONLY calculate pressure from hybrid level if ':1' parameter is present.
-      //
-      if (mode == UNDEFINED)
-      {
-        mode = ONLY_PRESSURE;
-      }
-
-      // 23-Nov-2012 PKi: Height value query support
-      //
-    } else if (required_level.getType() == NA_Level::HEIGHT_LEVEL) {
-      // HYBRID and BEST_VERTICAL remain
-      //
-
-    } else if (required_level.isSoundingLevel()) {
-      mode = ONLY_SOUNDING;
-    } else {
-      throw E_LOG_BUG0("Unexpected level type");  // shouldn't happen
-    }
-  }
-
-  if (mode == UNDEFINED)
-  {
-    mode = ONLY_GROUND;
-  }
+  if (!resolve_level_mode(q, err))
+    return track_error(L, err);
 
   // Take default origintime from globals (if any)
   //
-  if ((otindex > 0) && (!any_ot) && (!ot_absolute))
-  {
-    lua_pushliteral(L, "origintime");
-    lua_rawget(L, LUA_GLOBALSINDEX);
-    ot_absolute = JDay(L, -1);
-    lua_pop(L, 1);
+  take_default_origintime(L, q);
 
-    if (!ot_absolute)
-    {
-      any_ot = true;
-    }
-  }
+  assert((q.otindex <= 0) || q.any_ot || q.ot_absolute);
 
-  assert((otindex <= 0) || any_ot || ot_absolute);
+  TrackedData *d = nullptr;
 
   // If required, loop 0,-1,... until there is a match (or none, at all)
   //
-  if (any_ot)
-  {
-    NA_Level::Type leveltype = NA_Level::NO_LEVEL;
-
-    for (int run = 0; true; run--)
-    {
-      ot_absolute = my.getOriginTimeOfRun_(run, leveltype);
-      if (!ot_absolute)
-        break;  // checked all data ('d' remains nullptr)
-
-      // LOG_DEBUG( "[%x] getData_must_release_ run %d", (int) pthread_self(), run );
-      d = my.getData_must_release_(ot_absolute,
-                                   required_times,
-                                   required_params,
-                                   required_levels,
-                                   mode == ONLY_GROUND,
-                                   mode == ONLY_PRESSURE || mode == BEST_VERTICAL,
-                                   false,
-                                   metaQuery,
-                                   err);
-      if (d)
-        break;  // Got it!
-    }
-  }
-  else if (otindex <= 0)
-  {
-    // For vertical nonsounding data try pressure data (primary to search for exact pressure match)
-    // or hybrid data first whichever is newer
-    //
-    // getOriginTimeOfRun_ sets the selected leveltype (pressure or hybrid) when called
-    // with PRESSUREORHYBRID_LEVEL
-    //
-    // If first data/leveltype does not match the query, try the other leveltype
-
-    NA_Level::Type leveltype = NA_Level::HYBRID_LEVEL;
-    if (mode == ONLY_SOUNDING)
-      leveltype = NA_Level::NO_LEVEL;
-    else if (mode == ONLY_GROUND)
-      leveltype = NA_Level::GROUND_LEVEL;
-    else if (mode == ONLY_PRESSURE)
-      leveltype = NA_Level::PRESSUREORHYBRID_LEVEL;
-
-    for (int v = 0; (v < 2); v++)
-    {
-      ot_absolute = my.getOriginTimeOfRun_(otindex, leveltype);
-
-      if (ot_absolute)
-      {
-        // LOG_DEBUG( "[%x] getData_must_release_ run %d", (int) pthread_self(), run );
-        d = my.getData_must_release_(ot_absolute,
-                                     required_times,
-                                     required_params,
-                                     required_levels,
-                                     mode == ONLY_GROUND,
-                                     mode == ONLY_PRESSURE || mode == BEST_VERTICAL,
-                                     false,
-                                     metaQuery,
-                                     err);
-
-        if (d || ((leveltype != NA_Level::PRESSURE_LEVEL) && (leveltype != NA_Level::HYBRID_LEVEL)))
-          break;
-
-        // Try with the other (pressure or hybrid) leveltype
-
-        if ((v == 0) && (leveltype == NA_Level::HYBRID_LEVEL))
-          leveltype = NA_Level::PRESSURE_LEVEL;
-        else
-          leveltype = NA_Level::HYBRID_LEVEL;
-      }
-      else
-        break;
-    }
-  }
+  if (q.any_ot)
+    d = find_any_origintime(my, q, err);
+  else if (q.otindex <= 0)
+    d = find_relative_origintime(my, q, err);
   else
-  {
-    // Have a precise 'ot' to check
-    //
-    // Note: currently (by passing !metaQuery to my.getData_must_release_) we do not support/allow
-    // meta query for archived data.
-    // Lua side metadataquery() loops thru all track's 'normal' origintimes, and archived data
-    // having the given origintime
-    // could be selected by my.getData_must_release_()
-    //
-    // LOG_DEBUG( "[%x] getData_must_release_ abs %s", (int) pthread_self(),
-    // ot_absolute.toString().c_str() );
-    d = my.getData_must_release_(ot_absolute,
-                                 required_times,
-                                 required_params,
-                                 required_levels,
-                                 mode == ONLY_GROUND,
-                                 mode == ONLY_PRESSURE || mode == BEST_VERTICAL,
-                                 !metaQuery,
-                                 metaQuery,
-                                 err);
-
-    // Special treatment for randomly originated data: look for a nearby origintime
-    //
-    if ((!d) && (my.getRunSecs() == 0))
-    {
-      // Not exactly on a certain origintime, look at its surroundings.
-      //
-      // If 'ot' minutes==0, scan earlier hour backwards 59..01
-      // It 'ot' minutes>0, scan ongoing hour back and forth (1..60) to
-      //      find the _nearest_ available data.
-      //
-      string err_ignored;
-      JDay ot1;
-      JDay ot2;  // time range of our swipe
-
-      ot_absolute = JDay(ot_absolute.year(),
-                         ot_absolute.month(),
-                         ot_absolute.day(),
-                         ot_absolute.hour(),
-                         ot_absolute.min(),
-                         0 /*secs*/);
-
-      unsigned mm = ot_absolute.min();
-      if (mm == 0)
-      {
-        // Sweep earlier hour 59..01 minutes
-        //
-        for (mm = 59; mm >= 1; --mm)
-        {
-          d = my.getData_must_release_(ot_absolute.sub_mins(60 - mm),
-                                       required_times,
-                                       required_params,
-                                       required_levels,
-                                       mode == ONLY_GROUND,
-                                       mode == ONLY_PRESSURE || mode == BEST_VERTICAL,
-                                       true,
-                                       metaQuery,
-                                       err_ignored);
-          if (d)
-            break;  // match!
-        }
-
-        ot1 = ot_absolute.sub_mins(59);
-        ot2 = ot_absolute;
-      }
-      else
-      {
-        // Scan back/forth within 1..60 range, nearest entries first
-        //
-        const unsigned step_rev_last = mm - 1;
-        const unsigned step_fwd_last = 60 - mm;
-
-        for (unsigned step = 1; step < 60; step++)
-        {
-          if (step <= step_rev_last)
-          {
-            d = my.getData_must_release_(ot_absolute.sub_mins(step),
-                                         required_times,
-                                         required_params,
-                                         required_levels,
-                                         mode == ONLY_GROUND,
-                                         mode == ONLY_PRESSURE || mode == BEST_VERTICAL,
-                                         true,
-                                         metaQuery,
-                                         err_ignored);
-            if (d)
-              break;
-          }
-          if (step <= step_fwd_last)
-          {
-            d = my.getData_must_release_(ot_absolute.add_mins(step),
-                                         required_times,
-                                         required_params,
-                                         required_levels,
-                                         mode == ONLY_GROUND,
-                                         mode == ONLY_PRESSURE || mode == BEST_VERTICAL,
-                                         true,
-                                         metaQuery,
-                                         err_ignored);
-            if (d)
-              break;
-          }
-        }
-
-        ot1 = ot_absolute.sub_mins(mm - 1);  // hh:01 ('mm'>=1)
-        ot2 = ot1.add_mins(59);              // (hh+1):00
-      }
-
-      // When giving an error, mention all the times we've seen through (lowest first).
-      //
-      if (!d)
-      {
-        string ot1_s = ot1.toString();
-        string ot2_s = ot2.toString();
-        err = string_fmt("No matching data (origintimes %s .. %s)", ot1_s.c_str(), ot2_s.c_str());
-      }
-    }
-  }
+    d = find_exact_origintime(my, q, err);  // Have a precise 'ot' to check
 
   if (d)
   {
     NA_Level default_level;  // DEFAULT_LEVEL type
-    if (required_levels.size() == 1)
+    if (q.required_levels.size() == 1)
     {
       default_level =
-          required_levels[0];  // used if later creating a 'Grid' without level specifier
+          q.required_levels[0];  // used if later creating a 'Grid' without level specifier
     }
 
     new (L)
-        Raw(d, default_level, MatrixPos::ZERO, metaQuery);  // use it - GC will call 'd->Acquire()'
+        Raw(d, default_level, MatrixPos::ZERO, q.metaQuery);  // use it - GC will call 'd->Acquire()'
     return 1;
   }
-  if (err.empty())
-  {
-    // no data found, at all
-    //
-    if (ot_absolute)
-    {
-      string ot_s = ot_absolute.toString();
-      err = string_fmt("No matching data (origintime %s)", ot_s.c_str());
-    }
-    else
-    {
-      err =
-          "No data at all";  // Otherwise we should have gotten a reason in 'err' why it wasn't used
-    }
-    goto ERROR;
-  }
-  else
-  {
-    // Remove last newline
-    //
-    err = "No matching data (tried these):\n" + err.substr(0, err.length() - 1);
-    goto ERROR;
-  }
-
-ERROR:
-#ifdef CONFIG_TRACK_ERRORS_ENABLED
-  luaL_error(L, err.c_str());
-#else
-  return L_nilerr(err.c_str());
-#endif
+  return track_error(L, no_data_error(q.ot_absolute, err));
 }
