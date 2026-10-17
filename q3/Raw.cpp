@@ -616,6 +616,257 @@ bool get_dataids_from_ud(DataIdList &dataIds, struct lua_State *L, int index) {
 }
 }  // namespace
 
+namespace
+{
+/*
+ * The options of a 'RawBind::__call()'
+ */
+struct RawCallArgs {
+  JDay vt;
+  bool vt_force_default = false;
+
+  Projection proj = Projection::NONE;
+  MatrixPos gridsize;
+  bool native_gs = false;
+
+  NA_Level level; // NA_Level::NO_LEVEL
+
+  // 22-Sep-2011 PKi: For cross call
+  bool cross = false;
+  bool flightRoute = false;
+  std::vector<JDay> vtVec;
+  std::vector<NA_Level> levelVec;
+  LatLonList locs;
+  DataIdList dataIds;
+};
+
+/*
+ * Read the 'time' option at [-1]
+ */
+void read_time_option(lua_State *L, RawCallArgs &a) {
+  if (lua_isboolean(L, -1) && lua_toboolean(L, -1)) { // true
+    a.vt_force_default = true; // force to use first/last available time
+                               // (ignore 'validtime' global)
+  } else
+      // 22-Sep-2011 PKi: Time can be table when called for cross
+      if (lua_istable(L, -1)) {
+    a.vtVec = vector_of_times(L, -1);
+  } else {
+    a.vt = JDay(L, -1);
+    if (!a.vt) {
+      luaL_error(L, "Bad time: %s", L_string_or_typename(-1));
+    }
+  }
+}
+
+/*
+ * Read the 'projection' option at [-1]
+ */
+void read_projection_option(lua_State *L, const NA_Data *qd, RawCallArgs &a) {
+  const char *s = lua_tostring(L, -1);
+  if (s) {
+    try {
+      a.proj = Projection(s); // throws 'E_USAGE' if bad projection string
+    } catch (const E_USAGE &) {
+      luaL_error(L, "Bad projection: %s", s);
+    }
+  } else if (lua_isboolean(L, -1) && lua_toboolean(L, -1)) { // true
+    a.proj = qd->getProjection();
+  } else {
+    luaL_error(L, "Bad projection: %s", L_typename(-1));
+  }
+}
+
+/*
+ * Read the 'gridsize' option at [-1]
+ */
+void read_gridsize_option(lua_State *L, RawCallArgs &a) {
+  MatrixPos *ud = MatrixPos::instance(L, -1);
+  if (ud) {
+    a.gridsize = *ud; // makes a copy
+  } else if (lua_isboolean(L, -1) && lua_toboolean(L, -1)) { // true
+    a.native_gs = true;
+  } else {
+    luaL_error(L, "Bad gridsize: %s", L_typename(-1));
+  }
+}
+
+/*
+ * Read the level option 'key' at [-1]
+ */
+void read_level_option(lua_State *L, const char *key, RawCallArgs &a) {
+  if (a.level) {
+    luaL_error(
+        L, "Must give only one of: 'ground', 'hybrid', 'hpa', 'height'"
+#ifdef CONFIG_FLIGHT_LEVELS_API
+           ", 'flight'"
+#endif
+    );
+  }
+
+  try {
+    // 22-Sep-2011 PKi: Level can be table when called for cross
+    if (lua_istable(L, -1)) {
+      one_or_many_levels(L, -1, key, a.levelVec);
+      if (!a.levelVec.empty())
+        a.level = a.levelVec[0];
+    } else
+      a.level = one_level(L, -1, key);
+  } catch (const E_USAGE &e) {
+    luaL_error(L, "%s", e.what());
+  }
+}
+
+/*
+ * Is 'key' a level option?
+ */
+bool is_level_option(const char *key) {
+  return
+#ifdef CONFIG_FLIGHT_LEVELS_API
+      (strcmp(key, "flight") == 0) ||
+#endif
+      (NA_Level::lt_enum(key) != NA_Level::NO_LEVEL);
+}
+
+/*
+ * Read the option 'key' at [-1]
+ */
+void read_call_option(lua_State *L, const NA_Data *qd, const char *key,
+                      RawCallArgs &a) {
+  if (strcmp(key, "time") == 0) {
+    read_time_option(L, a);
+
+  } else if (strcmp(key, "projection") == 0) {
+    read_projection_option(L, qd, a);
+
+  } else if (strcmp(key, "gridsize") == 0) {
+    read_gridsize_option(L, a);
+
+  } else if (is_level_option(key)) {
+    read_level_option(L, key, a);
+
+    // 22-Sep-2011 PKi: New options for cross; 'cross=true' and
+    // 'location={latlon}' 05-Mar-2015 PKi: New option 'flightroute=true' to
+    // return one value per location/level/time
+  } else if ((strcmp(key, "cross") == 0) ||
+             (strcmp(key, "flightroute") == 0)) {
+    if (lua_isboolean(L, -1)) {
+      a.cross = lua_toboolean(L, -1);
+      a.flightRoute = (a.cross && (strcmp(key, "cross") != 0));
+    } else
+      luaL_error(L, "Bad cross: %s", L_typename(-1));
+  } else if (strcmp(key, "location") == 0) {
+    LatLonList::e_state st = a.locs.init_from_ud(L, -1, false);
+
+    if (st == LatLonList::NONE) {
+      luaL_error(L, "Bad location: %s",
+                 lua_isstring(L, -1) ? lua_tostring(L, -1) : L_typename(-1));
+    }
+  } else if (strcmp(key, "dataid") == 0) {
+    if (!get_dataids_from_ud(a.dataIds, L, -1)) {
+      luaL_error(L, "Bad data id: %s",
+                 lua_isstring(L, -1) ? lua_tostring(L, -1) : L_typename(-1));
+    }
+  } else {
+    luaL_error(L, "Unknown option: %s", key);
+  }
+}
+
+/*
+ * Get values from the param table (at [2])
+ */
+void read_call_args(lua_State *L, const NA_Data *qd, RawCallArgs &a) {
+  const int table_idx = 2;
+  L_GROW(2);
+
+  lua_pushnil(L); // first key
+  while (lua_next(L, table_idx)) {
+    // [-1]: value
+    // [-2]: key
+
+    const char *key = lua_tostring(L, -2);
+    if (!key) {
+      luaL_error(L, "Unknown key: %s", L_typename(-2));
+    }
+
+    read_call_option(L, qd, key, a);
+
+    lua_pop(L, 1); // remove value
+  }
+}
+
+/*
+ * Use global 'validtime', or first/last available time
+ */
+void set_default_validtime(lua_State *L, const NA_Data *qd, RawCallArgs &a) {
+  lua_getglobal(L, "validtime");
+  if ((!a.vt_force_default) && (!lua_isnil(L, -1))) {
+    a.vt = JDay(L, -1);
+    if (!a.vt) {
+      luaL_error(L, "Bad validtime: %s", L_string_or_typename(-1));
+    }
+  } else {
+    // TBD: Observations could use the LAST time (once we support
+    // observations)
+    //
+    // 07-Apr-2015 PKi: Use last time for point data
+
+    const std::vector<JDay> &t = qd->getTimes();
+    a.vt = t[qd->hasGrid() ? 0 : t.size() - 1]; // first or last time
+  }
+  lua_pop(L, 1);
+}
+
+/*
+ * Use the default gridsize of the Raw, or global 'gridsize', or native
+ * gridsize
+ */
+void set_default_gridsize(lua_State *L, const Raw_interface &r,
+                          RawCallArgs &a) {
+  MatrixPos def_gridsize = r.getDefaultGridsize();
+
+  if (def_gridsize) {
+    a.gridsize = def_gridsize; // certain default given at Raw creation
+
+  } else if (def_gridsize == MatrixPos::DX) { // (1,0) marks 'native as default'
+    a.native_gs = true;
+
+  } else {
+    lua_getglobal(L, "gridsize");
+    const MatrixPos *mp = MatrixPos::instance(L, -1);
+    if (mp) {
+      a.gridsize = *mp;
+    } else {
+      a.native_gs = true;
+    }
+    lua_pop(L, 1);
+  }
+}
+
+/*
+ * 22-Sep-2011 PKi: If called for cross, passing time(s), level(s) and
+ * location(s) as vectors; if not, report error if called with vector(s)
+ * (call from user script)
+ */
+void check_cross_args(lua_State *L, RawCallArgs &a) {
+  if ((a.cross && (a.locs.empty())) || ((!a.cross) && (!a.locs.empty())))
+    luaL_error(L, "%s option: location", a.cross ? "Missing" : "Unknown");
+  else if (a.cross) {
+    if (a.vtVec.empty())
+      a.vtVec.push_back(a.vt);
+    if (a.levelVec.empty())
+      a.levelVec.push_back(a.level);
+  } else {
+    const char *op[] = {"time", "level"};
+    const char *p = nullptr;
+
+    if (((p = op[0]) && (!a.vtVec.empty())) ||
+        ((p = op[1]) && (!a.levelVec.empty())))
+      luaL_error(L, "Expecting scalar %s", p);
+  }
+}
+}  // namespace
+
 /*
  * [grid_ud] [,err_str]= __call( raw_ud, [{ [time=jday_ud|time_str|true],
  *                                       [projection=str|true],
@@ -677,137 +928,12 @@ int RawBind::__call(lua_State *L) {
   const NA_Data *qd = r.getData();
   assert(qd);
 
-  JDay vt;
-  bool vt_force_default = false;
-
-  Projection proj = Projection::NONE;
-  MatrixPos gridsize;
-  bool native_gs = false;
-
-  NA_Level level; // NA_Level::NO_LEVEL
-
-  // 22-Sep-2011 PKi: For cross call
-  bool cross = false;
-  bool flightRoute = false;
-  std::vector<JDay> vtVec;
-  std::vector<NA_Level> levelVec;
-  LatLonList locs;
-  DataIdList dataIds;
+  RawCallArgs a;
 
   // 13-Oct-2011 PKi: To check level type
 
-  if (lua_gettop(L) > 1) {
-
-    const int table_idx = 2;
-    L_GROW(2);
-
-    // Get values from the param table
-    //
-    lua_pushnil(L); // first key
-    while (lua_next(L, table_idx)) {
-      // [-1]: value
-      // [-2]: key
-
-      const char *key = lua_tostring(L, -2);
-      if (!key) {
-        luaL_error(L, "Unknown key: %s", L_typename(-2));
-      }
-
-      if (strcmp(key, "time") == 0) {
-        if (lua_isboolean(L, -1) && lua_toboolean(L, -1)) { // true
-          vt_force_default = true; // force to use first/last available time
-                                   // (ignore 'validtime' global)
-        } else
-            // 22-Sep-2011 PKi: Time can be table when called for cross
-            if (lua_istable(L, -1)) {
-          vtVec = vector_of_times(L, -1);
-        } else {
-          vt = JDay(L, -1);
-          if (!vt) {
-            luaL_error(L, "Bad time: %s", L_string_or_typename(-1));
-          }
-        }
-
-      } else if (strcmp(key, "projection") == 0) {
-        const char *s = lua_tostring(L, -1);
-        if (s) {
-          try {
-            proj = Projection(s); // throws 'E_USAGE' if bad projection string
-          } catch (const E_USAGE &) {
-            luaL_error(L, "Bad projection: %s", s);
-          }
-        } else if (lua_isboolean(L, -1) && lua_toboolean(L, -1)) { // true
-          proj = qd->getProjection();
-        } else {
-          luaL_error(L, "Bad projection: %s", L_typename(-1));
-        }
-
-      } else if (strcmp(key, "gridsize") == 0) {
-        MatrixPos *ud = MatrixPos::instance(L, -1);
-        if (ud) {
-          gridsize = *ud; // makes a copy
-        } else if (lua_isboolean(L, -1) && lua_toboolean(L, -1)) { // true
-          native_gs = true;
-        } else {
-          luaL_error(L, "Bad gridsize: %s", L_typename(-1));
-        }
-
-      } else if (
-#ifdef CONFIG_FLIGHT_LEVELS_API
-          (strcmp(key, "flight") == 0) ||
-#endif
-          (NA_Level::lt_enum(key) != NA_Level::NO_LEVEL)) {
-        if (level) {
-          luaL_error(
-              L, "Must give only one of: 'ground', 'hybrid', 'hpa', 'height'"
-#ifdef CONFIG_FLIGHT_LEVELS_API
-                 ", 'flight'"
-#endif
-          );
-        }
-
-        try {
-          // 22-Sep-2011 PKi: Level can be table when called for cross
-          if (lua_istable(L, -1)) {
-            one_or_many_levels(L, -1, key, levelVec);
-            if (!levelVec.empty())
-              level = levelVec[0];
-          } else
-            level = one_level(L, -1, key);
-        } catch (const E_USAGE &e) {
-          luaL_error(L, "%s", e.what());
-        }
-
-        // 22-Sep-2011 PKi: New options for cross; 'cross=true' and
-        // 'location={latlon}' 05-Mar-2015 PKi: New option 'flightroute=true' to
-        // return one value per location/level/time
-      } else if ((strcmp(key, "cross") == 0) ||
-                 (strcmp(key, "flightroute") == 0)) {
-        if (lua_isboolean(L, -1)) {
-          cross = lua_toboolean(L, -1);
-          flightRoute = (cross && (strcmp(key, "cross") != 0));
-        } else
-          luaL_error(L, "Bad cross: %s", L_typename(-1));
-      } else if (strcmp(key, "location") == 0) {
-        LatLonList::e_state st = locs.init_from_ud(L, -1, false);
-
-        if (st == LatLonList::NONE) {
-          luaL_error(L, "Bad location: %s",
-                     lua_isstring(L, -1) ? lua_tostring(L, -1)
-                                         : L_typename(-1));
-        }
-      } else if (strcmp(key, "dataid") == 0) {
-        if (!get_dataids_from_ud(dataIds, L, -1)) {
-          luaL_error(L, "Bad data id: %s",
-                     lua_isstring(L, -1) ? lua_tostring(L, -1)
-                                         : L_typename(-1));
-        }
-      } else {
-        luaL_error(L, "Unknown option: %s", key);
-      }
-      lua_pop(L, 1); // remove value
-    }
-  }
+  if (lua_gettop(L) > 1)
+    read_call_args(L, qd, a);
 
   // Use globals 'validtime', 'projection' and 'gridsize' if the caller didn't
   // give them.
@@ -816,55 +942,20 @@ int RawBind::__call(lua_State *L) {
   // vector to avoid
   //                  unnecessary default value handling
 
-  cross |= flightRoute;
+  a.cross |= a.flightRoute;
 
-  if (cross && (!vtVec.empty()))
-    vt = vtVec[0];
+  if (a.cross && (!a.vtVec.empty()))
+    a.vt = a.vtVec[0];
 
-  if (!vt) {
-    lua_getglobal(L, "validtime");
-    if ((!vt_force_default) && (!lua_isnil(L, -1))) {
-      vt = JDay(L, -1);
-      if (!vt) {
-        luaL_error(L, "Bad validtime: %s", L_string_or_typename(-1));
-      }
-    } else {
-      // TBD: Observations could use the LAST time (once we support
-      // observations)
-      //
-      // 07-Apr-2015 PKi: Use last time for point data
+  if (!a.vt)
+    set_default_validtime(L, qd, a);
+  assert(a.vt);
 
-      const std::vector<JDay> &t = qd->getTimes();
-      vt = t[qd->hasGrid() ? 0 : t.size() - 1]; // first or last time
-    }
-    lua_pop(L, 1);
-  }
-  assert(vt);
+  if (!a.proj)
+    a.proj = getProjection(L, qd);
 
-  if (!proj)
-    proj = getProjection(L, qd);
-
-  if ((!native_gs) && (gridsize.getX() == 0)) {
-    MatrixPos def_gridsize = r.getDefaultGridsize();
-
-    if (def_gridsize) {
-      gridsize = def_gridsize; // certain default given at Raw creation
-
-    } else if (def_gridsize ==
-               MatrixPos::DX) { // (1,0) marks 'native as default'
-      native_gs = true;
-
-    } else {
-      lua_getglobal(L, "gridsize");
-      const MatrixPos *mp = MatrixPos::instance(L, -1);
-      if (mp) {
-        gridsize = *mp;
-      } else {
-        native_gs = true;
-      }
-      lua_pop(L, 1);
-    }
-  }
+  if ((!a.native_gs) && (a.gridsize.getX() == 0))
+    set_default_gridsize(L, r, a);
 
   // If using default level and 'def_level' has been set (by creating the Raw
   // with just one level id required).
@@ -876,30 +967,11 @@ int RawBind::__call(lua_State *L) {
   // call
   //
 
-  if (!level) {
-    level = r.getDefaultLevel();
+  if (!a.level) {
+    a.level = r.getDefaultLevel();
   }
 
-  // 22-Sep-2011 PKi: If called for cross, passing time(s), level(s) and
-  // location(s) as vectors;
-  //				    if not, report error if called with vector(s) (call from
-  //user script)
-
-  if ((cross && (locs.empty())) || ((!cross) && (!locs.empty())))
-    luaL_error(L, "%s option: location", cross ? "Missing" : "Unknown");
-  else if (cross) {
-    if (vtVec.empty())
-      vtVec.push_back(vt);
-    if (levelVec.empty())
-      levelVec.push_back(level);
-  } else {
-    const char *op[] = {"time", "level"};
-    const char *p = nullptr;
-
-    if (((p = op[0]) && (!vtVec.empty())) ||
-        ((p = op[1]) && (!levelVec.empty())))
-      luaL_error(L, "Expecting scalar %s", p);
-  }
+  check_cross_args(L, a);
 
   //---
   // NOTE: When there are exceptions within the 'new(L)' allocated constructor,
@@ -907,15 +979,16 @@ int RawBind::__call(lua_State *L) {
   //
   Grid *g = nullptr;
   try {
-    g = new (L) Grid(r, vt, level, proj,
-                     native_gs ? MatrixPos::ZERO : gridsize
+    g = new (L) Grid(r, a.vt, a.level, a.proj,
+                     a.native_gs ? MatrixPos::ZERO : a.gridsize
                      //
                      // 22-Sep-2011 PKi: For cross call
                      //
                      ,
-                     cross ? &vtVec : nullptr, cross ? &levelVec : nullptr,
-                     cross ? &locs : nullptr, flightRoute,
-                     (!dataIds.empty()) ? &dataIds : nullptr);
+                     a.cross ? &a.vtVec : nullptr,
+                     a.cross ? &a.levelVec : nullptr,
+                     a.cross ? &a.locs : nullptr, a.flightRoute,
+                     (!a.dataIds.empty()) ? &a.dataIds : nullptr);
   } catch (const E_NO_MATCH &e) {
     // Didn't get created (but Lua did allocate the object AND attach its GC
     // to the C++ destructor. Nuke the object before it gets to GC.
