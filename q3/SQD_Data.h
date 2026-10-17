@@ -110,6 +110,11 @@ private:
       // and escaping a noexcept function would abort via std::terminate.
       const DataIdList *dataIds = nullptr) CONST_IF_SERVER;
 
+  CONST_IF_SERVER Matrix *push_direct_matrix(lua_State *L, const JDay &vt,
+                                             const NA_Level &lev,
+                                             FmiParameterName e,
+                                             bool *target_ready) CONST_IF_SERVER;
+
   //
   // 22-Sep-2011 PKi: For fetching cross using newbase
   //

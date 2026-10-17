@@ -1420,6 +1420,305 @@ void pointValues(NFmiFastQueryInfo &info,
 }
 }  // namespace
 
+namespace
+{
+/*
+ * 16-Apr-2015 PKi: Store origintime of the first used querydata as a lua
+ * global; it will be returned in response headers
+ */
+void store_first_origintime(lua_State *L, const NFmiMetTime &origintime) {
+  lua_getglobal(L, "first_origintime");
+  string_or_null fstot = lua_tostring(L, -1);
+  lua_pop(L, 1);
+
+  if ((!fstot.c_str()) || (fstot.empty())) {
+    NFmiString otstr(origintime.ToStr(kYYYYMMDDHH));
+
+    lua_pushstring(L, otstr.CharPtr());
+    lua_setglobal(L, "first_origintime");
+  }
+}
+
+/*
+ * Is 'lev' available in the data without level interpolation?
+ */
+bool is_exact_level(const NA_Level &lev, const vector<NA_Level> &levels_) {
+  NA_Level::Type lt = lev.getType();
+  return ((lt != NA_Level::HEIGHT_LEVEL) &&
+          ((!lev) || lev.isGroundLevel() || lev.isSoundingLevel() ||
+           (find_it<NA_Level>(levels_, lev) != levels_.end())));
+}
+
+/*
+ * Set 'fi' to the time and level if they are in the data
+ */
+void set_exact_time_and_level(lua_State *L, NFmiFastQueryInfo &fi,
+                              const NFmiMetTime &mt, const NA_Level &lev,
+                              bool exact_time, bool exact_level) {
+  if (exact_time) {
+    bool tmp = fi.Time(mt);
+    L_ASSERT(tmp);
+  } else {
+    // Interpolate time (should be within time range if got here)
+  }
+
+  if (exact_level) {
+    if ((!lev) || lev.isGroundLevel() || lev.isSoundingLevel()) {
+      fi.FirstLevel();
+    } else {
+      fi.Level(SQD_Tools::newbase_level(lev));
+    }
+  } else {
+    // Interpolate level (should be within level range if got here)
+  }
+}
+
+/*
+ * Create the result matrix (filled with NANs if 'retMissing')
+ */
+MemMatrix *new_result_matrix(lua_State *L, bool retMissing, bool pointData,
+                             const MatrixPos &native_gs,
+                             const MatrixPos *target_gs, const NA_Level &lev,
+                             FmiParameterName e, const NA_Param::Unit &unit,
+                             const Projection &m_proj) {
+  MemMatrix *m_ = nullptr;
+  if (retMissing) {
+    m_ = L ? new (L) MemMatrix(native_gs, NAN, lev, e, unit, m_proj)
+           : ::new MemMatrix(native_gs, NAN, lev, e, unit, m_proj);
+  } else {
+    const MatrixPos &m_gs = (!pointData) && target_gs ? *target_gs : native_gs;
+    m_ = L ? new (L) MemMatrix(m_gs, lev, e, unit, m_proj)
+           : ::new MemMatrix(m_gs, lev, e, unit, m_proj);
+  }
+  return m_;
+}
+
+/*
+ * Area for nonnative target projection and/or gridsize (nullptr if both
+ * are native)
+ */
+NFmiAreaFactory::return_type target_area(NFmiFastQueryInfo &fi, bool same_proj,
+                                         bool same_gs,
+                                         const Projection &native_proj,
+                                         const Projection *target_proj) {
+  const Projection *pr = nullptr;
+  NFmiArea *area = nullptr;
+
+  if (!(same_proj && same_gs)) {
+    // Nonnative target projection and/or gridsize; if native projection,
+    // clone grid's area.
+    //
+    // Set pr to projection to be used if area is created using
+    // NFmiAreaFactory (when nonnative projection or getting/cloning area
+    // should fail)
+
+    pr = same_proj ? &native_proj : target_proj;
+
+    if (same_proj) {
+      const NFmiGrid *grid = fi.Grid();
+      if ((area = (grid ? grid->Area() : nullptr)))
+        area = area->Clone();
+    }
+  }
+
+  return ((!(same_proj && same_gs)) && (!area))
+                     ? NFmiAreaFactory::Create(pr->toString())
+                     : (NFmiAreaFactory::return_type)area;
+}
+
+/*
+ * Interpolate grid values by time and/or level alone (to 'nm', or directly
+ * to 'm_' for pressure levels without newbase projection)
+ */
+void interpolate_grid_values(NFmiFastQueryInfo &fi, const NFmiMetTime &mt,
+                             const NA_Level &lev, FmiParameterName e,
+                             bool exact_time, bool exact_level,
+                             bool native_area, const NFmiGrid &wantedGrid,
+                             bool relative_uv, NFmiDataMatrix<float> &nm,
+                             MemMatrix *m_) {
+  NA_Level::Type lt = lev.getType();
+  double lv = lev.getValue();
+
+  if (exact_level) {
+    // We know the time needs to be interpolated (and *is* interpolatable)
+
+#if 1
+    /* The 'NFmiDataMatrix' use causes unnecessary copying of values.
+     */
+    // NFmiDataMatrix<float> nm;
+
+    if (!native_area) {
+      //			NFmiGrid wantedGrid(areaPtr.get(),
+      // m_->getSize().getXS(),
+      // m_->getSize().getYS());
+      nm = fi.GridValues(wantedGrid, mt, relative_uv);
+    } else
+      nm = fi.Values(mt);
+
+      // LOG_DEBUG( "NMatrix size: %d", (int)(nm.NX() * nm.NY()) );
+      // LOG_DEBUG( "Grid size: %d", (int)native_gs.getN() );
+
+      // matrix_fill( *m_, nm );
+#else
+    /* This did not give right results
+     */
+    unsigned xs = fi.GridXNumber();
+    unsigned ys = fi.GridYNumber();
+
+    for (unsigned y = 0; y < ys; ++y) {
+      for (unsigned x = 0; x < xs; ++x) {
+        float v = fi.PeekLocationValue(x, y, mt);
+        if (v == kFloatMissing) {
+          v = NAN;
+        }
+
+        MatrixPos xy(x, y);
+        m_->set_value(xy, v);
+      }
+    }
+#endif
+  } else if (lt == NA_Level::PRESSURE_LEVEL) {
+#ifdef USE_NEWBASE_PROJ
+
+    if (!native_area) {
+      //			NFmiGrid wantedGrid(areaPtr.get(),
+      // m_->getSize().getXS(),
+      // m_->getSize().getYS());
+      nm = fi.PressureValues(wantedGrid, mt, lv, relative_uv);
+    } else
+      nm = fi.PressureValues(mt, lv);
+
+#else
+
+    if (!(fi.PressureValueAvailable() // Data has pressure parameter (useful
+                                      // for pressure level calculation)
+          ||
+          fi.PressureLevelDataAvailable() // Data has pressure levels as
+                                          // such (can be interpolated from)
+          )) {
+      throw E_LOG_BUG0("Data does not support .PressureLevelValue()");
+    }
+
+    // No need to route data via 'NFmiDataMatrix'. This also solves the
+    // crashing issue with '::PressureValues()'.
+    //
+#if (!defined(NDEBUG)) || (!defined(SQD_AND_Q3_INDEXING_ARE_THE_SAME))
+    unsigned xs = fi.GridXNumber();
+#endif
+    unsigned n;
+
+    // This seems to matter only if we're right on time (see comments below)
+    //
+    if (exact_time) {
+      fi.Time(mt);
+    }
+
+    for (fi.ResetLocation(); fi.NextLocation();) {
+      n = fi.LocationIndex();
+
+      // It seems '.PressureLevelValue()' does not work with interpolated
+      // times. It gives us NAN whenever 'mt' is not an exact time in the
+      // data.
+
+      // Note: Seems the 'fi.Time()' setting above does not cause time
+      // interpolation for
+      // '::PressureLevelValue()'.
+      //      There's another API that takes a time argument.
+      //
+      float v = exact_time ? fi.PressureLevelValue(lv)
+                           : fi.PressureLevelValue(lv, mt);
+
+      if (v == kFloatMissing) {
+        v = NAN;
+      }
+
+#ifdef SQD_AND_Q3_INDEXING_ARE_THE_SAME
+      (*m_)[n] = v;
+#else
+      MatrixPos xy(n % xs, n / xs);
+      m_->set_value(xy, v);
+#endif
+
+      // There's a bug in Newbase '::PressureLevelValue()'. If it does not
+      // find the right pressure level, it changes the current parameter to
+      // P (pressure). If we got NAN, we must reset the param to what we
+      // wanted. (No way for us to know if the NAN was because of the "give
+      // up" condition or because of genuinly missing data only on that
+      // particular position).  --AKa 21-Dec-2010
+      //
+#ifdef PRESSURELEVELVALUE_HAS_SIDE_EFFECTS
+      if (isnanf(v)) {
+        fi.Param(e);
+      }
+#endif
+    }
+
+#ifndef NDEBUG
+    unsigned ys = fi.GridYNumber();
+    assert(n == xs * ys - 1);
+#endif
+
+#endif // ifdef USE_NEWBASE_PROJ
+  } else if (lt == NA_Level::HEIGHT_LEVEL) {
+    // 23-Nov-2012 PKi: Height value query support
+    //
+
+    if (!native_area) {
+      //			NFmiGrid wantedGrid(areaPtr.get(),
+      // m_->getSize().getXS(),
+      // m_->getSize().getYS());
+      nm = fi.HeightValues(wantedGrid, mt, lv, relative_uv);
+    } else
+      nm = fi.HeightValues(mt, lv);
+  } else {
+    throw E_LOG_BUG("Unexpected level type: %d", (int)lev.getType());
+  }
+}
+}  // namespace
+
+/*
+ * Direct connection to data - no interpolations needed (writable in command
+ * line mode)
+ */
+CONST_IF_SERVER
+Matrix *SQD_Data::push_direct_matrix(lua_State *L, const JDay &vt,
+                                     const NA_Level &lev, FmiParameterName e,
+                                     bool *target_ready) CONST_IF_SERVER {
+  try {
+    // Push a read-only proxy (for read matrices, caller does a copy most
+    // likely anyways, to a MemMatrix if scaling and/or projection is
+    // applied).
+    //
+    SQD_Matrix *m = L ? new (L) SQD_Matrix(this, vt, lev, e)
+                      : ::new SQD_Matrix(this, vt, lev, e);
+
+#ifdef USE_NEWBASE_PROJ
+    // 22-Aug-2011 PKi: No further processing (interpolation, projection or
+    // scaling) to be done
+
+    if (target_ready)
+      *target_ready = true;
+#endif
+
+    // Attach grid; needed by PEEKXY
+    //
+    std::shared_ptr<NFmiGrid> wantedGrid(new NFmiGrid(
+        qd->Info()->Area(), m->getSize().getXS(), m->getSize().getYS()));
+    m->setGrid(wantedGrid);
+
+    return m;
+  } catch (const E_NO_MATCH &) {
+    if (L) {
+      // Didn't get created (but Lua did allocate the object AND attach its
+      // GC to the C++ destructor. Nuke the object before it gets to GC.
+      //
+      LuaNew_base::nuke(
+          L, -1); // removes the link from Lua GC to C++ destructor
+    }
+    return nullptr; // no such param
+  }
+}
+
 /*
  * TBD:  Current handling is inefficient. Scripts regularily ask for say 50,60
  * grid of interpolated values. We should calculate such right on, without
@@ -1455,11 +1754,7 @@ SQD_Data::push_NativeMatrix_e(lua_State *L, const JDay &vt, const NA_Level &lev,
 
     bool exact_time = find_it<JDay>(times_, vt) != times_.end();
 
-    NA_Level::Type lt = lev.getType();
-    bool exact_level =
-        ((lt != NA_Level::HEIGHT_LEVEL) &&
-         ((!lev) || lev.isGroundLevel() || lev.isSoundingLevel() ||
-          (find_it<NA_Level>(levels_, lev) != levels_.end())));
+    bool exact_level = is_exact_level(lev, levels_);
 
     if (target_gs && (*target_gs == MatrixPos::ZERO))
       target_gs = nullptr;
@@ -1470,16 +1765,7 @@ SQD_Data::push_NativeMatrix_e(lua_State *L, const JDay &vt, const NA_Level &lev,
     // 16-Apr-2015 PKi: Store origintime of the first used querydata as a lua
     // global; it will be returned in response headers
     //
-    lua_getglobal(L, "first_origintime");
-    string_or_null fstot = lua_tostring(L, -1);
-    lua_pop(L, 1);
-
-    if ((!fstot.c_str()) || (fstot.empty())) {
-      NFmiString otstr(qd->Info()->OriginTime().ToStr(kYYYYMMDDHH));
-
-      lua_pushstring(L, otstr.CharPtr());
-      lua_setglobal(L, "first_origintime");
-    }
+    store_first_origintime(L, qd->Info()->OriginTime());
 
     bool relative_uv = getExtra_sqd_RelativeUV();
 
@@ -1489,39 +1775,7 @@ SQD_Data::push_NativeMatrix_e(lua_State *L, const JDay &vt, const NA_Level &lev,
     //
     if (exact_time && exact_level && same_proj && same_gs &&
         ((!pointData) || (!dataIds))) {
-      try {
-        // Push a read-only proxy (for read matrices, caller does a copy most
-        // likely anyways, to a MemMatrix if scaling and/or projection is
-        // applied).
-        //
-        SQD_Matrix *m = L ? new (L) SQD_Matrix(this, vt, lev, e)
-                          : ::new SQD_Matrix(this, vt, lev, e);
-
-#ifdef USE_NEWBASE_PROJ
-        // 22-Aug-2011 PKi: No further processing (interpolation, projection or
-        // scaling) to be done
-
-        if (target_ready)
-          *target_ready = true;
-#endif
-
-        // Attach grid; needed by PEEKXY
-        //
-        std::shared_ptr<NFmiGrid> wantedGrid(new NFmiGrid(
-            qd->Info()->Area(), m->getSize().getXS(), m->getSize().getYS()));
-        m->setGrid(wantedGrid);
-
-        return m;
-      } catch (const E_NO_MATCH &) {
-        if (L) {
-          // Didn't get created (but Lua did allocate the object AND attach its
-          // GC to the C++ destructor. Nuke the object before it gets to GC.
-          //
-          LuaNew_base::nuke(
-              L, -1); // removes the link from Lua GC to C++ destructor
-        }
-        return nullptr; // no such param
-      }
+      return push_direct_matrix(L, vt, lev, e, target_ready);
     }
 
     //---
@@ -1546,24 +1800,7 @@ SQD_Data::push_NativeMatrix_e(lua_State *L, const JDay &vt, const NA_Level &lev,
 
     NFmiMetTime mt = SQD_Tools::jd2mt(vt);
 
-    if (exact_time) {
-      bool tmp = fi.Time(mt);
-      L_ASSERT(tmp);
-    } else {
-      // Interpolate time (should be within time range if got here)
-    }
-
-    if (exact_level) {
-      if ((!lev) || lev.isGroundLevel() || lev.isSoundingLevel()) {
-        fi.FirstLevel();
-      } else {
-        fi.Level(SQD_Tools::newbase_level(lev));
-      }
-    } else {
-      // Interpolate level (should be within level range if got here)
-    }
-
-    double lv = lev.getValue();
+    set_exact_time_and_level(L, fi, mt, lev, exact_time, exact_level);
 
     NA_Param::Unit unit = SQD_Tools::unit_by_id(e);
 
@@ -1576,40 +1813,12 @@ SQD_Data::push_NativeMatrix_e(lua_State *L, const JDay &vt, const NA_Level &lev,
     bool retMissing = pointData && (!(exact_time && exact_level));
 
     const Projection &m_proj = target_proj ? *target_proj : native_proj;
-    MemMatrix *m_ = nullptr;
-    if (retMissing) {
-      m_ = L ? new (L) MemMatrix(native_gs, NAN, lev, e, unit, m_proj)
-             : ::new MemMatrix(native_gs, NAN, lev, e, unit, m_proj);
-    } else {
-      const MatrixPos &m_gs = (!pointData) && target_gs ? *target_gs : native_gs;
-      m_ = L ? new (L) MemMatrix(m_gs, lev, e, unit, m_proj)
-             : ::new MemMatrix(m_gs, lev, e, unit, m_proj);
-    }
+    MemMatrix *m_ = new_result_matrix(L, retMissing, pointData, native_gs,
+                                      target_gs, lev, e, unit, m_proj);
 
     NFmiDataMatrix<float> nm;
-    const Projection *pr = nullptr;
-    NFmiArea *area = nullptr;
-
-    if (!(same_proj && same_gs)) {
-      // Nonnative target projection and/or gridsize; if native projection,
-      // clone grid's area.
-      //
-      // Set pr to projection to be used if area is created using
-      // NFmiAreaFactory (when nonnative projection or getting/cloning area
-      // should fail)
-
-      pr = same_proj ? &native_proj : target_proj;
-
-      if (same_proj) {
-        const NFmiGrid *grid = fi.Grid();
-        if ((area = (grid ? grid->Area() : nullptr)))
-          area = area->Clone();
-      }
-    }
-
-    auto areaPtr = ((!(same_proj && same_gs)) && (!area))
-                       ? NFmiAreaFactory::Create(pr->toString())
-                       : (NFmiAreaFactory::return_type)area;
+    auto areaPtr =
+        target_area(fi, same_proj, same_gs, native_proj, target_proj);
 
     if (pointData) {
       // 07-Apr-2015 PKi: Return point data within the given area
@@ -1628,140 +1837,9 @@ SQD_Data::push_NativeMatrix_e(lua_State *L, const JDay &vt, const NA_Level &lev,
 
       // Interpolate by time and/or level alone
       //
-      if (exact_level) {
-        // We know the time needs to be interpolated (and *is* interpolatable)
-
-#if 1
-        /* The 'NFmiDataMatrix' use causes unnecessary copying of values.
-         */
-        // NFmiDataMatrix<float> nm;
-
-        if (!(same_proj && same_gs)) {
-          //			NFmiGrid wantedGrid(areaPtr.get(),
-          // m_->getSize().getXS(),
-          // m_->getSize().getYS());
-          nm = fi.GridValues(*(wantedGrid.get()), mt, relative_uv);
-        } else
-          nm = fi.Values(mt);
-
-          // LOG_DEBUG( "NMatrix size: %d", (int)(nm.NX() * nm.NY()) );
-          // LOG_DEBUG( "Grid size: %d", (int)native_gs.getN() );
-
-          // matrix_fill( *m_, nm );
-#else
-        /* This did not give right results
-         */
-        unsigned xs = fi.GridXNumber();
-        unsigned ys = fi.GridYNumber();
-
-        for (unsigned y = 0; y < ys; ++y) {
-          for (unsigned x = 0; x < xs; ++x) {
-            float v = fi.PeekLocationValue(x, y, mt);
-            if (v == kFloatMissing) {
-              v = NAN;
-            }
-
-            MatrixPos xy(x, y);
-            m_->set_value(xy, v);
-          }
-        }
-#endif
-      } else if (lt == NA_Level::PRESSURE_LEVEL) {
-#ifdef USE_NEWBASE_PROJ
-
-        if (!(same_proj && same_gs)) {
-          //			NFmiGrid wantedGrid(areaPtr.get(),
-          // m_->getSize().getXS(),
-          // m_->getSize().getYS());
-          nm = fi.PressureValues(*(wantedGrid.get()), mt, lv, relative_uv);
-        } else
-          nm = fi.PressureValues(mt, lv);
-
-#else
-
-        if (!(fi.PressureValueAvailable() // Data has pressure parameter (useful
-                                          // for pressure level calculation)
-              ||
-              fi.PressureLevelDataAvailable() // Data has pressure levels as
-                                              // such (can be interpolated from)
-              )) {
-          throw E_LOG_BUG0("Data does not support .PressureLevelValue()");
-        }
-
-        // No need to route data via 'NFmiDataMatrix'. This also solves the
-        // crashing issue with '::PressureValues()'.
-        //
-#if (!defined(NDEBUG)) || (!defined(SQD_AND_Q3_INDEXING_ARE_THE_SAME))
-        unsigned xs = fi.GridXNumber();
-#endif
-        unsigned n;
-
-        // This seems to matter only if we're right on time (see comments below)
-        //
-        if (exact_time) {
-          fi.Time(mt);
-        }
-
-        for (fi.ResetLocation(); fi.NextLocation();) {
-          n = fi.LocationIndex();
-
-          // It seems '.PressureLevelValue()' does not work with interpolated
-          // times. It gives us NAN whenever 'mt' is not an exact time in the
-          // data.
-
-          // Note: Seems the 'fi.Time()' setting above does not cause time
-          // interpolation for
-          // '::PressureLevelValue()'.
-          //      There's another API that takes a time argument.
-          //
-          float v = exact_time ? fi.PressureLevelValue(lv)
-                               : fi.PressureLevelValue(lv, mt);
-
-          if (v == kFloatMissing) {
-            v = NAN;
-          }
-
-#ifdef SQD_AND_Q3_INDEXING_ARE_THE_SAME
-          (*m_)[n] = v;
-#else
-          MatrixPos xy(n % xs, n / xs);
-          m_->set_value(xy, v);
-#endif
-
-          // There's a bug in Newbase '::PressureLevelValue()'. If it does not
-          // find the right pressure level, it changes the current parameter to
-          // P (pressure). If we got NAN, we must reset the param to what we
-          // wanted. (No way for us to know if the NAN was because of the "give
-          // up" condition or because of genuinly missing data only on that
-          // particular position).  --AKa 21-Dec-2010
-          //
-#ifdef PRESSURELEVELVALUE_HAS_SIDE_EFFECTS
-          if (isnanf(v)) {
-            fi.Param(e);
-          }
-#endif
-        }
-
-#ifndef NDEBUG
-        unsigned ys = fi.GridYNumber();
-        assert(n == xs * ys - 1);
-#endif
-
-#endif // ifdef USE_NEWBASE_PROJ
-      } else if (lt == NA_Level::HEIGHT_LEVEL) {
-        // 23-Nov-2012 PKi: Height value query support
-        //
-
-        if (!(same_proj && same_gs)) {
-          //			NFmiGrid wantedGrid(areaPtr.get(),
-          // m_->getSize().getXS(),
-          // m_->getSize().getYS());
-          nm = fi.HeightValues(*(wantedGrid.get()), mt, lv, relative_uv);
-        } else
-          nm = fi.HeightValues(mt, lv);
-      } else {
-        throw E_LOG_BUG("Unexpected level type: %d", (int)lev.getType());
-      }
+      interpolate_grid_values(fi, mt, lev, e, exact_time, exact_level,
+                              same_proj && same_gs, *wantedGrid, relative_uv,
+                              nm, m_);
     }
 
 #if 1
