@@ -426,87 +426,102 @@ int Contour::contour_smoothen_one(lua_State *L) {
 
   bool q3smoothening = ((lua_gettop(L) < 3) || lua_toboolean(L, 3));
 
-  if (q3smoothening) {
-    // Smoothening itself
-    //
-    factor = std::min(factor, 1.0);
-
-    unsigned n = c2.points.size();
-    int half_window = (window_size - 1) / 2; // 1/2/3
-    unsigned i = 0;
-
-    for (auto it = c2.points.begin(); it != c2.points.end(); ++it, ++i) {
-
-      // If 'half_window-1' points left and round of '*it' are not edge points,
-      // smoothen. If there are edge points, try with a shortened range.
-      //
-      for (int hf = half_window; hf >= 1; hf--) {
-        Vectors::Point avg;
-        bool try_smaller_window = false;
-        for (int j = -hf; j <= hf; j++) {
-          const EdgePoint &p = old.points[(i + j + n) % n];
-
-          // First or last point are allowed to be at edge but not others (there
-          // must be no edge sections within our window, or we won't do the
-          // adjust).
-          //
-          if (p.edge && (abs(j) < half_window)) {
-            try_smaller_window = true;
-            break; // do not move this point
-          }             avg += Vectors::Point(p.x, p.y);
-         
-        }
-
-        if (!try_smaller_window) {
-          Vectors::Point p(it->x, it->y);
-          p +=
-              Vectors::Vector(p, avg / (hf * 2 + 1)) * factor; // move the point
-          *it = EdgePoint(p.x, p.y, false);                    // smoothened
-          break;
-        }
-      }
-    }
-
-    // Provide strecthing to compensate for area loss due to smoothening.
-    //
-    // Note: For areas touching an edge (having "edge" sections) the correction
-    //      is possibly little less than what would have been best (our code
-    //      expects an even expansion, but the edge points won't be expanded)
-    //
-    double area_was = old.area();
-    double area_now = c2.area();
-
-    double factor_1d =
-        sqrt(area_was) / sqrt(area_now); // How much to expand (>1.0) to make
-                                         // areas (almost) like they were
-
-    if (factor_1d > AREA_EXPANSION_LIMIT) {
-      c2.stretch_out(factor_1d);
-    }
-
-    // Confirm compensation is good (it is, gives around 100% original area)
-#if 0
-		double area_compensated= c2.area();
-		LOG_DEBUG( "Area compensation: %.3f -> %.3f (%.1f%%) -> %.3f (%.1f%%)", area_was, area_now, (area_now/area_was)*100.0, area_compensated, (area_compensated/area_was)*100.0 );
-#endif
-  } else {
-    SmoothPath sp;
-
-    for (auto &point : c2.points)
-      sp.add_point(Vectors::Point(point.x, point.y), point.edge);
-
-    sp.done(factor, true);
-
-    auto spit = sp.begin();
-
-    for (auto it = c2.points.begin();
-         ((it != c2.points.end()) && (spit != sp.end())); it++, spit++)
-      *it = EdgePoint(spit->x, spit->y, it->edge);
-  }
+  if (q3smoothening)
+    c2.q3_smoothen(old, factor, window_size);
+  else
+    c2.q2_smoothen(factor);
 
   assert(c2.points.size() == old.points.size());
 
   return 1; // 'c2' pushed
+}
+
+/*
+ * q3 smoothening of a copy of contour 'old' in-place (see
+ * 'contour_smoothen_one()')
+ */
+void Contour::q3_smoothen(const Contour &old, double factor,
+                          unsigned window_size) {
+  // Smoothening itself
+  //
+  factor = std::min(factor, 1.0);
+
+  unsigned n = points.size();
+  int half_window = (window_size - 1) / 2; // 1/2/3
+  unsigned i = 0;
+
+  for (auto it = points.begin(); it != points.end(); ++it, ++i) {
+
+    // If 'half_window-1' points left and round of '*it' are not edge points,
+    // smoothen. If there are edge points, try with a shortened range.
+    //
+    for (int hf = half_window; hf >= 1; hf--) {
+      Vectors::Point avg;
+      bool try_smaller_window = false;
+      for (int j = -hf; j <= hf; j++) {
+        const EdgePoint &p = old.points[(i + j + n) % n];
+
+        // First or last point are allowed to be at edge but not others (there
+        // must be no edge sections within our window, or we won't do the
+        // adjust).
+        //
+        if (p.edge && (abs(j) < half_window)) {
+          try_smaller_window = true;
+          break; // do not move this point
+        }
+        avg += Vectors::Point(p.x, p.y);
+      }
+
+      if (!try_smaller_window) {
+        Vectors::Point p(it->x, it->y);
+        p +=
+            Vectors::Vector(p, avg / (hf * 2 + 1)) * factor; // move the point
+        *it = EdgePoint(p.x, p.y, false);                    // smoothened
+        break;
+      }
+    }
+  }
+
+  // Provide strecthing to compensate for area loss due to smoothening.
+  //
+  // Note: For areas touching an edge (having "edge" sections) the correction
+  //      is possibly little less than what would have been best (our code
+  //      expects an even expansion, but the edge points won't be expanded)
+  //
+  double area_was = old.area();
+  double area_now = area();
+
+  double factor_1d =
+      sqrt(area_was) / sqrt(area_now); // How much to expand (>1.0) to make
+                                       // areas (almost) like they were
+
+  if (factor_1d > AREA_EXPANSION_LIMIT) {
+    stretch_out(factor_1d);
+  }
+
+  // Confirm compensation is good (it is, gives around 100% original area)
+#if 0
+		double area_compensated= area();
+		LOG_DEBUG( "Area compensation: %.3f -> %.3f (%.1f%%) -> %.3f (%.1f%%)", area_was, area_now, (area_now/area_was)*100.0, area_compensated, (area_compensated/area_was)*100.0 );
+#endif
+}
+
+/*
+ * q2 smoothening in-place using 'SmoothPath'
+ */
+void Contour::q2_smoothen(double factor) {
+  SmoothPath sp;
+
+  for (auto &point : points)
+    sp.add_point(Vectors::Point(point.x, point.y), point.edge);
+
+  sp.done(factor, true);
+
+  auto spit = sp.begin();
+
+  for (auto it = points.begin();
+       ((it != points.end()) && (spit != sp.end())); it++, spit++)
+    *it = EdgePoint(spit->x, spit->y, it->edge);
 }
 
 /*
@@ -1034,6 +1049,402 @@ struct LineStore {
       : sp(std::move(sp_)), curves(curves_) {}
 };
 
+namespace
+{
+const int cr_idx = 1;
+const int gs_idx = 2;
+const int lcfg_idx = 3;
+const int cdef_idx = 4;
+const int cval_idx = 5;
+const int contour_idx = 6;
+
+using cdefmap = map<unsigned int, string>;
+
+/*
+ * Get the Cairo context and grid size arguments of 'drawcontours()'
+ */
+cairo_t *get_drawcontours_target(lua_State *L, MatrixPos *&gs) {
+  cairo_t *cr = nullptr;
+
+  if ((lua_gettop(L) == contour_idx) &&
+      (lua_type(L, lcfg_idx) == LUA_TTABLE) &&
+      (lua_type(L, cdef_idx) == LUA_TTABLE) &&
+      (lua_type(L, cval_idx) == LUA_TTABLE) &&
+      (lua_type(L, contour_idx) == LUA_TTABLE)) {
+    Context *cx = Context::instance(L, cr_idx);
+
+    // 09-Feb-2012 PKi: Context::instance() fails if not statically linked
+    // with newcairo;
+    //                  just casting ...
+    if (!cx) {
+      void *ud = lua_touserdata(L, cr_idx);
+      cx = ((Context *)(ud ? ud : nullptr));
+    }
+
+    cr = (cx ? ((cairo_t *)*cx) : nullptr);
+
+    gs = MatrixPos::instance(L, gs_idx);
+  } else
+    luaL_error(L, "Invalid args; usage: drawcontours( cr, gridsize_ud, { "
+                  "contourdefs }, { contourvalues }, { contour_ud } )");
+
+  if ((!cr) || (!gs))
+    luaL_error(L,
+               "Invalid %s; usage: drawcontours( cr, gridsize_ud, { "
+               "contourdefs }, { contourvalues }, { contour_ud } )",
+               cr ? "gridsize" : "cairocontext");
+
+  return cr;
+}
+
+/*
+ * Get contour descriptor strings
+ */
+cdefmap read_contour_defs(lua_State *L) {
+  using cdefpair = pair<unsigned int, string>;
+  cdefmap contourdefs;
+
+  unsigned int idx = 0;
+  string s;
+
+  L_GROW(3);
+  lua_pushnil(L); // first key
+  while (lua_next(L, cdef_idx)) {
+    // [-2]: key
+    // [-1]: value
+
+    if (!lua_isnumber(L, -2))
+      luaL_error(L,
+                 "arg %d: numeric contour descriptor index expected, got %s",
+                 cdef_idx, lua_typename(L, lua_type(L, -2)));
+
+    idx = (unsigned int)lua_tonumber(L, -2);
+
+    if (lua_isnil(L, -1) || (!lua_isstring(L, -1)))
+      luaL_error(L, "arg %d: contour descriptor expected, got %s", cdef_idx,
+                 lua_typename(L, lua_type(L, -1)));
+
+    s = lua_tostring(L, -1);
+
+    contourdefs.insert(cdefpair(idx, s));
+
+    lua_pop(L, 1); // remove value, keep key (for 'lua_next()')
+  }
+
+  return contourdefs;
+}
+
+/*
+ * Get contour values (labels). 'nv' is set to the number of labels.
+ */
+vector<float> read_label_values(lua_State *L, unsigned int &nv) {
+  vector<float> labelval;
+  float v = NAN;
+  nv = 0;
+
+  L_GROW(3);
+  lua_pushnil(L); // first key
+  while (lua_next(L, cval_idx)) {
+    // [-2]: key (1..len)
+    // [-1]: value
+
+    if (!lua_isnumber(L, -1))
+      luaL_error(L, "arg %d: contour value expected, got %s", cval_idx,
+                 lua_typename(L, lua_type(L, -1)));
+    else {
+      v = lua_tonumber(L, -1);
+
+      // 11-Jan-2012 PKi: Value is nan if no label (label color is 'none')
+      //
+      if (!isnan(v))
+        nv++;
+    }
+
+    labelval.push_back(v);
+
+    lua_pop(L, 1); // remove value, keep key (for 'lua_next()')
+  }
+
+  return labelval;
+}
+
+/*
+ * Format a label value with 'decimals' (limited to 0..6) decimals
+ */
+string format_label(float v, int decimals) {
+  ostringstream oss;
+  oss.precision(1);
+  oss << fixed
+      << boost::format(string("%.") +
+                       boost::lexical_cast<string>(min(max(decimals, 0), 6)) +
+                       "f") %
+             v;
+  return oss.str();
+}
+
+/*
+ * Get the label of contour 'nc' ('labelizethis' is cleared for a nan value).
+ * Returns false if there is no label value for the contour.
+ */
+bool get_contour_label(unsigned int nc, const vector<float> &labelval,
+                       int decimals, bool &labelizethis, string &label) {
+  if (nc > labelval.size())
+    return false; // No label; should not happen
+
+  float v = labelval[nc - 1];
+
+  // 11-Jan-2012 PKi: If nan just do not labelize; go on to handle the
+  // contour
+  //
+  //					if (isnan(v))
+  //					{
+  //						lua_pop(L,1);   // remove value, keep
+  //key (for 'lua_next()')
+  //continue;
+  //					}
+  if ((labelizethis = (!isnan(v))))
+    label = format_label(v, decimals);
+  else
+    label.clear();
+
+  return true;
+}
+
+/*
+ * Find the contour descriptor having largest key <= contour's index 'nc'
+ */
+cdefmap::iterator find_contour_def(cdefmap &contourdefs, unsigned int nc,
+                                   unsigned int &pnc, cdefmap::iterator pit,
+                                   bool have_cc) {
+  // If contour index >= max. contour descriptor index, use the last
+  // descriptor without searching
+
+  auto cit = contourdefs.end();
+  cit--;
+
+  if (nc < cit->first) {
+    // If contour index >= previous index, start searching from prev.
+    // iterator
+
+    pnc++;
+
+    for (auto it = (have_cc && (nc >= pnc)) ? pit : contourdefs.begin();
+         it != contourdefs.end(); it++)
+      if (it->first > nc)
+        break;
+      else
+        cit = it;
+  }
+
+  pnc = nc;
+
+  return cit;
+}
+
+/*
+ * Add the points of contour 'c' to the labelizer
+ */
+void labelize_contour(const Contour &c, const Labelizer::FontSpec &fs,
+                      Labelizer &lzer) {
+  bool fst = true;
+
+  for (const auto &point : c.getPoints()) {
+    Vectors::Point p(point.x, point.y);
+
+    if (fst) {
+      lzer.add_point(p, fs);
+      fst = false;
+    } else
+      lzer.add_point(p);
+  }
+
+  lzer.close();
+}
+
+/*
+ * Store the line contours of the table at [-1] with their stroke attributes
+ * for drawing and (if labeling) add the contour paths and labels to
+ * Labelizer. 'c' is set to the last contour.
+ */
+void add_line_contours(lua_State *L, cairo_t *cr, const ContourInfo_Line &ci,
+                       const string &label, bool labelizethis,
+                       Labelizer &lzer, vector<LineStore> &line_store,
+                       bool &clip_labels, Contour *&c) {
+  // Default font size is height/30 for historical reasons
+  //
+  double font_size = ci.label.font_size_;
+
+  if (font_size <= 0.0) {
+    cairo_surface_t *cs = cairo_get_target(cr);
+    font_size = (cs ? (cairo_image_surface_get_height(cs) / 30.0) : 20.0);
+  }
+
+  Labelizer::FontSpec fs(label, label_size(cr, font_size, label), &ci.label);
+
+  L_GROW(3);
+  lua_pushnil(L); // first key
+  while (lua_next(L, -2)) {
+    c = Contour::instance(L, -1);
+
+    if (!c)
+      luaL_error(L, "arg %d: contour expected, got %s", contour_idx,
+                 lua_typename(L, lua_type(L, -1)));
+
+    if (labelizethis) {
+      labelize_contour(*c, fs, lzer);
+
+      if ((ci.label.box_fill_color & 0xff000000) == 0xff000000) {
+        // Full alpha: completely transparent (= "none")
+        //
+        clip_labels = true;
+      }
+    }
+
+    line_store.emplace_back(ci.stroke, c);
+
+    lua_pop(L, 1); // remove value, keep key (for 'lua_next()')
+  }
+}
+
+/*
+ * Set the fill pattern of a fill descriptor as the Cairo source
+ */
+void set_fill_source(cairo_t *cr, const ContourInfo_Fill &ci, bool &first) {
+  // 24-Jan-2014 PKi: Set pattern transformation matrix's scale
+  //
+  double ux = 1.0;
+  double uy = 1.0;
+  cairo_device_to_user_distance(cr, &ux, &uy);
+
+  cairo_matrix_t matrix;
+  cairo_pattern_get_matrix(ci.pattern, &matrix);
+  cairo_matrix_init_scale(&matrix, ci.patternSize() * (0.125 / ux),
+                          ci.patternSize() * (0.125 / uy));
+  cairo_pattern_set_matrix(ci.pattern, &matrix);
+
+  cairo_set_source(cr, ci.pattern);
+
+  if (first) {
+    cairo_set_fill_rule(cr, CAIRO_FILL_RULE_EVEN_ODD);
+    first = false;
+  }
+}
+
+/*
+ * Fill the contours of the table at [-1]; lo-hi range contours are filled
+ * in pairs. 'c' is set to the last contour.
+ */
+void fill_contours(lua_State *L, cairo_t *cr, const ContourInfo_Fill &ci,
+                   Contour *&c, Contour *&pc, bool &first, bool &fillOpen) {
+  if (!pc)
+    set_fill_source(cr, ci, first);
+
+  L_GROW(3);
+  lua_pushnil(L); // first key
+  while (lua_next(L, -2)) {
+    c = Contour::instance(L, -1);
+
+    if (!c)
+      luaL_error(L, "arg %d: contour expected, got %s", contour_idx,
+                 lua_typename(L, lua_type(L, -1)));
+
+    c->draw_path(cr, false);
+
+    lua_pop(L, 1); // remove value, keep key (for 'lua_next()')
+  }
+
+  if (fillOpen || c->range()) {
+    cairo_fill(cr);
+    fillOpen = false;
+  } else {
+    pc = c;
+    fillOpen = true;
+  }
+}
+
+/*
+ * Clip label boxes (don't allow drawing curves on them)
+ */
+void clip_label_boxes(cairo_t *cr,
+                      const vector<Labelizer::TiltedRect> &label_trs,
+                      const MatrixPos &gs) {
+  for (const auto &label_tr : label_trs) {
+    label_clip(cr, label_tr);
+  }
+
+  // Paths need to be inverted to clip out the label areas. Also filling
+  // the whole target area will do the same.
+  //
+  cairo_rectangle(cr, 0, 0, gs.getX(), gs.getY());
+
+  cairo_clip(cr); // clip them all at once
+}
+
+/*
+ * Prepare Cairo line type etc. (line width in device pixels)
+ */
+void set_stroke_params(cairo_t *cr,
+                       const ContourInfo_common::StrokeParams &sp) {
+  cairo_set_line_width(cr, pixel_to_data_dist(cr, sp.width));
+
+  ContourInfo_common::uint_ARGB col = sp.color;
+  cairo_set_source_rgba(cr, R(col), G(col), B(col), A(col));
+
+  // 'specs.stroke.dash' is a vector of unsigned; Cairo uses double
+  //
+  unsigned dash_n = sp.dash.size();
+
+  if (dash_n) {
+    auto *arr = new double[dash_n];
+    {
+      for (unsigned i = 0; i < dash_n; i++) {
+        unsigned a = sp.dash[i];
+        //
+        // 0: one pixel pause
+        // >=1: that many pixels on/off
+
+        arr[i] = a == 0 ? 1 : a;
+      }
+      cairo_set_dash(cr, arr, dash_n, 0.0);
+    }
+    delete[] arr;
+  } else if (cairo_get_dash_count(cr) > 0) {
+    // 02-Jan-2012 PKi: No dash, disable dashing
+    //
+
+    cairo_set_dash(cr, nullptr, 0, 0.0);
+  }
+}
+
+/*
+ * Draw the stored lines
+ */
+void draw_lines(cairo_t *cr, const vector<LineStore> &line_store) {
+  const ContourInfo_common::StrokeParams *sp_last = nullptr;
+
+  for (const auto &it : line_store) {
+    const ContourInfo_common::StrokeParams &sp = it.sp;
+    const Contour *curves = it.curves;
+
+    if ((!sp_last) || (*sp_last != sp)) {
+      if (sp_last) {
+        cairo_stroke(cr); // Output earlier lines
+      }
+
+      set_stroke_params(cr, sp);
+
+      sp_last = &it.sp;
+    }
+
+    // Add latest curve to Cairo path (not drawing, yet)
+    //
+
+    curves->draw_path(cr);
+  }
+  cairo_stroke(cr); // Output last curve type
+}
+}  // namespace
+
 /* 21-Nov-2011 PKi: Draw, fill and labelize contours
  *
  * drawcontours( cairocontext, gridsize_ud, { labelcfg }, { contourdefs }, {
@@ -1044,108 +1455,20 @@ int Contour::drawcontours(lua_State *L) {
     proto(L, "CairoContext, MatrixPos, { } , { string }, { [ number ] }, { { "
              "Contour } }");
 
-    cairo_t *cr = nullptr;
     MatrixPos *gs = nullptr;
-
-    const int cr_idx = 1;
-    const int gs_idx = 2;
-    const int lcfg_idx = 3;
-    const int cdef_idx = 4;
-    const int cval_idx = 5;
-    const int contour_idx = 6;
-
-    if ((lua_gettop(L) == contour_idx) &&
-        (lua_type(L, lcfg_idx) == LUA_TTABLE) &&
-        (lua_type(L, cdef_idx) == LUA_TTABLE) &&
-        (lua_type(L, cval_idx) == LUA_TTABLE) &&
-        (lua_type(L, contour_idx) == LUA_TTABLE)) {
-      Context *cx = Context::instance(L, cr_idx);
-
-      // 09-Feb-2012 PKi: Context::instance() fails if not statically linked
-      // with newcairo;
-      //                  just casting ...
-      if (!cx) {
-        void *ud = lua_touserdata(L, cr_idx);
-        cx = ((Context *)(ud ? ud : nullptr));
-      }
-
-      cr = (cx ? ((cairo_t *)*cx) : nullptr);
-
-      gs = MatrixPos::instance(L, gs_idx);
-    } else
-      luaL_error(L, "Invalid args; usage: drawcontours( cr, gridsize_ud, { "
-                    "contourdefs }, { contourvalues }, { contour_ud } )");
-
-    if ((!cr) || (!gs))
-      luaL_error(L,
-                 "Invalid %s; usage: drawcontours( cr, gridsize_ud, { "
-                 "contourdefs }, { contourvalues }, { contour_ud } )",
-                 cr ? "gridsize" : "cairocontext");
+    cairo_t *cr = get_drawcontours_target(L, gs);
 
     // Get contour descriptor strings
     //
     using spcc = boost::shared_ptr<const ContourInfo_common>;
     vector<spcc> ccVec;
 
-    using cdefmap = map<unsigned int, string>;
-    using cdefpair = pair<unsigned int, string>;
-    cdefmap contourdefs;
-
-    unsigned int idx = 0;
-    string s;
-
-    L_GROW(3);
-    lua_pushnil(L); // first key
-    while (lua_next(L, cdef_idx)) {
-      // [-2]: key
-      // [-1]: value
-
-      if (!lua_isnumber(L, -2))
-        luaL_error(L,
-                   "arg %d: numeric contour descriptor index expected, got %s",
-                   cdef_idx, lua_typename(L, lua_type(L, -2)));
-
-      idx = (unsigned int)lua_tonumber(L, -2);
-
-      if (lua_isnil(L, -1) || (!lua_isstring(L, -1)))
-        luaL_error(L, "arg %d: contour descriptor expected, got %s", cdef_idx,
-                   lua_typename(L, lua_type(L, -1)));
-
-      s = lua_tostring(L, -1);
-
-      contourdefs.insert(cdefpair(idx, s));
-
-      lua_pop(L, 1); // remove value, keep key (for 'lua_next()')
-    }
+    cdefmap contourdefs = read_contour_defs(L);
 
     // Get contour values (labels)
     //
-    vector<float> labelval;
-    float v = NAN;
     unsigned int nv = 0;
-
-    L_GROW(3);
-    lua_pushnil(L); // first key
-    while (lua_next(L, cval_idx)) {
-      // [-2]: key (1..len)
-      // [-1]: value
-
-      if (!lua_isnumber(L, -1))
-        luaL_error(L, "arg %d: contour value expected, got %s", cval_idx,
-                   lua_typename(L, lua_type(L, -1)));
-      else {
-        v = lua_tonumber(L, -1);
-
-        // 11-Jan-2012 PKi: Value is nan if no label (label color is 'none')
-        //
-        if (!isnan(v))
-          nv++;
-      }
-
-      labelval.push_back(v);
-
-      lua_pop(L, 1); // remove value, keep key (for 'lua_next()')
-    }
+    vector<float> labelval = read_label_values(L, nv);
 
     bool labelize = (nv > 0);
     bool clip_labels = false;
@@ -1175,8 +1498,6 @@ int Contour::drawcontours(lua_State *L) {
     bool fillOpen = false;
     bool labelizethis = labelize;
 
-    ostringstream oss;
-    oss.precision(1);
     string label;
 
     L_GROW(3);
@@ -1195,62 +1516,17 @@ int Contour::drawcontours(lua_State *L) {
         luaL_error(L, "arg %d: table of contours expected, got %s", contour_idx,
                    lua_typename(L, lua_type(L, -1)));
 
-      if (labelize) {
-        if (nc <= labelval.size()) {
-          v = labelval[nc - 1];
+      if (labelize &&
+          !get_contour_label(nc, labelval, lCfg.decimals, labelizethis, label)) {
+        // No label; should not happen
 
-          // 11-Jan-2012 PKi: If nan just do not labelize; go on to handle the
-          // contour
-          //
-          //					if (isnan(v))
-          //					{
-          //						lua_pop(L,1);   // remove value, keep
-          //key (for 'lua_next()')
-          //continue;
-          //					}
-          if ((labelizethis = (!isnan(v)))) {
-            oss.str("");
-            oss.clear();
-            oss << fixed
-                << boost::format(string("%.") +
-                                 boost::lexical_cast<string>(
-                                     min(max(lCfg.decimals, 0), 6)) +
-                                 "f") %
-                       v;
-            label = oss.str();
-          } else
-            label.clear();
-        } else {
-          // No label; should not happen
-
-          lua_pop(L, 1); // remove value, keep key (for 'lua_next()')
-          continue;
-        }
+        lua_pop(L, 1); // remove value, keep key (for 'lua_next()')
+        continue;
       }
 
       // Get contour's descriptor string (having largest key <= contour's index)
       //
-      // If contour index >= max. contour descriptor index, use the last
-      // descriptor without searching
-
-      auto cit = contourdefs.end();
-      cit--;
-
-      if (nc < cit->first) {
-        // If contour index >= previous index, start searching from prev.
-        // iterator
-
-        pnc++;
-
-        for (auto it = (cc && (nc >= pnc)) ? pit : contourdefs.begin();
-             it != contourdefs.end(); it++)
-          if (it->first > nc)
-            break;
-          else
-            cit = it;
-      }
-
-      pnc = nc;
+      auto cit = find_contour_def(contourdefs, nc, pnc, pit, cc != nullptr);
 
       if ((!cc) || (cit != pit)) {
         // First contour or contour set changes; create ContourInfo_common
@@ -1278,102 +1554,13 @@ int Contour::drawcontours(lua_State *L) {
         pc = nullptr; // To create new ContourInfo_Fill for next fill descriptor
       }
 
-      if (cc->line_type()) {
-        const auto &ci = static_cast<const ContourInfo_Line &>(*cc);
-
-        // Default font size is height/30 for historical reasons
-        //
-        double font_size = ci.label.font_size_;
-
-        if (font_size <= 0.0) {
-          cairo_surface_t *cs = cairo_get_target(cr);
-          font_size = (cs ? (cairo_image_surface_get_height(cs) / 30.0) : 20.0);
-        }
-
-        Labelizer::FontSpec fs(label, label_size(cr, font_size, label),
-                               &ci.label);
-
-        L_GROW(3);
-        lua_pushnil(L); // first key
-        while (lua_next(L, -2)) {
-          c = Contour::instance(L, -1);
-
-          if (!c)
-            luaL_error(L, "arg %d: contour expected, got %s", contour_idx,
-                       lua_typename(L, lua_type(L, -1)));
-
-          if (labelizethis) {
-            bool fst = true;
-
-            for (auto it = c->points.begin(); (it != c->points.end()); it++) {
-              Vectors::Point p(it->x, it->y);
-
-              if (fst) {
-                lzer.add_point(p, fs);
-                fst = false;
-              } else
-                lzer.add_point(p);
-            }
-
-            lzer.close();
-
-            if ((ci.label.box_fill_color & 0xff000000) == 0xff000000) {
-              // Full alpha: completely transparent (= "none")
-              //
-              clip_labels = true;
-            }
-          }
-
-          line_store.emplace_back(ci.stroke, c);
-
-          lua_pop(L, 1); // remove value, keep key (for 'lua_next()')
-        }
-      } else {
-        if (!pc) {
-          const auto &ci = static_cast<const ContourInfo_Fill &>(*cc);
-
-          // 24-Jan-2014 PKi: Set pattern transformation matrix's scale
-          //
-          double ux = 1.0;
-          double uy = 1.0;
-          cairo_device_to_user_distance(cr, &ux, &uy);
-
-          cairo_matrix_t matrix;
-          cairo_pattern_get_matrix(ci.pattern, &matrix);
-          cairo_matrix_init_scale(&matrix, ci.patternSize() * (0.125 / ux),
-                                  ci.patternSize() * (0.125 / uy));
-          cairo_pattern_set_matrix(ci.pattern, &matrix);
-
-          cairo_set_source(cr, ci.pattern);
-
-          if (first) {
-            cairo_set_fill_rule(cr, CAIRO_FILL_RULE_EVEN_ODD);
-            first = false;
-          }
-        }
-
-        L_GROW(3);
-        lua_pushnil(L); // first key
-        while (lua_next(L, -2)) {
-          c = Contour::instance(L, -1);
-
-          if (!c)
-            luaL_error(L, "arg %d: contour expected, got %s", contour_idx,
-                       lua_typename(L, lua_type(L, -1)));
-
-          c->draw_path(cr, false);
-
-          lua_pop(L, 1); // remove value, keep key (for 'lua_next()')
-        }
-
-        if (fillOpen || c->range()) {
-          cairo_fill(cr);
-          fillOpen = false;
-        } else {
-          pc = c;
-          fillOpen = true;
-        }
-      }
+      if (cc->line_type())
+        add_line_contours(L, cr, static_cast<const ContourInfo_Line &>(*cc),
+                          label, labelizethis, lzer, line_store, clip_labels,
+                          c);
+      else
+        fill_contours(L, cr, static_cast<const ContourInfo_Fill &>(*cc), c, pc,
+                      first, fillOpen);
 
       lua_pop(L, 1); // remove value, keep key (for 'lua_next()')
     }
@@ -1390,78 +1577,13 @@ int Contour::drawcontours(lua_State *L) {
       /*
        * Possible clipping before drawing lines
        */
-      if (clip_labels) {
-
-        // Clip label boxes (don't allow drawing curves on them)
-        //
-        for (auto &label_tr : label_trs) {
-          label_clip(cr, label_tr);
-        }
-
-        // Paths need to be inverted to clip out the label areas. Also filling
-        // the whole target area will do the same.
-        //
-        cairo_rectangle(cr, 0, 0, gs->getX(), gs->getY());
-
-        cairo_clip(cr); // clip them all at once
-      }
+      if (clip_labels)
+        clip_label_boxes(cr, label_trs, *gs);
     }
 
     // Draw lines
 
-    const ContourInfo_common::StrokeParams *sp_last = nullptr;
-
-    for (auto &it : line_store) {
-      const ContourInfo_common::StrokeParams &sp = it.sp;
-      const Contour *curves = it.curves;
-
-      if ((!sp_last) || (*sp_last != sp)) {
-        if (sp_last) {
-          cairo_stroke(cr); // Output earlier lines
-        }
-
-        /*
-         * Prepare Cairo line type etc. (line width in device pixels)
-         */
-        cairo_set_line_width(cr, pixel_to_data_dist(cr, sp.width));
-
-        ContourInfo_common::uint_ARGB col = sp.color;
-        cairo_set_source_rgba(cr, R(col), G(col), B(col), A(col));
-
-        // 'specs.stroke.dash' is a vector of unsigned; Cairo uses double
-        //
-        unsigned dash_n = sp.dash.size();
-
-        if (dash_n) {
-          auto *arr = new double[dash_n];
-          {
-            for (unsigned i = 0; i < dash_n; i++) {
-              unsigned a = sp.dash[i];
-              //
-              // 0: one pixel pause
-              // >=1: that many pixels on/off
-
-              arr[i] = a == 0 ? 1 : a;
-            }
-            cairo_set_dash(cr, arr, dash_n, 0.0);
-          }
-          delete[] arr;
-        } else if (cairo_get_dash_count(cr) > 0) {
-          // 02-Jan-2012 PKi: No dash, disable dashing
-          //
-
-          cairo_set_dash(cr, nullptr, 0, 0.0);
-        }
-
-        sp_last = &it.sp;
-      }
-
-      // Add latest curve to Cairo path (not drawing, yet)
-      //
-
-      curves->draw_path(cr);
-    }
-    cairo_stroke(cr); // Output last curve type
+    draw_lines(cr, line_store);
 
     // Draw the labels
     //

@@ -110,6 +110,7 @@ public:
   Contour() :  offset((unsigned)-1) { INVARIANT(); }
 
   void add_point(const EdgePoint &p) { points.push_back(p); }
+  const std::vector<EdgePoint> &getPoints() const { return points; }
 
   // size_t size() const { return points.size(); }
 
@@ -131,6 +132,8 @@ private:
 
   double area() const;
   void stretch_out(double factor);
+  void q3_smoothen(const Contour &old, double factor, unsigned window_size);
+  void q2_smoothen(double factor);
 
   // data members
   std::vector<EdgePoint> points;
