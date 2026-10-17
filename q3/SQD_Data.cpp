@@ -1267,6 +1267,107 @@ SQD_Data::push_NativeMatrix(lua_State *L, const JDay &vt, const NA_Level &lev,
 namespace
 {
 /*
+ * Store a pressure value to 'm' (if 'to_matrix') or to 'pressures'
+ */
+inline void store_pressure(float v, bool to_matrix, MemMatrix &m,
+                           MatrixPos::offset_t &n,
+                           std::vector<float> &pressures) {
+  if (to_matrix)
+    m[n++] = v;
+  else
+    pressures.push_back(v);
+}
+
+/*
+ * Read the pressures of all levels at the given data point id's
+ */
+void read_pressures_by_id(NFmiFastQueryInfo &info, const DataIdList &dataIds,
+                          bool to_matrix, MemMatrix &m, MatrixPos::offset_t &n,
+                          std::vector<float> &pressures) {
+  for (info.ResetLevel(); info.NextLevel();) {
+    for (auto it = dataIds.begin(); (it != dataIds.end()); it++) {
+      float v = kFloatMissing;
+
+      if (info.Location(*it))
+        v = info.FloatValue();
+
+      store_pressure(v, to_matrix, m, n, pressures);
+    }
+  }
+}
+
+/*
+ * Read the pressures of all levels at the data points within 'area'
+ */
+void read_pressures_in_area(NFmiFastQueryInfo &info,
+                            const NFmiAreaFactory::return_type &area,
+                            bool to_matrix, MemMatrix &m,
+                            MatrixPos::offset_t &n,
+                            std::vector<float> &pressures) {
+  for (info.ResetLevel(); info.NextLevel();) {
+    for (info.ResetLocation(); info.NextLocation();) {
+      if (area->IsInside(info.LatLon())) {
+        float v = info.FloatValue();
+
+        store_pressure(v, to_matrix, m, n, pressures);
+      }
+    }
+  }
+}
+
+/*
+ * Read the values of all levels at the given data point id's (NAN for
+ * missing values and, with sounding data, for missing pressures)
+ */
+void read_values_by_id(NFmiFastQueryInfo &info, const DataIdList &dataIds,
+                       bool retMissing, bool soundingData,
+                       std::vector<float>::iterator &itPressure, MemMatrix &m,
+                       MatrixPos::offset_t &n) {
+  for (info.ResetLevel(); info.NextLevel();) {
+    for (auto it = dataIds.begin(); (it != dataIds.end()); it++) {
+      float v = kFloatMissing;
+
+      if ((!retMissing) &&
+          ((!soundingData) || (*itPressure != kFloatMissing)) &&
+          info.Location(*it))
+        v = info.FloatValue();
+
+      m[n++] = ((v == kFloatMissing) ? NAN : v);
+
+      if ((!retMissing) && soundingData)
+        itPressure++;
+    }
+  }
+}
+
+/*
+ * Read the values of all levels at the data points within 'area' (NAN for
+ * missing values and, with sounding data, for missing pressures)
+ */
+void read_values_in_area(NFmiFastQueryInfo &info,
+                         const NFmiAreaFactory::return_type &area,
+                         bool retMissing, bool soundingData,
+                         std::vector<float>::iterator &itPressure,
+                         MemMatrix &m, MatrixPos::offset_t &n) {
+  for (info.ResetLevel(); info.NextLevel();) {
+    for (info.ResetLocation(); info.NextLocation();) {
+      if (area->IsInside(info.LatLon())) {
+        float v = kFloatMissing;
+
+        if ((!retMissing) &&
+            ((!soundingData) || (*itPressure != kFloatMissing)))
+          v = info.FloatValue();
+
+        m[n++] = ((v == kFloatMissing) ? NAN : v);
+
+        if ((!retMissing) && soundingData)
+          itPressure++;
+      }
+    }
+  }
+}
+
+/*
  * Get data for given data point id's or data points within given area. The data
  * is returned as [nPoints,1] matrix
  */
@@ -1289,34 +1390,12 @@ void pointValues(NFmiFastQueryInfo &info,
     if (!getSoundingPressureValues)
       info.Param(kFmiPressure);
 
-    if (dataIds) {
-      for (info.ResetLevel(); info.NextLevel();) {
-        for (auto it = dataIds->begin(); (it != dataIds->end()); it++) {
-          float v = kFloatMissing;
-
-          if (info.Location(*it))
-            v = info.FloatValue();
-
-          if (getSoundingPressureValues)
-            m[n++] = v;
-          else
-            pressures.push_back(v);
-        }
-      }
-    } else if (area) {
-      for (info.ResetLevel(); info.NextLevel();) {
-        for (info.ResetLocation(); info.NextLocation();) {
-          if (area->IsInside(info.LatLon())) {
-            float v = info.FloatValue();
-
-            if (getSoundingPressureValues)
-              m[n++] = v;
-            else
-              pressures.push_back(v);
-          }
-        }
-      }
-    }
+    if (dataIds)
+      read_pressures_by_id(info, *dataIds, getSoundingPressureValues, m, n,
+                           pressures);
+    else if (area)
+      read_pressures_in_area(info, area, getSoundingPressureValues, m, n,
+                             pressures);
 
     if (!getSoundingPressureValues)
       info.Param(queryParam);
@@ -1326,40 +1405,12 @@ void pointValues(NFmiFastQueryInfo &info,
     auto itPressure = pressures.begin();
     n = 0;
 
-    if (dataIds) {
-      for (info.ResetLevel(); info.NextLevel();) {
-        for (auto it = dataIds->begin(); (it != dataIds->end()); it++) {
-          float v = kFloatMissing;
-
-          if ((!retMissing) &&
-              ((!soundingData) || (*itPressure != kFloatMissing)) &&
-              info.Location(*it))
-            v = info.FloatValue();
-
-          m[n++] = ((v == kFloatMissing) ? NAN : v);
-
-          if ((!retMissing) && soundingData)
-            itPressure++;
-        }
-      }
-    } else if (area) {
-      for (info.ResetLevel(); info.NextLevel();) {
-        for (info.ResetLocation(); info.NextLocation();) {
-          if (area->IsInside(info.LatLon())) {
-            float v = kFloatMissing;
-
-            if ((!retMissing) &&
-                ((!soundingData) || (*itPressure != kFloatMissing)))
-              v = info.FloatValue();
-
-            m[n++] = ((v == kFloatMissing) ? NAN : v);
-
-            if ((!retMissing) && soundingData)
-              itPressure++;
-          }
-        }
-      }
-    }
+    if (dataIds)
+      read_values_by_id(info, *dataIds, retMissing, soundingData, itPressure,
+                        m, n);
+    else if (area)
+      read_values_in_area(info, area, retMissing, soundingData, itPressure, m,
+                          n);
   }
 
   if (n == 0)
