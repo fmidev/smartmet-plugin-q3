@@ -82,6 +82,67 @@ static vector<NA_Level> reverse_vector( const vector<NA_Level> &vec ) {
 namespace
 {
 /*
+ * Loop through the levels of the current time and location of 'fi' until
+ * there are two different 'id' values. Returns true with 'result' set (see
+ * 'TestRising()') if the orientation was found or the detection was given up.
+ * 'n' counts the values looked at.
+ */
+bool TestRisingLevels(NFmiFastQueryInfo &fi, FmiParameterName id, unsigned &n,
+                      int &result) {
+  float v[2];
+  unsigned found = 0;
+
+  for (fi.ResetLevel(); fi.NextLevel();) {
+    ++n;
+#if 1
+    assert(fi.IsLevelUsable());
+
+    const NFmiLevel *nlev = fi.Level();
+    FmiLevelType lt = nlev->LevelType();
+    long lv = (long)nlev->LevelValue();
+#endif
+    /* NOTE: Must be repeated, '.NextLevel()' may have changed the param
+     * setting.
+     */
+    fi.Param(id);
+
+    float a = fi.FloatValue();
+#if 1
+    if (n >= HEIGHT_POLLING_GIVING_UP_LIMIT) {
+      LOG_DEBUG("GIVING UP parameter orientation detection. Over %d "
+                "missing values for param %d.",
+                n, (int)id);
+      result = 0;
+      return true;
+    }
+#endif
+#if 0
+            if (n < 10) {
+                LOG_DEBUG( "%s %d:%d -> %f", time_str.c_str(), (int)lt,(int)lv, a );
+            }
+#else
+    (void)lt;
+    (void)lv;
+    (void)n;
+#endif
+    if (a != kFloatMissing) {
+      v[found++] = a;
+      if (found == 2) {
+        if (v[1] == v[0]) { // heights should not be the same; if they are,
+                            // continue looking
+          found--;
+        } else {
+          result = (v[1] > v[0]) ? +1 : -1;
+          return true;
+        }
+      }
+    }
+  }
+
+  return false;
+}
+
+/*
  * Returns:
  *   -1 if 'param' exists and its values are descending
  *   0 if 'param' does not exist (or it does but orientation does not matter)
@@ -116,8 +177,6 @@ int TestRising(NFmiFastQueryInfo &fi, FmiParameterName id,
     string_or_null time_str = vt.toString();
 #endif
     for (fi.ResetLocation(); fi.NextLocation();) {
-      float v[2];
-      unsigned found = 0;
 #if 1
       assert(fi.IsLocationUsable());
       /*
@@ -126,50 +185,9 @@ int TestRising(NFmiFastQueryInfo &fi, FmiParameterName id,
       double y= xy.Y();
       */
 #endif
-      for (fi.ResetLevel(); fi.NextLevel();) {
-        ++n;
-#if 1
-        assert(fi.IsLevelUsable());
-
-        const NFmiLevel *nlev = fi.Level();
-        FmiLevelType lt = nlev->LevelType();
-        long lv = (long)nlev->LevelValue();
-#endif
-        /* NOTE: Must be repeated, '.NextLevel()' may have changed the param
-         * setting.
-         */
-        fi.Param(id);
-
-        float a = fi.FloatValue();
-#if 1
-        if (n >= HEIGHT_POLLING_GIVING_UP_LIMIT) {
-          LOG_DEBUG("GIVING UP parameter orientation detection. Over %d "
-                    "missing values for param %d.",
-                    n, (int)id);
-          return 0;
-        }
-#endif
-#if 0
-                if (n < 10) {
-                    LOG_DEBUG( "%s %d:%d -> %f", time_str.c_str(), (int)lt,(int)lv, a );
-                }
-#else
-        (void)lt;
-        (void)lv;
-        (void)n;
-#endif
-        if (a != kFloatMissing) {
-          v[found++] = a;
-          if (found == 2) {
-            if (v[1] == v[0]) { // heights should not be the same; if they are,
-                                // continue looking
-              found--;
-            } else {
-              return (v[1] > v[0]) ? +1 : -1;
-            }
-          }
-        }
-      }
+      int result = 0;
+      if (TestRisingLevels(fi, id, n, result))
+        return result;
     }
   }
 
