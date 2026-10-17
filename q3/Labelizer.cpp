@@ -1216,6 +1216,21 @@ const Labelizer::Config &Labelizer::loadUserCfg(lua_State *L, int idx,
   return Labelizer::loadCfg(L, idx, lCfg, true);
 }
 
+namespace {
+/*
+ * The field 'fp' (pointing into 'Labelizer::lblCfg' at 'cpf') itself, or
+ * the corresponding field of the user configuration at 'cpu' if 'uConfig'
+ */
+template <typename T>
+T *config_field(T *fp, bool uConfig, char *cpu, char *cpf) {
+  if (uConfig)
+    // codechecker_false_positive [security.PointerSub] both pointers point into
+    // the same Labelizer::lblCfg object
+    return (T *)(cpu + ((char *)fp - cpf));
+  return fp;
+}
+} // namespace
+
 // 16-Dec-2011 PKi: Load Labelizer configuration from lua stack.
 //
 //                  uConfig is false when called for configuration loaded from
@@ -1249,25 +1264,11 @@ const Labelizer::Config &Labelizer::loadCfg(lua_State *L, int idx,
     if (!(cf->fld))
       luaL_error(L, "Labelizer config: unknown key %s", key);
     else if (lua_isnumber(L, -1) && (cf->vt == Labelizer::T_DOUBLE))
-      if (uConfig)
-        // codechecker_false_positive [security.PointerSub] both pointers point into the same
-        // Labelizer::lblCfg object
-        *(double *)(cpu + ((char *)cf->dp - cpf)) = lua_tonumber(L, -1);
-      else
-        *(cf->dp) = lua_tonumber(L, -1);
+      *config_field(cf->dp, uConfig, cpu, cpf) = lua_tonumber(L, -1);
     else if (lua_isboolean(L, -1) && (cf->vt == Labelizer::T_BOOL))
-      if (uConfig)
-        // codechecker_false_positive [security.PointerSub] both pointers point into the same
-        // Labelizer::lblCfg object
-        *(bool *)(cpu + ((char *)cf->bp - cpf)) =
-            (lua_toboolean(L, -1) != 0);
-      else
-        *(cf->bp) = (lua_toboolean(L, -1) != 0);
+      *config_field(cf->bp, uConfig, cpu, cpf) = (lua_toboolean(L, -1) != 0);
     else if (lua_isnumber(L, -1) && (cf->vt == Labelizer::T_INT))
-      if (uConfig)
-        *(int *)(cpu + ((char *)cf->ip - cpf)) = lua_tointeger(L, -1);
-      else
-        *(cf->ip) = lua_tointeger(L, -1);
+      *config_field(cf->ip, uConfig, cpu, cpf) = lua_tointeger(L, -1);
     else
       luaL_error(L, "Labelizer config: invalid value type %s for %s",
                  lua_typename(L, lua_type(L, -1)), key);
