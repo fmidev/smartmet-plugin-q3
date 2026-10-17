@@ -134,26 +134,64 @@ string StripDash(const string &s, vector<unsigned> &dash) {
  *       At least opaqueness can also be decimal (s.a. "0.5").
  *       No spaces allowed within the input string.
  */
+/*
+ * Pre-known color names. Returns false for other names.
+ */
+bool named_color(const string &name, ContourInfo_common::uint_ARGB &color) {
+  static const struct {
+    const char *name;
+    ContourInfo_common::uint_ARGB color;
+  } colors[] = {
+      {"none", 0xff000000}, // completely transparent
+      {"red", ContourInfo_common::RED},
+      {"green", ContourInfo_common::GREEN},
+      {"blue", ContourInfo_common::BLUE},
+      {"yellow", ContourInfo_common::YELLOW},
+      {"white", ContourInfo_common::WHITE},
+      {"black", ContourInfo_common::BLACK},
+  };
+
+  for (const auto &c : colors) {
+    if (name == c.name) {
+      color = c.color;
+      return true;
+    }
+  }
+  return false;
+}
+
+/*
+ * Parse a "0".."255" or "0%".."100%" color value into 0..255
+ */
+unsigned parse_color_component(const string &v) {
+  char *endptr = nullptr;
+  double d = strtod(v.c_str(), &endptr);
+
+  if (*endptr == '%') {
+    d /= 100.0;
+  } else if (*endptr) {
+    LOG_WARNING("Bad rgb[a] value: %s (ignored)", v.c_str());
+    throw runtime_error("Bad rgb[a] value: " + v + " (ignored)");
+  } else if ((d > 1) || (v == "1")) { // 1.0 is taken as full color
+    d /= 255.0;
+  }
+
+  if (d < 0.0 || d > 1.0) {
+    LOG_WARNING("Bad rgb[a] value: %s (out of range)", v.c_str());
+    d = d < 0 ? 0.0 : 1.0;
+  }
+  return (unsigned)floor(d * 255.0 + 0.5);
+}
+
 ContourInfo_common::uint_ARGB SetColor(const string &s,
                                               vector<unsigned> &dash) {
   string s_no_dash = StripDash(s, dash);
 
   // Pre-known special values
   //
-  if (s_no_dash == "none")
-    return 0xff000000; // completely transparent
-  if (s_no_dash == "red")
-    return ContourInfo_common::RED;
-  if (s_no_dash == "green")
-    return ContourInfo_common::GREEN;
-  if (s_no_dash == "blue")
-    return ContourInfo_common::BLUE;
-  if (s_no_dash == "yellow")
-    return ContourInfo_common::YELLOW;
-  if (s_no_dash == "white")
-    return ContourInfo_common::WHITE;
-  if (s_no_dash == "black")
-    return ContourInfo_common::BLACK;
+  ContourInfo_common::uint_ARGB named = 0;
+  if (named_color(s_no_dash, named))
+    return named;
 
   //---
   // Note: Q2 specs show "purple" as a preset color name, but there are 147
@@ -206,23 +244,7 @@ ContourInfo_common::uint_ARGB SetColor(const string &s,
     } else {
       string v = s2.substr(k_was, k - k_was - 1); // "0".."255" or "0%".."100%"
 
-      char *endptr = nullptr;
-      double d = strtod(v.c_str(), &endptr);
-
-      if (*endptr == '%') {
-        d /= 100.0;
-      } else if (*endptr) {
-        LOG_WARNING("Bad rgb[a] value: %s (ignored)", v.c_str());
-        throw runtime_error("Bad rgb[a] value: " + v + " (ignored)");
-      } else if ((d > 1) || (v == "1")) { // 1.0 is taken as full color
-        d /= 255.0;
-      }
-
-      if (d < 0.0 || d > 1.0) {
-        LOG_WARNING("Bad rgb[a] value: %s (out of range)", v.c_str());
-        d = d < 0 ? 0.0 : 1.0;
-      }
-      auto vi = (unsigned)floor(d * 255.0 + 0.5);
+      auto vi = parse_color_component(v);
 
       if (n < 3)
         color = (color << 8) | vi;
