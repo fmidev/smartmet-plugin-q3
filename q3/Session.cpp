@@ -143,6 +143,55 @@ static unsigned char latlon_chunk[] =
 namespace
 {
 /*
+ * Push a matrix of vectors (polar or cartesian), initialized from 'v2' (NANs
+ * if nullptr) unless 'dont_init'
+ */
+void push_vector_matrix(lua_State *L, const MatrixPos &gs, const Vector *v2,
+                        bool polar, bool dont_init, const char *proj,
+                        const NA_Param::Unit &a_unit) {
+  L_GROW(2);
+
+  NA_Param::Unit b_unit(polar ? NA_Param::UNIT_DEG : a_unit);
+
+  if (dont_init) {
+#ifdef NDEBUG
+    new (L) MemMatrix(gs, a_unit, proj); // not initialized (the script will)
+    new (L) MemMatrix(gs, b_unit, proj);
+#else
+    new (L) MemMatrix(gs, UNINITIALIZED_VALUE, a_unit, proj);
+    new (L) MemMatrix(gs, UNINITIALIZED_VALUE, b_unit, proj);
+#endif
+  } else if (polar) {
+    new (L) MemMatrix(gs, v2 ? v2->getAbs() : NAN, a_unit, proj);
+    new (L) MemMatrix(gs, v2 ? v2->getDeg() : NAN, b_unit, proj);
+  } else {
+    new (L) MemMatrix(gs, v2 ? v2->getX() : NAN, a_unit, proj);
+    new (L) MemMatrix(gs, v2 ? v2->getY() : NAN, b_unit, proj);
+  }
+
+  new (L) VectorMatrix(
+      L, polar); // eat components and take 'param' and 'proj' from them
+}
+
+/*
+ * Push a matrix of scalars, initialized from the number at [2] (NANs if
+ * none) unless 'dont_init'
+ */
+void push_scalar_matrix(lua_State *L, const MatrixPos &gs, bool dont_init,
+                        const char *proj, const NA_Param::Unit &a_unit) {
+  if (dont_init) {
+#ifdef NDEBUG
+    new (L) MemMatrix(gs, a_unit, proj);
+#else
+    new (L) MemMatrix(gs, UNINITIALIZED_VALUE, a_unit, proj);
+#endif
+  } else {
+    float v = lua_isnumber(L, 2) ? lua_tonumber(L, 2) : NAN;
+    new (L) MemMatrix(gs, v, a_unit, proj);
+  }
+}
+
+/*
  * matrix_ud | vectormatrix_ud = new_ApiMatrix( size_matrixpos_ud, [num|vector],
  * [param_name_str], [projection_str] )
  *
@@ -183,48 +232,18 @@ int new_ApiMatrix(lua_State *L) {
   if (param_is_2d || v2) {
     // Push matrix of vectors
     //
-    L_GROW(2);
-
     // If 'param_name' was given, it defines, whether the matrix is polar.
     // If no param name was given, we'll do as 'v2' has it.
     //
     bool polar = param_is_2d ? param_is_polar : v2->isPolar();
 
-    NA_Param::Unit b_unit(polar ? NA_Param::UNIT_DEG : a_unit);
-
-    if (dont_init) {
-#ifdef NDEBUG
-      new (L) MemMatrix(gs, a_unit, proj); // not initialized (the script will)
-      new (L) MemMatrix(gs, b_unit, proj);
-#else
-      new (L) MemMatrix(gs, UNINITIALIZED_VALUE, a_unit, proj);
-      new (L) MemMatrix(gs, UNINITIALIZED_VALUE, b_unit, proj);
-#endif
-    } else if (polar) {
-      new (L) MemMatrix(gs, v2 ? v2->getAbs() : NAN, a_unit, proj);
-      new (L) MemMatrix(gs, v2 ? v2->getDeg() : NAN, b_unit, proj);
-    } else {
-      new (L) MemMatrix(gs, v2 ? v2->getX() : NAN, a_unit, proj);
-      new (L) MemMatrix(gs, v2 ? v2->getY() : NAN, b_unit, proj);
-    }
-
-    new (L) VectorMatrix(
-        L, polar); // eat components and take 'param' and 'proj' from them
+    push_vector_matrix(L, gs, v2, polar, dont_init, proj, a_unit);
     return 1;
 
   } else {
     // Push matrix of scalars
     //
-    if (dont_init) {
-#ifdef NDEBUG
-      new (L) MemMatrix(gs, a_unit, proj);
-#else
-      new (L) MemMatrix(gs, UNINITIALIZED_VALUE, a_unit, proj);
-#endif
-    } else {
-      float v = lua_isnumber(L, 2) ? lua_tonumber(L, 2) : NAN;
-      new (L) MemMatrix(gs, v, a_unit, proj);
-    }
+    push_scalar_matrix(L, gs, dont_init, proj, a_unit);
     return 1;
   }
 }
@@ -1108,24 +1127,44 @@ int Session::init(lua_State *L) {
   return 0;
 }
 
+namespace {
 /*
- * Output script return value N (if any).
- *
- * Returns: MIME type of the entry (nullptr for just text)
- *
- * Note: The caller is supposed to have 'lua_pcall()' somewhere above us, to
- * catch possible errors from user-provided metamethods (or built-in
- * 'json.lua').
+ * Output a Cairo surface (PNG/SVG/PDF) at [i], returns its mime type
  */
-string_or_null Session::result_(lua_State *L, ostream &os, unsigned i) {
-  assert((i >= 1) && (i <= (unsigned)lua_gettop(L)));
-
-  bool jsonp_mode = RegTools::get_JSONP(L);
-
-  L_GROW(2);
-
-  // Check for types we know how to stream
+string_or_null output_cairo_surface(lua_State *L, ostream &os, unsigned i) {
+  // [i]: cairo surface
   //
+  // data_str, mime_type_str= cs.contents()
+
+  lua_pushliteral(L, "contents");
+  lua_gettable(L, i);
+  if (lua_type(L, -1) != LUA_TFUNCTION) {
+    const char *msg = "Problem with Cairo binding: '<cairo "
+                      "surface>.contents' is not a function";
+    LOG_BUG0(msg);
+    luaL_error(L, msg);
+  }
+  lua_call(L, 0 /*args*/, 2 /*retvals*/);
+
+  // [-1]: mime type (string); i.e. "image/png"
+  // [-2]: content (as binary string)
+
+  string_or_null mime = lua_tostring(L, -1);
+
+  size_t len = 0;
+  const char *data = lua_tolstring(L, -2, &len);
+  os.write(data, len);
+
+  lua_pop(L, 2);
+  return mime;
+}
+
+/*
+ * Output the object at [i] if it is of a type we know how to stream based
+ * on its metatable. Returns false (nothing output) for other objects.
+ */
+bool output_by_metatable(lua_State *L, ostream &os, unsigned i,
+                         bool jsonp_mode, string_or_null &mime) {
   if (lua_getmetatable(L, i)) {
 
     // Is it a Cairo surface (PNG/SVG/PDF)?
@@ -1140,31 +1179,8 @@ string_or_null Session::result_(lua_State *L, ostream &os, unsigned i) {
         luaL_error(L, "Trying to output an image using JSONP. No can do.");
       }
 
-      // [i]: cairo surface
-      //
-      // data_str, mime_type_str= cs.contents()
-
-      lua_pushliteral(L, "contents");
-      lua_gettable(L, i);
-      if (lua_type(L, -1) != LUA_TFUNCTION) {
-        const char *msg = "Problem with Cairo binding: '<cairo "
-                          "surface>.contents' is not a function";
-        LOG_BUG0(msg);
-        luaL_error(L, msg);
-      }
-      lua_call(L, 0 /*args*/, 2 /*retvals*/);
-
-      // [-1]: mime type (string); i.e. "image/png"
-      // [-2]: content (as binary string)
-
-      string_or_null mime = lua_tostring(L, -1);
-
-      size_t len = 0;
-      const char *data = lua_tolstring(L, -2, &len);
-      os.write(data, len);
-
-      lua_pop(L, 2);
-      return mime;
+      mime = output_cairo_surface(L, os, i);
+      return true;
     }
     lua_pop(L, 1);
 
@@ -1182,7 +1198,8 @@ string_or_null Session::result_(lua_State *L, ostream &os, unsigned i) {
         int decs = RegTools::get_Decimals(L);
 
         m->asBinary_q2_(os, decs);
-        return MIME_BINARY_MATRIX;
+        mime = MIME_BINARY_MATRIX;
+        return true;
       }
     }
 #endif
@@ -1208,10 +1225,38 @@ string_or_null Session::result_(lua_State *L, ostream &os, unsigned i) {
         os << tmp;
       }
       lua_pop(L, 2);
-      return nullptr; // just text
+      mime = nullptr; // just text
+      return true;
     }
     lua_pop(L, 2); // remove nil and metatable
   }
+
+  return false;
+}
+
+}  // namespace
+
+/*
+ * Output script return value N (if any).
+ *
+ * Returns: MIME type of the entry (nullptr for just text)
+ *
+ * Note: The caller is supposed to have 'lua_pcall()' somewhere above us, to
+ * catch possible errors from user-provided metamethods (or built-in
+ * 'json.lua').
+ */
+string_or_null Session::result_(lua_State *L, ostream &os, unsigned i) {
+  assert((i >= 1) && (i <= (unsigned)lua_gettop(L)));
+
+  bool jsonp_mode = RegTools::get_JSONP(L);
+
+  L_GROW(2);
+
+  // Check for types we know how to stream
+  //
+  string_or_null mt_mime;
+  if (output_by_metatable(L, os, i, jsonp_mode, mt_mime))
+    return mt_mime;
 
   size_t len = 0;
   const char *s = nullptr;
