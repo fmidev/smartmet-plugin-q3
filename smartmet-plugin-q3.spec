@@ -2,7 +2,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet q3 plugin
 Name: %{SPECNAME}
-Version: 26.10.16
+Version: 26.10.17
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -39,20 +39,20 @@ Requires: bzip2-libs >= 1.0.6
 Requires: libpng >= 1.5.13
 Requires: libjpeg-turbo >= 1.2.90
 Requires: cairo
-Requires: smartmet-library-newbase >= 26.10.16
-Requires: smartmet-library-trax >= 26.10.16
-Requires: smartmet-library-spine >= 26.10.16
-Requires: smartmet-server >= 26.10.16
+Requires: smartmet-library-newbase >= 26.10.17
+Requires: smartmet-library-trax >= 26.10.17
+Requires: smartmet-library-spine >= 26.10.17
+Requires: smartmet-server >= 26.10.17
 Obsoletes: fmi-q3-lib
 Obsoletes: fmi-q3-config
 Obsoletes: fmi-q3-brainstorm
 
-#TestRequires: smartmet-server >= 26.10.16
-#TestRequires: smartmet-library-spine >= 26.10.16
+#TestRequires: smartmet-server >= 26.10.17
+#TestRequires: smartmet-library-spine >= 26.10.17
 #TestRequires: smartmet-library-spine-plugin-test >= 26.10.16
-#TestRequires: smartmet-library-trax >= 26.10.16
-#TestRequires: smartmet-library-macgyver >= 26.10.16
-#TestRequires: smartmet-library-newbase >= 26.10.16
+#TestRequires: smartmet-library-trax >= 26.10.17
+#TestRequires: smartmet-library-macgyver >= 26.10.17
+#TestRequires: smartmet-library-newbase >= 26.10.17
 #TestRequires: smartmet-test-data
 #TestRequires: cairo
 #TestRequires: libjpeg-turbo >= 1.2.90
@@ -92,6 +92,10 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/smartmet/plugins/q3plugin.conf
 
 %changelog
+* Sat Oct 17 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.10.17-1.fmi
+- SSE.h: move the SSE_OP_* macro loops into inline function templates
+- Split functions with a cognitive complexity above 25 into smaller helpers, no functional changes
+
 * Fri Oct 16 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.10.16-1.fmi
 - The per-track tmp_pattern and tmp_threshold settings are no longer parsed, the code using them
   is disabled
