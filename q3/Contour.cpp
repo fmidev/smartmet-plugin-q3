@@ -1353,6 +1353,9 @@ void fill_contours(lua_State *L, cairo_t *cr, const ContourInfo_Fill &ci,
     lua_pop(L, 1); // remove value, keep key (for 'lua_next()')
   }
 
+  if (!c)
+    return; // an empty table and no earlier contour
+
   if (fillOpen || c->range()) {
     cairo_fill(cr);
     fillOpen = false;
