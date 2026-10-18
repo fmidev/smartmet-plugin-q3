@@ -93,6 +93,7 @@ rm -rf %{buildroot}
 
 %changelog
 * Sat Oct 17 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.10.17-1.fmi
+- Filling an empty contour table no longer dereferences a null contour
 - SSE.h: move the SSE_OP_* macro loops into inline function templates
 - Split functions with a cognitive complexity above 25 into smaller helpers, no functional changes
 
