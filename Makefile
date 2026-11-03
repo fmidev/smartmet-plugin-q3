@@ -10,7 +10,8 @@ FLAGS += -Wno-variadic-macros -Wno-narrowing -mfpmath=sse -msse2
 
 # Compiler options
 
-DEFINES = -DUNIX -D_REENTRANT -DSMOOTH_AND_STRETCH -DUSE_NEWBASE
+DEFINES = -DUNIX -D_REENTRANT -DSMOOTH_AND_STRETCH -DUSE_NEWBASE \
+	-DSANDBOX -DCUSTOM_FONT_PATH=\"$(datadir)/q3plugin/fonts\"
 
 INCLUDES += $(shell pkg-config --cflags-only-I luajit)
 
