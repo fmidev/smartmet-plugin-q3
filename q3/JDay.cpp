@@ -16,6 +16,7 @@
 #include <cstring>
 
 #include <cassert>
+#include <cctype>
 #include <climits>
 
 using namespace std;
@@ -320,9 +321,17 @@ JDay::jd_T JDay::calc(time_t ticks) {
 JDay::jd_T JDay::fromstring(const char *s) {
   assert(s);
 
-  // The whole string must be 8, 10, 12 or 14 digits
-  const size_t len = strlen(s);
-  if (strspn(s, "0123456789") != len ||
+  // Surrounding whitespace is ignored, as the original sscanf() parser did.
+  // Clients send e.g. "20261106090000 " and used to get a valid time.
+  auto is_blank = [](char c) { return isspace(static_cast<unsigned char>(c)) != 0; };
+  while (is_blank(*s))
+    ++s;
+  size_t len = strlen(s);
+  while (len > 0 && is_blank(s[len - 1]))
+    --len;
+
+  // The rest must be 8, 10, 12 or 14 digits
+  if (strspn(s, "0123456789") < len ||
       (len != 8 && len != 10 && len != 12 && len != 14)) {
     return INVALID_VALUE; // bad syntax
   }
