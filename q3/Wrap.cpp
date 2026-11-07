@@ -115,9 +115,8 @@ void *LuaWrapper::budget_alloc(void *ud, void *ptr, size_t osize,
   return p;
 }
 
-LuaWrapper::LuaWrapper(size_t memory_limit) : L(nullptr) {
-  budget.limit = memory_limit;
-  L = lua_newstate(budget_alloc, &budget);
+LuaWrapper::LuaWrapper(size_t memory_limit)
+    : budget{0, memory_limit}, L(lua_newstate(budget_alloc, &budget)) {
   if (!L)
     throw runtime_error("out of memory");
 
