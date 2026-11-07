@@ -60,7 +60,10 @@ The configuration file uses [libconfig](https://hyperrealm.github.io/libconfig/)
 
 ```
 log = syslog local2       # stderr | syslog <facility>
-killtime = 20sec          # max script execution time
+killtime = 20sec          # max script execution time: [Xh][YYmin][ZZsec], 0 = no limit
+memory_limit_mb = 1024    # max memory of one Lua session in MB, 0 = no limit
+max_image_pixels = 25000000  # max width*height of a script created Cairo surface, 0 = no limit
+max_grid_cells = 25000000    # max columns*rows of a script created grid/matrix, 0 = no limit
 refresh = 3min            # interval for reloading data file lists
 rootdir = /smartmet/      # prepended to relative file mask paths
 relative_uv = false       # true if U/V wind components are grid-relative

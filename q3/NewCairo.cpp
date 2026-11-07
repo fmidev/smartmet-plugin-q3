@@ -13,6 +13,7 @@
  * doing that?
  */
 #include "Invariant.h"
+#include "Limits.h"
 #include "LuaNew.h"
 #include "Proto.h"
 
@@ -109,6 +110,7 @@ int image_surface(lua_State *L) {
 #else
   proto(L, "number,number,[string]");
 #endif
+  Limits::check_image_size(L, lua_tonumber(L, 1), lua_tonumber(L, 2));
   int w = lua_tointeger(L, 1);
   int h = lua_tointeger(L, 2);
   cairo_format_t format = conv_image_format(L, 3, CAIRO_FORMAT_ARGB32);
@@ -208,6 +210,7 @@ int pdf_surface(lua_State *L) {
 #endif
   double w = lua_tonumber(L, 1);
   double h = lua_tonumber(L, 2);
+  Limits::check_image_size(L, w, h);
 #ifndef SANDBOX
   const char *fn = lua_tostring(L, 3);
 #endif
@@ -243,6 +246,7 @@ int svg_surface(lua_State *L) {
 #endif
   lua_Number w = lua_tonumber(L, 1);
   lua_Number h = lua_tonumber(L, 2);
+  Limits::check_image_size(L, w, h);
   cairo_svg_version_t v_e =
       conv_svg_version(L, 3, CAIRO_SVG_VERSION_1_2 /*latest*/);
 #ifndef SANDBOX

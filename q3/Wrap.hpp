@@ -26,7 +26,10 @@ public:
   // Note: Some parameter is needed, otherwise 'operator lua_State *' does not
   // work.
   //
-  LuaWrapper(bool ignore);
+  // 'memory_limit': maximum number of bytes the Lua session may allocate
+  //                 (0 for no limit)
+  //
+  explicit LuaWrapper(size_t memory_limit);
   ~LuaWrapper() {
     INVARIANT();
     destroy();
@@ -55,8 +58,18 @@ private:
 
   static int run2_(lua_State *L);
 
+  // Memory budget for the Lua allocator
+  //
+  struct MemoryBudget {
+    size_t used = 0;
+    size_t limit = 0; // 0 for no limit
+  };
+
+  static void *budget_alloc(void *ud, void *ptr, size_t osize, size_t nsize);
+
   // data members
   //
+  MemoryBudget budget; // must be initialized before 'L'
   lua_State *L;
 
 #ifndef NDEBUG

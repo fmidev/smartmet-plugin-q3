@@ -6,6 +6,7 @@
 #include "Raw.h"
 #include <macgyver/StringConversion.h>
 #include "Tools.h"
+#include "Limits.h"
 
 #include "Proto.h"
 
@@ -956,6 +957,10 @@ int RawBind::__call(lua_State *L) {
 
   if ((!a.native_gs) && (a.gridsize.getX() == 0))
     set_default_gridsize(L, r, a);
+
+  // Bound the grid allocated for a script supplied gridsize
+  if (!a.native_gs)
+    Limits::check_grid_size(L, a.gridsize);
 
   // If using default level and 'def_level' has been set (by creating the Raw
   // with just one level id required).

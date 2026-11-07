@@ -90,10 +90,44 @@ void set_package_loaded(lua_State *L, const char *name) {
 
 /*---=== LuaWrapper ===---
  */
-LuaWrapper::LuaWrapper(bool ignore) : L(luaL_newstate()) {
-  (void)ignore;
+
+/*
+ * Lua allocator which enforces a memory budget for the session. Returning
+ * nullptr makes Lua raise a "not enough memory" error (LUA_ERRMEM).
+ */
+void *LuaWrapper::budget_alloc(void *ud, void *ptr, size_t osize,
+                               size_t nsize) {
+  auto *b = static_cast<MemoryBudget *>(ud);
+  const size_t old = (ptr ? osize : 0);
+
+  if (nsize == 0) {
+    free(ptr);
+    b->used -= old;
+    return nullptr;
+  }
+
+  if (b->limit > 0 && nsize > old && nsize - old > b->limit - b->used)
+    return nullptr;
+
+  void *p = realloc(ptr, nsize);
+  if (p)
+    b->used = b->used - old + nsize;
+  return p;
+}
+
+LuaWrapper::LuaWrapper(size_t memory_limit) : L(nullptr) {
+  budget.limit = memory_limit;
+  L = lua_newstate(budget_alloc, &budget);
   if (!L)
     throw runtime_error("out of memory");
+
+  // Same as what 'luaL_newstate()' does
+  lua_atpanic(L, [](lua_State *LL) -> int {
+    const char *msg = lua_tostring(LL, -1);
+    fprintf(stderr, "PANIC: unprotected error in call to Lua API (%s)\n",
+            msg ? msg : "?");
+    return 0;
+  });
 
   // Open the safe standard libraries in full ('os' and 'debug' are handled
   // below).

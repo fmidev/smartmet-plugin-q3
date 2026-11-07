@@ -15,6 +15,7 @@
 #include "JDay.h"
 #include "Labelizer.h"
 #include "LatLon.h"
+#include "Limits.h"
 #include "MemMatrix.h"
 #include "Projection.h"
 #include "RegTools.h"
@@ -213,6 +214,7 @@ int new_ApiMatrix(lua_State *L) {
   proto(L, "MatrixPos, [number|Vector|true], [string], [string]");
 
   const MatrixPos &gs = *MatrixPos::instance(L, 1);
+  Limits::check_grid_size(L, gs);
 
   const Vector *v2 = Vector::instance(L, 2);
   const char *param_name = lua_tostring(L, 3);
@@ -271,6 +273,7 @@ int new_ScalarMatrix(lua_State *L) {
 
   } else {
     const MatrixPos &gs = *MatrixPos::instance(L, 1);
+    Limits::check_grid_size(L, gs);
     const char *proj = lua_tostring(L, 3);
 
     Matrix *m = Matrix::instance(L, 2);
@@ -335,6 +338,7 @@ int new_VectorMatrix(lua_State *L) {
   } else {
     proto(L, "MatrixPos");
     MatrixPos &gs = *MatrixPos::instance(L, 1);
+    Limits::check_grid_size(L, gs);
 
 #ifdef NDEBUG
     new (L) MemMatrix(gs, NA_Param::UNIT_UNKNOWN_,
@@ -366,6 +370,7 @@ int nan_matrix(lua_State *L) {
   proto(L, "MatrixPos,[number|Vector]");
 
   const MatrixPos &size = *MatrixPos::instance(L, 1);
+  Limits::check_grid_size(L, size);
 
   if (lua_type(L, 2) == LUA_TNIL || lua_type(L, 2) == LUA_TNUMBER) {
     new (L) MemMatrix(size, NAN, NA_Param::UNIT_UNKNOWN_, nullptr);
@@ -437,6 +442,7 @@ int LONLAT(lua_State *L) {
 
   const char *proj = lua_tostring(L, 1);
   const MatrixPos &gs = *MatrixPos::instance(L, 2);
+  Limits::check_grid_size(L, gs);
 
   L_GROW(3);
 

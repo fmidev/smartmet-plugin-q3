@@ -17,6 +17,7 @@
 #include "ZmqLogger.h"
 
 #include "Wrap.hpp"
+#include "Limits.h"
 
 /*
 * Enabling this will make "validTime=..." work as "validtime=..."
@@ -39,6 +40,7 @@
 #endif
 
 #include <cassert>
+#include <cerrno>
 #include <cstdio>
 #include <cmath>
 
@@ -65,6 +67,9 @@ enum
 namespace
 {
 unsigned killtime_secs = 10;
+
+// Memory budget of a single Lua session in megabytes (0 for no limit)
+size_t memory_limit_mb = 1024;
 
 string_or_null package_path;
 string_or_null package_cpath;
@@ -197,29 +202,42 @@ void split_config_line(char *buf, const char *&key, const char *&val)
 
 /*
 * Parse a 'killtime' value [Xh][YYmin][ZZsec] - same syntax as for Q3 engine
-* time values.
+* time values. A plain "0" disables the limit.
 *
-* Note: The loop runs only if the line had a tail comment ('comment' is the
-*       position of the removed '#' in 'line', or nullptr).
+* Note: 'val' has already been stripped of a tail comment and trailing white space.
+*
+* Throws on a bad value instead of silently disabling the limit.
 */
-unsigned parse_killtime(const char *val, const char *comment, const char *line)
+unsigned parse_killtime(const char *val, const char *line)
 {
-  unsigned secs = 0;  // no limit
+  if (strcmp(val, "0") == 0)
+    return 0;  // no limit
 
+  unsigned long secs = 0;
   const char *pp = val;
-  while (comment)
+  while (*pp)
   {
+    if (isspace(*pp))
+    {
+      pp++;
+      continue;
+    }
+
     char *end = nullptr;
-    int v = strtol(pp, &end, 10);
+    errno = 0;
+    long v = strtol(pp, &end, 10);
+
+    if (end == pp || errno != 0 || v < 0)
+      throw runtime_error(string_fmt("Bad killtime entry: %s", line));
 
     if (begins_with(end, "h"))
     {
-      secs += 60 * 60 * v;
+      secs += 60UL * 60UL * v;
       pp = end + 1;
     }
     else if (begins_with(end, "min"))
     {
-      secs += 60 * v;
+      secs += 60UL * v;
       pp = end + 3;
     }
     else if (begins_with(end, "sec"))
@@ -229,19 +247,34 @@ unsigned parse_killtime(const char *val, const char *comment, const char *line)
     }
     else
     {
-      LOG_USAGE("Bad configuration: '%s'", line);
-      secs = 0;
-      break;
+      throw runtime_error(string_fmt("Bad killtime entry: %s", line));
     }
+
+    if (secs > 7UL * 24 * 60 * 60)
+      throw runtime_error(string_fmt("Too large killtime entry: %s", line));
   }
-  return secs;
+
+  return static_cast<unsigned>(secs);
+}
+
+/*
+* Parse a non-negative integer configuration value (0 for no limit)
+*/
+size_t parse_limit(const char *val, const char *line)
+{
+  char *end = nullptr;
+  errno = 0;
+  long v = strtol(val, &end, 10);
+  if (end == val || *end != '\0' || errno != 0 || v < 0)
+    throw runtime_error(string_fmt("Bad configuration entry: %s", line));
+  return static_cast<size_t>(v);
 }
 
 /*
 * Set the global of a configuration entry. Returns false for keys not used
 * here.
 */
-bool apply_config_entry(const char *key, const char *val, const char *line, const char *comment)
+bool apply_config_entry(const char *key, const char *val, const char *line)
 {
   if (strcmp(key, "log") == 0)
   {
@@ -265,7 +298,31 @@ bool apply_config_entry(const char *key, const char *val, const char *line, cons
     killtime_secs = 0;  // no limit
     if (val)
     {
-      killtime_secs = parse_killtime(val, comment, line);
+      killtime_secs = parse_killtime(val, line);
+    }
+  }
+  else if (strcmp(key, "memory_limit_mb") == 0)
+  {
+    memory_limit_mb = 0;  // no limit
+    if (val)
+    {
+      memory_limit_mb = parse_limit(val, line);
+    }
+  }
+  else if (strcmp(key, "max_image_pixels") == 0)
+  {
+    Limits::max_image_pixels = 0;  // no limit
+    if (val)
+    {
+      Limits::max_image_pixels = static_cast<int64_t>(parse_limit(val, line));
+    }
+  }
+  else if (strcmp(key, "max_grid_cells") == 0)
+  {
+    Limits::max_grid_cells = 0;  // no limit
+    if (val)
+    {
+      Limits::max_grid_cells = static_cast<int64_t>(parse_limit(val, line));
     }
   }
   else if (strcmp(key, "testbed") == 0)
@@ -325,6 +382,9 @@ string read_config(const char *fn)
     // Find if the line begins with any key we use:
     //
     // killtime = [Xh][YYmin][ZZsec]
+    // memory_limit_mb = megabytes (0 for no limit)
+    // max_image_pixels = pixels (0 for no limit)
+    // max_grid_cells = cells (0 for no limit)
     // testbed = filename
     // log = console|scribe|log4cpp|... [...params...]
     // package_path = str
@@ -342,7 +402,7 @@ string read_config(const char *fn)
     // 'key': non-nullptr if "key =" existed
     // "val": non-nullptr if non-whitespace string followed
 
-    bool eat_line = (key != nullptr) && apply_config_entry(key, val, line, p);
+    bool eat_line = (key != nullptr) && apply_config_entry(key, val, line);
     s += eat_line ? "\n" : line;
   }
   return s;  // all file contents (without comments and used entries)
@@ -529,7 +589,7 @@ int Q3Server::query(const map<string, string> &key_val,
   // Note: Preparation takes 1..2 ms on crash.fmi.fi (64-bit Linux). Not worth making
   //      cached states that would be instantly available.    --AKa 10-Sep-2009
   //
-  LuaWrapper L(false);
+  LuaWrapper L(memory_limit_mb * 1024 * 1024);
 
   // Set globals. This must be done before 'q3.lua' which modifies some values
   // (validtime, origintime, gridsize).

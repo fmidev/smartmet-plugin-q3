@@ -4,6 +4,7 @@
  * Revised:  22-Oct-10 AKa
  */
 #include "LatLon.h"
+#include "Limits.h"
 #include "Proto.h"
 
 #include "MemMatrix.h"
@@ -391,6 +392,7 @@ int LatLonList::_areamask(lua_State *L) {
 
   const char *proj = lua_tostring(L, 1);
   const MatrixPos &gs = *MatrixPos::instance(L, 2);
+  Limits::check_grid_size(L, gs);
   double value = lua_tonumber(L, 3);
   bool invert = lua_toboolean(L, 4);
 
