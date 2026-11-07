@@ -528,7 +528,7 @@ private:
   // Information of the level and parameter we're carrying
   //
   NA_Level level;
-  FmiParameterName param;
+  FmiParameterName param = kFmiBadParameter;
   const NA_Param::Unit unit;
 
 protected:
