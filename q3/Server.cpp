@@ -299,6 +299,21 @@ string read_config(const char *fn)
   char *line = nullptr; // allocated and released by 'getline()'
   size_t len = 0;
 
+  // Release the file and the getline() buffer also if a config entry throws
+  struct Cleanup
+  {
+    FILE *file;
+    char *&buffer;
+    Cleanup(FILE *theFile, char *&theBuffer) : file(theFile), buffer(theBuffer) {}
+    Cleanup(const Cleanup &) = delete;
+    Cleanup &operator=(const Cleanup &) = delete;
+    ~Cleanup()
+    {
+      free(buffer);  // like in "man getline" sample
+      (void)fclose(file);
+    }
+  } cleanup{f, line};
+
   while (getline(&line, &len, f) != -1)
   {
     // "Buffer is null-terminated and includes the newline character, if one was found"
@@ -330,9 +345,6 @@ string read_config(const char *fn)
     bool eat_line = (key != nullptr) && apply_config_entry(key, val, line, p);
     s += eat_line ? "\n" : line;
   }
-  if (line)
-    free(line);  // like in "man getline" sample
-
   return s;  // all file contents (without comments and used entries)
 }
 
