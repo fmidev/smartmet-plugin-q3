@@ -72,7 +72,7 @@ local math_pow=     assert( math.pow )
 function tonumber_all(...)
     local t= {}
     for i=1,select('#',...) do
-        -- NOTE: Vital to have the 'select(i,...)' in extra paranthesis,
+        -- NOTE: Vital to have the 'select(i,...)' in extra parenthesis,
         --      to take only the FIRST (i:th) member. Without it, the whole
         --      tail will follow (and mess up 'tonumber()')
         --
@@ -857,7 +857,7 @@ end
 assert( isnan(0/0) )
 assert( not isnan(0) )
 
--- either component being NAN makes the vector NAN (this could be otherways too, at least
+-- either component being NAN makes the vector NAN (this could be otherwise too, at least
 -- for polar vectors)
 --
 assert( isnan( vector_xy(0/0,123) ) )

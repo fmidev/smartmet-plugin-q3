@@ -615,7 +615,7 @@ int Matrix::mul( lua_State *L ) {
 /*
 * m_ud= div( m_ud )
 *
-* Note: Only '1/b' is currently needed and excercised; 'VectorMatrix' converts any divisions
+* Note: Only '1/b' is currently needed and exercised; 'VectorMatrix' converts any divisions
 *       'a/b' to 'a*(1/b)' and calls us only to get the reciprocal.
 */
 int Matrix::reciprocal( lua_State *L ) {
@@ -1685,7 +1685,7 @@ float Matrix::at( const LatLon &latlon ) const {
 
     if (useGrid || getProjection().at( latlon, dx, dy )) {
         return at_( dx, dy );    // maybe within the grid (but not guaranteed)
-    }         return NAN;     // definately outside the grid
+    }         return NAN;     // definitely outside the grid
    
 }
 

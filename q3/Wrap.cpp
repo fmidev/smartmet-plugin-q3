@@ -276,8 +276,8 @@ int LuaWrapper::run(int args, RequestResponse &rr, double secs, int decimals
     // The count parameter affects the reaction time; it does not really
     // matter which value is here (as long as its >100 or so).
     //
-    // NOTE: This is enough for finding accidential eternal loops but
-    //      NOT ENOUGH TO COUNTERFIGHT MALICOUS SCRIPTS intended to bring
+    // NOTE: This is enough for finding accidental eternal loops but
+    //      NOT ENOUGH TO COUNTERFIGHT MALICIOUS SCRIPTS intended to bring
     //      a server to its knees. Making a very elaborate 'string.gsub'
     //      call or similar will essentially take "forever" within a single
     //      Lua line. To counterattack such requires custom made protection

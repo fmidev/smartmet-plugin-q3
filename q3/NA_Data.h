@@ -324,7 +324,7 @@ public:
 
   // Some levels are calculated by the adaptors, on-the-fly (height levels from
   // hybrid or pressure data; pressure levels from hybrid data). Checks
-  // availablility of these.
+  // availability of these.
   //
   virtual bool providesPressureLevelsFromHybrid() const = 0;
 

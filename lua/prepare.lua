@@ -23,7 +23,7 @@ assert( type(assert)=="table" )
 testraw= bind.testraw
 
 --
--- Lua 5.0 features depricated in 5.1 (we don't need them)
+-- Lua 5.0 features deprecated in 5.1 (we don't need them)
 --
 if not METQU then
     math.mod= nil       -- now 'math.fmod'

@@ -244,7 +244,7 @@ void Surface_bind::setup(lua_State *L) {
 
 /*
  * It's very good we open the file already in constructor; get error messages
- * early and be consistant with how the user thinks things go. 'ImageSurface'
+ * early and be consistent with how the user thinks things go. 'ImageSurface'
  * will write to it only at GC, whereas PDF and SVG surfaces will write through-
  * out the drawing.
  */

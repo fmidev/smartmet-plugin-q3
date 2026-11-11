@@ -263,7 +263,7 @@ bool NA_Level::covered_by(const NA_Data &data, bool &exact) const {
      *
      * 23-Nov-2012 PKi: Height value query support. Currently no value based
      * checks are made for the height value(s) requested; if support for height
-     * level query data (in addition to intepolating data to given heights by
+     * level query data (in addition to interpolating data to given heights by
      * using the Z parameter) is added later, availability of the requested
      * level(s) shall be checked
      */

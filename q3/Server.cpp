@@ -658,7 +658,7 @@ int Q3Server::query(const map<string, string> &key_val,
     set_track_proxies(L, *itsEngine, names);
     set_track_names(L, *itsEngine, names);
 
-// Make sure none of the preparations accidentially set '_' global
+// Make sure none of the preparations accidentally set '_' global
 // (this is just to keep clean).
 //
 #if 1

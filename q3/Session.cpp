@@ -579,7 +579,7 @@ int setdecimals(lua_State *L) {
  * peekxy( Matrix m, Matrix m2, MatrixPos gp, MatrixPos offset )
  * peekxy( Matrix m, Matrix m2, MatrixPos gp, xdistance, ydistance )
  *
- * Offseting for Q2 smarttools PEEKXY/PEEKXY3.
+ * Offsetting for Q2 smarttools PEEKXY/PEEKXY3.
  * Return location (latlon_ud) relative to given matrix/gridpoint gp of m2
  *
  * Offset given as number of matrix/grid points or as distance in km
@@ -994,7 +994,7 @@ int Session::init(lua_State *L) {
 
     lua_call(L, 0 /*args*/, 1 /*results*/);
 
-    // [-1]: function returned by 'latlon.lua', to be used for parsin
+    // [-1]: function returned by 'latlon.lua', to be used for parsing
     //       complex latlon index strings (could also be done with C++ regexps,
     //       if there were any decent ones).
     //

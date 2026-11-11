@@ -113,7 +113,7 @@ void *TrackerBase::polling_thread(void *me_v) {
     // second to go through the files on disk).
     //
     // There's many ways we can deal with this - just sleep normally or wait
-    // until other kinds of (normal) initializations are succesfully done.
+    // until other kinds of (normal) initializations are successfully done.
     //
     if (!tired)
       continue; // go on run another 'update()' (no wiping in between)

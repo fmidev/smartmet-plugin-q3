@@ -31,7 +31,7 @@ projection= str                         -- Newbase and/or Proj4 projection strin
 -- The whole header is stored with UTF8 encoding (important for parameter names and units).
 --
 -- Unit strings are expected not to have spaces in them. Further metaparameters can be added
--- similarily after these (by making providing of unit compulsory). 
+-- similarly after these (by making providing of unit compulsory). 
 --
 -- In the beginning of the binary area, there's a block of metadata for each "tile". These
 -- are in order, but the actual data (pointed to from these) may be out of order (allowing
@@ -51,7 +51,7 @@ projection= str                         -- Newbase and/or Proj4 projection strin
 --      Compressed block size (0: no compression)
 --      Offset of actual data, from binary block start (0 for empty tile)
 --
--- Use of several data types allows us to get concise files without tying parameters artifically
+-- Use of several data types allows us to get concise files without tying parameters artificially
 -- together (into bitmaps). This is a storage optimization only; in the 'NA_Data' API all values
 -- are represented as float, NAN marking a missing value.
 --

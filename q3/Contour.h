@@ -78,7 +78,7 @@ private:
 };
 
 struct EdgePoint : public Point, LuaNew<EdgePointBind> {
-  // '.edge' provided publically; we're all family and only few places need
+  // '.edge' provided publicly; we're all family and only few places need
   // this.
   //
   bool edge; // at material edge (or hole edge); do not stroke two such points

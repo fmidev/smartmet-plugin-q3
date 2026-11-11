@@ -14,7 +14,7 @@
  * There is only one 'Data' instance for each available SQD or BZ2 file.
  * Multiple users will share that, and 'refcount' keeps us aware of them.
  *
- * 'TrackerBase' will regularily call 'Data::Wipe()' which may close open
+ * 'TrackerBase' will regularly call 'Data::Wipe()' which may close open
  * files (that haven't been used in a while).
  *
  * The 'qd' data portion is kept open even if refcount reaches zero; the

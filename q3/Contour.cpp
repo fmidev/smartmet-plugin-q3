@@ -285,7 +285,7 @@ int Contour::contour(lua_State *L) {
   //					object is pushed onto stack; otherwise it is just
   //used
   // and returned. If the 'TronHints' 					arg is omitted, nil is
-  // pushed and returned to keep the number of return values preceeding
+  // pushed and returned to keep the number of return values preceding
   // the contours constant
   //
   unsigned argc =
@@ -337,7 +337,7 @@ int Contour::contour(lua_State *L) {
   //was passed in - top of stack will be adjusted down by 1 by the
   // call if the object is not nil (nothing pushed, the hints are just used and
   // returned); if hints are not to be used, push
-  // nil onto the stack to keep the number of return values preceeding the
+  // nil onto the stack to keep the number of return values preceding the
   // contours constant
   //
   if ((argc > 3) && (argc < 7))
@@ -354,7 +354,7 @@ int Contour::contour(lua_State *L) {
   // 29-May-2012 PKi: Set offsets only when old style call (not used by lua side
   // contourcollector)
   //
-  // 02-Mar-2015 PKi: Offsets must always be set for proper egde handling (must
+  // 02-Mar-2015 PKi: Offsets must always be set for proper edge handling (must
   // start stroking from the start of a strokable section; offset is needed by
   // draw_path())
   //
@@ -482,7 +482,7 @@ void Contour::q3_smoothen(const Contour &old, double factor,
     }
   }
 
-  // Provide strecthing to compensate for area loss due to smoothening.
+  // Provide stretching to compensate for area loss due to smoothening.
   //
   // Note: For areas touching an edge (having "edge" sections) the correction
   //      is possibly little less than what would have been best (our code
@@ -660,7 +660,7 @@ const float LABEL_MARGIN_Y = 5;
 namespace
 {
 /*
- * Label positioning (used for both priting & clipping)
+ * Label positioning (used for both printing & clipping)
  *
  * Projections:
  *   When called, a data (user) projection is in effect.
@@ -997,7 +997,7 @@ void Contour::draw_path(cairo_t *cr, bool line) const {
   bool within_gap = false; // if true, next operation is 'move_to()'
   bool had_gap = false;    // if false, last point gets closed to the first
 
-  // 02-Mar-2015 PKi: Offset must be used for proper egde handling (must start
+  // 02-Mar-2015 PKi: Offset must be used for proper edge handling (must start
   // stroking from the start of a strokable section)
   //
   unsigned n = points.size();

@@ -474,7 +474,7 @@ int Context::push_group(lua_State *L) {
   Context &my = *Context::instance(L, lua_upvalueindex(1));
 
   // By default, content type is CAIRO_CONTENT_COLOR_ALPHA
-  // (the baisc 'cairo_push_group()' would do that)
+  // (the basic 'cairo_push_group()' would do that)
   //
   bool content_color = lua_isboolean(L, 1) ? lua_toboolean(L, 1) : true;
   bool content_alpha = lua_isboolean(L, 2) ? lua_toboolean(L, 2) : true;

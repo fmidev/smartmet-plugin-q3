@@ -198,7 +198,7 @@ function cross( a, param, loc, time, levels, flightroute, use_q3 )
         
         -- Note: SQD files always contain ONLY ground, hybrid, or pressure levels ONLY.
         --       We don't stick to this restriction in q3, though. Data sources can have any
-        --       combindation of these.
+        --       combination of these.
         --
         --       The levels are returned to the caller in the 'ground,hybrid,pressure' order,
         --       but within these groups we stick to the order given by '.levels'.

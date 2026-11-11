@@ -8,7 +8,7 @@
 
 //---
 // Configure behaviour so that 'validtime', 'projection' and 'gridsize' globals
-// are used also in the functional API ('.grid{ ... }'), if similarily named
+// are used also in the functional API ('.grid{ ... }'), if similarly named
 // fields are missing.
 //
 // Even without this, they are used for variable API s.a. 'HIR.T'

@@ -64,7 +64,7 @@ public:
   static void init(Logger *logger_);
   virtual ~Logger() = default;
 
-  // A unique id for groupping separate log messages (i.e. all that have to do
+  // A unique id for grouping separate log messages (i.e. all that have to do
   // with particular script) together.
   //
   // This is unique within the one server (servers can be differentiated

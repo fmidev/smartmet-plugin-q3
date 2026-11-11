@@ -806,7 +806,7 @@ function contourcollector()
 		-- 					smoothed matrix is passed to contourer).
 		--
 		-- 					Earlier the old hints (instead of nil) were passed when resmoothing,
-		--					and things got messed up. This is catched now on the c++ side too.
+		--					and things got messed up. This is caught now on the c++ side too.
         --
 		-- 03-Mar-2015 PKi: Use q3 (instead of tron) smoothening when zero length and nonzero degree
 		--					(could use q2 smoothening instead by setting q3smoothening to false)
@@ -1213,7 +1213,7 @@ end
 --
 -- all_contours:    ...necessary info to guard against overlapping other contours than 'label'...
 --
--- Returns:     'true' if the label was succesfully plotted.
+-- Returns:     'true' if the label was successfully plotted.
 --              'false' if there was something preventing it (overlapping other contours, mainly)
 --
 local function plot_label( cr, p, label, slant_deg, all_contours )

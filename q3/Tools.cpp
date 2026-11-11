@@ -407,7 +407,7 @@ string_or_null latin1_to_utf8(const char *latin1) {
 
   unsigned n = strlen(latin1);
 
-  // At most, the lenght of 's' is triple as UTF-8 (and the terminating '\0')
+  // At most, the length of 's' is triple as UTF-8 (and the terminating '\0')
   //
   std::vector<char> buf(n * 3 + 1);
   char *r = buf.data();
@@ -446,7 +446,7 @@ string_or_null utf8_to_latin1(const char *utf8) {
 
   unsigned n = strlen(utf8);
 
-  // The lenght of Latin1 string (in bytes) is same as UTF8, or less.
+  // The length of Latin1 string (in bytes) is same as UTF8, or less.
   //
   char buf[n + 1];
   char *r = buf;

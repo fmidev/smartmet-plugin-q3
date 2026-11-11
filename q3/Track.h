@@ -3,7 +3,7 @@
 *
 * Managing a group of file filters given in a Q3 configuration file.
 *
-* This object also updates its contents regularily, and takes care of releasing
+* This object also updates its contents regularly, and takes care of releasing
 * old data no longer required.
 */
 #ifndef Q3_TRACK_H

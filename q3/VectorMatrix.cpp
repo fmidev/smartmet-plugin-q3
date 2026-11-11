@@ -667,7 +667,7 @@ int VectorMatrixBind::mul(lua_State *L) {
 /*
  * m2_ud= reciprocal( m2_ud )
  *
- * Note: Only '1/b' is currently needed and excercised; 'VectorMatrix' converts
+ * Note: Only '1/b' is currently needed and exercised; 'VectorMatrix' converts
  * any divisions 'a/b' to 'a*(1/b)' and calls us only to get the reciprocal.
  */
 #if 0 // NOT NEEDED

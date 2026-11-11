@@ -480,7 +480,7 @@ local function mt_call( _, s, ... )
     local have_n= select('#',...)
     local want_n= #protos
 
-    -- Allow explicity 'nil's in the top params (Lua does differ between them slightly,
+    -- Allow explicitly 'nil's in the top params (Lua does differ between them slightly,
     -- but we can consider missing params and 'nil' the same).
     --
     for k=have_n,want_n+1,-1 do

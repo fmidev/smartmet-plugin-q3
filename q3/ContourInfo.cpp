@@ -5,7 +5,7 @@
  * whose format dates back to earlier Q2Server usage.
  *
  * Note:
- *   Error checking of URL parameters is intensionally left rather loose.
+ *   Error checking of URL parameters is intentionally left rather loose.
  *   The real way to do this kind of stuff should be by regular expressions,
  *   in a scripting language. Plans for such are discussed, so it's not worth
  *   brushing this too shiny.    -- AKa 7-Nov-2008
@@ -202,14 +202,14 @@ ContourInfo_common::uint_ARGB SetColor(const string &s,
   //---
 
   // 's_no_dash' is supposed to be "rgb[a](...)". We don't really check
-  // the prefix; just take stuff within paranthesis. If it's three, it's
+  // the prefix; just take stuff within parenthesis. If it's three, it's
   // RGB, if it's four it's RGBA.
 
   // AKa 17-Oct-2008: Heh, C++ stdlib has no case insensitive compare.
   //          Really, what to do with the language, anyways.
   //
   // MH: 4-Nov-2008: boost::algorithm defines iequals + many other
-  //                 string specific algortihms
+  //                 string specific algorithms
 
   //
   if (my_strincmp(s_no_dash.c_str(), "rgb", 3) != 0) {

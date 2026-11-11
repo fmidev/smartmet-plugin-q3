@@ -212,7 +212,7 @@ local AddonCfg= {}
 -- Loop the file, line by line (each entry is supposed to be on a single line)
 --
 for s,line_n in lines(conf_s) do
-    local k2     -- argument within paranthesis of the key
+    local k2     -- argument within parenthesis of the key
 
     local k,v= s:match( "^([%w_%.]+)%s*=%s*(.*)$" )    -- i.e. "run = 6h"
     if not k then
@@ -266,7 +266,7 @@ for s,line_n in lines(conf_s) do
             -- Plain "key=val"
             --
             -- Convert time strings to seconds, all others passed as-is. 
-            -- Numberical strings are converted to numbers.
+            -- Numerical strings are converted to numbers.
             -- Boolean strings are converted to booleans.
             --
             -- Addon configuration settings are named <addon>.<setting>, e.g. fminames.dbuser.

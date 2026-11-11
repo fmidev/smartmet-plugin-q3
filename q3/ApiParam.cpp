@@ -78,7 +78,7 @@ bool native_match(const string &name_in_data,
   FmiParameterName b_id;
 
   if (!SQD_Tools::cut_at_colon(name_to_match.c_str(), b_name_part, b_id)) {
-    // 17-Oct-2011 PKi: Invalid name; do not throw (not catched), just return
+    // 17-Oct-2011 PKi: Invalid name; do not throw (not caught), just return
     // 'nonmatch'
     //
     // throw E_LOG_USAGE( "Bad parameter name (expecting 'xxx' or 'xxx:nnn'):
@@ -197,7 +197,7 @@ vector<string> ApiParam::convert_to_api(const std::vector<NA_Param> &vec,
 vector<NA_Param> ApiParam::convert_to_native(const std::vector<ApiParam> &vec,
                                              const NA_Data *data) {
 
-  // 25-Oct-2011 PKi: Take the params from data if not excplicitly given
+  // 25-Oct-2011 PKi: Take the params from data if not explicitly given
 
   if (vec.empty())
     return realParams(data);

@@ -1720,7 +1720,7 @@ Matrix *SQD_Data::push_direct_matrix(lua_State *L, const JDay &vt,
 }
 
 /*
- * TBD:  Current handling is inefficient. Scripts regularily ask for say 50,60
+ * TBD:  Current handling is inefficient. Scripts regularly ask for say 50,60
  * grid of interpolated values. We should calculate such right on, without
  * pushing native resolution interpolation (s.a. 500,600).
  */

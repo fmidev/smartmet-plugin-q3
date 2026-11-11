@@ -317,7 +317,7 @@ end
 function MAXZ( r, param, h_start, h_end, gs )
     proto( "Raw, string, [number], [number], [MatrixPos]", r, param, h_start, h_end, gs )
 
-    -- Note: 'r.params' provides the standard names, so we can check for existance of 'Z'
+    -- Note: 'r.params' provides the standard names, so we can check for existence of 'Z'
     --       (regardless of its native name, i.e. 'Z-korkeus:2').
     --
     if not array_index( r.params, "Z" ) then
@@ -388,7 +388,7 @@ function ATZ( r, param, z_value, gs )
         gs= _G["gridsize"] or r.sqd_gridsize or error( "Gridsize must be provided" )
     end
 
-    -- Going throught the levels of 'g' (with provided gridsize) we find the steps where param 'Z'
+    -- Going through the levels of 'g' (with provided gridsize) we find the steps where param 'Z'
     -- crosses the value 'z_value'. For such, we interpolate an estimate for the actual value of
     -- requested 'param' at 'z_value' height.
     
@@ -583,7 +583,7 @@ local function matchpattern(pattern,...)
 end
 
 --
--- Get querydata for given track and data selection (level type, parameters and origintime) criterias
+-- Get querydata for given track and data selection (level type, parameters and origintime) criteria
 --
 local function getraw(track,targs)
 	-- params is empty if querying only calculated parameter(s)
@@ -2683,7 +2683,7 @@ function dataquery()
 	local function query(args,lqargs) return querydata(checkdqargs(args,lqargs)) end
 
 	--
-	-- Querys returning cross section data
+	-- Queries returning cross section data
 	--
 	local function crossquery(dqargs,cqargs) return querycross(checkcqargs(dqargs,cqargs)) end
 	local function timecrossquery(dqargs,cqargs) return querycross(checkcqargs(dqargs,cqargs,"timecross")) end

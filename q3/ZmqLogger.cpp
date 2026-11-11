@@ -14,7 +14,7 @@
 using namespace std;
 
 // USE_ZMQ is enabled in engine, to get the feature. Even if it's not, we'll
-// give a sceleton to throw an error.
+// give a skeleton to throw an error.
 //
 #ifdef USE_ZMQ
 #include <zmq_mod.hpp>

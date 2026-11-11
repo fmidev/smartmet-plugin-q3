@@ -277,7 +277,7 @@ int push_raw_info(lua_State *L, const Raw_interface &r, const NA_Data *qd,
 int push_raw_param_info(lua_State *L, const NA_Data *qd, const char *s) {
   // { str [, ...] }= .params
   //
-  // Lists the parameters, prefering to give their standard names (i.e. "T" for
+  // Lists the parameters, preferring to give their standard names (i.e. "T" for
   // "Lämpötila:4").
   //
   if (strcmp(s, "params") == 0) {
@@ -296,7 +296,7 @@ int push_raw_param_info(lua_State *L, const NA_Data *qd, const char *s) {
 
   // { str [, ...] }= .native_params
   //
-  // Lists the parameters, prefering to give their native names (i.e.
+  // Lists the parameters, preferring to give their native names (i.e.
   // "Lämpötila:4").
   //
   // Note: Since with 'USE_NEWBASE' define all 'NA_Param' parameters always
@@ -921,7 +921,7 @@ int RawBind::__call(lua_State *L) {
       "cross=[true|false],"         // 22-Sep-2011 PKi: Flag for cross call
       "flightroute=[true|false]," // 05-Mar-2015 PKi: Flag for flightroute call
       "height=[number|{number}]," // 04-Oct-2011 PKi: For cross call using
-                                  // heigths 23-Nov-2012 PKi: and for height
+                                  // heights 23-Nov-2012 PKi: and for height
                                   // value query
       "}]");
 

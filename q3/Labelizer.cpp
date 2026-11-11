@@ -423,7 +423,7 @@ void Labelizer::Chain::add_point(const Point &xy) {
       // make a new chunk (growing so big)
       //
       chunks.emplace_back(chunk_area_limit);
-      bool _ = chunks.back().add_point(xy, v); // should always succeeed
+      bool _ = chunks.back().add_point(xy, v); // should always succeed
       assert(_);
       (void)_;
     }

@@ -341,7 +341,7 @@ enum LatLonList::e_state LatLonList::init_from_ud(lua_State *L, int index,
 }
 
 /*
- * Is a certain coordinate within the area defined by 'LatLonList' (inclusing
+ * Is a certain coordinate within the area defined by 'LatLonList' (including
  * closure from end point to start).
  *
  * Returns:
