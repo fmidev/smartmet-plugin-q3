@@ -18,10 +18,10 @@
 #include "Matrix.h"
 #include "TronHints.h"
 
-#include <smartmet/trax/Contour.h>
-#include <smartmet/trax/Grid.h>
-#include <smartmet/trax/IsobandLimits.h>
-#include <smartmet/trax/SavitzkyGolay.h>
+#include <trax/Contour.h>
+#include <trax/Grid.h>
+#include <trax/IsobandLimits.h>
+#include <trax/SavitzkyGolay.h>
 
 #include <algorithm>
 #include <cmath>

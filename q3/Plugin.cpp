@@ -15,10 +15,10 @@
  *
  * As of now, SPServer has no actual documentation. --AKa 28-Nov-2007
  */
-#include <smartmet/spine/HTTP.h>
-#include <smartmet/spine/Reactor.h>
-#include <smartmet/spine/SmartMet.h>
-#include <smartmet/spine/SmartMetPlugin.h>
+#include <spine/HTTP.h>
+#include <spine/Reactor.h>
+#include <spine/SmartMet.h>
+#include <spine/SmartMetPlugin.h>
 
 /*
 ..8<...8<...8<...8<...8<...8<...8<...8<...8<...8<...8<...8<...8<...8<...
