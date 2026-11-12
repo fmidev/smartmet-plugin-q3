@@ -3,9 +3,8 @@
  */
 
 #include "LuaWrap.h"
-
 #include "LogTools.h"
-#include "Tools.h"
+#include "Invariant.h"
 
 /*
  */

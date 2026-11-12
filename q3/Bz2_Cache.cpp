@@ -7,14 +7,21 @@
  *       12-Mar-2009 AKa
  */
 #include "Bz2_Cache.h"
-#include "SQD_Tools.h"
 #include <macgyver/StringConversion.h>
+#include "SQD_Tools.h"
+#include "LogTools.h"
+
 using namespace std;
 
 #include <newbase/NFmiMetTime.h>
 #include <cerrno>
 #include <cstring>
 #include <system_error>
+#include <cassert>
+#include <climits>
+#include <cstdint>
+#include <cstdlib>
+#include <utility>
 
 namespace
 {

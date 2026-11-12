@@ -12,23 +12,21 @@
  */
 
 #include "ContourInfo.h"
-
-
+#include <boost/lexical_cast.hpp>
+#include <newbase/NFmiDataMatrix.h>
+#include <algorithm>
+#include <sstream>
+#include <cassert>
+#include <cstring>
+#include <cmath>
+#include <cctype>
+#include <cstdlib>
+#include <stdexcept>
 #include "newbase/NFmiStringTools.h"
-
 // 29-Dec-2011 PKi: LogTools.h instead of QDLog.h
 //
 //#include "QDLog.h"
 #include "LogTools.h"
-
-#include <algorithm>
-#include <boost/lexical_cast.hpp>
-
-#include <sstream>
-
-#include <cassert>
-#include <cstring>
-#include <cmath>
 
 using namespace std;
 

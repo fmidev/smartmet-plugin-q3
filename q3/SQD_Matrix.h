@@ -6,10 +6,14 @@
 #ifndef SQD_MATRIX_H
 #define SQD_MATRIX_H
 
+#include <newbase/NFmiParameterName.h>
+#include <string>
 #include "Matrix.h"
 #include "Projection.h"
-#include "SQD_Data.h"
-#include "SQD_Tools.h"
+#include "JDay.h"
+#include "LogTools.h"
+
+class SQD_Data;
 
 #ifndef USE_NEWBASE
 #error "This file shouldn't be included when compiling without Newbase."

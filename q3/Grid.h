@@ -6,15 +6,27 @@
 #ifndef GRID_H
 #define GRID_H
 
+#include <cassert>
+#include <vector>
 #include "LatLon.h"
 #include "LuaNew.h"
 #include "Matrix.h"
 #include "NA_Data.h"
 #include "Raw.h"
+#include "ApiParam.h"
+#include "JDay.h"
+#include "MatrixPos.h"
+#include "NA_Level.h"
+#include "NA_Param.h"
+#include "Projection.h"
+#include "Tools.h"
 
 /*
  */
 class Grid;
+class ApiMatrix;
+class Matrix;
+class Raw_interface;
 
 struct GridBind {
 public:

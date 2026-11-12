@@ -7,13 +7,12 @@
 #ifndef PROJECTION_H
 #define PROJECTION_H
 
-#include "LatLon.h"
-#include "Tools.h"
-
 #include <string>
-#include <vector>
+#include <cassert>
+#include "LatLon.h"
+#include "Invariant.h"
 
-#include <macgyver/Exception.h>
+class MatrixPos;
 
 /*
  * Abstract base class (interface) for particular projections.

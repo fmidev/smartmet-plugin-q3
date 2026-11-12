@@ -12,26 +12,18 @@
 #warning "_GNU_SOURCE not defined; 'posix_memalign()' may not be available"
 #endif
 
-#include "Invariant.h"
-#include "LogTools.h"
-
 #include <cassert>
 #include <cstdlib>
-#include <limits>
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include "LogTools.h"
 // abort(), posix_memalign()
 
-#include <errno.h>
 #include <stdint.h>
-#include <string.h>
-#include <sys/time.h>
-#include <time.h>
+#include <pthread.h>
 // keep this for Ubuntu (Centos seems to be giving 'string.h' from some system
 // headers)
-
-#include "Lua.h"
 
 #ifdef METQU
 #define CONST_IF_SERVER /*not const*/
@@ -39,11 +31,8 @@
 #define CONST_IF_SERVER const
 #endif
 
-// Compile-time configurations
-//
-#include "Config.h"
-
 #include <float.h>
+
 const float INF_F = FLT_MAX; // = FLT_MAX (not quite infinity, but close by)
 
 const char *const MIME_TEXT_UTF8 = "text/html; charset=UTF-8";
@@ -175,6 +164,7 @@ bool ends_with(const char *a, const char *b);
 
 #ifdef UNIX
 #include <glob.h>
+
 const char *glob_fn(const char *fn_mask, glob_t &gbuf, int &gbuf_i,
                     bool is_dir = false);
 #else

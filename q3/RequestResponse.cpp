@@ -8,9 +8,11 @@
  *   http://www.drdobbs.com/windows/226500168
  */
 #include "RequestResponse.hpp"
-
 #include <cctype>
 #include <string>
+#include <cassert>
+#include <cstring>
+#include "LogTools.h"
 
 using namespace std;
 

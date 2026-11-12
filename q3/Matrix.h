@@ -36,25 +36,32 @@
 
 #include "MatrixPos.h"
 #include "Raw.h"
-
 #include "Tools.h"
+#include "Config.h"
+#include "Invariant.h"
+#include "LogTools.h"
+#include "LuaNew.h"
+#include "NA_Level.h"
+#include "NA_Param.h"
 // string_or_null
 
+#include <newbase/NFmiParameterName.h>
+#include <ostream>
+#include <memory>
+#include <utility>
+#include <cassert>
+#include <cstddef>
+#include <sstream>
+#include <string>
 #include "LatLon.h"
-
 #include "newbase/NFmiLocation.h"
 #include "newbase/NFmiPoint.h"
 
-#include <ostream>
-
-#include <memory>
-#include <utility>
-
 class Projection;
-
 /*---=== MatrixSize ===---
  */
 class MatrixSize;
+class LatLon;
 
 struct MatrixSizeBind {
 public:
@@ -310,6 +317,7 @@ private:
  * if 'is_readonly' is true.
  */
 class NFmiGrid;
+
 class Matrix : public ApiMatrix, public LuaNew<MatrixBind> {
 public:
   Matrix& operator=(const Matrix&) = delete;

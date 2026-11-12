@@ -8,17 +8,16 @@
 #ifndef TRACKERBASE_H
 #define TRACKERBASE_H
 
-#include "NA_Data.h"
-#include "TrackedData.h"
-
-#include "Tools.h"
-
+#include <pthread.h>
 #include <map>
-#include <time.h>
-
 #include <set>
 #include <string>
 #include <vector>
+#include "Tools.h"
+#include "JDay.h"
+#include "NA_Level.h"
+
+class TrackedData;
 
 /*
  * Abstract base class for 'Sqd_Tracker' and 'Bz2_Tracker'

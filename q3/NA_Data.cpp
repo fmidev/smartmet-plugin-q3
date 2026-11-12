@@ -4,12 +4,17 @@
  * Revised:  19-Oct-10 AKa
  */
 #include "NA_Data.h"
-
-#include "MemMatrix.h"
 #include <macgyver/StringConversion.h>
 #include <utility>
 #include <vector>
 #include <limits>
+#include <cassert>
+#include <cstdlib>
+#include <optional>
+#include "MemMatrix.h"
+#include "Invariant.h"
+#include "LogTools.h"
+#include "Matrix.h"
 
 using namespace std;
 

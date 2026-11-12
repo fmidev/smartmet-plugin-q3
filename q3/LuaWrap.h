@@ -4,6 +4,7 @@
 #ifndef LUAWRAP_H
 #define LUAWRAP_H
 
+#include <cstddef>
 #include "LuaNew.h"
 #include "Tools.h"
 // assert_invariant

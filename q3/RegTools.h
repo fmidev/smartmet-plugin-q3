@@ -5,6 +5,7 @@
 #define REGTOOLS_H
 
 #include "Tools.h"
+#include "Config.h"
 
 /*---=== Output decimals and MIME control (via Lua stack registry) ===---
  */

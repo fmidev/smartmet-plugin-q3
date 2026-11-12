@@ -7,14 +7,17 @@
 #define NA_PARAM_H
 
 #include "Tools.h"
+#include "Invariant.h"
+#include "LogTools.h"
 
 #ifdef USE_NEWBASE
 #include "newbase/NFmiParameterName.h"
 #endif
 
+#include <macgyver/StringConversion.h>
 #include <string>
 #include <vector>
-#include <macgyver/StringConversion.h>
+#include <cstring>
 
 // 31-Oct-2011 PKi: Parameter mapping for virtual parameters
 //

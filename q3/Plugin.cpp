@@ -5,8 +5,6 @@
  *
  * 10-Jan-2014 PKi: SmartMet Server API now uses HTTP classes
  */
-#include "Server.hpp"
-
 /*
  * For 'SP_HttpRequest' and 'SP_HttpResponse' documentation, see:
  *
@@ -19,6 +17,10 @@
 #include <spine/Reactor.h>
 #include <spine/SmartMet.h>
 #include <spine/SmartMetPlugin.h>
+#include <boost/bind/bind.hpp>
+#include "Server.hpp"
+#include "LogTools.h"
+#include "RequestResponse.hpp"
 
 /*
 ..8<...8<...8<...8<...8<...8<...8<...8<...8<...8<...8<...8<...8<...8<...
@@ -60,6 +62,9 @@ length = 0 ); SP_HttpMessage::const void * getContent() const;
 */
 
 #include <iostream>
+#include <cassert>
+#include <string>
+#include <utility>
 // cerr
 
 using namespace std;

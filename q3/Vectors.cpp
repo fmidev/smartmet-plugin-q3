@@ -8,16 +8,10 @@
  */
 
 #include "Vectors.h"
-
 #include <math.h>
-
-// 29-Dec-2011 PKi: LogTools.h instead of QDLog.h
-//
-//#include "QDLog.h"
-#include "LogTools.h"
+#include <version>
 
 #ifdef SELFTEST_ENABLE
-#include <math.h>
 #include <stdexcept>
 #endif
 

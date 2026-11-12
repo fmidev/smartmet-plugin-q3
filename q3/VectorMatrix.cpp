@@ -7,6 +7,12 @@
  * Revised:  20-Oct-2010 AKa
  */
 #include "VectorMatrix.h"
+#include <cstring>
+#include <sstream>
+#include <cmath>
+#include <stdexcept>
+#include <string>
+#include <vector>
 #include "Grid.h"
 #include "LatLon.h"
 #include "Matrix.h"
@@ -14,11 +20,10 @@
 #include "RegTools.h"
 #include "Tools.h"
 #include "Vector.h"
-
-#include <cstring>
-#include <limits>
-#include <ostream>
-#include <sstream>
+#include "Invariant.h"
+#include "Lua.h"
+#include "NA_Param.h"
+#include "Projection.h"
 
 using namespace std;
 

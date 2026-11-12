@@ -6,10 +6,11 @@
 #ifndef APIPARAM_H
 #define APIPARAM_H
 
+#include <string>
+#include <vector>
 #include "NA_Param.h"
-#include "Tools.h"
+#include "Invariant.h"
 
-class NA_Info;
 class NA_Data;
 
 /*

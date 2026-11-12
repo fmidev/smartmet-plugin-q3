@@ -8,12 +8,17 @@
 #ifndef Q3_WRAP_HPP
 #define Q3_WRAP_HPP
 
-#include "RequestResponse.hpp"
-#include "Server.hpp"
-#include "Tools.h"
 #include <lua.hpp>
 #include <map>
 #include <string>
+#include <cstddef>
+#include "RequestResponse.hpp"
+#include "Server.hpp"
+#include "Tools.h"
+#include "Config.h"
+#include "Invariant.h"
+
+class RequestResponse;
 
 /*
  * Takes care of Lua sandboxing for a single query.

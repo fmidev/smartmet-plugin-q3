@@ -2,7 +2,7 @@
  * REGTOOLS.CPP                     Copyright (c) 2010, Ilmatieteen laitos
  */
 #include "RegTools.h"
-
+#include <version>
 #include "LuaNew.h"
 
 using namespace std;

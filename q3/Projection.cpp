@@ -3,12 +3,15 @@
  * laitos
  */
 #include "Projection.h"
+#include <exception>
 
 #ifdef USE_NEWBASE
 #include "SQD_Projection.h"
 #endif
 
 #include "Proj4_Projection.h"
+#include "LogTools.h"
+#include "MatrixPos.h"
 
 using namespace std;
 

@@ -7,19 +7,24 @@
 #ifndef NA_DATA_H
 #define NA_DATA_H
 
+#include <newbase/NFmiParameterName.h>
+#include <sys/types.h>
+#include <list>
+#include <map>
+#include <string>
+#include <vector>
 #include "JDay.h"
 #include "MatrixPos.h"
 #include "MoreTools.h"
 #include "Projection.h"
 #include "Tools.h"
-
 #include "NA_Level.h"
-
-#include <list>
-#include <map>
-#include <string>
+#include "NA_Param.h"
 
 class Matrix;
+class LatLon;
+class LatLonList;
+
 class LatLonBlanket;
 class ApiParam;
 

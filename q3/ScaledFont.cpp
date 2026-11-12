@@ -2,15 +2,13 @@
  * SCALEDFONT.CPP                               Copyright 2010, Ilmatieteen
  * laitos
  */
+#include <cstring>
+#include <cassert>
+#include <stdexcept>
 #include "Invariant.h"
 #include "LuaNew.h"
-#include "Proto.h"
-
 #include "ScaledFont.hpp"
-
 #include "Converter.hpp"
-
-#include <cstring>
 
 using namespace std;
 

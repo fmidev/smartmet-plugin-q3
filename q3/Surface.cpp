@@ -3,23 +3,21 @@
  *
  * Ref: <http://www.cairographics.org/manual/cairo-image-surface.html>
  */
-#include "Invariant.h"
-#include "LuaNew.h"
-#include "Proto.h"
-
-#include "Context.hpp"
-#include "Surface.hpp"
-
-#include "Converter.hpp"
-
-#include <cairo.h>
 #include <cstring>
-
 #include <fstream>
-#include <map>
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <cassert>
+#include <iostream>
+#include "Invariant.h"
+#include "LuaNew.h"
+#include "Proto.h"
+#include "Context.hpp"
+#include "Surface.hpp"
+#include "Converter.hpp"
+#include "Common.h"
+#include "Lua.h"
 
 #ifdef CAIRO_HAS_PDF_SURFACE
 #include <cairo-pdf.h>

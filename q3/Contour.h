@@ -5,15 +5,15 @@
 #ifndef CONTOUR_H
 #define CONTOUR_H
 
+#include <math.h>
+#include <vector>
 #include "LuaNew.h"
-
 #include "MemMatrix.h" // 08-Dec-2011 PKi: Using MemMatrix; smoothening changes the data
 #include "Tools.h"
-
-#include <math.h>
-
 #include "cairo.h"
-#include <vector>
+#include "Invariant.h"
+#include "Matrix.h"
+#include "MatrixPos.h"
 
 class Contour;
 struct EdgePoint; // keep as a separate class since be bind it to Lua

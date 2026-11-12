@@ -9,12 +9,6 @@
 #ifndef MORETOOLS_H
 #define MORETOOLS_H
 
-#include "JDay.h"
-#include "Tools.h"
-
-#include "ApiParam.h"
-#include "NA_Level.h"
-
 #include <algorithm>
 #include <cmath>
 #include <sstream>
@@ -22,6 +16,14 @@
 #include <vector>
 // std::unique
 #include <string>
+#include <exception>
+#include <utility>
+#include "JDay.h"
+#include "Tools.h"
+#include "ApiParam.h"
+#include "NA_Level.h"
+#include "LogTools.h"
+#include "LuaNew.h"
 
 #ifdef METQU
 #include "NA_Param.h"

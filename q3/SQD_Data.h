@@ -13,16 +13,21 @@
 #error "This file shouldn't be included when compiling without Newbase."
 #endif
 
+#include <cstddef>
+#include <map>
+#include <string>
 #include "Tools.h"
-
 #include "NA_Data.h"
 #include "NA_Level.h"
-
 #include "JDay.h"
-
 #include "newbase/NFmiParameterName.h"
+#include "MatrixPos.h"
+#include "NA_Param.h"
 
 class Matrix;
+class Projection;
+struct NA_Level;
+
 class MemMatrix;
 class VectorMatrix;
 

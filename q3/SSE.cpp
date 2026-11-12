@@ -18,12 +18,13 @@
 #error "Only for SSE enabled compilations."
 #endif
 
+#include <cmath>
+#include <cstdlib>
+#include <algorithm>
 #include "LogTools.h"
 #include "Tools.h"
-
 #include "MemMatrix.h"
-
-#include <cmath>
+#include "Matrix.h"
 
 #define HAS_NANS_8(vb) (!NO_NANS_8(vb))
 
@@ -200,10 +201,6 @@ JustOnce_SSE::JustOnce_SSE() {
   //
   __m128 va = _mm_add_ps(m_XnanXnan, m_nanXnanX);
   always_assert(mm_nan_comp(va, m_nannannannan));
-#endif
-
-#if (!defined(METQU)) && (!defined(MQD2SQD))
-  // LOG_DEBUG0( "min/max assumptions() passed." );
 #endif
 }
 

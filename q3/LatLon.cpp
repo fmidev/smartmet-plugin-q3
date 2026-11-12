@@ -5,11 +5,13 @@
  */
 #include "LatLon.h"
 #include "Limits.h"
-#include "Proto.h"
-
 #include "MemMatrix.h"
 #include "Projection.h"
-#include "Tools.h"
+#include "LogTools.h"
+#include "Lua.h"
+#include "Matrix.h"
+#include "MatrixPos.h"
+#include "NA_Param.h"
 
 // Proj4 headers define MIN and MAX as macros, which is plenty stupid.
 //
@@ -17,6 +19,11 @@ const LatLon LatLon::MIN(-90, -180);
 const LatLon LatLon::MAX(90, 180);
 
 #include <vector>
+#include <cassert>
+#include <cctype>
+#include <cstring>
+#include <algorithm>
+#include <cmath>
 
 using namespace std;
 

@@ -1,15 +1,14 @@
 /*
  * FONTFACE.CPP                               Copyright 2010, Ilmatieteen laitos
  */
+#include <cstring>
+#include <cassert>
+#include <cstdio>
+#include <stdexcept>
 #include "Invariant.h"
 #include "LuaNew.h"
-#include "Proto.h"
-
 #include "FontFace.hpp"
-
 #include "Converter.hpp"
-
-#include <cstring>
 
 using namespace std;
 

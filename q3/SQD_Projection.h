@@ -14,10 +14,11 @@
 
 #include <memory>
 #include <stdexcept>
+#include <cstring>
+#include <string>
 // required for 'std::auto_ptr' (Centos works without it; Ubuntu must have this)
 
 #include "Projection.h"
-
 #include "newbase/NFmiArea.h"
 #include "newbase/NFmiAreaFactory.h"
 

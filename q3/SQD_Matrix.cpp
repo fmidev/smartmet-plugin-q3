@@ -5,14 +5,19 @@
  * Revised:  22-Oct-2010
  */
 #include "SQD_Matrix.h"
+#include <newbase/NFmiParam.h>
+#include <cassert>
+#include <cmath>
+#include <version>
 #include "SQD_Data.h"
 #include "SQD_Tools.h"
-
 #include "newbase/NFmiFastQueryInfo.h"
 #include "newbase/NFmiParameterName.h"
-
 #include "MoreTools.h"
 #include "NA_Level.h"
+#include "Invariant.h"
+
+class NFmiQueryData;
 
 using namespace std;
 

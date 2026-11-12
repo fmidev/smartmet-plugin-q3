@@ -6,6 +6,7 @@
 extern "C" {
 #include "lauxlib.h"
 #include "lualib.h"
+#include "Lua.h"
 }
 
 #include <cassert>

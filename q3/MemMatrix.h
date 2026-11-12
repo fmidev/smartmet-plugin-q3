@@ -6,10 +6,16 @@
 #ifndef MEMMATRIX_H
 #define MEMMATRIX_H
 
+#include <boost/optional.hpp>
+#include <newbase/NFmiParameterName.h>
+#include <cassert>
+#include <stdexcept>
 #include "Matrix.h"
 #include "Projection.h"
+#include "MatrixPos.h"
+#include "NA_Param.h"
 
-#include <boost/optional.hpp>
+struct NA_Level;
 
 /*---=== MemMatrix ===---
  *

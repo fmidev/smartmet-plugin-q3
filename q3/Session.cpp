@@ -8,7 +8,13 @@
  * Revised: 12-Nov-2010
  */
 #include "Session.h"
-
+#include <newbase/NFmiParameterName.h>
+#include <sys/time.h>
+#include <cassert>
+#include <cmath>
+#include <cstring>
+#include <ctime>
+#include <string>
 #include "ApiParam.h"
 #include "Contour.h"
 #include "Grid.h"
@@ -24,8 +30,15 @@
 #include "TronHints.h"
 #include "Vector.h"
 #include "VectorMatrix.h"
-
 #include "newbase/NFmiEnumConverter.h"
+#include "Config.h"
+#include "LogTools.h"
+#include "Lua.h"
+#include "LuaNew.h"
+#include "Matrix.h"
+#include "MatrixPos.h"
+#include "NA_Param.h"
+#include "Raw.h"
 
 #ifdef METQU
 #include "TrackedDataSet.h"
@@ -36,7 +49,6 @@
 #endif
 
 #include "Proto.h"
-
 #include "Q3Engine.h"
 
 // Entry point of the baked-in 'newcairo' C module (defined in NewCairo.cpp).

@@ -3,12 +3,11 @@
  *
  * Ref: <http://www.cairographics.org/manual/cairo-paths.html>
  */
+#include <cassert>
+#include <stdexcept>
 #include "Invariant.h"
 #include "LuaNew.h"
-#include "Proto.h"
-
 #include "Path.hpp"
-
 #include "Converter.hpp"
 //#include "Color.hpp"
 

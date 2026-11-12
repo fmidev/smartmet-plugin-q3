@@ -24,19 +24,17 @@
  *   --AKa 20-Jan-2009
  */
 #include "Labelizer.h"
-
-
+#include <cassert>
+#include <cstring>
+#include <cmath>
+#include <stdexcept>
+#include <algorithm>
 // 29-Dec-2011 PKi: LogTools.h instead of QDLog.h
 //
 //#include "QDLog.h"
 #include "LogTools.h"
-
-#include "LuaWrap.h" // 01-Feb-2012 PKi
-#include <cassert>
-#include <cstring>
-#include <cmath>
-
-#include <stdexcept>
+#include "Lua.h"
+#include "LuaNew.h"
 
 using namespace std;
 

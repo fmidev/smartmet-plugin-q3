@@ -12,12 +12,16 @@
 #include <utility>
 #include <vector>
 #include <string>
-
+#include <ctime>
 #include "TrackerBase.h"
 #include "LuaNew.h"
-
 #include "Q3Engine.h"
 #include "JDay.h"
+#include "Invariant.h"
+#include "NA_Level.h"
+#include "TrackedData.h"
+
+class ApiParam;
 
 /*
 * Class to keep an eye on a set of files (usually from a certain producer).

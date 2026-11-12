@@ -6,6 +6,7 @@
 #ifndef SYSLOG_LOGGER_H
 #define SYSLOG_LOGGER_H
 
+#include <cstddef>
 #include "LogTools.h"
 
 /*

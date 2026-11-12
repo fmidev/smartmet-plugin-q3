@@ -7,12 +7,14 @@
 #ifndef VECTORMATRIX_H
 #define VECTORMATRIX_H
 
+#include <cmath>
+#include <cassert>
+#include <iosfwd>
 #include "LuaNew.h"
-
 #include "Matrix.h"
 #include "Vector.h"
-
-#include <cmath>
+#include "LogTools.h"
+#include "MatrixPos.h"
 
 /*---=== VectorMatrix ===---*
  *

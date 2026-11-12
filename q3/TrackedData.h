@@ -7,8 +7,13 @@
 #ifndef TRACKEDDATA_H
 #define TRACKEDDATA_H
 
+#include <ctime>
+#include <string>
+#include <vector>
 #include "NA_Data.h"
 #include "Tools.h"
+#include "JDay.h"
+#include "NA_Level.h"
 
 /*
  * There is only one 'Data' instance for each available SQD or BZ2 file.

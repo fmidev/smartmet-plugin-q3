@@ -19,13 +19,11 @@
 #ifndef VECTORS_H
 #define VECTORS_H
 
-#include <assert.h>
 #include <math.h>
 #include <values.h>
 // MAXFLOAT
 
 #include <algorithm>
-#include <stdexcept>
 
 namespace Vectors {
 

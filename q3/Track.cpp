@@ -11,27 +11,28 @@
 *       -- AKa 2-Mar-2009
 */
 #include "Track.h"
-#include "Sqd_Tracker.h"
-#include "Bz2_Tracker.h"
-
-#include "SQD_Data.h"
-
-#include "LogTools.h"
-#include "Tools.h"
-#include "MoreTools.h"
-#include "Proto.h"
-
-#include "Raw.h"
-#include "Grid.h"
-#include "Matrix.h"
-
 #include <cassert>
-
 #include <map>
 #include <utility>
 #include <vector>
 #include <cstdlib>
 #include <cstring>
+#include <cmath>
+#include "Sqd_Tracker.h"
+#include "Bz2_Tracker.h"
+#include "SQD_Data.h"
+#include "LogTools.h"
+#include "Tools.h"
+#include "MoreTools.h"
+#include "Proto.h"
+#include "Raw.h"
+#include "Grid.h"
+#include "Matrix.h"
+#include "ApiParam.h"
+#include "Config.h"
+#include "Lua.h"
+#include "MatrixPos.h"
+#include "NA_Data.h"
 
 extern "C" {
 #include <sys/stat.h>
@@ -496,6 +497,8 @@ LuaNew_ID TrackProxyBind::ID;
 
 static unsigned char track_proxy_chunk[] =
 #include "track_proxy.lch"
+
+class NA_Param;
 
     /*
     * Set up a metatable (at [-1]) and return our ID.

@@ -8,15 +8,14 @@
 #ifndef JDAY_H
 #define JDAY_H
 
-#include "Invariant.h"
-#include "LuaNew.h"
-
 #include <math.h>
 #include <stdint.h>
 // int64_t
 #include <time.h>
-
 #include <vector>
+#include <string>
+#include "Invariant.h"
+#include "LuaNew.h"
 
 class JDay;
 

@@ -4,20 +4,15 @@
  * Revised:  17-Oct-10 AKa
  */
 #include "NA_Level.h"
-
-#include "LogTools.h"
-#include "Matrix.h"
-#include "Tools.h"
-
-#include <map>
-#include <memory>
 #include <string>
-// auto_ptr
-#include <fstream>
-#include <macgyver/StringConversion.h>
 #include <cmath>
 #include <cstring>
-#include <optional>
+#include <cassert>
+#include <algorithm>
+#include "LogTools.h"
+#include "Tools.h"
+#include "Invariant.h"
+#include "NA_Data.h"
 
 using namespace std;
 

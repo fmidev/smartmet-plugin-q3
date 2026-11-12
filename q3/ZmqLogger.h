@@ -6,6 +6,7 @@
 #ifndef ZMQ_LOGGER_H
 #define ZMQ_LOGGER_H
 
+#include <cstddef>
 #include "LogTools.h"
 
 /*
@@ -23,6 +24,7 @@ private:
   // not)
   //
   struct impl;
+
   impl *opaque;
   // zmq::context_t ctx;
   // zmq::socket_t socket;

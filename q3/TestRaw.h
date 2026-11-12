@@ -2,6 +2,10 @@
  * TESTRAW.H                         Copyright (c) 2010, Ilmatieteen laitos
  */
 #include "Config.h"
+#include "Tools.h"
+
+class MatrixPos;
+struct NA_Level;
 
 #if (!defined(TESTRAW_H)) && defined(USE_TESTRAW)
 #define TESTRAW_H

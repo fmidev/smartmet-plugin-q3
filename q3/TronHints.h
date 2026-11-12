@@ -7,6 +7,7 @@
 #include "LuaNew.h"
 
 class TronHints;
+class LuaNew_ID;
 
 struct TronHintsBind {
 public:

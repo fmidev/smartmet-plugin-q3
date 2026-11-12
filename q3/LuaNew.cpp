@@ -2,12 +2,12 @@
  * LUANEW.CPP                 Copyright (c) 2008-2009, Ilmatieteen laitos
  */
 #include "LuaNew.h"
-
 #include <cstdarg>
 #include <sstream>
 #include <stdexcept>
-
-#include <iostream>
+#include <cassert>
+#include <cstdio>
+#include <string>
 // cerr
 
 using namespace std;

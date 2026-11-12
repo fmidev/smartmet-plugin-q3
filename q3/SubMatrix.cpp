@@ -4,12 +4,13 @@
  * "Peekhole" object used by 'foreach' to iterate a parent matrix.
  */
 #include "SubMatrix.h"
-
-#include "Vector.h"
-#include "VectorMatrix.h"
-
 #include <cstring>
 #include <cmath>
+#include "Vector.h"
+#include "VectorMatrix.h"
+#include "Invariant.h"
+#include "LatLon.h"
+#include "LogTools.h"
 
 using namespace std;
 

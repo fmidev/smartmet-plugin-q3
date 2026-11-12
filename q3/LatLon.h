@@ -7,11 +7,11 @@
 #define LATLON_H
 
 #include <vector>
-
 #include "LogTools.h"
 #include "LuaNew.h"
 #include "MatrixPos.h"
 #include "Tools.h"
+#include "Invariant.h"
 
 class MemMatrix;
 class Matrix;

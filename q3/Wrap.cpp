@@ -5,16 +5,22 @@
  */
 #include "Wrap.hpp"
 #include "Tools.h"
-
 #include "LuaNew.h"
+#include "LogTools.h"
+#include "Lua.h"
+#include "RequestResponse.hpp"
 // L_ASSERT etc.
-
-#include "Q3Engine.h"
-#include "RegTools.h"
 
 #include <map>
 #include <sstream>
 #include <string>
+#include <cassert>
+#include <cstdint>
+#include <cstdio>
+#include <cstdlib>
+#include <stdexcept>
+#include "Q3Engine.h"
+#include "RegTools.h"
 
 using namespace std;
 

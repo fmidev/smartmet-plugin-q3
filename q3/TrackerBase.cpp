@@ -6,18 +6,17 @@
  *       12-Mar-2009 AKa
  */
 #include "TrackerBase.h"
-#include "NA_Data.h"
-
 #include <macgyver/ThreadName.h>
-#include "NA_Level.h"
-#include "Tools.h"
-
-#include <fstream>
 #include <string>
-
-#include <algorithm> // sort
 #include <utility>
 #include <vector>
+#include <cstdint>
+#include <cstring>
+#include "NA_Level.h"
+#include "Tools.h"
+#include "LogTools.h"
+#include "MoreTools.h"
+#include "TrackedData.h"
 
 using namespace std;
 

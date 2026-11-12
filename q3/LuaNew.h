@@ -18,10 +18,13 @@
 #define LUANEW_H
 
 #include <cassert>
-
-#include "Lua.h"
 #include <set>
 #include <string>
+#include <cstddef>
+#include <stdexcept>
+#include "Lua.h"
+
+class LuaNew_base;
 
 #define L_typename(n) LuaNew_base::typename_(L, n)
 

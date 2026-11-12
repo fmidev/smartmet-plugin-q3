@@ -10,14 +10,14 @@
  * Revised:  25-Oct-2010
  */
 #include "JDay.h"
-#include "Proto.h"
-
-#include "Tools.h"
 #include <cstring>
-
 #include <cassert>
 #include <cctype>
 #include <climits>
+#include <cstdio>
+#include "Proto.h"
+#include "Tools.h"
+#include "Lua.h"
 
 using namespace std;
 

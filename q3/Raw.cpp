@@ -5,14 +5,24 @@
  */
 #include "Raw.h"
 #include <macgyver/StringConversion.h>
+#include <sys/types.h>
 #include "Tools.h"
 #include "Limits.h"
-
 #include "Proto.h"
-
 #include "Grid.h"
 #include "Matrix.h"
 #include "VectorMatrix.h"
+#include "ApiParam.h"
+#include "Config.h"
+#include "Invariant.h"
+#include "JDay.h"
+#include "LatLon.h"
+#include "LogTools.h"
+#include "Lua.h"
+#include "MoreTools.h"
+#include "NA_Data.h"
+#include "NA_Param.h"
+#include "Projection.h"
 
 #ifdef USE_NEWBASE
 #include "SQD_Data.h"
@@ -29,7 +39,10 @@
 #include <cstring>
 #include <stdexcept>
 #include <utility>
-
+#include <cassert>
+#include <exception>
+#include <optional>
+#include <vector>
 #include "newbase/NFmiEnumConverter.h"
 
 using namespace std;

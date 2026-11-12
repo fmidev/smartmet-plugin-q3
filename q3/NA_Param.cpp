@@ -4,6 +4,7 @@
  * Revised:  17-Oct-10 AKa
  */
 #include "NA_Param.h"
+#include <newbase/NFmiParameterName.h>
 
 #ifdef USE_NEWBASE
 #include "SQD_Tools.h"
@@ -12,6 +13,8 @@
 #include <map>
 #include <string>
 #include <utility>
+#include <cassert>
+#include "Config.h"
 
 using namespace std;
 

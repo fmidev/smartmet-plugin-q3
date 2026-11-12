@@ -9,12 +9,14 @@
  *   ...
  */
 #include "ApiParam.h"
+#include <newbase/NFmiParameterName.h>
+#include <cassert>
+#include "LogTools.h"
+#include "NA_Data.h"
 
 #ifdef USE_NEWBASE
 #include "SQD_Tools.h"
 #endif
-
-#include <cmath>
 
 using namespace std;
 

@@ -6,13 +6,14 @@
 #include "LuaNew.h"
 #include "Invariant.h"
 #include "Proto.h"
-
 #include "Matrix.hpp"
-
 #include "Converter.hpp"
 //#include "Color.hpp"
 
+#include <cairo.h>
 #include <cstring>
+#include <cassert>
+#include <stdexcept>
 
 using namespace std;
 

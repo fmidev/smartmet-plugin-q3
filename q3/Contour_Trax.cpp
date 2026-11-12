@@ -13,22 +13,29 @@
  *     edge or boundary of missing values)
  */
 
-#include "Contour.h"
-
-#include "Matrix.h"
-#include "TronHints.h"
-
 #include <trax/Contour.h>
 #include <trax/Grid.h>
 #include <trax/IsobandLimits.h>
 #include <trax/SavitzkyGolay.h>
-
+#include <trax/GeometryCollection.h>
+#include <trax/InterpolationType.h>
+#include <trax/Polygon.h>
+#include <trax/Polyline.h>
 #include <algorithm>
 #include <cmath>
 #include <limits>
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include <cassert>
+#include <cstddef>
+#include <exception>
+#include "Contour.h"
+#include "Matrix.h"
+#include "TronHints.h"
+#include "Lua.h"
+#include "LuaNew.h"
+#include "MatrixPos.h"
 
 using namespace std;
 

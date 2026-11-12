@@ -8,30 +8,28 @@
 #include <macgyver/StringConversion.h>
 #include "Session.h"
 #include "RegTools.h"
-
 #include "Track.h"
 #include "HealthCheck.h"
-
 #include "Bz2_Tracker.h"
-
 #include "Tools.h"
 #include "LogTools.h"
 #include "LuaWrap.h"
 #include "Proto.h"
+#include "Lua.h"
+#include "LuaNew.h"
 
 #ifndef NDEBUG
 #include "Vector.h"
 #endif
 
+#include <boost/algorithm/string.hpp>
 #include <string>
 #include <vector>
 #include <cassert>
 #include <stdexcept>
-
 #include <cmath>
-
-#include <boost/algorithm/string.hpp>
-
+#include <cstring>
+#include <utility>
 // 02-Dec-2011 PKi: Labelizer (contour labeling) configuration from configuration file
 //
 #include "Labelizer.h"

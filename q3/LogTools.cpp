@@ -3,22 +3,20 @@
  *
  * Logging from Metqu/Q3, into multiple log backbones.
  */
-#include <cassert>
 #include <iostream>
 #include <sstream>
 #include <string>
 #include <vector>
-
-#include <pthread.h>
-
+#include <cstdarg>
+#include <cstring>
 #include "JDay.h"
 #include "LogTools.h"
 #include "Tools.h"
-
 #include "LuaNew.h"
+#include "Lua.h"
+#include "NA_Param.h"
 // L_GROW
 
-#include "ApiParam.h"
 #include "Matrix.h" // MatrixSize
 #include "MatrixPos.h"
 #include "NA_Level.h"

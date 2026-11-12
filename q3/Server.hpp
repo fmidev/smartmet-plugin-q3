@@ -6,14 +6,12 @@
 #ifndef Q3_SERVER_HPP
 #define Q3_SERVER_HPP
 
-#include "RequestResponse.hpp"
-#include "Tools.h"
-#include <lua.hpp>
 #include <map>
 #include <string>
-#include <utility>
+#include "Config.h"
 
 class Q3Engine;
+class RequestResponse;
 
 /*
  * Give OGC WMS services at '/q3_wms?...'

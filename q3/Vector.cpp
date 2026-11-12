@@ -2,12 +2,13 @@
  * VECTOR.CPP                          Copyright (c) 2009-10, Ilmatieteen laitos
  */
 #include "Vector.h"
-
-
 #include <cstring>
 #include <cmath>
-
-#include <iostream>
+#include <cassert>
+#include <version>
+#include "Invariant.h"
+#include "LogTools.h"
+#include "Lua.h"
 // debug
 
 using namespace std;

@@ -7,8 +7,6 @@
  *      <http://api.zeromq.org/zmq.7.html>
  */
 #include "ZmqLogger.h"
-
-#include <stdexcept>
 #include <string>
 
 using namespace std;

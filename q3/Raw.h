@@ -8,12 +8,16 @@
 #ifndef RAW_H
 #define RAW_H
 
+#include <string>
 #include "LuaNew.h"
 #include "MatrixPos.h"
 #include "NA_Data.h"
 #include "TrackedData.h"
-
 #include "JDay.h"
+#include "NA_Level.h"
+#include "Tools.h"
+
+class NA_Data;
 
 #ifdef METQU
 #include "ApiParam.h"

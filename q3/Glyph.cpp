@@ -1,15 +1,12 @@
 /*
  * GLYPH.CPP                               Copyright 2010, Ilmatieteen laitos
  */
-#include "Invariant.h"
-#include "LuaNew.h"
-#include "Proto.h"
-
-#include "Glyph.hpp"
-
-#include "Converter.hpp"
-
 #include <cstring>
+#include <cassert>
+#include <stdexcept>
+#include "LuaNew.h"
+#include "Glyph.hpp"
+#include "Converter.hpp"
 
 using namespace std;
 

@@ -7,11 +7,11 @@
 #ifndef BZ2_CACHE_H
 #define BZ2_CACHE_H
 
-#include "JDay.h"
-#include "Tools.h"
-
 #include <map>
 #include <string>
+#include <cstdio>
+#include "JDay.h"
+#include "Tools.h"
 
 /*
  * Class for making str-to-str cache persistent (used for BZ2 origintime

@@ -5,8 +5,12 @@
  * Ref. http://trac.osgeo.org/proj/wiki/ProjAPI
  */
 #include "Proj4_Projection.h"
-
-#include "Tools.h"
+#include <gis/SpatialReference.h>
+#include <cassert>
+#include <version>
+#include "Invariant.h"
+#include "LatLon.h"
+#include "LogTools.h"
 
 using namespace std;
 

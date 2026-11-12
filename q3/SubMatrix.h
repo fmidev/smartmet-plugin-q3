@@ -6,8 +6,15 @@
 #ifndef SUBMATRIX_H
 #define SUBMATRIX_H
 
+#include <cassert>
+#include <cstddef>
+#include <vector>
 #include "Matrix.h"
 #include "MatrixPos.h"
+#include "LuaNew.h"
+#include "Projection.h"
+
+class LatLon;
 
 /*---=== Array2D ===---
  *
@@ -53,6 +60,7 @@ private:
  *       as well as the usual ones.
  */
 class SubMatrix;
+
 struct SubMatrixBind {
 public:
   static LuaNew_ID ID; // the unique key

@@ -1,13 +1,10 @@
 /*
  * COLOR.CPP                               Copyright 2010, Ilmatieteen laitos
  */
-#include "Invariant.h"
-#include "LuaNew.h"
-#include "Proto.h"
-
-#include "Color.hpp"
-
 #include <cstdlib>
+#include "LuaNew.h"
+#include "Color.hpp"
+#include "Lua.h"
 // strtol (on Ubuntu 9.10)
 
 /*

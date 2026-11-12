@@ -3,8 +3,7 @@
  */
 #include "Limits.h"
 #include "MatrixPos.h"
-
-#include <lauxlib.h>
+#include "Lua.h"
 
 namespace Limits
 {

@@ -5,22 +5,30 @@
  * Calculation of iso lines (contours) for matrix data.
  */
 #include "Contour.h"
-
+#include <boost/shared_ptr.hpp>
 #include <cmath>
+#include <algorithm>
+#include <cstring>
+#include <stdexcept>
+#include <cassert>
+#include <cstdlib>
+#include <exception>
+#include <iterator>
+#include <map>
+#include <sstream>
+#include <string>
 #include "Matrix.h"
 #include "Proto.h"
 #include "Tools.h"
 #include "Vector.h"
-
-#include <algorithm>
-#include <cstring>
-
 // 21-Nov-2011 PKi: For drawing, filling and labeling contours
 //
 #include "Labelizer.h"
 #include "cairo.h"
-#include <boost/shared_ptr.hpp>
-#include <stdexcept>
+#include "ContourInfo.h"
+#include "Lua.h"
+#include "Vectors.h"
+
 #undef assert_invariant
 #include "Context.hpp"
 #include "TronHints.h"
@@ -29,7 +37,6 @@
 #include <boost/format.hpp>
 #include <boost/lexical_cast.hpp>
 #include <utility>
-
 #include "Smoothener.h"
 
 using namespace std;

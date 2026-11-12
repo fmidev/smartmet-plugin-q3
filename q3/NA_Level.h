@@ -8,12 +8,9 @@
 #ifndef NA_LEVEL_H
 #define NA_LEVEL_H
 
-#include "MatrixPos.h"
-#include "Tools.h"
-
-#include <math.h>
 #include <string>
 #include <vector>
+#include <cmath>
 
 class NA_Data;
 
@@ -48,7 +45,7 @@ public:
   Type getType() const { return lt; }
   double getValue() const { return lv; }
 
-  bool hasValue() const { return !isnan(lv); }
+  bool hasValue() const { return !std::isnan(lv); }
   std::string toString(bool getLongName = false) const;
 
   bool operator==(const NA_Level &o) const {
@@ -85,7 +82,7 @@ private:
 #ifndef NDEBUG
   void _INVARIANT(const char *file, unsigned line) const {
     if ((lt == NO_LEVEL) || (lt == GROUND_LEVEL)) {
-      assert_invariant(isnan(lv));
+      assert_invariant(std::isnan(lv));
     }
   }
 #endif

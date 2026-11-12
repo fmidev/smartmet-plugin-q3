@@ -8,11 +8,8 @@
 #ifndef PROJ4_PROJECTION_H
 #define PROJ4_PROJECTION_H
 
-#include "Projection.h"
-
 #include <gis/CoordinateTransformation.h>
-#include <gis/SpatialReference.h>
-#include <ogr_spatialref.h>
+#include "Projection.h"
 
 #define PI 3.14159265358979323846
 #define DEG_TO_RAD (PI / 180)

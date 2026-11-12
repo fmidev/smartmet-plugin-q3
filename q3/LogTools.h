@@ -8,24 +8,22 @@
 #ifndef LOGTOOLS_H
 #define LOGTOOLS_H
 
-#include <cassert>
 #include <stdio.h>
 #include <time.h>
-
+#include <stdint.h>
+#include <cassert>
 #include <sstream>
 #include <stdexcept>
 #include <string>
 #include <utility>
+#include <exception>
+#include "Lua.h"
 
 class MatrixPos;
 class MatrixSize;
 struct NA_Level;
 class NA_Param;
 class JDay;
-
-#include "Lua.h"
-
-#include <stdint.h>
 // 'uint64_t' (Ubuntu 9.10)
 
 /*

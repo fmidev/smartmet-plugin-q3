@@ -10,19 +10,35 @@
 #include "Proto.h"
 #include "Projection.h"
 #include "RegTools.h"
-
 #include "newbase/NFmiGrid.h"
 #include "newbase/NFmiLocation.h"
+#include "Config.h"
+#include "LatLon.h"
+#include "LogTools.h"
+#include "Lua.h"
+#include "LuaNew.h"
+#include "Matrix.h"
+#include "MatrixPos.h"
+#include "NA_Level.h"
+#include "NA_Param.h"
+#include "Vector.h"
 
 #ifdef __SSE__
 # include "SSE.h"
 #endif
 
 
+#include <newbase/NFmiArea.h>
+#include <newbase/NFmiPoint.h>
 #include <cmath>
-
 #include <sstream>
 #include <cstring>
+#include <cassert>
+#include <cstdint>
+#include <algorithm>
+#include <memory>
+#include <string>
+#include <vector>
 
 using namespace std;
 
@@ -833,9 +849,6 @@ int Matrix::q3_fmod( lua_State *L ) {
     offset_t n= c.getN();
 
     offset_t i=0;
-#ifdef __SSE__
-    // '_mm_rcp_ps' could be used to get recipropal of 'a' and 'b'
-#endif
     for( ; i<n; i++ ) { c[i]= fmodf(a[i],b); }
 
     return 1;   // 'c' pushed

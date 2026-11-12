@@ -12,15 +12,19 @@
  * 'cairo_status_to_string()' to get the strings. Would there be any help from
  * doing that?
  */
+#include <cairo.h>
+#include <unistd.h>
+#include <cairo-ft.h>
+#include <cairo-svg.h>
+#include <cstring>
+#include <cassert>
+#include <exception>
 #include "Invariant.h"
 #include "Limits.h"
 #include "LuaNew.h"
 #include "Proto.h"
-
-#include <cairo.h>
-#include <cstring>
-
-#include <unistd.h>
+#include "Common.h"
+#include "Lua.h"
 // mkstemp()
 
 using namespace std;
@@ -48,14 +52,12 @@ using namespace std;
 #include "Pattern.hpp"
 #include "ScaledFont.hpp"
 #include "Surface.hpp"
-
 #include "Converter.hpp"
 
 // Lua side of binding precompiled
 //
 static unsigned char newcairo_chunk[] =
 #include "newcairo.lch"
-
 #include "Color.hpp"
 
 namespace

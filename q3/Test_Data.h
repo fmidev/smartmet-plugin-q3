@@ -5,6 +5,8 @@
 #define TEST_DATA_H
 
 #include "Config.h"
+#include "JDay.h"
+#include "NA_Param.h"
 
 #ifndef USE_TESTRAW
 #error "This file shouldn't be included."
@@ -15,6 +17,9 @@
 
 #include "MatrixPos.h"
 #include "NA_Data.h"
+
+class Matrix;
+struct NA_Level;
 
 /*
  * Provides static test data

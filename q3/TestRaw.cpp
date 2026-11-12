@@ -2,7 +2,8 @@
  * TESTRAW.CPP                    Copyright (c) 2010, Ilmatieteen laitos
  */
 #include "TestRaw.h"
-#include "Tools.h"
+#include "MatrixPos.h"
+#include "NA_Level.h"
 
 #ifdef USE_TESTRAW
 

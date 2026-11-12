@@ -6,9 +6,10 @@
 #ifndef Q3_REQUESTRESPONSE_HPP
 #define Q3_REQUESTRESPONSE_HPP
 
-#include "Tools.h"
-
 #include <map>
+#include <cstddef>
+#include <string>
+#include "Tools.h"
 
 #define HTTPHdr_First_Origintime "XFMI-OriginTime"
 

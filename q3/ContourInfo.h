@@ -6,11 +6,11 @@
 #ifndef CONTOUR_INFO_H
 #define CONTOUR_INFO_H
 
+#include <math.h>
 #include <string>
 #include <utility>
 #include <vector>
-
-#include <math.h>
+#include <cstddef>
 
 // 29-Dec-2011 PKi: Just to build
 //
@@ -27,9 +27,11 @@
  */
 #ifdef USE_NFMIDATAMATRIX_FOR_CONTOURS
 #include "newbase/NFmiDataMatrix.h"
+
 #define ContourMatrix NFmiDataMatrix
 #else
 #include "Q2Matrix.h"
+
 #define ContourMatrix Q2Matrix
 #endif
 

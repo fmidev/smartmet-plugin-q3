@@ -3,25 +3,25 @@
  *
  * Ref: <http://www.cairographics.org/manual/cairo-context.html>
  */
+#include <cstring>
+#include <cstdlib>
+// strtol (on Ubuntu 9.10)
+#include <cmath>
+#include <cassert>
+#include <stdexcept>
 #include "Invariant.h"
 #include "LuaNew.h"
 #include "Proto.h"
-
 #include "Context.hpp"
-
 #include "FontFace.hpp"
 #include "Matrix.hpp"
 #include "Path.hpp"
 #include "Pattern.hpp"
 #include "ScaledFont.hpp"
 #include "Surface.hpp"
-
 #include "Converter.hpp"
-
-#include <cstring>
-#include <cstdlib>
-// strtol (on Ubuntu 9.10)
-#include <cmath>
+#include "Common.h"
+#include "Lua.h"
 
 using namespace std;
 

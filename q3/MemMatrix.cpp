@@ -6,6 +6,10 @@
  */
 #include "MemMatrix.h"
 #include "SSE.h"
+#include "Invariant.h"
+#include "Tools.h"
+
+struct NA_Level;
 
 /*---=== MemMatrix ===---*/
 

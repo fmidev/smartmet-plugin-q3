@@ -17,21 +17,17 @@
  *       12-Mar-2009 AKa
  */
 #include "Sqd_Tracker.h"
-#include "Tools.h"
-
-#include "SQD_Data.h"
-
-#include "LogTools.h"
-
+#include <glob.h>
 #include <cassert>
 #include <cstring>
-
-#ifdef UNIX
-#include <cerrno>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <unistd.h>
-#endif
+#include <map>
+#include <set>
+#include "Tools.h"
+#include "SQD_Data.h"
+#include "LogTools.h"
+#include "JDay.h"
+#include "NA_Data.h"
+#include "TrackedData.h"
 
 using namespace std;
 

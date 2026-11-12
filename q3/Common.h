@@ -7,8 +7,9 @@
 #define NEWCAIRO_COMMON_HPP
 
 #include <cairo.h>
-#include "Lua.h"
 #include <stdexcept>
+#include <exception>
+#include "Lua.h"
 
 #ifndef NDEBUG
 #define assert_invariant assert

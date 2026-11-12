@@ -3,20 +3,19 @@
  *
  * Ref: <http://www.cairographics.org/manual/cairo-pattern.html>
  */
+#include <cmath>
+#include <cstring>
+#include <cassert>
+#include <stdexcept>
 #include "Invariant.h"
 #include "LuaNew.h"
 #include "Proto.h"
-
-#include "Context.hpp"
 #include "Matrix.hpp"
 #include "Pattern.hpp"
-
-#include <cmath>
-
 #include "Color.hpp"
 #include "Converter.hpp"
-
-#include <cstring>
+#include "Common.h"
+#include "Lua.h"
 
 using namespace std;
 

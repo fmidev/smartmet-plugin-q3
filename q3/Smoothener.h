@@ -6,10 +6,8 @@
 #ifndef SMOOTHENER_H
 #define SMOOTHENER_H
 
-#include "Vectors.h"
-
-#include <map>
 #include <vector>
+#include "Vectors.h"
 
 /*
  * Define for testing purposes to 'fake' a hole (missing values) within the

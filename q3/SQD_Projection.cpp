@@ -20,10 +20,14 @@ laitos
 <<
 */
 #include "SQD_Projection.h"
-
+#include <newbase/NFmiArea.h>
+#include <newbase/NFmiPoint.h>
+#include <cassert>
 #include "newbase/NFmiAreaFactory.h"
 #include "newbase/NFmiGrid.h"
 #include "newbase/NFmiLocation.h"
+#include "Invariant.h"
+#include "LatLon.h"
 
 using namespace std;
 

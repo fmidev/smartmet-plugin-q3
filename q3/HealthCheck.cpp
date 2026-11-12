@@ -7,22 +7,19 @@
  * Log output is in JSON format (see <http://www.json.org>).
  */
 #include "HealthCheck.h"
-#include "Tools.h"
-
 #include <macgyver/ThreadName.h>
-
-#include <stdexcept>
 #include <string>
-
 #include <fstream>
-#include <iostream>
-
-#include <sys/resource.h>
-#include <sys/time.h>
+#include <cassert>
+#include <cctype>
+#include <cstdlib>
+#include <cstring>
+#include "Tools.h"
+#include "LogTools.h"
 // getrusage()
 
-#include <cerrno>
 #include <sys/statvfs.h>
+#include <cerrno>
 
 using namespace std;
 

@@ -22,11 +22,8 @@
  *      'man 3 syslog'
  */
 #include "SyslogLogger.h"
-
 #include <syslog.h>
-
 #include <cstring>
-#include <stdexcept>
 #include <string>
 #include <utility>
 #include <vector>

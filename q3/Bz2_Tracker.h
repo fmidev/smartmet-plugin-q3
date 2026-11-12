@@ -10,10 +10,14 @@
 #ifndef BZ2_TRACKER_H
 #define BZ2_TRACKER_H
 
-#include "TrackerBase.h"
-
 #include <set>
 #include <string>
+#include <ctime>
+#include "TrackerBase.h"
+#include "JDay.h"
+#include "Tools.h"
+
+class TrackedData;
 
 /*
  * Class to access archive data (.sqd.bz2)

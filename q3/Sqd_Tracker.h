@@ -8,14 +8,8 @@
 #ifndef SQD_TRACKER_H
 #define SQD_TRACKER_H
 
-#include <map>
 #include <string>
 #include <utility>
-#include <vector>
-
-#include <set>
-
-#include "Tools.h"
 #include "TrackerBase.h"
 
 /*

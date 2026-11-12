@@ -5,15 +5,44 @@
  * Revised:  22-Oct-2010
  */
 #include "SQD_Data.h"
+#include <boost/lexical_cast.hpp>
+#include <sys/stat.h>
+#include <gis/CoordinateMatrix.h>
+#include <newbase/NFmiArea.h>
+#include <newbase/NFmiDataIdent.h>
+#include <newbase/NFmiDataMatrix.h>
+#include <newbase/NFmiGlobals.h>
+#include <newbase/NFmiLevel.h>
+#include <newbase/NFmiLevelType.h>
+#include <newbase/NFmiLocation.h>
+#include <newbase/NFmiParam.h>
+#include <newbase/NFmiParameterName.h>
+#include <newbase/NFmiPoint.h>
+#include <newbase/NFmiProducer.h>
+#include <newbase/NFmiQueryInfo.h>
+#include <newbase/NFmiStaticTime.h>
+#include <newbase/NFmiString.h>
+#include <newbase/NFmiTime.h>
+#include <newbase/NFmiTimeBag.h>
+#include <newbase/NFmiTimeDescriptor.h>
+#include <newbase/NFmiTimePeriod.h>
+#include <sys/types.h>
+#include <cstring>
+#include <ctime>
+#include <cmath>
+#include <cassert>
+#include <exception>
+#include <list>
+#include <memory>
+#include <stdexcept>
+#include <utility>
+#include <vector>
 #include "SQD_Matrix.h"
 #include "SQD_Projection.h"
 #include "SQD_Tools.h"
-
 #include "NA_Level.h"
-
 #include "MemMatrix.h"
 #include "Projection.h"
-
 #include "newbase/NFmiAreaFactory.h"
 #include "newbase/NFmiFastQueryInfo.h"
 #include "newbase/NFmiGrid.h"
@@ -24,18 +53,13 @@
 #include "newbase/NFmiTimeList.h"
 #include "newbase/NFmiTotalWind.h"
 #include "newbase/NFmiWeatherAndCloudiness.h"
-
-#include <cstring>
-
-#include <boost/lexical_cast.hpp>
-
-#include <ctime>
-#include <cmath>
-#include <sys/stat.h>
-
 #include "newbase/NFmiRotatedLatLonArea.h"
-
-#include <gis/CoordinateMatrix.h>
+#include "Invariant.h"
+#include "LatLon.h"
+#include "LogTools.h"
+#include "Lua.h"
+#include "LuaNew.h"
+#include "Matrix.h"
 
 using namespace std;
 

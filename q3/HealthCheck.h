@@ -6,7 +6,9 @@
 #ifndef HEALTHCHECK_H
 #define HEALTHCHECK_H
 
-#include "Tools.h"
+#include <pthread.h>
+#include <string>
+#include <vector>
 
 /*
  */

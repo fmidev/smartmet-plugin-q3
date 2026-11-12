@@ -17,14 +17,15 @@
 #include "NA_Data.h"
 #include "NA_Level.h"
 #include "Tools.h"
-
 #include "JDay.h"
 #include "LatLon.h"
+#include "NA_Param.h"
 
 class VectorMatrix;
 
+#include <newbase/NFmiLevelType.h>
+#include <newbase/NFmiPoint.h>
 #include <string>
-
 #include "newbase/NFmiGrid.h"
 #include "newbase/NFmiLevel.h"
 #include "newbase/NFmiMetTime.h"
