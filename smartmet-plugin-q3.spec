@@ -2,8 +2,8 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet q3 plugin
 Name: %{SPECNAME}
-Version: 26.11.7
-Release: 2%{?dist}.fmi
+Version: 26.11.13
+Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
 URL: https://github.com/fmidev/smartmet-plugin-q3
@@ -92,6 +92,9 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/smartmet/plugins/q3plugin.conf
 
 %changelog
+* Fri Nov 13 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.11.13-1.fmi
+- Include cleanup: files include what they use, unnecessary includes removed. No functional changes
+
 * Sat Nov 7 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.11.7-2.fmi
 - Fixed parsing of killtime, which was always disabled
 - New settings memory_limit_mb, max_image_pixels and max_grid_cells
