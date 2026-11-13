@@ -7,7 +7,6 @@
 #include "Proj4_Projection.h"
 #include <gis/SpatialReference.h>
 #include <cassert>
-#include <version>
 #include "Invariant.h"
 #include "LatLon.h"
 #include "LogTools.h"

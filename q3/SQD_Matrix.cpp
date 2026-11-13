@@ -8,7 +8,6 @@
 #include <newbase/NFmiParam.h>
 #include <cassert>
 #include <cmath>
-#include <version>
 #include "SQD_Data.h"
 #include "SQD_Tools.h"
 #include "newbase/NFmiFastQueryInfo.h"

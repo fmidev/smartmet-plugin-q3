@@ -9,7 +9,6 @@
 
 #include "Vectors.h"
 #include <math.h>
-#include <version>
 
 #ifdef SELFTEST_ENABLE
 #include <stdexcept>

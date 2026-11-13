@@ -5,7 +5,6 @@
 #include <cstring>
 #include <cmath>
 #include <cassert>
-#include <version>
 #include "Invariant.h"
 #include "LogTools.h"
 #include "Lua.h"
