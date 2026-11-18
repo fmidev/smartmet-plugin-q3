@@ -98,6 +98,8 @@ rm -rf %{buildroot}
 - Tests accept rendered images which differ only in PNG encoding
 - Scripts with a time or memory limit are run in the LuaJIT interpreter so that the limits are checked in loops too
 - Functions called with arguments of a wrong type report an error; scripts see only the type name of the metatable of a data object
+- Fixed a crash when a cairo matrix was released, the class had the same name as the data matrix class. The cairo matrix methods scale, rotate, invert, multiply, transform_distance and transform_point now work
+- Fixed a crash after a failed construction of a data object, for example with an unknown projection
 
 * Fri Nov 13 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.11.13-1.fmi
 - Include cleanup: files include what they use, unnecessary includes removed. No functional changes

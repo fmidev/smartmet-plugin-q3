@@ -144,6 +144,22 @@ void *LuaNew_base::push(lua_State *L, size_t bytes, const LuaNew_ID &ID,
 }
 
 /*
+ * The constructor of the object allocated at 'p' by 'new(L)' threw: find the
+ * userdata on the stack and detach its metatable ('__gc' won't be called).
+ */
+void LuaNew_base::unconstructed(lua_State *L, void *p) {
+  for (int i = lua_gettop(L); i >= 1; i--) {
+    if (lua_touserdata(L, i) == p) {
+      if (lua_checkstack(L, 1)) {
+        lua_pushnil(L);
+        lua_setmetatable(L, i);
+      }
+      return;
+    }
+  }
+}
+
+/*
  * Nuke the object after a constructor has thrown an exception; otherwise the
  * destructor will (eventually, at GC) get called for a non-valid C++ object.
  */

@@ -214,7 +214,7 @@ int Pattern_bind::index(lua_State *L) {
       {
         lua_pushliteral(L, "matrix");
         cairo_pattern_get_matrix(my, *new (L)
-                                         Matrix()); // push matrix, then fill it
+                                         CairoMatrix()); // push matrix, then fill it
         lua_settable(L, -3);
       }
 
@@ -397,9 +397,9 @@ int Pattern::set_filter(lua_State *L) {
 int Pattern::set_matrix(lua_State *L) {
   proto(L, "CairoMatrix");
   Pattern &my = Pattern::instance_notnull(L, lua_upvalueindex(1));
-  Matrix *matrix = Matrix::instance(L, 1);
+  CairoMatrix *matrix = CairoMatrix::instance(L, 1);
   if (!matrix) {
-    luaL_error(L, "Wanted Matrix, got %s", L_typename(1));
+    luaL_error(L, "Wanted CairoMatrix, got %s", L_typename(1));
   }
 
   cairo_pattern_set_matrix(my, *matrix);

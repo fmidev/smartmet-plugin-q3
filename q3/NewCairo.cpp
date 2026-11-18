@@ -352,7 +352,7 @@ int pattern_radial(lua_State *L) {
   return 1;
 }
 
-/*---=== Matrix ===---
+/*---=== CairoMatrix ===---
  *
  * Note: We've reduced the '_init' away from the function call names.
  */
@@ -369,7 +369,7 @@ int matrix(lua_State *L) {
   double x0 = lua_tonumber(L, 5);
   double y0 = lua_tonumber(L, 6);
 
-  cairo_matrix_init(*new (L) Matrix(), xx, yx, xy, yy, x0, y0);
+  cairo_matrix_init(*new (L) CairoMatrix(), xx, yx, xy, yy, x0, y0);
   return 1;
 }
 
@@ -378,7 +378,7 @@ int matrix(lua_State *L) {
  */
 int matrix_identity(lua_State *L) {
   proto(L, "");
-  cairo_matrix_init_identity(*new (L) Matrix());
+  cairo_matrix_init_identity(*new (L) CairoMatrix());
   return 1;
 }
 
@@ -390,7 +390,7 @@ int matrix_translate(lua_State *L) {
   double tx = lua_tonumber(L, 1);
   double ty = lua_tonumber(L, 2);
 
-  cairo_matrix_init_translate(*new (L) Matrix(), tx, ty);
+  cairo_matrix_init_translate(*new (L) CairoMatrix(), tx, ty);
   return 1;
 }
 
@@ -402,7 +402,7 @@ int matrix_scale(lua_State *L) {
   double sx = lua_tonumber(L, 1);
   double sy = lua_tonumber(L, 2);
 
-  cairo_matrix_init_scale(*new (L) Matrix(), sx, sy);
+  cairo_matrix_init_scale(*new (L) CairoMatrix(), sx, sy);
   return 1;
 }
 
@@ -413,7 +413,7 @@ int matrix_rotate(lua_State *L) {
   proto(L, "number");
   double rad = lua_tonumber(L, 1);
 
-  cairo_matrix_init_rotate(*new (L) Matrix(), rad);
+  cairo_matrix_init_rotate(*new (L) CairoMatrix(), rad);
   return 1;
 }
 }  // namespace
@@ -476,7 +476,7 @@ int is_pattern(lua_State *L) {
  * bool= is_matrix( any )
  */
 int is_matrix(lua_State *L) {
-  lua_pushboolean(L, Matrix::instance(L, 1) != nullptr);
+  lua_pushboolean(L, CairoMatrix::instance(L, 1) != nullptr);
   return 1;
 }
 
@@ -536,7 +536,7 @@ extern "C" int WIN32_DLLEXPORT luaopen_newcairo(lua_State *L) {
     Surface::create_mt(L);
     Context::create_mt(L);
     Pattern::create_mt(L);
-    Matrix::create_mt(L);
+    CairoMatrix::create_mt(L);
     Path::create_mt(L);
     FontFace::create_mt(L);
     ScaledFont::create_mt(L);
@@ -586,7 +586,7 @@ extern "C" int WIN32_DLLEXPORT luaopen_newcairo(lua_State *L) {
     lua_setfield(L, -2, "pattern_radial");
 
     //---
-    // Matrix binding
+    // CairoMatrix binding
     //
     lua_pushcfunction(L, matrix);
     lua_setfield(L, -2, "matrix");

@@ -133,9 +133,9 @@ Path::~Path() {
 #if 0
 int Path::set_matrix( lua_State *L ) {
     Path &my= Path::instance_notnull(L, lua_upvalueindex(1) );
-    Matrix *matrix= Matrix::instance(L,1);
+    CairoMatrix *matrix= CairoMatrix::instance(L,1);
     if (!matrix) {
-        luaL_error( L, "Wanted Matrix, got %s", L_typename(1) );
+        luaL_error( L, "Wanted CairoMatrix, got %s", L_typename(1) );
     }
 
     cairo_pattern_set_matrix( my, *matrix );

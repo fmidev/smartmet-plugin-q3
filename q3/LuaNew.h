@@ -123,6 +123,16 @@ public:
 
   static void operator delete(void * /*unused*/) {}
 
+  /*
+   * Called by C++ when the constructor of a 'new(L)' object (or the evaluation
+   * of its arguments) throws. The userdata is already on the Lua stack with its
+   * metatable: detach the metatable so that Lua will not call the destructor
+   * of an object which was never constructed.
+   */
+  static void operator delete(void *p, lua_State *L) { unconstructed(L, p); }
+
+  static void unconstructed(lua_State *L, void *p);
+
 private:
   static int __gc(lua_State *L);
 };

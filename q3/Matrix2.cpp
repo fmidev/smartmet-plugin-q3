@@ -24,7 +24,7 @@ LuaNew_ID Matrix_bind::ID;
 */
 
 
-/*---=== Matrix ===---
+/*---=== CairoMatrix ===---
 */
 
 struct MatrixMethodNames : public MethodNames {
@@ -34,13 +34,13 @@ struct MatrixMethodNames : public MethodNames {
         initialized = initialized + 1;
         if (was) throw runtime_error( "There should be only one MatrixMethodNames" );
 
-        map( "translate",			Matrix::translate );
-        map( "scale",				Matrix::translate );
-        map( "rotate",				Matrix::translate );
-        map( "invert",		        Matrix::translate );
-        map( "multiply",		  	Matrix::translate );
-        map( "transform_distance",	Matrix::translate );
-        map( "transform_point",     Matrix::translate );
+        map( "translate",			CairoMatrix::translate );
+        map( "scale",				CairoMatrix::scale );
+        map( "rotate",				CairoMatrix::rotate );
+        map( "invert",		        CairoMatrix::invert );
+        map( "multiply",		  	CairoMatrix::multiply );
+        map( "transform_distance",	CairoMatrix::transform_distance );
+        map( "transform_point",     CairoMatrix::transform_point );
 
         // ...
     }
@@ -72,7 +72,7 @@ bool push_matrix_member( lua_State *L, const cairo_matrix_t &tmp, const char *s 
 * ...= __index( pattern_ud, key_any )
 */
 int Matrix_bind::index( lua_State *L ) {
-    Matrix &my= Matrix::instance_notnull(L,1);
+    CairoMatrix &my= CairoMatrix::instance_notnull(L,1);
 
     L_GROW(2);
 
@@ -140,9 +140,9 @@ void Matrix_bind::setup( lua_State *L ) {
 /*
 * matrix= matrix.translate( tx_num, ty_num )
 */
-int Matrix::translate( lua_State *L ) {
+int CairoMatrix::translate( lua_State *L ) {
     proto( L, "number,number" );
-    Matrix &my= Matrix::instance_notnull(L, lua_upvalueindex(1) );
+    CairoMatrix &my= CairoMatrix::instance_notnull(L, lua_upvalueindex(1) );
     double tx= lua_tonumber(L,1);
     double ty= lua_tonumber(L,2);
 
@@ -155,9 +155,9 @@ int Matrix::translate( lua_State *L ) {
 /*
 * matrix= matrix.scale( sx_num, sy_num )
 */
-int Matrix::scale( lua_State *L ) {
+int CairoMatrix::scale( lua_State *L ) {
     proto( L, "number,number" );
-    Matrix &my= Matrix::instance_notnull(L, lua_upvalueindex(1) );
+    CairoMatrix &my= CairoMatrix::instance_notnull(L, lua_upvalueindex(1) );
     double sx= lua_tonumber(L,1);
     double sy= lua_tonumber(L,2);
 
@@ -170,9 +170,9 @@ int Matrix::scale( lua_State *L ) {
 /*
 * matrix= matrix.rotate( rad_num )
 */
-int Matrix::rotate( lua_State *L ) {
+int CairoMatrix::rotate( lua_State *L ) {
     proto( L, "number" );
-    Matrix &my= Matrix::instance_notnull(L, lua_upvalueindex(1) );
+    CairoMatrix &my= CairoMatrix::instance_notnull(L, lua_upvalueindex(1) );
     double rad= lua_tonumber(L,1);
 
     cairo_matrix_rotate( my, rad );
@@ -184,9 +184,9 @@ int Matrix::rotate( lua_State *L ) {
 /*
 * matrix= matrix.invert()
 */
-int Matrix::invert( lua_State *L ) {
+int CairoMatrix::invert( lua_State *L ) {
     proto( L, "" );
-    Matrix &my= Matrix::instance_notnull(L, lua_upvalueindex(1) );
+    CairoMatrix &my= CairoMatrix::instance_notnull(L, lua_upvalueindex(1) );
 
     cairo_matrix_invert( my );
 
@@ -200,10 +200,10 @@ int Matrix::invert( lua_State *L ) {
 * Note: Unlike in Cairo C API, we use the same matrix for the first param, and the
 *       destination.
 */
-int Matrix::multiply( lua_State *L ) {
+int CairoMatrix::multiply( lua_State *L ) {
     proto( L, "CairoMatrix" );
-    Matrix &my= Matrix::instance_notnull(L, lua_upvalueindex(1) );
-    Matrix &mb= Matrix::instance_notnull( L, 1 );
+    CairoMatrix &my= CairoMatrix::instance_notnull(L, lua_upvalueindex(1) );
+    CairoMatrix &mb= CairoMatrix::instance_notnull( L, 1 );
 
     cairo_matrix_t ma= *my;     // just in case (if 'cairo_matrix_multiply' would corrupt 
                                 // when destination and source are the same)
@@ -216,9 +216,9 @@ int Matrix::multiply( lua_State *L ) {
 /*
 * dx', dy'= matrix.transform_distance( dx_num, dy_num )
 */
-int Matrix::transform_distance( lua_State *L ) {
+int CairoMatrix::transform_distance( lua_State *L ) {
     proto( L, "number,number" );
-    Matrix &my= Matrix::instance_notnull(L, lua_upvalueindex(1) );
+    CairoMatrix &my= CairoMatrix::instance_notnull(L, lua_upvalueindex(1) );
     double dx= lua_tonumber(L,1);
     double dy= lua_tonumber(L,2);
 
@@ -232,9 +232,9 @@ int Matrix::transform_distance( lua_State *L ) {
 /*
 * x', y'= matrix.transform_point( x_num, y_num )
 */
-int Matrix::transform_point( lua_State *L ) {
+int CairoMatrix::transform_point( lua_State *L ) {
     proto( L, "number,number" );
-    Matrix &my= Matrix::instance_notnull(L, lua_upvalueindex(1) );
+    CairoMatrix &my= CairoMatrix::instance_notnull(L, lua_upvalueindex(1) );
     double x= lua_tonumber(L,1);
     double y= lua_tonumber(L,2);
 

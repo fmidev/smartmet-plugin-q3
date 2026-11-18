@@ -1169,7 +1169,7 @@ int Context::rotate(lua_State *L) {
 int Context::transform(lua_State *L) {
   proto(L, "matrix");
   Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
-  Matrix &matrix = Matrix::instance_notnull(L, 1);
+  CairoMatrix &matrix = CairoMatrix::instance_notnull(L, 1);
 
   cairo_transform(my, matrix);
   status_check_ok(L, cairo_status(my));
@@ -1184,7 +1184,7 @@ int Context::transform(lua_State *L) {
 int Context::set_matrix(lua_State *L) {
   proto(L, "matrix");
   Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
-  Matrix &matrix = Matrix::instance_notnull(L, 1);
+  CairoMatrix &matrix = CairoMatrix::instance_notnull(L, 1);
 
   cairo_set_matrix(my, matrix);
   status_check_ok(L, cairo_status(my));
@@ -1200,7 +1200,7 @@ int Context::get_matrix(lua_State *L) {
   proto(L, "");
   Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
 
-  cairo_get_matrix(my, *new (L) Matrix()); // pushes matrix
+  cairo_get_matrix(my, *new (L) CairoMatrix()); // pushes matrix
   status_check_ok(L, cairo_status(my));
   return 1;
 }
@@ -1718,7 +1718,7 @@ int Context::set_font_size(lua_State *L) {
 int Context::set_font_matrix(lua_State *L) {
   proto(L, "matrix");
   Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
-  Matrix &mat = Matrix::instance_notnull(L, 1);
+  CairoMatrix &mat = CairoMatrix::instance_notnull(L, 1);
 
   cairo_set_matrix(my, mat);
   status_check_ok(L, cairo_status(my));
@@ -1734,7 +1734,7 @@ int Context::get_font_matrix(lua_State *L) {
   proto(L, "");
   Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
 
-  cairo_get_matrix(my, *new (L) Matrix()); // pushes matrix
+  cairo_get_matrix(my, *new (L) CairoMatrix()); // pushes matrix
   status_check_ok(L, cairo_status(my));
   return 1;
 }

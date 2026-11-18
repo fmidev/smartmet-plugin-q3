@@ -12,9 +12,9 @@
 #include <cairo.h>
 
 
-/*---=== Matrix ===---
+/*---=== CairoMatrix ===---
 */
-class Matrix;
+class CairoMatrix;
 
 struct Matrix_bind {
   public:
@@ -23,18 +23,18 @@ struct Matrix_bind {
     static const char *name() { return "Cairo matrix"; }
     static const char *env_mode() { return nullptr; }
     static const LuaNew_ID & id() { return ID; }
-    using CAST_T = Matrix;
+    using CAST_T = CairoMatrix;
 
   private:
     static int index( lua_State *L );
 };
 
-class Matrix : public LuaNew<Matrix_bind> {
+class CairoMatrix : public LuaNew<Matrix_bind> {
   public:
     operator cairo_matrix_t *() { return &cm; }
 
-    Matrix() :cm() {}
-	//~Matrix();
+    CairoMatrix() :cm() {}
+	//~CairoMatrix();
 
     static int translate( lua_State *L );
     static int scale( lua_State *L );
