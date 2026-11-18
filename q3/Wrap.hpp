@@ -71,6 +71,7 @@ private:
   };
 
   static void *budget_alloc(void *ud, void *ptr, size_t osize, size_t nsize);
+  static lua_State *new_state(MemoryBudget &budget);
 
   // data members
   //

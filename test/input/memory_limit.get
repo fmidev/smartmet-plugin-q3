@@ -1,0 +1,2 @@
+GET /q3?code=local%20ok%2Cerr%3Dpcall%28function%28%29%20local%20t%3D%7B%7D%20for%20i%3D1%2C1e8%20do%20t%5Bi%5D%3Dstring.rep%28%22x%22%2C1000%29..i%20end%20end%29%20t%3Dnil%20collectgarbage%28%29%20return%20ok%2C%20string.find%28tostring%28err%29%2C%22not%20enough%20memory%22%29~%3Dnil HTTP/1.0
+

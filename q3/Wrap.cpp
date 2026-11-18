@@ -92,6 +92,40 @@ void set_package_loaded(lua_State *L, const char *name) {
 
 /*const*/ void *REGISTRY_KEY_HOOK =
     (void *)LuaWrapper::my_hook; // unique key
+
+// registry[REGISTRY_KEY_MEMLIMIT] = kilobytes   Memory limit checked by the
+// hook when the Lua allocator cannot be replaced
+int memlimit_key_anchor = 0;
+void *REGISTRY_KEY_MEMLIMIT = &memlimit_key_anchor; // unique key
+
+void *probe_alloc(void * /* ud */, void *ptr, size_t /* osize */,
+                  size_t nsize) {
+  if (nsize == 0) {
+    free(ptr);
+    return nullptr;
+  }
+  return realloc(ptr, nsize);
+}
+
+/*
+ * 64-bit LuaJIT built without LJ_GC64 (the x86-64 default up to 2.1.0-beta3,
+ * i.e. RHEL8) must allocate from the low 2 GB itself: its 'lua_newstate()'
+ * prints "Must use luaL_newstate() for 64 bit target" and returns nullptr.
+ * Probe once whether a custom allocator can be used at all.
+ */
+bool custom_allocator_supported() {
+  static const bool supported = [] {
+    lua_State *L = lua_newstate(probe_alloc, nullptr);
+    if (L)
+      lua_close(L);
+    else
+      fprintf(stderr,
+              "q3: this LuaJIT does not support custom allocators, enforcing "
+              "memory_limit_mb from the instruction count hook instead\n");
+    return L != nullptr;
+  }();
+  return supported;
+}
 }  // namespace
 
 /*---=== LuaWrapper ===---
@@ -121,8 +155,19 @@ void *LuaWrapper::budget_alloc(void *ud, void *ptr, size_t osize,
   return p;
 }
 
+/*
+ * Create the Lua state with the budget allocator when LuaJIT allows it, and
+ * with the built-in allocator otherwise (the limit is then enforced by
+ * 'my_hook').
+ */
+lua_State *LuaWrapper::new_state(MemoryBudget &budget) {
+  if (custom_allocator_supported())
+    return lua_newstate(budget_alloc, &budget);
+  return luaL_newstate();
+}
+
 LuaWrapper::LuaWrapper(size_t memory_limit)
-    : budget{0, memory_limit}, L(lua_newstate(budget_alloc, &budget)) {
+    : budget{0, memory_limit}, L(new_state(budget)) {
   if (!L)
     throw runtime_error("out of memory");
 
@@ -202,9 +247,10 @@ void LuaWrapper::destroy() {
  * Lua hook, called every N instructions (see 'lua_sethook()').
  *
  * Debug hooks cannot have upvalues of their own (they're stored in Lua as
- * C pointers) so we need to pass the end time via registry:
+ * C pointers) so we need to pass the limits via registry:
  *
- *   registry[my_hook] = ms_uint   End limit for allowed execution
+ *   registry[my_hook] = ms_uint   End limit for allowed execution (if any)
+ *   registry[REGISTRY_KEY_MEMLIMIT] = kilobytes   Memory limit (if any)
  */
 void LuaWrapper::my_hook(lua_State *L, lua_Debug *ar) {
   (void)ar; // debugging information not needed
@@ -214,13 +260,21 @@ void LuaWrapper::my_hook(lua_State *L, lua_Debug *ar) {
   lua_pushlightuserdata(L, REGISTRY_KEY_HOOK);
   lua_gettable(L, LUA_REGISTRYINDEX);
 
-  auto run_until = (uint64_t)lua_tonumber(L, -1);
-  assert(run_until > 0); // if no limit, the hook shouldn't be set up
-
+  auto run_until = (uint64_t)lua_tonumber(L, -1); // 0 if not set
   lua_pop(L, 1);
 
-  if (now_ms() >= run_until) {
+  if (run_until > 0 && now_ms() >= run_until) {
     luaL_error(L, "Script took too long to execute");
+  }
+
+  lua_pushlightuserdata(L, REGISTRY_KEY_MEMLIMIT);
+  lua_gettable(L, LUA_REGISTRYINDEX);
+
+  auto limit_kb = (uint64_t)lua_tonumber(L, -1); // 0 if not set
+  lua_pop(L, 1);
+
+  if (limit_kb > 0 && (uint64_t)lua_gc(L, LUA_GCCOUNT, 0) >= limit_kb) {
+    luaL_error(L, "not enough memory");
   }
 }
 
@@ -264,10 +318,22 @@ int LuaWrapper::run(int args, RequestResponse &rr, double secs, int decimals
                     bool binary_q2
 #endif
 ) {
+  // Without a custom allocator the memory budget is checked by the hook
+  //
+  const bool hook_memlimit =
+      (budget.limit > 0 && !custom_allocator_supported());
+
+  if (hook_memlimit) {
+    lua_pushlightuserdata(L, REGISTRY_KEY_MEMLIMIT); // the key
+    lua_pushnumber(L, (double)(budget.limit / 1024));
+    lua_settable(L, LUA_REGISTRYINDEX);
+  }
+
   // Set up killtime hook if required
   //
-  if (secs > 0.0) {
-    double run_until_ms = ((double)now_ms()) + secs * 1000;
+  if (secs > 0.0 || hook_memlimit) {
+    double run_until_ms =
+        (secs > 0.0 ? ((double)now_ms()) + secs * 1000 : 0.0);
 
     // 'my_hook' is a C function pointer so we cannot give upvalues to it;
     // use Lua registry to pass the end time.
