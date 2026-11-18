@@ -360,6 +360,12 @@ int LuaWrapper::run(int args, RequestResponse &rr, double secs, int decimals
     // NOTE: The script gets to run slightly longer than 'secs' since the check
     //      only happens every 'LUA_MASKCOUNT' commands. This should be okay.
     //
+    // LuaJIT does not call hooks from JIT-compiled code, hence a compiled
+    // loop would never be interrupted. Run limited scripts in the
+    // interpreter; the heavy lifting is done in C++ anyway.
+    //
+    luaJIT_setmode(L, 0, LUAJIT_MODE_ENGINE | LUAJIT_MODE_OFF);
+
     lua_sethook(L, my_hook, LUA_MASKCOUNT, 500);
   }
 
