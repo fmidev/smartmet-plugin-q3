@@ -61,6 +61,7 @@ Obsoletes: fmi-q3-brainstorm
 #TestRequires: luajit >= 2.1.0
 #TestRequires: proj97 >= 9.7.0
 #TestRequires: smartmet-utils-devel
+#TestRequires: smartmet-library-regression
 
 %description
 SmartMet q3 plugin
@@ -94,6 +95,7 @@ rm -rf %{buildroot}
 %changelog
 * Wed Nov 18 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.11.18-1.fmi
 - Fixed all requests failing with "out of memory" on RHEL8: its LuaJIT does not support custom allocators, memory_limit_mb is then enforced from the instruction count hook
+- Tests accept rendered images which differ only in PNG encoding
 
 * Fri Nov 13 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.11.13-1.fmi
 - Include cleanup: files include what they use, unnecessary includes removed. No functional changes
