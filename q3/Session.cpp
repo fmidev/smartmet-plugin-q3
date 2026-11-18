@@ -225,7 +225,7 @@ int new_ApiMatrix(lua_State *L) {
 
   proto(L, "MatrixPos, [number|Vector|true], [string], [string]");
 
-  const MatrixPos &gs = *MatrixPos::instance(L, 1);
+  const MatrixPos &gs = MatrixPos::instance_notnull(L, 1);
   Limits::check_grid_size(L, gs);
 
   const Vector *v2 = Vector::instance(L, 2);
@@ -284,7 +284,7 @@ int new_ScalarMatrix(lua_State *L) {
     return 1;
 
   } else {
-    const MatrixPos &gs = *MatrixPos::instance(L, 1);
+    const MatrixPos &gs = MatrixPos::instance_notnull(L, 1);
     Limits::check_grid_size(L, gs);
     const char *proj = lua_tostring(L, 3);
 
@@ -349,7 +349,7 @@ int new_VectorMatrix(lua_State *L) {
     new (L) MemMatrix(*my);
   } else {
     proto(L, "MatrixPos");
-    MatrixPos &gs = *MatrixPos::instance(L, 1);
+    MatrixPos &gs = MatrixPos::instance_notnull(L, 1);
     Limits::check_grid_size(L, gs);
 
 #ifdef NDEBUG
@@ -381,7 +381,7 @@ int new_VectorMatrix(lua_State *L) {
 int nan_matrix(lua_State *L) {
   proto(L, "MatrixPos,[number|Vector]");
 
-  const MatrixPos &size = *MatrixPos::instance(L, 1);
+  const MatrixPos &size = MatrixPos::instance_notnull(L, 1);
   Limits::check_grid_size(L, size);
 
   if (lua_type(L, 2) == LUA_TNIL || lua_type(L, 2) == LUA_TNUMBER) {
@@ -389,7 +389,7 @@ int nan_matrix(lua_State *L) {
     return 1;
 
   } else {
-    const Vector &v = *Vector::instance(L, 2);
+    const Vector &v = Vector::instance_notnull(L, 2);
 
     new (L) MemMatrix(size, NAN, NA_Param::UNIT_UNKNOWN_, nullptr);
     new (L) MemMatrix(size, NAN, NA_Param::UNIT_UNKNOWN_, nullptr);
@@ -406,8 +406,8 @@ int nan_matrix(lua_State *L) {
 int new_SubMatrix(lua_State *L) {
   proto(L, "Matrix,MatrixPos");
 
-  Matrix &m = *Matrix::instance(L, 1);
-  MatrixPos &a = *MatrixPos::instance(L, 2);
+  Matrix &m = Matrix::instance_notnull(L, 1);
+  MatrixPos &a = MatrixPos::instance_notnull(L, 2);
 
   new (L) SubMatrix(m, a);
   LuaNew_base::keep_alive(L, -1, 1); // keep 'm' alive throughout our lifespan
@@ -453,7 +453,7 @@ int LONLAT(lua_State *L) {
   proto(L, "string,MatrixPos");
 
   const char *proj = lua_tostring(L, 1);
-  const MatrixPos &gs = *MatrixPos::instance(L, 2);
+  const MatrixPos &gs = MatrixPos::instance_notnull(L, 2);
   Limits::check_grid_size(L, gs);
 
   L_GROW(3);
@@ -494,8 +494,8 @@ int latlon(lua_State *L) {
     proto(L, "string,MatrixPos,MatrixPos");
 
     const char *proj_s = lua_tostring(L, 1);
-    const MatrixPos &gs = *MatrixPos::instance(L, 2);
-    const MatrixPos &pos = *MatrixPos::instance(L, 3);
+    const MatrixPos &gs = MatrixPos::instance_notnull(L, 2);
+    const MatrixPos &pos = MatrixPos::instance_notnull(L, 3);
 
     double dx = ((double)pos.getX()) / (gs.getX() - 1);
     double dy = ((double)pos.getY()) / (gs.getY() - 1);
@@ -604,12 +604,12 @@ int peekxy(lua_State *L) {
   else
     proto(L, "Matrix,Matrix,MatrixPos,number,number");
 
-  const Matrix &m = *Matrix::instance(L, 1);
-  const Matrix &m2 = *Matrix::instance(L, 2);
-  const MatrixPos &pos = *MatrixPos::instance(L, 3);
+  const Matrix &m = Matrix::instance_notnull(L, 1);
+  const Matrix &m2 = Matrix::instance_notnull(L, 2);
+  const MatrixPos &pos = MatrixPos::instance_notnull(L, 3);
 
   if (n == 4) {
-    const MatrixPos &offset = *MatrixPos::instance(L, 4);
+    const MatrixPos &offset = MatrixPos::instance_notnull(L, 4);
     return m2.offsetPosition(L, m, pos, offset);
   }
 

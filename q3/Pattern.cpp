@@ -133,7 +133,7 @@ struct PatternMethodNames pattern_method_names;
  * ...= __index( pattern_ud, key_any )
  */
 int Pattern_bind::index(lua_State *L) {
-  Pattern &my = *Pattern::instance(L, 1);
+  Pattern &my = Pattern::instance_notnull(L, 1);
 
   L_GROW(2);
 
@@ -275,7 +275,7 @@ Pattern::~Pattern() {
 int Pattern::add_color_stop_rgb(lua_State *L) {
   proto(L, lua_type(L, 2) == LUA_TNUMBER ? "number,number,number,number"
                                          : "number,string");
-  Pattern &my = *Pattern::instance(L, lua_upvalueindex(1));
+  Pattern &my = Pattern::instance_notnull(L, lua_upvalueindex(1));
 
   double offset = lua_tonumber(L, 1);
   Color col(L, 2);
@@ -299,7 +299,7 @@ int Pattern::add_color_stop_rgb(lua_State *L) {
 int Pattern::add_color_stop_rgba(lua_State *L) {
   proto(L, lua_type(L, 2) == LUA_TNUMBER ? "number,number,number,number,number"
                                          : "number,string,number");
-  Pattern &my = *Pattern::instance(L, lua_upvalueindex(1));
+  Pattern &my = Pattern::instance_notnull(L, lua_upvalueindex(1));
 
   double offset = lua_tonumber(L, 1);
   Color col(L, 2, true);
@@ -330,7 +330,7 @@ int Pattern::add_color_stop_rgba(lua_State *L) {
  */
 int Pattern::get_color_stop_rgba(lua_State *L) {
   proto(L, "uint");
-  Pattern &my = *Pattern::instance(L, lua_upvalueindex(1));
+  Pattern &my = Pattern::instance_notnull(L, lua_upvalueindex(1));
 
   unsigned index = lua_tointeger(L, 1);
 
@@ -368,7 +368,7 @@ int Pattern::get_color_stop_rgba(lua_State *L) {
  */
 int Pattern::set_extend(lua_State *L) {
   proto(L, "string");
-  Pattern &my = *Pattern::instance(L, lua_upvalueindex(1));
+  Pattern &my = Pattern::instance_notnull(L, lua_upvalueindex(1));
 
   cairo_pattern_set_extend(my, conv_extend(L, 1));
   status_check_ok(L, cairo_pattern_status(my));
@@ -382,7 +382,7 @@ int Pattern::set_extend(lua_State *L) {
  */
 int Pattern::set_filter(lua_State *L) {
   proto(L, "string");
-  Pattern &my = *Pattern::instance(L, lua_upvalueindex(1));
+  Pattern &my = Pattern::instance_notnull(L, lua_upvalueindex(1));
 
   cairo_pattern_set_filter(my, conv_filter(L, 1));
   status_check_ok(L, cairo_pattern_status(my));
@@ -396,7 +396,7 @@ int Pattern::set_filter(lua_State *L) {
  */
 int Pattern::set_matrix(lua_State *L) {
   proto(L, "CairoMatrix");
-  Pattern &my = *Pattern::instance(L, lua_upvalueindex(1));
+  Pattern &my = Pattern::instance_notnull(L, lua_upvalueindex(1));
   Matrix *matrix = Matrix::instance(L, 1);
   if (!matrix) {
     luaL_error(L, "Wanted Matrix, got %s", L_typename(1));

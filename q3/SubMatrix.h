@@ -106,6 +106,10 @@ public:
     return LuaNew<SubMatrixBind>::instance(L, index);
   }
 
+  static SubMatrix &instance_notnull(lua_State *L, int index) {
+    return LuaNew<SubMatrixBind>::instance_notnull(L, index);
+  }
+
   // Same ambiguity with 'operator new(L)'
   //
   static void *operator new(size_t size, lua_State *L) {

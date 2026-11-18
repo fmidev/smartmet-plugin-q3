@@ -339,7 +339,7 @@ int Context_bind::index(lua_State *L) {
     // Data members
     //
     if (strcmp(s, "info") == 0) {
-      Context &my = *Context::instance(L, 1);
+      Context &my = Context::instance_notnull(L, 1);
       lua_newtable(L);
 
       // .fill_rule ("winding"|"even_odd")
@@ -445,7 +445,7 @@ Context::~Context() {
  */
 int Context::save(lua_State *L) {
   proto(L, "");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
   cairo_save(my);
   status_check_ok(L, cairo_status(my));
 
@@ -458,7 +458,7 @@ int Context::save(lua_State *L) {
  */
 int Context::restore(lua_State *L) {
   proto(L, "");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
   cairo_restore(my);
   status_check_ok(L, cairo_status(my));
 
@@ -471,7 +471,7 @@ int Context::restore(lua_State *L) {
  */
 int Context::push_group(lua_State *L) {
   proto(L, "[bool], [bool]");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
 
   // By default, content type is CAIRO_CONTENT_COLOR_ALPHA
   // (the basic 'cairo_push_group()' would do that)
@@ -497,7 +497,7 @@ int Context::push_group(lua_State *L) {
  */
 int Context::pop_group_to_source(lua_State *L) {
   proto(L, "");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
 
   cairo_pop_group_to_source(my);
   status_check_ok(L, cairo_status(my));
@@ -517,7 +517,7 @@ int Context::pop_group_to_source(lua_State *L) {
 int Context::set_source_rgb(lua_State *L) {
   proto(L, lua_type(L, 1) == LUA_TNUMBER ? "number,number,number" : "string");
 
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
   double r = NAN;
   double g = NAN;
   double b = NAN;
@@ -542,7 +542,7 @@ int Context::set_source_rgba(lua_State *L) {
   proto(L, lua_type(L, 1) == LUA_TNUMBER ? "number,number,number,number"
                                          : "string,number");
 
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
   double r = NAN;
   double g = NAN;
   double b = NAN;
@@ -561,7 +561,7 @@ int Context::set_source_rgba(lua_State *L) {
  */
 int Context::set_source(lua_State *L) {
   proto(L, "CairoPattern");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
   Pattern &pat = Pattern::instance_notnull(L, 1);
 
   cairo_set_source(my, pat);
@@ -576,7 +576,7 @@ int Context::set_source(lua_State *L) {
  */
 int Context::set_source_surface(lua_State *L) {
   proto(L, "CairoSurface,number,number");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
   Surface &surf = Surface::instance_notnull(L, 1);
   double x = lua_tonumber(L, 2);
   double y = lua_tonumber(L, 3);
@@ -593,7 +593,7 @@ int Context::set_source_surface(lua_State *L) {
  */
 int Context::get_source(lua_State *L) {
   proto(L, "");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
 
   cairo_pattern_t *cp = cairo_get_source(my);
 
@@ -618,7 +618,7 @@ int Context::get_source(lua_State *L) {
 #if 0
 int Context::get_target( lua_State *L ) {
     proto( L, "" );
-    Context &my= *Context::instance(L,lua_upvalueindex(1));
+    Context &my= Context::instance_notnull(L,lua_upvalueindex(1));
     
     cairo_surface_t *cs= cairo_get_target(my);
 
@@ -644,7 +644,7 @@ int Context::get_target( lua_State *L ) {
  */
 int Context::set_antialias(lua_State *L) {
   proto(L, "string|bool");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
   cairo_antialias_t e;
 
   if (lua_isboolean(L, 1)) {
@@ -668,7 +668,7 @@ int Context::set_antialias(lua_State *L) {
  */
 int Context::set_dash(lua_State *L) {
   proto(L, "[{ [number], ... }], [number]");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
   unsigned n = 0;
 
   if (!lua_istable(L, 1)) {
@@ -713,7 +713,7 @@ int Context::set_dash(lua_State *L) {
  */
 int Context::get_dash(lua_State *L) {
   proto(L, "");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
 
   unsigned n = cairo_get_dash_count(my);
 
@@ -744,7 +744,7 @@ int Context::get_dash(lua_State *L) {
  */
 int Context::set_fill_rule(lua_State *L) {
   proto(L, "string");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
 
   cairo_set_fill_rule(my, conv_fill_rule(L, 1));
   status_check_ok(L, cairo_status(my));
@@ -760,7 +760,7 @@ int Context::set_fill_rule(lua_State *L) {
  */
 int Context::set_line_cap(lua_State *L) {
   proto(L, "string");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
 
   cairo_set_line_cap(my, conv_line_cap(L, 1));
   status_check_ok(L, cairo_status(my));
@@ -776,7 +776,7 @@ int Context::set_line_cap(lua_State *L) {
  */
 int Context::set_line_join(lua_State *L) {
   proto(L, "string");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
 
   cairo_set_line_join(my, conv_line_join(L, 1));
   status_check_ok(L, cairo_status(my));
@@ -790,7 +790,7 @@ int Context::set_line_join(lua_State *L) {
  */
 int Context::set_line_width(lua_State *L) {
   proto(L, "number");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
   double w = lua_tonumber(L, 1);
 
   cairo_set_line_width(my, w);
@@ -805,7 +805,7 @@ int Context::set_line_width(lua_State *L) {
  */
 int Context::set_miter_limit(lua_State *L) {
   proto(L, "number");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
   double v = lua_tonumber(L, 1);
 
   cairo_set_miter_limit(my, v);
@@ -820,7 +820,7 @@ int Context::set_miter_limit(lua_State *L) {
  */
 int Context::set_operator(lua_State *L) {
   proto(L, "string");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
 
   cairo_operator_t op = conv_operator(L, 1);
 
@@ -836,7 +836,7 @@ int Context::set_operator(lua_State *L) {
  */
 int Context::set_tolerance(lua_State *L) {
   proto(L, "number");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
 
   cairo_set_tolerance(my, lua_tonumber(L, 2));
   status_check_ok(L, cairo_status(my));
@@ -854,7 +854,7 @@ int Context::set_tolerance(lua_State *L) {
  */
 int Context::clip(lua_State *L) {
   proto(L, "");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
 
   cairo_clip(my);
   status_check_ok(L, cairo_status(my));
@@ -868,7 +868,7 @@ int Context::clip(lua_State *L) {
  */
 int Context::clip_preserve(lua_State *L) {
   proto(L, "");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
 
   cairo_clip_preserve(my);
   status_check_ok(L, cairo_status(my));
@@ -882,7 +882,7 @@ int Context::clip_preserve(lua_State *L) {
  */
 int Context::reset_clip(lua_State *L) {
   proto(L, "");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
 
   cairo_reset_clip(my);
   status_check_ok(L, cairo_status(my));
@@ -896,7 +896,7 @@ int Context::reset_clip(lua_State *L) {
  */
 int Context::clip_extents(lua_State *L) {
   proto(L, "");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
   double v[4];
 
   cairo_clip_extents(my, &v[0], &v[1], &v[2], &v[3]);
@@ -913,7 +913,7 @@ int Context::clip_extents(lua_State *L) {
  */
 int Context::fill(lua_State *L) {
   proto(L, "");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
 
   cairo_fill(my);
   status_check_ok(L, cairo_status(my));
@@ -927,7 +927,7 @@ int Context::fill(lua_State *L) {
  */
 int Context::fill_preserve(lua_State *L) {
   proto(L, "");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
 
   cairo_fill_preserve(my);
   status_check_ok(L, cairo_status(my));
@@ -941,7 +941,7 @@ int Context::fill_preserve(lua_State *L) {
  */
 int Context::fill_extents(lua_State *L) {
   proto(L, "");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
   double v[4];
   cairo_fill_extents(my, &v[0], &v[1], &v[2], &v[3]);
   status_check_ok(L, cairo_status(my));
@@ -957,7 +957,7 @@ int Context::fill_extents(lua_State *L) {
  */
 int Context::in_fill(lua_State *L) {
   proto(L, "number,number");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
   double x = lua_tonumber(L, 1);
   double y = lua_tonumber(L, 2);
 
@@ -973,7 +973,7 @@ int Context::in_fill(lua_State *L) {
  */
 int Context::mask(lua_State *L) {
   proto(L, "CairoPattern");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
   Pattern &pat = Pattern::instance_notnull(L, 1);
 
   cairo_mask(my, pat);
@@ -988,7 +988,7 @@ int Context::mask(lua_State *L) {
  */
 int Context::mask_surface(lua_State *L) {
   proto(L, lua_gettop(L) == 1 ? "CairoSurface" : "CairoSurface,number,number");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
   Surface &surf = Surface::instance_notnull(L, 1);
   double x = lua_tonumber(L, 2); // 0.0 by default
   double y = lua_tonumber(L, 3);
@@ -1005,7 +1005,7 @@ int Context::mask_surface(lua_State *L) {
  */
 int Context::paint(lua_State *L) {
   proto(L, "");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
 
   cairo_paint(my);
   status_check_ok(L, cairo_status(my));
@@ -1019,7 +1019,7 @@ int Context::paint(lua_State *L) {
  */
 int Context::paint_with_alpha(lua_State *L) {
   proto(L, "number");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
   cairo_paint_with_alpha(my, lua_tonumber(L, 1));
   status_check_ok(L, cairo_status(my));
 
@@ -1032,7 +1032,7 @@ int Context::paint_with_alpha(lua_State *L) {
  */
 int Context::stroke(lua_State *L) {
   proto(L, "");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
   cairo_stroke(my);
   status_check_ok(L, cairo_status(my));
 
@@ -1045,7 +1045,7 @@ int Context::stroke(lua_State *L) {
  */
 int Context::stroke_preserve(lua_State *L) {
   proto(L, "");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
   cairo_stroke_preserve(my);
   status_check_ok(L, cairo_status(my));
 
@@ -1058,7 +1058,7 @@ int Context::stroke_preserve(lua_State *L) {
  */
 int Context::stroke_extents(lua_State *L) {
   proto(L, "");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
   double v[4];
   cairo_stroke_extents(my, &v[0], &v[1], &v[2], &v[3]);
   status_check_ok(L, cairo_status(my));
@@ -1074,7 +1074,7 @@ int Context::stroke_extents(lua_State *L) {
  */
 int Context::in_stroke(lua_State *L) {
   proto(L, "number,number");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
   double x = lua_tonumber(L, 1);
   double y = lua_tonumber(L, 2);
 
@@ -1090,7 +1090,7 @@ int Context::in_stroke(lua_State *L) {
  */
 int Context::copy_page(lua_State *L) {
   proto(L, "");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
   cairo_copy_page(my);
   status_check_ok(L, cairo_status(my));
 
@@ -1103,7 +1103,7 @@ int Context::copy_page(lua_State *L) {
  */
 int Context::show_page(lua_State *L) {
   proto(L, "");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
   cairo_show_page(my);
   status_check_ok(L, cairo_status(my));
 
@@ -1116,7 +1116,7 @@ int Context::show_page(lua_State *L) {
  */
 int Context::translate(lua_State *L) {
   proto(L, "number, number");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
   double tx = lua_tonumber(L, 1);
   double ty = lua_tonumber(L, 2);
 
@@ -1133,7 +1133,7 @@ int Context::translate(lua_State *L) {
  */
 int Context::scale(lua_State *L) {
   proto(L, "number, [number]");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
   double sx = lua_tonumber(L, 1);
   double sy = (lua_gettop(L) > 1) ? lua_tonumber(L, 2) : sx;
 
@@ -1153,7 +1153,7 @@ int Context::scale(lua_State *L) {
  */
 int Context::rotate(lua_State *L) {
   proto(L, "number");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
   double rad = lua_tonumber(L, 1);
 
   cairo_rotate(my, rad);
@@ -1168,7 +1168,7 @@ int Context::rotate(lua_State *L) {
  */
 int Context::transform(lua_State *L) {
   proto(L, "matrix");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
   Matrix &matrix = Matrix::instance_notnull(L, 1);
 
   cairo_transform(my, matrix);
@@ -1183,7 +1183,7 @@ int Context::transform(lua_State *L) {
  */
 int Context::set_matrix(lua_State *L) {
   proto(L, "matrix");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
   Matrix &matrix = Matrix::instance_notnull(L, 1);
 
   cairo_set_matrix(my, matrix);
@@ -1198,7 +1198,7 @@ int Context::set_matrix(lua_State *L) {
  */
 int Context::get_matrix(lua_State *L) {
   proto(L, "");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
 
   cairo_get_matrix(my, *new (L) Matrix()); // pushes matrix
   status_check_ok(L, cairo_status(my));
@@ -1210,7 +1210,7 @@ int Context::get_matrix(lua_State *L) {
  */
 int Context::identity_matrix(lua_State *L) {
   proto(L, "");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
 
   cairo_identity_matrix(my);
   status_check_ok(L, cairo_status(my));
@@ -1224,7 +1224,7 @@ int Context::identity_matrix(lua_State *L) {
  */
 int Context::user_to_device(lua_State *L) {
   proto(L, "number,number");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
   double x = lua_tonumber(L, 1);
   double y = lua_tonumber(L, 2);
 
@@ -1241,7 +1241,7 @@ int Context::user_to_device(lua_State *L) {
  */
 int Context::user_to_device_distance(lua_State *L) {
   proto(L, "number,number");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
   double dx = lua_tonumber(L, 1);
   double dy = lua_tonumber(L, 2);
 
@@ -1258,7 +1258,7 @@ int Context::user_to_device_distance(lua_State *L) {
  */
 int Context::device_to_user(lua_State *L) {
   proto(L, "number,number");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
   double x = lua_tonumber(L, 1);
   double y = lua_tonumber(L, 2);
 
@@ -1275,7 +1275,7 @@ int Context::device_to_user(lua_State *L) {
  */
 int Context::device_to_user_distance(lua_State *L) {
   proto(L, "number,number");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
   double dx = lua_tonumber(L, 1);
   double dy = lua_tonumber(L, 2);
 
@@ -1292,7 +1292,7 @@ int Context::device_to_user_distance(lua_State *L) {
  */
 int Context::copy_path(lua_State *L) {
   proto(L, "");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
 
   Path &path = *new (L) Path(cairo_copy_path(my));
   status_check(L, path.status());
@@ -1305,7 +1305,7 @@ int Context::copy_path(lua_State *L) {
  */
 int Context::copy_path_flat(lua_State *L) {
   proto(L, "");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
 
   Path &path = *new (L) Path(cairo_copy_path_flat(my));
   status_check(L, path.status());
@@ -1318,7 +1318,7 @@ int Context::copy_path_flat(lua_State *L) {
  */
 int Context::append_path(lua_State *L) {
   proto(L, "path");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
   Path &path = Path::instance_notnull(L, 1);
 
   cairo_append_path(my, path);
@@ -1333,7 +1333,7 @@ int Context::append_path(lua_State *L) {
  */
 int Context::has_current_point(lua_State *L) {
   proto(L, "");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
 
   bool v = cairo_has_current_point(my);
   status_check_ok(L, cairo_status(my));
@@ -1347,7 +1347,7 @@ int Context::has_current_point(lua_State *L) {
  */
 int Context::get_current_point(lua_State *L) {
   proto(L, "");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
   double x = NAN;
   double y = NAN;
 
@@ -1364,7 +1364,7 @@ int Context::get_current_point(lua_State *L) {
  */
 int Context::new_path(lua_State *L) {
   proto(L, "");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
 
   cairo_new_path(my);
   status_check_ok(L, cairo_status(my));
@@ -1378,7 +1378,7 @@ int Context::new_path(lua_State *L) {
  */
 int Context::new_sub_path(lua_State *L) {
   proto(L, "");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
 
   cairo_new_sub_path(my);
   status_check_ok(L, cairo_status(my));
@@ -1392,7 +1392,7 @@ int Context::new_sub_path(lua_State *L) {
  */
 int Context::close_path(lua_State *L) {
   proto(L, "");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
 
   cairo_close_path(my);
   status_check_ok(L, cairo_status(my));
@@ -1408,7 +1408,7 @@ int Context::close_path(lua_State *L) {
  */
 int Context::arc(lua_State *L) {
   proto(L, "number,number,number,number,number");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
   double xc = lua_tonumber(L, 1);
   double yc = lua_tonumber(L, 2);
   double r = lua_tonumber(L, 3);
@@ -1429,7 +1429,7 @@ int Context::arc(lua_State *L) {
  */
 int Context::arc_negative(lua_State *L) {
   proto(L, "number,number,number,number,number");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
   double xc = lua_tonumber(L, 1);
   double yc = lua_tonumber(L, 2);
   double r = lua_tonumber(L, 3);
@@ -1452,7 +1452,7 @@ int Context::arc_negative(lua_State *L) {
  */
 int Context::circle(lua_State *L) {
   proto(L, "number,number,number");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
   double xc = lua_tonumber(L, 1);
   double yc = lua_tonumber(L, 2);
   double r = lua_tonumber(L, 3);
@@ -1470,7 +1470,7 @@ int Context::circle(lua_State *L) {
  */
 int Context::curve_to(lua_State *L) {
   proto(L, "number,number, number,number, number,number");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
   double x1 = lua_tonumber(L, 1);
   double y1 = lua_tonumber(L, 2);
   double x2 = lua_tonumber(L, 3);
@@ -1490,7 +1490,7 @@ int Context::curve_to(lua_State *L) {
  */
 int Context::line_to(lua_State *L) {
   proto(L, "number,number");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
   double x = lua_tonumber(L, 1);
   double y = lua_tonumber(L, 2);
 
@@ -1506,7 +1506,7 @@ int Context::line_to(lua_State *L) {
  */
 int Context::move_to(lua_State *L) {
   proto(L, "number,number");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
   double x = lua_tonumber(L, 1);
   double y = lua_tonumber(L, 2);
 
@@ -1522,7 +1522,7 @@ int Context::move_to(lua_State *L) {
  */
 int Context::rectangle(lua_State *L) {
   proto(L, "number,number,number,number");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
   double x = lua_tonumber(L, 1);
   double y = lua_tonumber(L, 2);
   double w = lua_tonumber(L, 3);
@@ -1541,7 +1541,7 @@ int Context::rectangle(lua_State *L) {
 /*** NOT ENABLED
 int Context::glyph_path( lua_State *L ) {
     proto( L, "{ glyph, ... }" );
-    Context &my= *Context::instance(L,lua_upvalueindex(1));
+    Context &my= Context::instance_notnull(L,lua_upvalueindex(1));
 
     if (!lua_istable(L,1)) {
         luaL_error( L, "Expecting table, got %s", L_typename(1) );
@@ -1575,7 +1575,7 @@ int Context::glyph_path( lua_State *L ) {
  */
 int Context::text_path(lua_State *L) {
   proto(L, "string");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
 
   cairo_text_path(my, lua_tostring(L, 1));
   status_check_ok(L, cairo_status(my));
@@ -1589,7 +1589,7 @@ int Context::text_path(lua_State *L) {
  */
 int Context::rel_curve_to(lua_State *L) {
   proto(L, "number,number, number,number, number,number");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
   double dx1 = lua_tonumber(L, 1);
   double dy1 = lua_tonumber(L, 2);
   double dx2 = lua_tonumber(L, 3);
@@ -1612,7 +1612,7 @@ int Context::rel_curve_to(lua_State *L) {
  */
 int Context::rel_line_to(lua_State *L) {
   proto(L, "number,number");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
   double dx = lua_tonumber(L, 1);
   double dy = lua_tonumber(L, 2);
 
@@ -1631,7 +1631,7 @@ int Context::rel_line_to(lua_State *L) {
  */
 int Context::rel_move_to(lua_State *L) {
   proto(L, "number,number");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
   double dx = lua_tonumber(L, 1);
   double dy = lua_tonumber(L, 2);
 
@@ -1650,7 +1650,7 @@ int Context::rel_move_to(lua_State *L) {
  */
 int Context::path_extents(lua_State *L) {
   proto(L, "");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
   double v[4];
 
   cairo_path_extents(my, &v[0], &v[1], &v[2], &v[3]);
@@ -1673,7 +1673,7 @@ int Context::path_extents(lua_State *L) {
  */
 int Context::select_font_face(lua_State *L) {
   proto(L, "string, [string], [string]");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
 
   const char *family = lua_tostring(L, 1);
   cairo_font_slant_t slant = CAIRO_FONT_SLANT_NORMAL;
@@ -1702,7 +1702,7 @@ int Context::select_font_face(lua_State *L) {
  */
 int Context::set_font_size(lua_State *L) {
   proto(L, "number");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
   double v = lua_tonumber(L, 1);
 
   cairo_set_font_size(my, v);
@@ -1717,7 +1717,7 @@ int Context::set_font_size(lua_State *L) {
  */
 int Context::set_font_matrix(lua_State *L) {
   proto(L, "matrix");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
   Matrix &mat = Matrix::instance_notnull(L, 1);
 
   cairo_set_matrix(my, mat);
@@ -1732,7 +1732,7 @@ int Context::set_font_matrix(lua_State *L) {
  */
 int Context::get_font_matrix(lua_State *L) {
   proto(L, "");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
 
   cairo_get_matrix(my, *new (L) Matrix()); // pushes matrix
   status_check_ok(L, cairo_status(my));
@@ -1750,7 +1750,7 @@ int Context::get_font_matrix(lua_State *L) {
 int Context::set_font_options(lua_State *L) {
   proto(L, "{ antialias=[string], subpixel_order=[string], "
            "hint_style=[string], hint_metrics=[string] }");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
 
   if (!lua_istable(L, 1)) {
     luaL_error(L, "Expected table, got %s", L_typename(1));
@@ -1804,7 +1804,7 @@ int Context::set_font_options(lua_State *L) {
  */
 int Context::get_font_options(lua_State *L) {
   proto(L, "");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
 
   L_GROW(3);
   lua_newtable(L);
@@ -1837,7 +1837,7 @@ int Context::get_font_options(lua_State *L) {
  */
 int Context::set_font_face(lua_State *L) {
   proto(L, "CairoFont");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
   FontFace &font = FontFace::instance_notnull(L, 1);
 
   cairo_set_font_face(my, font);
@@ -1852,7 +1852,7 @@ int Context::set_font_face(lua_State *L) {
  */
 int Context::get_font_face(lua_State *L) {
   proto(L, "");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
 
   cairo_font_face_t *ff = cairo_get_font_face(my);
   //
@@ -1872,7 +1872,7 @@ int Context::get_font_face(lua_State *L) {
  */
 int Context::set_scaled_font(lua_State *L) {
   proto(L, "scaled_font");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
   ScaledFont &font = ScaledFont::instance_notnull(L, 1);
 
   cairo_set_scaled_font(my, font);
@@ -1887,7 +1887,7 @@ int Context::set_scaled_font(lua_State *L) {
  */
 int Context::get_scaled_font(lua_State *L) {
   proto(L, "");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
 
   cairo_scaled_font_t *sf = cairo_get_scaled_font(my);
   //
@@ -1907,7 +1907,7 @@ int Context::get_scaled_font(lua_State *L) {
  */
 int Context::show_text(lua_State *L) {
   proto(L, "string");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
   const char *s = lua_tostring(L, 1);
 
   cairo_show_text(my, s);
@@ -1923,7 +1923,7 @@ int Context::show_text(lua_State *L) {
 /*** NOT ENABLED
 int Context::show_glyphs( lua_State *L ) {
     proto( L, "{ glyph, ... }" );
-    Context &my= *Context::instance(L,lua_upvalueindex(1));
+    Context &my= Context::instance_notnull(L,lua_upvalueindex(1));
 
     if (!lua_istable(L,1)) {
         luaL_error( L, "Expected table, got %s", L_typename(1) );
@@ -1956,7 +1956,7 @@ int Context::show_glyphs( lua_State *L ) {
  */
 int Context::font_extents(lua_State *L) {
   proto(L, "");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
 
   cairo_font_extents_t ext;
   cairo_font_extents(my, &ext);
@@ -1999,7 +1999,7 @@ int Context::font_extents(lua_State *L) {
  */
 int Context::text_extents(lua_State *L) {
   proto(L, "string");
-  Context &my = *Context::instance(L, lua_upvalueindex(1));
+  Context &my = Context::instance_notnull(L, lua_upvalueindex(1));
   const char *s = lua_tostring(L, 1);
 
   cairo_text_extents_t ext;

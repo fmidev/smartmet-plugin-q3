@@ -97,6 +97,7 @@ rm -rf %{buildroot}
 - Fixed all requests failing with "out of memory" on RHEL8: its LuaJIT does not support custom allocators, memory_limit_mb is then enforced from the instruction count hook
 - Tests accept rendered images which differ only in PNG encoding
 - Scripts with a time or memory limit are run in the LuaJIT interpreter so that the limits are checked in loops too
+- Functions called with arguments of a wrong type report an error; scripts see only the type name of the metatable of a data object
 
 * Fri Nov 13 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.11.13-1.fmi
 - Include cleanup: files include what they use, unnecessary includes removed. No functional changes

@@ -34,7 +34,7 @@ struct GlyphMethodNames glyph_method_names;
  * ...= __index( Glyph_ud, key_any )
  */
 int Glyph_bind::index(lua_State *L) {
-  // Glyph &my= *Glyph::instance(L,1);
+  // Glyph &my= Glyph::instance_notnull(L,1);
 
   L_GROW(2);
 

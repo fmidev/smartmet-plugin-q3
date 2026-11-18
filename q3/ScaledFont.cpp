@@ -36,7 +36,7 @@ struct ScaledFontMethodNames scaled_font_method_names;
  * ...= __index( ScaledFont_ud, key_any )
  */
 int ScaledFont_bind::index(lua_State *L) {
-  // ScaledFont &my= *ScaledFont::instance(L,1);
+  // ScaledFont &my= ScaledFont::instance_notnull(L,1);
 
   L_GROW(2);
 
@@ -99,7 +99,7 @@ ScaledFont::~ScaledFont() {
  * }= scaled_font.text_extents( utf8_str )
  */
 int ScaledFont::text_extents(lua_State *L) {
-  ScaledFont &my = *ScaledFont::instance(L, lua_upvalueindex(1));
+  ScaledFont &my = ScaledFont::instance_notnull(L, lua_upvalueindex(1));
   const char *s = lua_tostring(L, 1);
 
   cairo_text_extents_t ext;

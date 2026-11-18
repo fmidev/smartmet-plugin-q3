@@ -133,7 +133,7 @@ int wn_PnPoly(const LatLon &P, const vector<LatLon> &V) {
  * number= __index( latlon_ud, "lat"|"lon" )
  */
 int LatLonBind::index(lua_State *L) {
-  const LatLon &my = *LatLon::instance(L, 1);
+  const LatLon &my = LatLon::instance_notnull(L, 1);
 
   const char *s = lua_tostring(L, 2); // key
   if (s) {
@@ -155,8 +155,8 @@ int LatLonBind::index(lua_State *L) {
  * bool= __eq( latlon_ud, latlon_ud )
  */
 int LatLonBind::eq(lua_State *L) {
-  const LatLon &a = *LatLon::instance(L, 1);
-  const LatLon &b = *LatLon::instance(L, 1);
+  const LatLon &a = LatLon::instance_notnull(L, 1);
+  const LatLon &b = LatLon::instance_notnull(L, 1);
 
   lua_pushboolean(L, a == b);
   return 1;
@@ -166,7 +166,7 @@ int LatLonBind::eq(lua_State *L) {
  * [str]= __tostring( latlon_ud )
  */
 int LatLonBind::tostring(lua_State *L) {
-  const LatLon &a = *LatLon::instance(L, 1);
+  const LatLon &a = LatLon::instance_notnull(L, 1);
 
   char NS = a.lat >= 0.0 ? 'N' : 'S';
   char WE = a.lon >= 0.0 ? 'E' : 'W';
@@ -398,7 +398,7 @@ int LatLonList::_areamask(lua_State *L) {
 #endif
 
   const char *proj = lua_tostring(L, 1);
-  const MatrixPos &gs = *MatrixPos::instance(L, 2);
+  const MatrixPos &gs = MatrixPos::instance_notnull(L, 2);
   Limits::check_grid_size(L, gs);
   double value = lua_tonumber(L, 3);
   bool invert = lua_toboolean(L, 4);

@@ -127,7 +127,7 @@ int VectorBind::lt(lua_State *L) {
  * bool= __index( vector_ud, "isnan" )
  */
 int VectorBind::index(lua_State *L) {
-  const Vector &my = *Vector::instance(L, 1);
+  const Vector &my = Vector::instance_notnull(L, 1);
   double v = NAN;
 
   const char *s = lua_tostring(L, 2);
@@ -158,7 +158,7 @@ int VectorBind::index(lua_State *L) {
  * vector_ud= __unm( vector_ud )
  */
 int VectorBind::unm(lua_State *L) {
-  Vector &a = *Vector::instance(L, 1);
+  Vector &a = Vector::instance_notnull(L, 1);
   new (L) Vector(-a);
   return 1;
 }

@@ -159,7 +159,7 @@ string MatrixPos::asString() const {
 * uint= __index( pos_ud, "x"|"y" )
 */
 int MatrixPosBind::index( lua_State *L ) {
-    const MatrixPos &my= *MatrixPos::instance(L,1);
+    const MatrixPos &my= MatrixPos::instance_notnull(L,1);
 
     const char *s= lua_tostring(L,2);
     if (s) switch(*s) {
@@ -260,7 +260,7 @@ int MatrixPosBind::mul( lua_State *L ) {
 * pos_ud= __unm( pos_ud )
 */
 int MatrixPosBind::unm( lua_State *L ) {
-    MatrixPos &a= *MatrixPos::instance( L, 1 );
+    MatrixPos &a= MatrixPos::instance_notnull(L, 1 );
 
     new(L) MatrixPos( -a.x, -a.y );
     return 1;
@@ -353,7 +353,7 @@ string MatrixSize::asString() const {
 * ...
 */
 int MatrixSizeBind::index( lua_State *L ) {
-    const MatrixSize &my= *MatrixSize::instance(L,1);
+    const MatrixSize &my= MatrixSize::instance_notnull(L,1);
     (void)my;
 
     const char *s= lua_tostring(L,2);
@@ -515,7 +515,7 @@ int Matrix::add( lua_State *L ) {
     const Matrix* a= Matrix::instance(L,1);
     const Matrix* b= Matrix::instance(L,2);
     const Matrix* a_or_b= a ? a:b;
-    assert(a_or_b);
+    if (!a_or_b) luaL_error(L, "Matrix expected");
 
     MemMatrix &c= * new(L) MemMatrix( a_or_b->getSize(), a_or_b->getUnit(), common_proj(a,b) );   // uninitialized
     offset_t n= c.getN();
@@ -556,7 +556,7 @@ int Matrix::sub( lua_State *L ) {
     const Matrix* a= Matrix::instance(L,1);
     const Matrix* b= Matrix::instance(L,2);
     const Matrix* a_or_b= a ? a:b;
-    assert(a_or_b);
+    if (!a_or_b) luaL_error(L, "Matrix expected");
 
     MemMatrix &c= *new(L) MemMatrix( a_or_b->getSize(), a_or_b->getUnit(), common_proj(a,b) );    // uninitialized
     offset_t n= c.getN();
@@ -599,7 +599,7 @@ int Matrix::mul( lua_State *L ) {
     const Matrix* a= Matrix::instance(L,1);
     const Matrix* b= Matrix::instance(L,2);
     const Matrix* a_or_b= a ? a:b;
-    assert(a_or_b);
+    if (!a_or_b) luaL_error(L, "Matrix expected");
 
     MemMatrix &c= *new(L) MemMatrix( a_or_b->getSize(), a_or_b->getUnit(), common_proj(a,b) );
     offset_t n= c.getN();
@@ -636,7 +636,7 @@ int Matrix::mul( lua_State *L ) {
 */
 int Matrix::reciprocal( lua_State *L ) {
     const Matrix* a= Matrix::instance(L,1);
-    assert(a);
+    if (!a) luaL_error(L, "Matrix expected");
 
     MemMatrix &c= *new(L) MemMatrix( a->getSize(), NA_Param::UNIT_UNKNOWN_INTERPOLATABLE, a->getProjection() );
     offset_t n= c.getN();
@@ -660,7 +660,7 @@ int Matrix::reciprocal( lua_State *L ) {
 * m_ud= unm(m_ud)
 */
 int Matrix::unm( lua_State *L ) {
-    const Matrix &a= *Matrix::instance(L,1);
+    const Matrix &a= Matrix::instance_notnull(L,1);
 
     MemMatrix &c= *new(L) MemMatrix( a.getSize(), a.getUnit(), a.getProjection() );    // always retains the param (& unit)
     offset_t n= c.getN();
@@ -683,7 +683,7 @@ int Matrix::unm( lua_State *L ) {
 * [0..360) range.
 */
 int Matrix::unm_deg( lua_State *L ) {
-    const Matrix &a= *Matrix::instance(L,1);
+    const Matrix &a= Matrix::instance_notnull(L,1);
 
     MemMatrix &c= *new(L) MemMatrix( a.getSize(), a.getUnit(), a.getProjection() );    // always retains the param (& unit)
     offset_t n= c.getN();
@@ -775,7 +775,7 @@ int Matrix::pow( lua_State *L ) {
 * m_ud= abs(m_ud)
 */
 int Matrix::q3_abs( lua_State *L ) {
-    const Matrix &a= *Matrix::instance(L,1);
+    const Matrix &a= Matrix::instance_notnull(L,1);
 
     MemMatrix &c= *new(L) MemMatrix( a.getSize(), a.getUnit(), a.getProjection() );
     offset_t n= c.getN();
@@ -796,7 +796,7 @@ int Matrix::q3_abs( lua_State *L ) {
 * m_ud= ceil(m_ud)
 */
 int Matrix::q3_ceil( lua_State *L ) {
-    const Matrix &a= *Matrix::instance(L,1);
+    const Matrix &a= Matrix::instance_notnull(L,1);
 
     MemMatrix &c= *new(L) MemMatrix( a.getSize(), a.getUnit(), a.getProjection() );
     offset_t n= c.getN();
@@ -812,7 +812,7 @@ int Matrix::q3_ceil( lua_State *L ) {
 * m_ud= cos(m_ud)
 */
 int Matrix::q3_cos( lua_State *L ) {
-    const Matrix &a= *Matrix::instance(L,1);
+    const Matrix &a= Matrix::instance_notnull(L,1);
 
     MemMatrix &c= *new(L) MemMatrix( a.getSize(), NA_Param::UNIT_UNKNOWN_INTERPOLATABLE, a.getProjection() );
     offset_t n= c.getN();
@@ -826,7 +826,7 @@ int Matrix::q3_cos( lua_State *L ) {
 * m_ud= floor(m_ud)
 */
 int Matrix::q3_floor( lua_State *L ) {
-    const Matrix &a= *Matrix::instance(L,1);
+    const Matrix &a= Matrix::instance_notnull(L,1);
 
     MemMatrix &c= *new(L) MemMatrix( a.getSize(), a.getUnit(), a.getProjection() );
     offset_t n= c.getN();
@@ -842,7 +842,7 @@ int Matrix::q3_floor( lua_State *L ) {
 * m_ud= fmod(m_ud, num)
 */
 int Matrix::q3_fmod( lua_State *L ) {
-    const Matrix &a= *Matrix::instance(L,1);
+    const Matrix &a= Matrix::instance_notnull(L,1);
     auto b = (float)lua_tonumber(L, 2);
 
     MemMatrix &c= *new(L) MemMatrix( a.getSize(), a.getUnit(), a.getProjection() );    // retains the unit
@@ -858,7 +858,7 @@ int Matrix::q3_fmod( lua_State *L ) {
 * m_ud= log(m_ud)
 */
 int Matrix::q3_log( lua_State *L ) {
-    const Matrix &a= *Matrix::instance(L,1);
+    const Matrix &a= Matrix::instance_notnull(L,1);
 
     MemMatrix &c= *new(L) MemMatrix( a.getSize(), NA_Param::UNIT_UNKNOWN_INTERPOLATABLE, a.getProjection() );
     offset_t n= c.getN();
@@ -872,7 +872,7 @@ int Matrix::q3_log( lua_State *L ) {
 * m_ud= log10(m_ud)
 */
 int Matrix::q3_log10( lua_State *L ) {
-    const Matrix &a= *Matrix::instance(L,1);
+    const Matrix &a= Matrix::instance_notnull(L,1);
 
     MemMatrix &c= *new(L) MemMatrix( a.getSize(), NA_Param::UNIT_UNKNOWN_INTERPOLATABLE, a.getProjection() );
     offset_t n= c.getN();
@@ -1121,7 +1121,7 @@ int Matrix::q3_min( lua_State *L ) {
 * m_integral_ud, m_fractions_ud= modf(m_ud)
 */
 int Matrix::q3_modf( lua_State *L ) {
-    const Matrix &a= *Matrix::instance(L,1);
+    const Matrix &a= Matrix::instance_notnull(L,1);
 
     // 'modf' does retain the unit, for both returned values (the measurement stick does not change)
     //
@@ -1140,7 +1140,7 @@ int Matrix::q3_modf( lua_State *L ) {
 * m_ud= sin(m_ud)
 */
 int Matrix::q3_sin( lua_State *L ) {
-    const Matrix &a= *Matrix::instance(L,1);
+    const Matrix &a= Matrix::instance_notnull(L,1);
 
     MemMatrix &c= *new(L) MemMatrix( a.getSize(), NA_Param::UNIT_UNKNOWN_INTERPOLATABLE, a.getProjection() );
     offset_t n= c.getN();
@@ -1154,7 +1154,7 @@ int Matrix::q3_sin( lua_State *L ) {
 * m_ud= tan(m_ud)
 */
 int Matrix::q3_tan( lua_State *L ) {
-    const Matrix &a= *Matrix::instance(L,1);
+    const Matrix &a= Matrix::instance_notnull(L,1);
 
     MemMatrix &c= *new(L) MemMatrix( a.getSize(), NA_Param::UNIT_UNKNOWN_INTERPOLATABLE, a.getProjection() );
     offset_t n= c.getN();
@@ -1294,7 +1294,7 @@ int Matrix::q3_sum_or_avg( lua_State *L ) {
 int Matrix::q3_count( lua_State *L ) {
     proto( L, "Matrix" );
 
-    const Matrix &a= *Matrix::instance(L,1);
+    const Matrix &a= Matrix::instance_notnull(L,1);
 
     lua_pushinteger( L, a.reduce_count() );
     return 1;
@@ -1419,7 +1419,7 @@ int Matrix::q3_set( lua_State *L ) {
 * bool= has_missing(m_ud)
 */
 int Matrix::has_missing( lua_State *L ) {
-    const Matrix &a= *Matrix::instance(L,1);
+    const Matrix &a= Matrix::instance_notnull(L,1);
     MatrixPos::offset_t n= a.getN();
     bool found = false;
     
@@ -1538,7 +1538,7 @@ int push_matrix_field( lua_State *L, const Matrix &m, const char *s ) {
 * Returns NAN for values outside of the matrix (i.e. 'i-size(1,0)')
 */
 int MatrixBind::index( lua_State *L ) {
-    const Matrix &m= *Matrix::instance(L,1);
+    const Matrix &m= Matrix::instance_notnull(L,1);
 
     switch( lua_type(L,2) ) {
         case LUA_TSTRING: {
@@ -1607,7 +1607,7 @@ int MatrixBind::index( lua_State *L ) {
 * void= __newindex( m_ud, pos_ud, num )     -- m[ pos_ud ]= num|NAN
 */
 int MatrixBind::newindex( lua_State *L ) {
-    Matrix &m= *Matrix::instance(L,1);   // we'll modify it.
+    Matrix &m= Matrix::instance_notnull(L,1);   // we'll modify it.
 
     MatrixPos *pos= MatrixPos::instance(L,2);
     if (!pos) {

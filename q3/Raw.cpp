@@ -488,7 +488,7 @@ int push_raw_point_info(lua_State *L, const NA_Data *qd, const char *s) {
  * ...= __index( raw_ud, key_any )
  */
 int RawBind::__index(lua_State *L) {
-  const Raw_interface &r = *Raw_interface::instance(L, 1);
+  const Raw_interface &r = Raw_interface::instance_notnull(L, 1);
   const NA_Data *qd = r.getData();
   assert(qd);
 
@@ -938,7 +938,7 @@ int RawBind::__call(lua_State *L) {
                                   // value query
       "}]");
 
-  Raw_interface &r = *Raw_interface::instance(L, 1);
+  Raw_interface &r = Raw_interface::instance_notnull(L, 1);
   const NA_Data *qd = r.getData();
   assert(qd);
 
@@ -1049,7 +1049,7 @@ void RawBind::setup(lua_State *L) {
  */
 #if 0 // NOT NEEDED (now '.params' lists the standard param names)
 int RawBind::has_param( lua_State *L ) {
-    const Raw_interface &me= * Raw_interface::instance( L, lua_upvalueindex(1) );
+    const Raw_interface &me= Raw_interface::instance_notnull(L, lua_upvalueindex(1) );
     const char *s= lua_tostring(L,1);
 
     ApiParam p(s);

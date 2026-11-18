@@ -145,13 +145,13 @@ struct SurfaceMethodNames surface_method_names;
  * any|nil= __index( surf_ud, key )
  */
 int Surface_bind::index(lua_State *L) {
-  // const Surface &my= *Surface::instance(L,1);
+  // const Surface &my= Surface::instance_notnull(L,1);
 
   L_GROW(2);
 
   const char *s = lua_tostring(L, 2);
   if (s) {
-    Surface &my = *Surface::instance(L, 1);
+    Surface &my = Surface::instance_notnull(L, 1);
 
     // Data members
     //
@@ -303,7 +303,7 @@ Surface::~Surface() {
  */
 int Surface::finish(lua_State *L) {
   proto(L, "");
-  Surface &my = *Surface::instance(L, lua_upvalueindex(1));
+  Surface &my = Surface::instance_notnull(L, lua_upvalueindex(1));
   if (!my.finished) {
     cairo_surface_flush(my);
     my.image_to_out(); // copy internal bitmap to 'io' (nothing for PDF, SVG)
@@ -322,7 +322,7 @@ int Surface::finish(lua_State *L) {
  */
 int Surface::get_font_options(lua_State *L) {
   proto(L, "");
-  Surface &my = *Surface::instance(L, lua_upvalueindex(1));
+  Surface &my = Surface::instance_notnull(L, lua_upvalueindex(1));
   (void)my;
 
   luaL_error(L, "TBD: Providing font options out"); // use a table, or userdata?
@@ -333,7 +333,7 @@ int Surface::get_font_options(lua_State *L) {
  */
 int Surface::contents(lua_State *L) {
   proto(L, "");
-  Surface &my = *Surface::instance(L, lua_upvalueindex(1));
+  Surface &my = Surface::instance_notnull(L, lua_upvalueindex(1));
 
   L_GROW(2);
 
@@ -404,7 +404,7 @@ int Surface::contents(lua_State *L) {
  */
 int Surface::copy_page(lua_State *L) {
   proto(L, "");
-  Surface &my = *Surface::instance(L, lua_upvalueindex(1));
+  Surface &my = Surface::instance_notnull(L, lua_upvalueindex(1));
 
   cairo_surface_copy_page(my);
   status_check_ok(L, cairo_surface_status(my));
@@ -420,7 +420,7 @@ int Surface::copy_page(lua_State *L) {
  */
 int Surface::show_page(lua_State *L) {
   proto(L, "");
-  Surface &my = *Surface::instance(L, lua_upvalueindex(1));
+  Surface &my = Surface::instance_notnull(L, lua_upvalueindex(1));
 
   cairo_surface_show_page(my);
   status_check_ok(L, cairo_surface_status(my));
@@ -436,7 +436,7 @@ int Surface::show_page(lua_State *L) {
  */
 int Surface::set_size(lua_State *L) {
   proto(L, "number,number");
-  Surface &my = *Surface::instance(L, lua_upvalueindex(1));
+  Surface &my = Surface::instance_notnull(L, lua_upvalueindex(1));
   lua_Number w = lua_tonumber(L, 1);
   lua_Number h = lua_tonumber(L, 2);
 
@@ -502,7 +502,7 @@ ImageSurface::~ImageSurface() {
 #ifndef SANDBOX
 int ImageSurface::write_to_png(lua_State *L) {
   proto(L, "string");
-  Surface &my = *Surface::instance(L, lua_upvalueindex(1));
+  Surface &my = Surface::instance_notnull(L, lua_upvalueindex(1));
   const char *fn = lua_tostring(L, 1);
 
   cairo_status_t st = cairo_surface_write_to_png(my, fn);

@@ -72,7 +72,7 @@ bool push_integer_field(lua_State *L, const JDay &my, const char *s) {
  * [bool|int]= __index( jday_ud, key_any )
  */
 int JDayBind::index(lua_State *L) {
-  const JDay &my = *JDay::instance(L, 1);
+  const JDay &my = JDay::instance_notnull(L, 1);
 
   if (!my) {
     return 0; // undefined, return nothing
@@ -141,7 +141,7 @@ int JDayBind::index(lua_State *L) {
 int JDayBind::newindex(lua_State *L) {
   proto(L, "*,string,uint");
 
-  JDay &my = *JDay::instance(L, 1);
+  JDay &my = JDay::instance_notnull(L, 1);
 
   const char *s = lua_tostring(L, 2); // key
   assert(s);
@@ -230,8 +230,8 @@ int JDayBind::sub(lua_State *L) {
  * Note: Lua metamethod handling guarantees the types are both 'jday'.
  */
 int JDayBind::eq(lua_State *L) {
-  const JDay &a = *JDay::instance(L, 1);
-  const JDay &b = *JDay::instance(L, 2);
+  const JDay &a = JDay::instance_notnull(L, 1);
+  const JDay &b = JDay::instance_notnull(L, 2);
 
   lua_pushboolean(L, a && b && (a == b));
   return 1;
@@ -243,8 +243,8 @@ int JDayBind::eq(lua_State *L) {
  * Note: Lua metamethod handling guarantees the types are both 'jday'.
  */
 int JDayBind::lt(lua_State *L) {
-  const JDay &a = *JDay::instance(L, 1);
-  const JDay &b = *JDay::instance(L, 2);
+  const JDay &a = JDay::instance_notnull(L, 1);
+  const JDay &b = JDay::instance_notnull(L, 2);
 
   lua_pushboolean(L, a && b && (a < b));
   return 1;
@@ -254,7 +254,7 @@ int JDayBind::lt(lua_State *L) {
  * [str]= __tostring( jday )
  */
 int JDayBind::tostring(lua_State *L) {
-  const JDay &a = *JDay::instance(L, 1);
+  const JDay &a = JDay::instance_notnull(L, 1);
 
   if (a) {
     lua_pushstring(L, a.toString().c_str());

@@ -256,7 +256,7 @@ void LuaNew_base::create_mt(lua_State *L, f_setup setup_f, const LuaNew_ID &_id,
                             const char *name) {
   assert(name);
 
-  L_GROW(3);
+  L_GROW(5);
 
   lua_newtable(L);
 
@@ -277,6 +277,30 @@ void LuaNew_base::create_mt(lua_State *L, f_setup setup_f, const LuaNew_ID &_id,
     lua_pushstring(L, name);
     lua_settable(L, -3);
   }
+
+  // Scripts must not get hold of the real metatable: its C functions would be
+  // callable with arbitrary arguments ('__gc' even twice for the same object).
+  // 'getmetatable(ud)' returns this table instead; it has what the Lua side
+  // libraries look at ('__type', and whether there is a '__tostring').
+  //
+  lua_pushliteral(L, "__metatable");
+  lua_newtable(L);
+  if (name) {
+    lua_pushliteral(L, "__type");
+    lua_pushstring(L, name);
+    lua_settable(L, -3);
+  }
+  lua_pushliteral(L, "__tostring");
+  lua_rawget(L, -4); // the metatable is at [-4]
+  if (!lua_isnil(L, -1)) {
+    lua_pop(L, 1);
+    lua_pushliteral(L, "__tostring");
+    lua_pushboolean(L, 1);
+    lua_settable(L, -3);
+  } else {
+    lua_pop(L, 1);
+  }
+  lua_settable(L, -3);
 
   // Tie to registry
   //

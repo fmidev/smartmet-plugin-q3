@@ -36,7 +36,7 @@ struct FontFaceMethodNames font_face_method_names;
  * ...= __index( FontFace_ud, key_any )
  */
 int FontFace_bind::index(lua_State *L) {
-  // FontFace &my= *FontFace::instance(L,1);
+  // FontFace &my= FontFace::instance_notnull(L,1);
 
   L_GROW(2);
 

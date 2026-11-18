@@ -72,7 +72,7 @@ bool push_matrix_member( lua_State *L, const cairo_matrix_t &tmp, const char *s 
 * ...= __index( pattern_ud, key_any )
 */
 int Matrix_bind::index( lua_State *L ) {
-    Matrix &my= *Matrix::instance(L,1);
+    Matrix &my= Matrix::instance_notnull(L,1);
 
     L_GROW(2);
 
@@ -142,7 +142,7 @@ void Matrix_bind::setup( lua_State *L ) {
 */
 int Matrix::translate( lua_State *L ) {
     proto( L, "number,number" );
-    Matrix &my= *Matrix::instance( L, lua_upvalueindex(1) );
+    Matrix &my= Matrix::instance_notnull(L, lua_upvalueindex(1) );
     double tx= lua_tonumber(L,1);
     double ty= lua_tonumber(L,2);
 
@@ -157,7 +157,7 @@ int Matrix::translate( lua_State *L ) {
 */
 int Matrix::scale( lua_State *L ) {
     proto( L, "number,number" );
-    Matrix &my= *Matrix::instance( L, lua_upvalueindex(1) );
+    Matrix &my= Matrix::instance_notnull(L, lua_upvalueindex(1) );
     double sx= lua_tonumber(L,1);
     double sy= lua_tonumber(L,2);
 
@@ -172,7 +172,7 @@ int Matrix::scale( lua_State *L ) {
 */
 int Matrix::rotate( lua_State *L ) {
     proto( L, "number" );
-    Matrix &my= *Matrix::instance( L, lua_upvalueindex(1) );
+    Matrix &my= Matrix::instance_notnull(L, lua_upvalueindex(1) );
     double rad= lua_tonumber(L,1);
 
     cairo_matrix_rotate( my, rad );
@@ -186,7 +186,7 @@ int Matrix::rotate( lua_State *L ) {
 */
 int Matrix::invert( lua_State *L ) {
     proto( L, "" );
-    Matrix &my= *Matrix::instance( L, lua_upvalueindex(1) );
+    Matrix &my= Matrix::instance_notnull(L, lua_upvalueindex(1) );
 
     cairo_matrix_invert( my );
 
@@ -202,7 +202,7 @@ int Matrix::invert( lua_State *L ) {
 */
 int Matrix::multiply( lua_State *L ) {
     proto( L, "CairoMatrix" );
-    Matrix &my= *Matrix::instance( L, lua_upvalueindex(1) );
+    Matrix &my= Matrix::instance_notnull(L, lua_upvalueindex(1) );
     Matrix &mb= Matrix::instance_notnull( L, 1 );
 
     cairo_matrix_t ma= *my;     // just in case (if 'cairo_matrix_multiply' would corrupt 
@@ -218,7 +218,7 @@ int Matrix::multiply( lua_State *L ) {
 */
 int Matrix::transform_distance( lua_State *L ) {
     proto( L, "number,number" );
-    Matrix &my= *Matrix::instance( L, lua_upvalueindex(1) );
+    Matrix &my= Matrix::instance_notnull(L, lua_upvalueindex(1) );
     double dx= lua_tonumber(L,1);
     double dy= lua_tonumber(L,2);
 
@@ -234,7 +234,7 @@ int Matrix::transform_distance( lua_State *L ) {
 */
 int Matrix::transform_point( lua_State *L ) {
     proto( L, "number,number" );
-    Matrix &my= *Matrix::instance( L, lua_upvalueindex(1) );
+    Matrix &my= Matrix::instance_notnull(L, lua_upvalueindex(1) );
     double x= lua_tonumber(L,1);
     double y= lua_tonumber(L,2);
 

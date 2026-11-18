@@ -64,7 +64,7 @@ LuaNew_ID EdgePointBind::ID;
  * 'INVARIANT()'.
  */
 int ContourBind::__index(lua_State *L) {
-  const Contour &my = *Contour::instance(L, 1);
+  const Contour &my = Contour::instance_notnull(L, 1);
 
   if (lua_type(L, 2) == LUA_TSTRING) {
     const char *s = lua_tostring(L, 2);
@@ -94,7 +94,7 @@ int ContourBind::__index(lua_State *L) {
  * uint= __len( contour_ud )
  */
 int ContourBind::__len(lua_State *L) {
-  const Contour &my = *Contour::instance(L, 1);
+  const Contour &my = Contour::instance_notnull(L, 1);
 
   lua_pushinteger(L, my.points.size());
   return 1;
@@ -124,7 +124,7 @@ void ContourBind::setup(lua_State *L) {
  * ...= __index( contour_ud, "x"|"y"|"edge" )      -- n: 1..N
  */
 int EdgePointBind::__index(lua_State *L) {
-  const EdgePoint &my = *EdgePoint::instance(L, 1);
+  const EdgePoint &my = EdgePoint::instance_notnull(L, 1);
 
   const char *s = lua_tostring(L, 2);
   if (s) {
@@ -150,7 +150,7 @@ int EdgePointBind::__index(lua_State *L) {
  * This is only needed for debugging (makes 'DUMP()' show the point internals).
  */
 int EdgePointBind::__tostring(lua_State *L) {
-  const EdgePoint &my = *EdgePoint::instance(L, 1);
+  const EdgePoint &my = EdgePoint::instance_notnull(L, 1);
 
   lua_pushfstring(L, "{ x=%f, y=%f, edge=%s }", my.x, my.y,
                   my.edge ? "true" : "false");
@@ -255,7 +255,7 @@ int Contour::contour(lua_State *L) {
   proto(L, "Matrix, number, [ number ], [ number ], [ number ], [ Matrix ], [ "
            "TronHints ]");
 
-  const Matrix &my = *Matrix::instance(L, 1);
+  const Matrix &my = Matrix::instance_notnull(L, 1);
 
   /*
    * Here's invariants for the contours we should get:
@@ -414,7 +414,7 @@ int Contour::contour_smoothen_one(lua_State *L) {
 
   proto(L, "Contour,number,[bool]");
 
-  const Contour &old = *Contour::instance(L, 1);
+  const Contour &old = Contour::instance_notnull(L, 1);
 
   double factor = lua_tonumber(L, 2);
   if (factor <= 0.0) {

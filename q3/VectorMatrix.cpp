@@ -329,7 +329,7 @@ int push_vector_matrix_field(lua_State *L, const VectorMatrix &me,
  * Returns nil for values outside of the matrix.
  */
 int VectorMatrixBind::index(lua_State *L) {
-  const VectorMatrix &me = *VectorMatrix::instance(L, 1);
+  const VectorMatrix &me = VectorMatrix::instance_notnull(L, 1);
 
   switch (lua_type(L, 2)) {
   case LUA_TSTRING: {
@@ -398,7 +398,7 @@ int VectorMatrixBind::index(lua_State *L) {
  * void= __newindex( m2_ud, pos_ud, vector_ud )     -- m2[ pos_ud ]= vector_ud
  */
 int VectorMatrixBind::newindex(lua_State *L) {
-  VectorMatrix &m2 = *VectorMatrix::instance(L, 1); // we'll modify it.
+  VectorMatrix &m2 = VectorMatrix::instance_notnull(L, 1); // we'll modify it.
 
   MatrixPos *pos = MatrixPos::instance(L, 2);
   if (!pos) {

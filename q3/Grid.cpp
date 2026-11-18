@@ -85,7 +85,7 @@ void GridBind::setup(lua_State *L) {
 int GridBind::__index(lua_State *L) {
 
   const unsigned my_index = 1;
-  Grid &my = *Grid::instance(L, my_index);
+  Grid &my = Grid::instance_notnull(L, my_index);
 
   const char *s = lua_tostring(L, 2);
   if (!s) {
@@ -164,7 +164,7 @@ int GridBind::__index(lua_State *L) {
 #ifdef METQU
 int GridBind::__newindex(lua_State *L) {
 
-  Grid &my = *Grid::instance(L, 1);
+  Grid &my = Grid::instance_notnull(L, 1);
 
   const char *s = lua_tostring(L, 2);
   if (!s) {

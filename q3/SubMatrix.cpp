@@ -88,7 +88,7 @@ SubMatrix::~SubMatrix() {
  * void= set_pos( submatrix_ud, matrixpos_ud )
  */
 int SubMatrix::set_pos(lua_State *L) {
-  SubMatrix &my = *SubMatrix::instance(L, 1);
+  SubMatrix &my = SubMatrix::instance_notnull(L, 1);
 
   const MatrixPos *pos = MatrixPos::instance(L, 2);
   L_ASSERT(pos);
@@ -109,7 +109,7 @@ int SubMatrix::set_pos(lua_State *L) {
  * for distance calculations.
  */
 int SubMatrix::set_radius(lua_State *L) {
-  SubMatrix &my = *SubMatrix::instance(L, 1);
+  SubMatrix &my = SubMatrix::instance_notnull(L, 1);
 
   my.r_km = lua_tonumber(L, 2);
 
@@ -148,7 +148,7 @@ int SubMatrix::set_radius(lua_State *L) {
  *   ... and all 'Matrix' indices ...
  */
 int SubMatrixBind::index(lua_State *L) {
-  SubMatrix &my = *SubMatrix::instance(L, 1);
+  SubMatrix &my = SubMatrix::instance_notnull(L, 1);
 
   // [1]: not even needed (we don't do anything to it directly)
   //
